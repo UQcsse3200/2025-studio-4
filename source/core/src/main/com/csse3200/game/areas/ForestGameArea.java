@@ -40,7 +40,8 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/base_tower.png"
+    "images/base_tower.png",
+    "images/sun.png"
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
@@ -73,14 +74,17 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    spawnGhosts();
-    spawnGhostKing();
+    //spawnGhosts();
+    //spawnGhostKing();
 
     // Add base tower at a chosen position
     GridPoint2 baseTowerPos = new GridPoint2(5, 5); // Choose your desired position
     Entity baseTower = TowerFactory.createBaseTower();
-    baseTower.addComponent(new TextureRenderComponent("images/base_tower.png"));
     spawnEntityAt(baseTower, baseTowerPos, true, false);
+
+    GridPoint2 sunTowerPos = new GridPoint2(12, 12); // Choose your desired position
+    Entity sunTower = TowerFactory.createSunTower();
+    spawnEntityAt(sunTower, sunTowerPos, true, false);
 
     playMusic();
   }

@@ -1,0 +1,12 @@
+{
+  "baseTower": {
+    "damage": 5,
+    "range": 3.0,
+    "cooldown": 1.0
+  },
+  "sunTower": {
+    "damage": 8,
+    "range": 2.0,
+    "cooldown": 0.8
+  }
+}

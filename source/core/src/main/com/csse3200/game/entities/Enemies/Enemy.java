@@ -12,10 +12,8 @@ public abstract class Enemy extends Entity {
     protected float speed;
     protected int damage;
     protected String type;
-
-    // resistances/weaknesses could be expanded to enums
-    protected String[] resistances;
-    protected String[] weaknesses;
+    protected DamageType[] resistances;
+    protected DamageType[] weaknesses;
 
     public Enemy(int maxHealth, float speed, int damage, String type) {
         this.maxHealth = maxHealth;

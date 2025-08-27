@@ -6,8 +6,8 @@ package com.csse3200.game.entities.Enemies;
 public class DroneEnemy extends Enemy {
     public DroneEnemy() {
         super(50, 2.0f, 10, "Drone");
-        this.resistances = new String[] {"electric"};
-        this.weaknesses = new String[] {"fire"};
+        this.resistances = new DamageType[] {DamageType.Electricity};
+        this.weaknesses = new DamageType[] {DamageType.Fire};
     }
 
     @Override

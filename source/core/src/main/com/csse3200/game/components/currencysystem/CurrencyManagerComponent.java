@@ -32,7 +32,7 @@ public class CurrencyManagerComponent extends Component {
 
     /**
      * Subtracts a specified amount of the given currency type.
-     * If the result would be negative, the value is clamped at zero.
+     * If the result is negative, the value is zero.
      *
      * @param type   the type of currency to subtract
      * @param amount the amount to subtract

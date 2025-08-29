@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.Enemies.DamageType;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.TextureRenderComponent;
@@ -19,10 +20,23 @@ public class CombatStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
   private int baseAttack;
+  private DamageType resistances;
+  private DamageType weaknesses;
 
-  public CombatStatsComponent(int health, int baseAttack) {
+  public CombatStatsComponent(int health, int baseAttack, DamageType resistances, DamageType weaknesses) {
     setHealth(health);
     setBaseAttack(baseAttack);
+    this.resistances = resistances;
+    this.weaknesses = weaknesses;
+  }
+
+
+  public DamageType getResistances() {
+    return resistances;
+  }
+
+  public DamageType getWeaknesses() {
+    return weaknesses;
   }
 
   /**
@@ -72,8 +86,22 @@ public class CombatStatsComponent extends Component {
    *
    * @param health health to add
    */
-  public void addHealth(int health) {
-    setHealth(this.health + health);
+  public void addHealth(int health, DamageType damagetype) {
+    if (damagetype == DamageType.None) {
+      setHealth(this.health + health);
+      return;
+    }
+    if (damagetype == getWeaknesses()) {
+      setHealth(this.health + (health * 2));
+      return;
+    } 
+    if (damagetype == getResistances()) {
+      setHealth(this.health + (int) Math.round(health * 0.5));
+      return;
+    } else {
+        setHealth(this.health + health);
+        return;
+    }
   }
 
   /**

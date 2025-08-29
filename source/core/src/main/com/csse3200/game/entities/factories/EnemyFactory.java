@@ -7,6 +7,7 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.Enemies.DamageType;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
@@ -28,8 +29,9 @@ public class EnemyFactory {
     Entity drone = createBaseEnemy(target, new Vector2(1f, 1f));
 
     drone
-        // For now this is where I'm setting the individual enemy stats, I'll need to modify CombatStatsComponent or make our own at a later point //
-        .addComponent(new CombatStatsComponent(50, 10))
+        // This is where we assign unique enemy stats
+        .addComponent(new CombatStatsComponent(50, 10, DamageType.None, DamageType.None))
+
         .addComponent(new TextureRenderComponent("images/placeholder-enemy.png"))
         .addComponent(new clickable("Drone Enemy"));
 

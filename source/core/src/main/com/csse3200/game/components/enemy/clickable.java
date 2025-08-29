@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.Enemies.DamageType;
 import com.csse3200.game.rendering.Renderer;
 
 public class clickable extends Component{
@@ -30,10 +31,9 @@ public class clickable extends Component{
                 camera.unproject(worldClickPos);
                 
                 // Check if click is close to enemy
-                float clickRadius = 1.0f; // Adjust this value as needed (world units)
+                float clickRadius = 0.7f; // Adjust this value as needed (world units)
                 if (Math.abs(worldClickPos.x - entityPos.x) < clickRadius && 
                     Math.abs(worldClickPos.y - entityPos.y) < clickRadius) {
-                    System.out.println("*** Target Clicked! ***");
                     printDebugInfo();
                 }
             } else {
@@ -55,8 +55,9 @@ public class clickable extends Component{
 
     public void printDebugInfo() {
         System.out.println("=== Hit " + name + "===");
-        entity.getComponent(CombatStatsComponent.class).addHealth(-25);
-        System.out.println(name + "Health: " + entity.getComponent(CombatStatsComponent.class).getHealth());
+        // For now, we have to manually set the damage type of the click attack, but for testing purposes it works
+        entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageType.None);
+        System.out.println("Health: " + entity.getComponent(CombatStatsComponent.class).getHealth());
         if (entity.getComponent(CombatStatsComponent.class).isDead()) {
             System.out.println("Killed " + name);
             

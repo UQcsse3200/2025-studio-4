@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -24,12 +25,13 @@ public class EnemyFactory {
    */
   public static Entity createDroneEnemy(Entity target) {
     // The Vector2 that createBaseEnemy takes as an input is the SPEED of the enemy //
-    Entity drone = createBaseEnemy(target, new Vector2(3f, 3f));
+    Entity drone = createBaseEnemy(target, new Vector2(1f, 1f));
 
     drone
         // For now this is where I'm setting the individual enemy stats, I'll need to modify CombatStatsComponent or make our own at a later point //
         .addComponent(new CombatStatsComponent(50, 10))
-        .addComponent(new TextureRenderComponent("images/placeholder-enemy.png"));
+        .addComponent(new TextureRenderComponent("images/placeholder-enemy.png"))
+        .addComponent(new clickable("Drone Enemy"));
 
     return drone;
   }

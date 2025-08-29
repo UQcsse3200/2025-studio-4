@@ -3,12 +3,7 @@ package com.csse3200.game.components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.physics.components.HitboxComponent;
-import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.rendering.TextureRenderComponent;
-import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Component used to store information related to combat such as health, attack, etc. Any entities
@@ -72,11 +67,7 @@ public class CombatStatsComponent extends Component {
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
       if (this.health == 0) {
-        EntityService entityService = ServiceLocator.getEntityService();
-        RenderService renderService = ServiceLocator.getRenderService();
-        entityService.unregister(entity);
-        renderService.unregister(entity.getComponent(TextureRenderComponent.class));
-        entity.getComponent(HitboxComponent.class).dispose();
+        entity.getEvents().trigger("entityDeath");
       }
     }
   }

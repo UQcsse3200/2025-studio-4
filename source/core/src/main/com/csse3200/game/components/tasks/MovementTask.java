@@ -17,7 +17,7 @@ public class MovementTask extends DefaultTask {
 
   private final GameTime gameTime;
   private Vector2 target;
-  public Vector2 speed;
+  private Vector2 speed;
   private float stopDistance = 0.01f;
   private long lastTimeMoved;
   private Vector2 lastPos;
@@ -25,6 +25,12 @@ public class MovementTask extends DefaultTask {
 
   public MovementTask(Vector2 target) {
     this.target = target;
+    this.gameTime = ServiceLocator.getTimeSource();
+  }
+
+  public MovementTask(Vector2 target, Vector2 speed) {
+    this.target = target;
+    this.speed = speed;
     this.gameTime = ServiceLocator.getTimeSource();
   }
 

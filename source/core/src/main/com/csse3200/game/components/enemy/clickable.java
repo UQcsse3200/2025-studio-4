@@ -34,10 +34,8 @@ public class clickable extends Component{
                 float clickRadius = 0.7f; // Adjust this value as needed (world units)
                 if (Math.abs(worldClickPos.x - entityPos.x) < clickRadius && 
                     Math.abs(worldClickPos.y - entityPos.y) < clickRadius) {
-                    printDebugInfo();
+                    entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageTypeConfig.None);
                 }
-            } else {
-                System.out.println("Camera not found!");
             }
         }
     }
@@ -51,17 +49,5 @@ public class clickable extends Component{
             return renderer.camera.getCamera(); // CameraComponent.getCamera() returns the LibGDX Camera
         }
         return null;
-    }
-
-    public void printDebugInfo() {
-        System.out.println("=== Hit " + name + "===");
-        // For now, we have to manually set the damage type of the click attack, but for testing purposes it works
-        // The line below is the one that actually deals damage to the entity
-        entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageTypeConfig.None);
-        System.out.println("Health: " + entity.getComponent(CombatStatsComponent.class).getHealth());
-        if (entity.getComponent(CombatStatsComponent.class).isDead()) {
-            System.out.println("Killed " + name);
-            
-        }
     }
 }

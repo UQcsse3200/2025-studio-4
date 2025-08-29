@@ -1,6 +1,20 @@
 package com.csse3200.game.components.currencysystem;
 
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
+
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
+
 
 /**
  * A component that marks an entity as collectible by the player.
@@ -8,5 +22,39 @@ import com.csse3200.game.components.Component;
  * Entities with this component can be picked up or collected during gameplay.
  */
 public class CollectibleComponent extends Component {
+    private boolean isCollected;
+    private float clickRadius = 1.0f;
+
+    public void update () {
+        if (Gdx.input.justTouched()) {
+            Vector2 entityPos = entity.getPosition();
+            int screenX = Gdx.input.getX();
+            int screenY = Gdx.input.getY();
+
+            Vector3 worldClickPos = new Vector3(screenX, screenY, 0);
+            Camera camera = this.getCamera();
+            camera.unproject(worldClickPos);
+
+            if (Math.abs(worldClickPos.x - entityPos.x) < this.clickRadius &&
+                    Math.abs(worldClickPos.y - entityPos.y) < this.clickRadius) {
+
+                Gdx.app.postRunnable(entity::dispose);
+                entity.getEvents().trigger("updateScrap", this.entity);
+            }
+
+        }
+    }
+
+    /**
+     * Get the camera from the current Renderer.
+     */
+    private Camera getCamera() {
+        Renderer renderer = Renderer.getCurrentRenderer();
+        if (renderer != null && renderer.getCamera() != null) {
+            return renderer.getCamera().getCamera(); // CameraComponent.getCamera() returns the LibGDX Camera
+        }
+        return null;
+    }
+
 
 }

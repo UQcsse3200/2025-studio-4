@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.Renderer;
 
@@ -54,5 +55,11 @@ public class clickable extends Component{
 
     public void printDebugInfo() {
         System.out.println("=== Hit " + name + "===");
+        entity.getComponent(CombatStatsComponent.class).addHealth(-25);
+        System.out.println(name + "Health: " + entity.getComponent(CombatStatsComponent.class).getHealth());
+        if (entity.getComponent(CombatStatsComponent.class).isDead()) {
+            System.out.println("Killed " + name);
+            
+        }
     }
 }

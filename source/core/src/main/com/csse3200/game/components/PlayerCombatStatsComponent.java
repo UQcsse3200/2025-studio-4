@@ -84,7 +84,7 @@ public class PlayerCombatStatsComponent extends Component {
     }
   }
 
-  public void hit(PlayerCombatStatsComponent attacker) {
+  public void hit(CombatStatsComponent attacker) {
     int newHealth = getHealth() - attacker.getBaseAttack();
     setHealth(newHealth);
   }

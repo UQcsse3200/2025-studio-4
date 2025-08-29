@@ -12,6 +12,8 @@ public abstract class Enemy extends Entity {
     protected float speed;
     protected int damage;
     protected String type;
+
+    // resistances/weaknesses could be enums
     protected DamageType[] resistances;
     protected DamageType[] weaknesses;
 
@@ -56,6 +58,6 @@ public abstract class Enemy extends Entity {
     }
 
     protected void onDeath() {
-        // Handle enemy death (e.g., drop loot, play animation)
+        // Handle enemy death (e.g.,loot, play animation)
     }
 }

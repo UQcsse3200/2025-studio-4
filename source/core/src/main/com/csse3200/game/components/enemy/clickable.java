@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.entities.Enemies.DamageType;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.Renderer;
 
 public class clickable extends Component{
@@ -56,7 +56,8 @@ public class clickable extends Component{
     public void printDebugInfo() {
         System.out.println("=== Hit " + name + "===");
         // For now, we have to manually set the damage type of the click attack, but for testing purposes it works
-        entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageType.None);
+        // The line below is the one that actually deals damage to the entity
+        entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageTypeConfig.None);
         System.out.println("Health: " + entity.getComponent(CombatStatsComponent.class).getHealth());
         if (entity.getComponent(CombatStatsComponent.class).isDead()) {
             System.out.println("Killed " + name);

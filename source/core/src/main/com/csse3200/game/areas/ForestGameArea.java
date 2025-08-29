@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.EnemyFactory;
+import com.csse3200.game.entities.factories.DroneEnemyFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -145,9 +145,9 @@ public class ForestGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 1; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity drone = EnemyFactory.createDroneEnemy(player);
+      Entity drone = DroneEnemyFactory.createDroneEnemy(player);
       spawnEntityAt(drone, randomPos, true, true);
     }
   }

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.entities.Enemies.DamageType;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.TextureRenderComponent;
@@ -20,10 +20,10 @@ public class CombatStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
   private int health;
   private int baseAttack;
-  private DamageType resistances;
-  private DamageType weaknesses;
+  private DamageTypeConfig resistances;
+  private DamageTypeConfig weaknesses;
 
-  public CombatStatsComponent(int health, int baseAttack, DamageType resistances, DamageType weaknesses) {
+  public CombatStatsComponent(int health, int baseAttack, DamageTypeConfig resistances, DamageTypeConfig weaknesses) {
     setHealth(health);
     setBaseAttack(baseAttack);
     this.resistances = resistances;
@@ -31,11 +31,11 @@ public class CombatStatsComponent extends Component {
   }
 
 
-  public DamageType getResistances() {
+  public DamageTypeConfig getResistances() {
     return resistances;
   }
 
-  public DamageType getWeaknesses() {
+  public DamageTypeConfig getWeaknesses() {
     return weaknesses;
   }
 
@@ -86,8 +86,8 @@ public class CombatStatsComponent extends Component {
    *
    * @param health health to add
    */
-  public void addHealth(int health, DamageType damagetype) {
-    if (damagetype == DamageType.None) {
+  public void addHealth(int health, DamageTypeConfig damagetype) {
+    if (damagetype == DamageTypeConfig.None) {
       setHealth(this.health + health);
       return;
     }

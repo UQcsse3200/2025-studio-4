@@ -32,7 +32,7 @@ public class EnemyFactory {
         // This is where we assign unique enemy stats
         .addComponent(new CombatStatsComponent(50, 10, DamageType.None, DamageType.None))
 
-        .addComponent(new TextureRenderComponent("images/placeholder-enemy.png"))
+        .addComponent(new TextureRenderComponent("images/drone_enemy.png"))
         .addComponent(new clickable("Drone Enemy"));
 
     return drone;

@@ -5,12 +5,13 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.maingame.SimplePlacementController;
+import com.csse3200.game.components.maingame.TowerHotbarDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.entities.factories.TowerFactory;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
@@ -92,8 +93,11 @@ public class ForestGameArea extends GameArea {
   private void displayUI() {
     Entity ui = new Entity();
     ui.addComponent(new GameAreaDisplay("Box Forest"));
-    spawnEntity(ui);
+    ui.addComponent(new TowerHotbarDisplay());
+      ui.addComponent(new SimplePlacementController());   // this listens and places the sprite
+      spawnEntity(ui);
   }
+
 
   private void spawnTerrain() {
     // Background terrain

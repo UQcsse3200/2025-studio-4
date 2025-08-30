@@ -8,16 +8,16 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
 public class TankEnemyFactory {
-    // Default drone configuration
+    // Default tank configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 50;
-    private static final int DEFAULT_DAMAGE = 10;
+    private static final int DEFAULT_HEALTH = 150;
+    private static final int DEFAULT_DAMAGE = 15;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(1f, 1f);
-    private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
-    private static final String DEFAULT_NAME = "Drone Enemy";
+    private static final Vector2 DEFAULT_SPEED = new Vector2(0.2f, 0.2f);
+    private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
+    private static final String DEFAULT_NAME = "Tank Enemy";
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -30,20 +30,20 @@ public class TankEnemyFactory {
     private static String displayName = DEFAULT_NAME;
     
     /**
-     * Creates a drone enemy with current configuration.
+     * Creates a tank enemy with current configuration.
      *
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDroneEnemy(Entity target) {
-        Entity drone = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+    public static Entity createTankEnemy(Entity target) {
+        Entity tank = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
 
-        drone
+        tank
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new clickable(displayName));
 
-        return drone;
+        return tank;
     }
         
     // Getters    
@@ -69,35 +69,35 @@ public class TankEnemyFactory {
     
     // Setters   
     public static void setResistance(DamageTypeConfig resistance) {
-        DroneEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
+        TankEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
     }
     
     public static void setWeakness(DamageTypeConfig weakness) {
-        DroneEnemyFactory.weakness = (weakness != null) ? weakness : DEFAULT_WEAKNESS;
+        TankEnemyFactory.weakness = (weakness != null) ? weakness : DEFAULT_WEAKNESS;
     }
     
     public static void setSpeed(Vector2 speed) {
         if (speed != null) {
-            DroneEnemyFactory.speed.set(speed);
+            TankEnemyFactory.speed.set(speed);
         }
     }
     
     public static void setSpeed(float x, float y) {
-        DroneEnemyFactory.speed.set(x, y);
+        TankEnemyFactory.speed.set(x, y);
     }
     
     public static void setTexturePath(String texturePath) {
-        DroneEnemyFactory.texturePath = (texturePath != null && !texturePath.trim().isEmpty()) 
+        TankEnemyFactory.texturePath = (texturePath != null && !texturePath.trim().isEmpty()) 
             ? texturePath : DEFAULT_TEXTURE;
     }
     
     public static void setDisplayName(String displayName) {
-        DroneEnemyFactory.displayName = (displayName != null && !displayName.trim().isEmpty()) 
+        TankEnemyFactory.displayName = (displayName != null && !displayName.trim().isEmpty()) 
             ? displayName : DEFAULT_NAME;
     }
     
     /**
-     * Resets all drone configuration to default values.
+     * Resets all tank configuration to default values.
      */
     public static void resetToDefaults() {
         health = DEFAULT_HEALTH;
@@ -109,7 +109,7 @@ public class TankEnemyFactory {
         displayName = DEFAULT_NAME;
     }
 
-    private DroneEnemyFactory() {
+    private TankEnemyFactory() {
         throw new IllegalStateException("Instantiating static util class");
     }
 }

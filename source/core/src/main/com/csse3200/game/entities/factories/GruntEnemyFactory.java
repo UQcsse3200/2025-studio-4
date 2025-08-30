@@ -7,17 +7,17 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
-public class DroneEnemyFactory {
-    // Default drone configuration
+public class GruntEnemyFactory {
+    // Default grunt configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 50;
-    private static final int DEFAULT_DAMAGE = 10;
+    private static final int DEFAULT_HEALTH = 75;
+    private static final int DEFAULT_DAMAGE = 12;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(1f, 1f);
-    private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
-    private static final String DEFAULT_NAME = "Drone Enemy";
+    private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
+    private static final String DEFAULT_TEXTURE = "images/base_enemy.png";
+    private static final String DEFAULT_NAME = "Grunt Enemy";
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -30,20 +30,20 @@ public class DroneEnemyFactory {
     private static String displayName = DEFAULT_NAME;
     
     /**
-     * Creates a drone enemy with current configuration.
+     * Creates a grunt enemy with current configuration.
      *
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDroneEnemy(Entity target) {
-        Entity drone = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+    public static Entity createGruntEnemy(Entity target) {
+        Entity grunt = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
 
-        drone
+        grunt
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new clickable(displayName));
 
-        return drone;
+        return grunt;
     }
         
     // Getters    
@@ -69,35 +69,35 @@ public class DroneEnemyFactory {
     
     // Setters   
     public static void setResistance(DamageTypeConfig resistance) {
-        DroneEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
+        GruntEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
     }
     
     public static void setWeakness(DamageTypeConfig weakness) {
-        DroneEnemyFactory.weakness = (weakness != null) ? weakness : DEFAULT_WEAKNESS;
+        GruntEnemyFactory.weakness = (weakness != null) ? weakness : DEFAULT_WEAKNESS;
     }
     
     public static void setSpeed(Vector2 speed) {
         if (speed != null) {
-            DroneEnemyFactory.speed.set(speed);
+            GruntEnemyFactory.speed.set(speed);
         }
     }
     
     public static void setSpeed(float x, float y) {
-        DroneEnemyFactory.speed.set(x, y);
+        GruntEnemyFactory.speed.set(x, y);
     }
     
     public static void setTexturePath(String texturePath) {
-        DroneEnemyFactory.texturePath = (texturePath != null && !texturePath.trim().isEmpty()) 
+        GruntEnemyFactory.texturePath = (texturePath != null && !texturePath.trim().isEmpty()) 
             ? texturePath : DEFAULT_TEXTURE;
     }
     
     public static void setDisplayName(String displayName) {
-        DroneEnemyFactory.displayName = (displayName != null && !displayName.trim().isEmpty()) 
+        GruntEnemyFactory.displayName = (displayName != null && !displayName.trim().isEmpty()) 
             ? displayName : DEFAULT_NAME;
     }
     
     /**
-     * Resets all drone configuration to default values.
+     * Resets all grunt configuration to default values.
      */
     public static void resetToDefaults() {
         health = DEFAULT_HEALTH;
@@ -109,7 +109,7 @@ public class DroneEnemyFactory {
         displayName = DEFAULT_NAME;
     }
 
-    private DroneEnemyFactory() {
+    private GruntEnemyFactory() {
         throw new IllegalStateException("Instantiating static util class");
     }
 }

@@ -9,6 +9,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.entities.factories.TowerFactory;
+import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
@@ -37,7 +39,9 @@ public class ForestGameArea extends GameArea {
     "images/hex_grass_3.png",
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
-    "images/iso_grass_3.png"
+    "images/iso_grass_3.png",
+    "images/base_tower.png",
+    "images/sun.png"
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
@@ -70,8 +74,17 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    spawnGhosts();
-    spawnGhostKing();
+    //spawnGhosts();
+    //spawnGhostKing();
+
+    // Add base tower at a chosen position
+    GridPoint2 baseTowerPos = new GridPoint2(5, 5); // Choose your desired position
+    Entity baseTower = TowerFactory.createBaseTower();
+    spawnEntityAt(baseTower, baseTowerPos, true, false);
+
+    GridPoint2 sunTowerPos = new GridPoint2(12, 12); // Choose your desired position
+    Entity sunTower = TowerFactory.createSunTower();
+    spawnEntityAt(sunTower, sunTowerPos, true, false);
 
     playMusic();
   }

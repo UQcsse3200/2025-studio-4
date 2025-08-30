@@ -7,7 +7,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
-public class DroneEnemyFactory {
+public class TankEnemyFactory {
     // Default drone configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////

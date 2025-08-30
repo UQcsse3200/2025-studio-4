@@ -18,6 +18,11 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.badlogic.gdx.graphics.Camera;
+import com.csse3200.game.entities.configs.HeroConfig;
+import com.csse3200.game.entities.factories.HeroFactory;
+import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.rendering.Renderer;
 
 /** Forest area for the demo game with trees, a player, and some enemies. */
 public class ForestGameArea extends GameArea {
@@ -42,7 +47,9 @@ public class ForestGameArea extends GameArea {
     "images/placeholder-enemy.png",
     "images/drone_enemy.png",
     "images/base_enemy.png",
-    "images/tank_enemy.png"
+    "images/tank_enemy.png",
+          "images/hero/Heroshoot.png",
+          "images/hero/Bullet.png"
 
   };
   private static final String[] forestTextureAtlases = {
@@ -79,6 +86,7 @@ public class ForestGameArea extends GameArea {
     spawnDrones();
     spawnGrunts();
     spawnTanks();
+    spawnHero();
 
     playMusic();
   }
@@ -168,6 +176,25 @@ public class ForestGameArea extends GameArea {
       spawnEntityAt(tank, randomPos, true, true);
     }
   }
+
+  private void spawnHero() {
+    HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
+    if (heroCfg == null) {
+      logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
+      heroCfg = new HeroConfig(); // 不让游戏崩
+    }
+
+    Renderer r = Renderer.getCurrentRenderer();
+    if (r == null || r.getCamera() == null) {
+      logger.warn("Renderer/Camera not ready, skip spawnHero this frame.");
+      return;
+    }
+    Camera cam = r.getCamera().getCamera();
+
+    Entity hero = HeroFactory.createHero(heroCfg, cam);
+    spawnEntityAt(hero, new GridPoint2(5, 5), true, true);
+  }
+
 
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);

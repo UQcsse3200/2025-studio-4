@@ -11,7 +11,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
@@ -79,13 +78,13 @@ public class ForestGameArea extends GameArea {
     //spawnGhostKing();
 
     // Add base tower at a chosen position
-    GridPoint2 baseTowerPos = new GridPoint2(5, 5); // Choose your desired position
-    Entity baseTower = TowerFactory.createBaseTower();
-    spawnEntityAt(baseTower, baseTowerPos, true, false);
-
-    GridPoint2 sunTowerPos = new GridPoint2(12, 12); // Choose your desired position
-    Entity sunTower = TowerFactory.createSunTower();
-    spawnEntityAt(sunTower, sunTowerPos, true, false);
+//    GridPoint2 baseTowerPos = new GridPoint2(5, 5); // Choose your desired position
+//    Entity baseTower = TowerFactory.createBaseTower();
+//    spawnEntityAt(baseTower, baseTowerPos, true, false);
+//
+//    GridPoint2 sunTowerPos = new GridPoint2(12, 12); // Choose your desired position
+//    Entity sunTower = TowerFactory.createSunTower();
+//    spawnEntityAt(sunTower, sunTowerPos, true, false);
 
     playMusic();
   }

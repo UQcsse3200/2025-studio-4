@@ -20,12 +20,12 @@ public class SimplePlacementControllerTest {
         ui.getEvents().trigger("startPlacementBase");
         assertTrue(getBool(ctrl, "placementActive"));
         assertTrue(getBool(ctrl, "needRelease"));
-        assertEquals("base", getString(ctrl, "pendingType"));
+        assertEquals("base", getString(ctrl));
 
         ui.getEvents().trigger("startPlacementSun");
         assertTrue(getBool(ctrl, "placementActive"));
         assertTrue(getBool(ctrl, "needRelease"));
-        assertEquals("sun", getString(ctrl, "pendingType"));
+        assertEquals("sun", getString(ctrl));
     }
 
     @Test
@@ -56,8 +56,8 @@ public class SimplePlacementControllerTest {
         f.setAccessible(true);
         return (boolean) f.get(target);
     }
-    private static String getString(Object target, String field) throws Exception {
-        Field f = target.getClass().getDeclaredField(field);
+    private static String getString(Object target) throws Exception {
+        Field f = target.getClass().getDeclaredField("pendingType");
         f.setAccessible(true);
         return (String) f.get(target);
     }

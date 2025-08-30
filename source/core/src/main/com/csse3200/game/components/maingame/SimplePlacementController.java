@@ -12,7 +12,6 @@ import com.csse3200.game.components.TowerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.areas.terrain.TerrainComponent;
 /**
  * Simple controller to place towers in the world by clicking. The controller listens for events
  * "startPlacementBase" and "startPlacementSun" to arm placement of the respective tower type. After
@@ -29,7 +28,7 @@ public class SimplePlacementController extends Component {
     private OrthographicCamera camera;
 
     // Spacing to avoid overlap
-    private float minSpacing = 1.0f;       // fallback if no terrain
+    private final float minSpacing = 1.0f;       // fallback if no terrain
 
     @Override
     public void create() {

@@ -25,30 +25,33 @@ import java.util.Map;
  * 地图编辑器类，用于在游戏运行时编辑地形
  * 支持通过Q键在玩家上方放置树木
  * 自动生成敌人行走通道（使用path.png纹理）
+ * Map editor class, used to edit terrain while the game is running
+ * Support placing trees above players by pressing the Q key
+ * Automatically generate enemy walking paths (using the path.png texture)
  */
 public class MapEditor extends InputAdapter {
     private TerrainComponent terrain;
     private boolean editorEnabled = false;
     private InputProcessor originalProcessor;
-    private Entity player; // 玩家实体的引用
+    private Entity player; // 玩家实体的引用 References to player entities
     
-    // 用于追踪放置的树木
+    // 用于追踪放置的树木 Used for tracking placed trees
     private Map<String, Entity> placedTrees = new HashMap<>();
     
-    // 用于追踪创建的路径瓦片
+    // 用于追踪创建的路径瓦片 Used for tracking created path tiles
     private Map<String, GridPoint2> pathTiles = new HashMap<>();
     
-    // 路径瓦片（使用path.png纹理）
+    // 路径瓦片（使用path.png纹理）path tile (using path.png texture)
     private TiledMapTile pathTile;
     
-    // 可放置区域瓦片（白色空格）
+    // 可放置区域瓦片（白色空格）Placement area tiles (white Spaces)
     private TiledMapTile placeableAreaTile;
     
-    // 用于追踪可放置区域的瓦片
+    // 用于追踪可放置区域的瓦片 Tiles used for tracking the placement area
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
     
-    // 路径附近的可放置区域范围
-    private int placeableRange = 2; // 路径周围2格内可以放置树木
+    // 路径附近的可放置区域范围 The range of the placement area near the path
+    private int placeableRange = 2; // 路径周围2格内可以放置树木 Trees can be placed within two Spaces around the path
 
     
     public MapEditor(TerrainComponent terrain, Entity player) {
@@ -60,33 +63,35 @@ public class MapEditor extends InputAdapter {
     
     /**
      * 初始化路径瓦片（使用path.png纹理）
+     * Initialize the path tile (using the path.png texture)
      */
     private void initializePathTile() {
         try {
-            // 加载path.png纹理
+            // 加载path.png纹理 load the path.png texture
             Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
             TextureRegion pathRegion = new TextureRegion(pathTexture);
             pathTile = new StaticTiledMapTile(pathRegion);
-            System.out.println("✅ 路径瓦片(path.png)初始化成功");
+            System.out.println("✅ The path tile (path.png) has been initialized successfully");
         } catch (Exception e) {
-            System.out.println("⚠️ 路径瓦片初始化失败: " + e.getMessage());
-            System.out.println("将使用空白瓦片作为替代");
+            System.out.println("⚠️ The initialization of the path tile failed: " + e.getMessage());
+            System.out.println("Blank tiles will be used as a substitute");
             pathTile = null;
         }
     }
     
     /**
      * 初始化可放置区域瓦片（创建白色空格瓦片）
+     * Initialize the placement area tiles (create white space tiles)
      */
     private void initializePlaceableAreaTile() {
         try {
-            // 创建一个白色像素纹理，使其比背景更明显
+            // 创建一个白色像素纹理，使其比背景更明显 Create a white pixel texture to make it more prominent than the background
             com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(32, 32, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-            pixmap.setColor(0.9f, 0.9f, 0.9f, 0.8f); // 浅灰白色，较明显
+            pixmap.setColor(0.9f, 0.9f, 0.9f, 0.8f); // 浅灰白色，较明显 Light grayish white, quite distinct
             pixmap.fill();
             
-            // 添加边框使其更明显
-            pixmap.setColor(1.0f, 1.0f, 1.0f, 1.0f); // 纯白色边框
+            // 添加边框使其更明显 Add a border to make it more obvious
+            pixmap.setColor(1.0f, 1.0f, 1.0f, 1.0f); // 纯白色边框 Pure white border
             pixmap.drawRectangle(0, 0, 32, 32);
             
             Texture whiteTexture = new Texture(pixmap);
@@ -94,9 +99,9 @@ public class MapEditor extends InputAdapter {
             
             TextureRegion whiteRegion = new TextureRegion(whiteTexture);
             placeableAreaTile = new StaticTiledMapTile(whiteRegion);
-            System.out.println("✅ 可放置区域瓦片(白色空格)初始化成功");
+            System.out.println("✅ The initialization of the placement area tiles (white Spaces) has been successful");
         } catch (Exception e) {
-            System.out.println("⚠️ 可放置区域瓦片初始化失败: " + e.getMessage());
+            System.out.println("⚠️ The initialization of the tiles in the placement area failed: " + e.getMessage());
             placeableAreaTile = null;
         }
     }

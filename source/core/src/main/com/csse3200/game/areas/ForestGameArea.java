@@ -27,7 +27,7 @@ public class ForestGameArea extends GameArea {
   private static final String[] forestTextures = {
     "images/box_boy_leaf.png",
     "images/tree.png",
-    "images/path.png",//插入敌人路径的图片
+    "images/path.png",//插入敌人路径的图片 Insert pictures of the enemy's path
     "images/ghost_king.png",
     "images/ghost_1.png",
     "images/grass_1.png",
@@ -72,8 +72,10 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     //spawnTrees();
     player = spawnPlayer();
-    spawnGhosts();
-    spawnGhostKing();
+    //小鬼生成
+    //spawnGhosts();
+    //鬼王生成
+    //spawnGhostKing();
 
     playMusic();
   }
@@ -90,7 +92,8 @@ public class ForestGameArea extends GameArea {
     spawnEntity(new Entity().addComponent(terrain));
 
     // 注意：这里暂时使用null，稍后在spawn player后更新
-    System.out.println("💡 地图编辑器将在玩家生成后初始化");
+    //Note: null is temporarily used here and will be updated later after spawn player
+    System.out.println("💡 The map editor will be initialized after the player is generated");
 
     // Terrain walls
     float tileSize = terrain.getTileSize();
@@ -133,72 +136,39 @@ public class ForestGameArea extends GameArea {
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
     
     // 在玩家生成后初始化地图编辑器
+    //Initialize the map editor after the player is generated
     mapEditor = new MapEditor(terrain, newPlayer);
     mapEditor.enableEditor();
-    System.out.println("💡 地图编辑器已初始化并启用！按 Q 键放置树木");
+    System.out.println("💡 The map editor has been initialized and enabled! Press the Q key to place the tree");
     
     // 自动生成敌人行走路径
+    //Automatically generate the enemy's walking path
     mapEditor.generateEnemyPath();
     
     return newPlayer;
   }
+//删去原始的敌人生成方法 Delete the original enemy generation method
+//  private void spawnGhosts() {
+//    // 生成普通的随机移动敌人
+//    GridPoint2 minPos = new GridPoint2(0, 0);
+//    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//    for (int i = 0; i < NUM_GHOSTS; i++) {
+//      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//      Entity ghost = NPCFactory.createGhost(player);
+//      spawnEntityAt(ghost, randomPos, true, true);
+//    }
+//  }
 
-  private void spawnGhosts() {
-    // 创建沿路径移动的敌人
-    spawnPathFollowingGhosts();
-    
-    // 保留一些随机移动的敌人
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < NUM_GHOSTS - 1; i++) { // 减少一个，因为有路径敌人
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity ghost = NPCFactory.createGhost(player);
-      spawnEntityAt(ghost, randomPos, true, true);
-    }
-  }
-  
-  /**
-   * 创建沿路径移动的敌人
-   */
-  private void spawnPathFollowingGhosts() {
-    if (mapEditor == null) {
-      System.out.println("⚠️ 地图编辑器未初始化，无法创建路径敌人");
-      return;
-    }
-    
-    // 获取路径点
-    java.util.List<com.badlogic.gdx.math.Vector2> pathPoints = mapEditor.getOrderedPathPoints();
-    if (pathPoints.isEmpty()) {
-      System.out.println("⚠️ 没有可用的路径点");
-      return;
-    }
-    
-    // 创建路径跟随敌人
-    Entity pathGhost = NPCFactory.createGhost(player);
-    
-    // 添加路径跟随组件
-    com.csse3200.game.components.npc.PathFollowerComponent pathFollower = 
-        new com.csse3200.game.components.npc.PathFollowerComponent(pathPoints, 2.0f);
-    pathGhost.addComponent(pathFollower);
-    
-    // 在路径起点生成敌人
-    if (!pathPoints.isEmpty()) {
-      com.badlogic.gdx.math.Vector2 startPos = pathPoints.get(0);
-      pathGhost.setPosition(startPos);
-      ServiceLocator.getEntityService().register(pathGhost);
-      System.out.println("👻 在路径起点创建了路径跟随敌人: " + startPos);
-    }
-  }
-
-  private void spawnGhostKing() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity ghostKing = NPCFactory.createGhostKing(player);
-    spawnEntityAt(ghostKing, randomPos, true, true);
-  }
+//  private void spawnGhostKing() {
+//    GridPoint2 minPos = new GridPoint2(0, 0);
+//    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//    Entity ghostKing = NPCFactory.createGhostKing(player);
+//    spawnEntityAt(ghostKing, randomPos, true, true);
+//  }
 
   private void playMusic() {
     Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
@@ -234,7 +204,7 @@ public class ForestGameArea extends GameArea {
   public void dispose() {
     super.dispose();
     if (mapEditor != null) {
-      mapEditor.cleanup(); // 清理所有创建的树木
+      mapEditor.cleanup(); // 清理所有创建的树木 Clear all the created trees
     }
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();

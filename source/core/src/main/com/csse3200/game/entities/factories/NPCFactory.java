@@ -11,6 +11,7 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.components.tasks.WanderTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.BaseEntityConfig;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.entities.configs.GhostKingConfig;
 import com.csse3200.game.entities.configs.NPCConfigs;
 import com.csse3200.game.files.FileLoader;
@@ -54,7 +55,7 @@ public class NPCFactory {
     animator.addAnimation("float", 0.1f, Animation.PlayMode.LOOP);
 
     ghost
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack, DamageTypeConfig.None, DamageTypeConfig.None))
         .addComponent(animator)
         .addComponent(new GhostAnimationController());
 
@@ -81,7 +82,7 @@ public class NPCFactory {
     animator.addAnimation("angry_float", 0.1f, Animation.PlayMode.LOOP);
 
     ghostKing
-        .addComponent(new CombatStatsComponent(config.health, config.baseAttack))
+        .addComponent(new CombatStatsComponent(config.health, config.baseAttack, DamageTypeConfig.None, DamageTypeConfig.None))
         .addComponent(animator)
         .addComponent(new GhostAnimationController());
 
@@ -98,7 +99,7 @@ public class NPCFactory {
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new WanderTask(new Vector2(2f, 2f), 2f))
-            .addTask(new ChaseTask(target, 10, 3f, 4f));
+            .addTask(new ChaseTask(target, 10, 3f, 4f, new Vector2(1f, 1f)));
     Entity npc =
         new Entity()
             .addComponent(new PhysicsComponent())

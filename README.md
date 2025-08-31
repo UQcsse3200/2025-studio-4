@@ -27,7 +27,7 @@ Our feature team is responsible for implementing the **Hero System**, including:
 ## 📂 File Structure and Responsibilities
 
 After integration with the **Enemy system**, our Hero feature is organised as follows:
-
+```
 source/core/assets/images/
 ├─ hero/ # Hero sprites
 │ └─ Heroshoot.png # Default hero sprite (rotatable)

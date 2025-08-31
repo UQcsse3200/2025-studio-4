@@ -33,6 +33,12 @@ public final class HeroFactory {
                     cfg.bulletTexture,
                     camera   // ✅ 注入相机
             ));
+    TextureRenderComponent tex = hero.getComponent(TextureRenderComponent.class);
+    if (tex != null) {
+      // 这里如果有 setOriginCenter() 方法就用，没有的话不用写，
+      // 因为我们在 draw() 已经指定绕中心旋转了
+      // tex.setOriginCenter();
+    }
 
     return hero;
   }

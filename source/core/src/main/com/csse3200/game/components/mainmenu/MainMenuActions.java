@@ -20,7 +20,7 @@ public class MainMenuActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("start", this::onStart);
-    entity.getEvents().addListener("load", this::onLoad);
+    entity.getEvents().addListener("continue", this::onContinue);
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("settings", this::onSettings);
   }
@@ -34,11 +34,16 @@ public class MainMenuActions extends Component {
   }
 
   /**
-   * Intended for loading a saved game state.
-   * Load functionality is not actually implemented.
+   * Intended for continuing a saved game state.
+   * Continue functionality is not actually implemented yet.
    */
-  private void onLoad() {
-    logger.info("Load game");
+  private void onContinue() {
+    logger.info("Continue game - functionality coming soon!");
+    // TODO: 实现继续游戏功能
+    // 这里可以添加：
+    // 1. 检查是否有存档文件
+    // 2. 如果有存档，加载存档并开始游戏
+    // 3. 如果没有存档，显示提示信息或禁用按钮
   }
 
   /**

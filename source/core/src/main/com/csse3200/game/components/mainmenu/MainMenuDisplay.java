@@ -1,5 +1,6 @@
 package com.csse3200.game.components.mainmenu;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -7,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -29,15 +31,25 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.setFillParent(true);
-    Image title =
+    
+    // 添加背景图片
+    Image backgroundImage =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/box_boy_title.png", Texture.class));
+                .getAsset("images/main_menu_background.png", Texture.class));
+    backgroundImage.setFillParent(true);
+    stage.addActor(backgroundImage);
 
-    TextButton startBtn = new TextButton("Start", skin);
-    TextButton loadBtn = new TextButton("Load", skin);
+    TextButton startBtn = new TextButton("New Game", skin);
+    TextButton loadBtn = new TextButton("Continue", skin);
     TextButton settingsBtn = new TextButton("Settings", skin);
     TextButton exitBtn = new TextButton("Exit", skin);
+    
+    // 设置按钮文字颜色为白色
+    startBtn.getLabel().setColor(Color.WHITE);
+    loadBtn.getLabel().setColor(Color.WHITE);
+    settingsBtn.getLabel().setColor(Color.WHITE);
+    exitBtn.getLabel().setColor(Color.WHITE);
 
     // Triggers an event when the button is pressed
     startBtn.addListener(
@@ -53,8 +65,8 @@ public class MainMenuDisplay extends UIComponent {
         new ChangeListener() {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
-            logger.debug("Load button clicked");
-            entity.getEvents().trigger("load");
+            logger.debug("Continue button clicked");
+            entity.getEvents().trigger("continue");
           }
         });
 
@@ -77,15 +89,17 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    table.add(title);
+    // 增加顶部间距，让按钮往下移
+    table.add().expandY().row(); // 添加弹性空间将按钮推到下方
+    table.add(startBtn).padTop(50f);
     table.row();
-    table.add(startBtn).padTop(30f);
+    table.add(loadBtn).padTop(20f);
     table.row();
-    table.add(loadBtn).padTop(15f);
+    table.add(settingsBtn).padTop(20f);
     table.row();
-    table.add(settingsBtn).padTop(15f);
+    table.add(exitBtn).padTop(20f);
     table.row();
-    table.add(exitBtn).padTop(15f);
+    table.add().expandY(); // 底部也添加弹性空间
 
     stage.addActor(table);
   }

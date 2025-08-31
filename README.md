@@ -33,10 +33,12 @@ source/core/assets/images/
 │ └─ Heroshoot.png # Default hero sprite (rotatable)
 │ └─ Bullet.png # Default hero sprite (rotatable)
 └─ base_enemy.png # Enemy sprite (used in EnemyFactory)
+```
 ### 🔎 Asset Purposes
 - **hero/** - folder containing all hero sprites (used in `HeroFactory` & `HeroTurretAttackComponent`).
 - **base_enemy.png** - default enemy sprite, used in `EnemyFactory`.
 
+```
 source/core/src/main/com/csse3200/game/
 ├─ components/
 │ └─ hero/
@@ -61,6 +63,7 @@ source/core/src/main/com/csse3200/game/
 └─ entities/configs/
 ├─ HeroConfig.java # Config values for hero (health, attack, cooldown, textures)
 └─ EnemyConfig.java # Config values for enemie
+```
 
 ### 🔎 File Purposes
 - **HeroTurretAttackComponent.java** - Controls hero's turret behaviour:

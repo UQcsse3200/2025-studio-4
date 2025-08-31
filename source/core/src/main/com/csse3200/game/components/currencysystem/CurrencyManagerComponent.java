@@ -55,16 +55,23 @@ public class CurrencyManagerComponent extends Component {
         return currencies.getOrDefault(type, 0);
     }
 
+    /**
+     * Add Currency entity to list and add event listeners to handle on collect action.
+     * @param entity
+     */
     public void addCurrencyEntity (Entity entity) {
         currencyList.add(entity);
-        entity.getEvents().addListener("collectCurrency", this::handleCollect);
+        entity.getEvents().addListener("collectCurrency", this::collectCurrency);
     }
 
-    private void handleCollect(Entity entity) {
-//        CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
-//        this.addCurrencyAmount(type, 1);
-//        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
-        return;
+    /**
+     * Increment the counter and trigger to update UI.
+     * @param entity collected Currency Entity
+     */
+    private void collectCurrency(Entity entity) {
+        CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
+        this.addCurrencyAmount(type, 1);
+        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
     }
 
 }

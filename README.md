@@ -31,84 +31,114 @@ Our feature team is responsible for implementing the **Hero System**, including:
 ## 📂 File Structure and Responsibilities
 
 ### 🎨 Assets
-"""
 source/core/assets/images/
 ├─ hero/
-│ ├─ Heroshoot.png # Default hero sprite (rotatable)
-│ └─ Bullet.png # Bullet sprite
-└─ base_enemy.png # Enemy sprite (used in EnemyFactory)
-"""
+│  ├─ Heroshoot.png   # Default hero sprite (rotatable)
+│  └─ Bullet.png      # Bullet sprite
+└─ base_enemy.png      # Enemy sprite (used in EnemyFactory)
 
-**Asset Purposes**
-- `hero/` – folder containing hero sprites (used in `HeroFactory` & `HeroTurretAttackComponent`).
-- `base_enemy.png` – default enemy sprite, used in `EnemyFactory`.
+Asset Purposes
 
----
+hero/ – folder containing hero sprites (used in HeroFactory & HeroTurretAttackComponent).
+base_enemy.png – default enemy sprite, used in EnemyFactory.
 
-### 🧩 Code
+🧩 Code
+
 source/core/src/main/com/csse3200/game/
 ├─ components/
-│ └─ hero/
-│ └─ HeroTurretAttackComponent.java # Handles aiming, shooting, cooldown logic
+│  └─ hero/
+│     └─ HeroTurretAttackComponent.java   # Handles aiming, shooting, cooldown logic
+│
+│  └─ projectile/
+│     ├─ ProjectileComponent.java         # Controls bullet velocity & lifetime
+│     ├─ DestroyOnHitComponent.java       # Destroys bullet on collision
+│     └─ TouchAttackComponent.java        # Applies bullet damage to enemies
 │
 ├─ entities/
-│ ├─ factories/
-│ │ ├─ HeroFactory.java # Builds hero entity (physics, rendering, attack, combat stats)
-│ │ └─ EnemyFactory.java # Builds enemy entities with AI/behaviour
-│ └─ Enemies/
-│ └─ Enemy.java # Base enemy entity definition
+│  ├─ factories/
+│  │  ├─ HeroFactory.java                 # Builds hero entity (physics, rendering, attack, combat stats)
+│  │  ├─ EnemyFactory.java                # Builds enemy entities with AI/behaviour
+│  │  └─ ProjectileFactory.java           # Creates bullet entities with texture, speed, lifetime, damage
+│  └─ Enemies/
+│     └─ Enemy.java                       # Base enemy entity definition
 │
 ├─ rendering/
-│ ├─ TextureRenderComponent.java # Static texture rendering (used by tests)
-│ └─ RotatingTextureRenderComponent.java # Rotating texture rendering (used by Hero & bullets)
+│  ├─ TextureRenderComponent.java         # Static texture rendering (used by tests)
+│  └─ RotatingTextureRenderComponent.java # Rotating texture rendering (used by Hero & projectiles)
 │
 ├─ physics/
-│ ├─ components/ColliderComponent.java # Collision handling
-│ ├─ components/HitboxComponent.java # Hitbox layer setup
-│ └─ PhysicsLayer.java # Defines collision layers (PLAYER, ENEMY, PROJECTILE, etc.)
+│  ├─ components/ColliderComponent.java   # Collision handling
+│  ├─ components/HitboxComponent.java     # Hitbox layer setup
+│  └─ PhysicsLayer.java                   # Defines collision layers (PLAYER, ENEMY, PROJECTILE, etc.)
 │
 └─ entities/configs/
-├─ HeroConfig.java # Config values for hero (health, attack, cooldown, textures)
-└─ EnemyConfig.java # Config values for enemies
-"""
+   ├─ HeroConfig.java                     # Config values for hero (health, attack, cooldown, textures)
+   └─ EnemyConfig.java                    # Config values for enemies
+File Purposes
 
-**File Purposes**
-- **HeroTurretAttackComponent.java** – Controls hero’s turret behaviour (aim, rotation, shooting).  
-- **HeroFactory.java** – Central place to spawn hero entity with all required components.  
-- **RotatingTextureRenderComponent.java** – Provides rotation support for rendering hero/enemy sprites.  
-- **EnemyFactory.java & Enemy.java** – Build and define enemy entities, integrated alongside hero for combat interactions.  
-- **HeroConfig.java / EnemyConfig.java** – Store configurable attributes (HP, attack, textures, cooldowns).  
-- **Physics components** – Ensure hero/enemy interact correctly (collisions, layers).  
+HeroTurretAttackComponent.java – Controls hero’s turret behaviour (aim, rotation, shooting).
 
----
+HeroFactory.java – Central place to spawn hero entity with all required components.
 
-## 🔫 Projectiles / Bullets
+ProjectileFactory.java – Creates bullets with physics, damage, and collision handling.
 
-### 📂 Code
-"""
-source/core/src/main/com/csse3200/game/
-├─ entities/factories/ProjectileFactory.java # Creates bullet entities with texture, speed, lifetime
-├─ components/projectile/
-│ ├─ DestroyOnHitComponent.java # Destroys bullet on impact and applies damage
-│ └─ LifetimeComponent.java (if present) # Removes bullet after given lifetime
-"""
+ProjectileComponent.java – Controls bullet flight and timed cleanup.
 
+TouchAttackComponent.java – Applies bullet damage to enemy entities on collision.
 
-### 🔎 Responsibilities
-- **ProjectileFactory** – Standardised creation of bullets with texture, velocity, lifetime, and collision layer.  
-- **DestroyOnHitComponent** – Handles collision with ENEMY layer, applies damage, and removes the bullet.  
-- **HeroTurretAttackComponent** – Calls `ProjectileFactory` to spawn bullets at mouse direction.  
-- **PhysicsLayer.PROJECTILE** – Ensures bullets collide with ENEMY but not PLAYER.  
+DestroyOnHitComponent.java – Ensures bullet is safely removed when hitting an enemy.
 
-### 🔁 Lifecycle
-1. **Spawn** – `HeroTurretAttackComponent.fire()` → `ProjectileFactory.createBullet()`  
-2. **Fly** – Moves with velocity (`PhysicsComponent` or manual update).  
-3. **Hit** – Collision triggers `DestroyOnHitComponent` → apply damage → destroy bullet.  
-4. **Timeout** – Optional `LifetimeComponent` cleans up bullets after expiry.  
+RotatingTextureRenderComponent.java – Provides rotation support for rendering hero/projectile sprites.
 
----
+EnemyFactory.java & Enemy.java – Build and define enemy entities, integrated alongside hero for combat interactions.
 
-## Documentation and Reports
+HeroConfig.java / EnemyConfig.java – Store configurable attributes (HP, attack, textures, cooldowns).
 
-- [JavaDoc](https://uqcsse3200.github.io/2025-studio-4/)
-- [SonarCloud](https://sonarcloud.io/project/overview?id=UQcsse3200_2025-studio-4)
+Physics components – Ensure hero/enemy/projectiles interact correctly (collisions, layers).
+
+🔫 Projectiles / Bullets
+🔎 Responsibilities
+ProjectileFactory – Standardised creation of bullets with texture, velocity, lifetime, and combat stats.
+
+ProjectileComponent – Handles bullet motion and removes it after its lifetime expires.
+
+TouchAttackComponent – Applies bullet damage (from CombatStatsComponent) to enemies on collision.
+
+DestroyOnHitComponent – Ensures the bullet is destroyed safely on collision.
+
+HeroTurretAttackComponent – Spawns bullets and passes damage/speed/lifetime attributes.
+
+PhysicsLayer.PROJECTILE – Ensures bullets collide with ENEMY but not PLAYER.
+
+🔁 Lifecycle (actual)
+Spawn → HeroTurretAttackComponent calls ProjectileFactory.createBullet(...).
+The bullet entity is created with:
+
+TextureRenderComponent (rendering)
+
+PhysicsComponent (movement & collisions)
+
+ProjectileComponent(vx, vy, life) (velocity & lifetime)
+
+CombatStatsComponent(damage) (stores bullet damage)
+
+TouchAttackComponent (applies damage to enemies)
+
+DestroyOnHitComponent (destroys bullet on collision)
+
+Init → In ProjectileComponent.create(), the lifetime timer starts and the physics body is given linear velocity.
+
+Fly → Bullet travels through the world under physics simulation.
+
+End → The bullet is removed when either condition occurs:
+
+Hit: TouchAttackComponent applies damage to the enemy; DestroyOnHitComponent schedules bullet destruction.
+
+Timeout: ProjectileComponent.update() timer expires → disables physics → schedules bullet destruction.
+
+Cleanup → Actual destruction (entity.dispose() + EntityService.unregister()) is deferred with Gdx.app.postRunnable to avoid concurrent modification during entity iteration.
+
+Documentation and Reports
+JavaDoc
+
+SonarCloud

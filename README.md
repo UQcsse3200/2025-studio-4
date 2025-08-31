@@ -89,8 +89,8 @@ source/core/src/main/com/csse3200/game/
 source/core/src/main/com/csse3200/game/
 ├─ entities/factories/ProjectileFactory.java # Creates bullet entities with texture, speed, lifetime
 ├─ components/projectile/
-│ ├─ DestroyOnHitComponent.java # Destroys bullet on impact and applies damage
-│ └─ LifetimeComponent.java (if present) # Removes bullet after given lifetime
+│  ├─ DestroyOnHitComponent.java  # Destroys bullet on impact and applies damage
+│  └─ ProjectileComponent.java    # Handles bullet movement and behaviour
 ```
 
 

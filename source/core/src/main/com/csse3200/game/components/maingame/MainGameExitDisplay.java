@@ -28,9 +28,20 @@ public class MainGameExitDisplay extends UIComponent {
     table.top().right();
     table.setFillParent(true);
 
+    TextButton saveBtn = new TextButton("Save", skin);
     TextButton mainMenuBtn = new TextButton("Exit", skin);
 
-    // Triggers an event when the button is pressed.
+    
+    saveBtn.addListener(
+      new ChangeListener() {
+        @Override
+        public void changed(ChangeEvent changeEvent, Actor actor) {
+          logger.debug("Save button clicked");
+          entity.getEvents().trigger("save");
+        }
+      });
+
+    
     mainMenuBtn.addListener(
       new ChangeListener() {
         @Override
@@ -40,7 +51,9 @@ public class MainGameExitDisplay extends UIComponent {
         }
       });
 
-    table.add(mainMenuBtn).padTop(10f).padRight(10f);
+    table.add(saveBtn).padTop(10f).padRight(10f);
+    table.row();
+    table.add(mainMenuBtn).padTop(5f).padRight(10f);
 
     stage.addActor(table);
   }

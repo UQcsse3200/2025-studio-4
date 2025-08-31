@@ -32,7 +32,7 @@ public class MainMenuDisplay extends UIComponent {
     table = new Table();
     table.setFillParent(true);
     
-    // 添加背景图片
+    
     Image backgroundImage =
         new Image(
             ServiceLocator.getResourceService()
@@ -45,7 +45,7 @@ public class MainMenuDisplay extends UIComponent {
     TextButton settingsBtn = new TextButton("Settings", skin);
     TextButton exitBtn = new TextButton("Exit", skin);
     
-    // 设置按钮文字颜色为白色
+    
     startBtn.getLabel().setColor(Color.WHITE);
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);
@@ -89,8 +89,8 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    // 增加顶部间距，让按钮往下移
-    table.add().expandY().row(); // 添加弹性空间将按钮推到下方
+    
+    table.add().expandY().row(); 
     table.add(startBtn).padTop(50f);
     table.row();
     table.add(loadBtn).padTop(20f);
@@ -99,7 +99,7 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(exitBtn).padTop(20f);
     table.row();
-    table.add().expandY(); // 底部也添加弹性空间
+    table.add().expandY(); 
 
     stage.addActor(table);
   }

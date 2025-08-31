@@ -2,6 +2,7 @@ package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.services.SaveGameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,17 +34,19 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.MAIN_GAME);
   }
 
-  /**
-   * Intended for continuing a saved game state.
-   * Continue functionality is not actually implemented yet.
-   */
   private void onContinue() {
-    logger.info("Continue game - functionality coming soon!");
-    // TODO: 实现继续游戏功能
-    // 这里可以添加：
-    // 1. 检查是否有存档文件
-    // 2. 如果有存档，加载存档并开始游戏
-    // 3. 如果没有存档，显示提示信息或禁用按钮
+    logger.info("Attempting to continue saved game");
+    
+    SaveGameService saveGameService = new SaveGameService(null);
+    
+    if (saveGameService.hasSaveFile()) {
+      logger.info("Save file found, loading game");
+      
+      game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    } else {
+      logger.warn("No save file found, cannot continue");
+      
+    }
   }
 
   /**

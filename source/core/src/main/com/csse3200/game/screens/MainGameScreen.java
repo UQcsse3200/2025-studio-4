@@ -24,6 +24,7 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
+import com.csse3200.game.services.SaveGameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +41,16 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  private SaveGameService saveGameService;
 
   public MainGameScreen(GdxGame game) {
+    this(game, false);
+  }
+  
+  public MainGameScreen(GdxGame game, boolean isContinue) {
     this.game = game;
 
-    logger.debug("Initialising main game screen services");
+    logger.debug("Initialising main game screen services (Continue: {})", isContinue);
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -56,6 +62,9 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+    
+    
+    saveGameService = new SaveGameService(ServiceLocator.getEntityService());
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
@@ -68,6 +77,20 @@ public class MainGameScreen extends ScreenAdapter {
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
     forestGameArea.create();
+    
+    
+    if (isContinue && saveGameService.hasSaveFile()) {
+      logger.info("Loading saved game state for continue");
+      saveGameService.loadGame();
+      
+      TerrainFactory terrainFactory2 = new TerrainFactory(renderer.getCamera());
+      ForestGameArea forestGameArea2 = new ForestGameArea(terrainFactory2);
+      forestGameArea2.create();
+    } else if (!isContinue) {
+     
+      logger.info("Creating new player for new game");
+      
+    }
   }
 
   @Override

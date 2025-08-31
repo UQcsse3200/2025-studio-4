@@ -56,12 +56,24 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
-     * Add Currency entity to list and add event listeners to handle on collect action.
+     * Add the Currency entity to the list if it is not already present. And add event listeners to handle on collect action.
+     *
      * @param entity
      */
-    public void addCurrencyEntity (Entity entity) {
-        currencyList.add(entity);
-        entity.getEvents().addListener("collectCurrency", this::collectCurrency);
+    public void addCurrencyEntity(Entity entity) {
+        if (!currencyList.contains(entity)){
+            currencyList.add(entity);
+            entity.getEvents().addListener("collectCurrency", this::collectCurrency);
+        }
+    }
+
+    /**
+     * Gets the list of currency entities.
+     *
+     * @return the current list of currency entities
+     */
+    public List<Entity> getCurrencyList() {
+        return currencyList;
     }
 
     /**

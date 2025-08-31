@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -20,8 +21,9 @@ class TouchAttackComponentTest {
     ServiceLocator.registerPhysicsService(new PhysicsService());
   }
 
+  
   @Test
-  void shouldAttack() {
+    void shouldAttack() {
     short targetLayer = (1 << 3);
     Entity entity = createAttacker(targetLayer);
     Entity target = createTarget(targetLayer);
@@ -69,7 +71,7 @@ class TouchAttackComponentTest {
     Entity entity =
         new Entity()
             .addComponent(new TouchAttackComponent(targetLayer))
-            .addComponent(new CombatStatsComponent(0, 10))
+            .addComponent(new CombatStatsComponent(0, 10, DamageTypeConfig.None, DamageTypeConfig.None))
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent());
     entity.create();
@@ -79,7 +81,7 @@ class TouchAttackComponentTest {
   Entity createTarget(short layer) {
     Entity target =
         new Entity()
-            .addComponent(new CombatStatsComponent(10, 0))
+            .addComponent(new CombatStatsComponent(10, 0, DamageTypeConfig.None, DamageTypeConfig.None))
             .addComponent(new PhysicsComponent())
             .addComponent(new HitboxComponent().setLayer(layer));
     target.create();

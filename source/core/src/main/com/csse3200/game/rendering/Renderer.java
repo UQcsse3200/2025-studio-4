@@ -22,7 +22,8 @@ public class Renderer implements Disposable {
 
 
   private static Renderer currentRenderer;
-  private CameraComponent camera;
+
+  public CameraComponent camera;
   private float gameWidth;
   private SpriteBatch batch;
   private Stage stage;
@@ -86,8 +87,6 @@ public class Renderer implements Disposable {
     renderService.setStage(stage);
     renderService.setDebug(debugRenderer);
     resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-
-
 
     // ADD THIS LINE TO STORE STATIC REFERENCE
     currentRenderer = this;

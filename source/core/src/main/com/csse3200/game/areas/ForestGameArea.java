@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.DroneEnemyFactory;
 import com.csse3200.game.entities.factories.CurrencyFactory;
@@ -219,6 +220,7 @@ public class ForestGameArea extends GameArea {
       float y = randomPos.y * terrain.getTileSize();
 
       Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
+      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
       spawnEntity(metalScrap);
     }
   }

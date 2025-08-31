@@ -2,8 +2,11 @@ package com.csse3200.game.components.currencysystem;
 
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.entities.Entity;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +22,7 @@ import java.util.Map;
  */
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
+    private List<Entity> currencyList = new ArrayList<>();
 
     /**
      * Adds a specified amount of the given currency type.
@@ -50,4 +54,17 @@ public class CurrencyManagerComponent extends Component {
     public int getCurrencyAmount(CurrencyType type) {
         return currencies.getOrDefault(type, 0);
     }
+
+    public void addCurrencyEntity (Entity entity) {
+        currencyList.add(entity);
+        entity.getEvents().addListener("collectCurrency", this::handleCollect);
+    }
+
+    private void handleCollect(Entity entity) {
+//        CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
+//        this.addCurrencyAmount(type, 1);
+//        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
+        return;
+    }
+
 }

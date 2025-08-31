@@ -38,8 +38,9 @@ public class CollectibleComponent extends Component {
             if (Math.abs(worldClickPos.x - entityPos.x) < this.clickRadius &&
                     Math.abs(worldClickPos.y - entityPos.y) < this.clickRadius) {
 
+                entity.getEvents().trigger("collectCurrency", this.entity);
                 Gdx.app.postRunnable(entity::dispose);
-                entity.getEvents().trigger("updateScrap", this.entity);
+
             }
 
         }

@@ -55,7 +55,7 @@ public class PlayerStatsDisplay extends UIComponent {
     scrapImage = new Image(ServiceLocator.getResourceService().getAsset("images/scrap.png", Texture.class));
 
     // Scrap text
-    int scrap = 5; //entity.getComponent(ScrapStatsComponent.class).getScrap();
+    int scrap = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
     CharSequence scrapText = String.format("Scrap: %d", scrap);
     scrapLabel = new Label(scrapText, skin, "large");
 

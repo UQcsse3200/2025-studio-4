@@ -71,7 +71,7 @@ source/core/src/main/com/csse3200/game/
 └─ entities/configs/
 ├─ HeroConfig.java # Config values for hero (health, attack, cooldown, textures)
 └─ EnemyConfig.java # Config values for enemies
-"""
+```
 
 **File Purposes**
 - **HeroTurretAttackComponent.java** – Controls hero’s turret behaviour (aim, rotation, shooting).  
@@ -80,7 +80,6 @@ source/core/src/main/com/csse3200/game/
 - **EnemyFactory.java & Enemy.java** – Build and define enemy entities, integrated alongside hero for combat interactions.  
 - **HeroConfig.java / EnemyConfig.java** – Store configurable attributes (HP, attack, textures, cooldowns).  
 - **Physics components** – Ensure hero/enemy interact correctly (collisions, layers).  
-```
 ---
 
 ## 🔫 Projectiles / Bullets

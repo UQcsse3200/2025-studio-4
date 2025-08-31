@@ -31,13 +31,13 @@ Our feature team is responsible for implementing the **Hero System**, including:
 ## 📂 File Structure and Responsibilities
 
 ### 🎨 Assets
-"""
+```
 source/core/assets/images/
 ├─ hero/
 │ ├─ Heroshoot.png # Default hero sprite (rotatable)
 │ └─ Bullet.png # Bullet sprite
 └─ base_enemy.png # Enemy sprite (used in EnemyFactory)
-"""
+```
 
 **Asset Purposes**
 - `hero/` – folder containing hero sprites (used in `HeroFactory` & `HeroTurretAttackComponent`).
@@ -46,6 +46,7 @@ source/core/assets/images/
 ---
 
 ### 🧩 Code
+```
 source/core/src/main/com/csse3200/game/
 ├─ components/
 │ └─ hero/
@@ -79,19 +80,19 @@ source/core/src/main/com/csse3200/game/
 - **EnemyFactory.java & Enemy.java** – Build and define enemy entities, integrated alongside hero for combat interactions.  
 - **HeroConfig.java / EnemyConfig.java** – Store configurable attributes (HP, attack, textures, cooldowns).  
 - **Physics components** – Ensure hero/enemy interact correctly (collisions, layers).  
-
+```
 ---
 
 ## 🔫 Projectiles / Bullets
 
 ### 📂 Code
-"""
+```
 source/core/src/main/com/csse3200/game/
 ├─ entities/factories/ProjectileFactory.java # Creates bullet entities with texture, speed, lifetime
 ├─ components/projectile/
 │ ├─ DestroyOnHitComponent.java # Destroys bullet on impact and applies damage
 │ └─ LifetimeComponent.java (if present) # Removes bullet after given lifetime
-"""
+```
 
 
 ### 🔎 Responsibilities

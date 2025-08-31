@@ -31,17 +31,13 @@ public class TextureRenderComponent extends RenderComponent {
   @Override
   protected void draw(SpriteBatch batch) {
     if (entity == null || texture == null) return;
+
     Vector2 pos = entity.getPosition();
-    Vector2 size = entity.getScale(); // 测试期望用 scale 作为宽高 (1,1)
-    // 关键：必须使用 Texture 的 4 参重载，且参数顺序匹配测试
-    batch.draw(texture,
-            pos.x, pos.y,
-            size.x / 2f, size.y / 2f, // 原点：中心
-            size.x, size.y,
-            1f, 1f,
-            rotationDeg,
-            0, 0,
-            texture.getWidth(), texture.getHeight(),
-            false, false);
+    Vector2 size = entity.getScale();
+    float w = (size == null ? 1f : size.x);
+    float h = (size == null ? 1f : size.y);
+
+    // 与测试期望完全一致：draw(texture, x, y, width, height)
+    batch.draw(texture, pos.x, pos.y, w, h);
   }
 }

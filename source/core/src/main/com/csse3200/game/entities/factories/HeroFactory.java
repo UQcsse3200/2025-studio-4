@@ -9,7 +9,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 
 public final class HeroFactory {
@@ -24,22 +24,20 @@ public final class HeroFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            .addComponent(new TextureRenderComponent(cfg.heroTexture))
+            // ✅ 用可旋转贴图组件
+            .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
             .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
             .addComponent(new HeroTurretAttackComponent(
                     cfg.attackCooldown,
                     cfg.bulletSpeed,
                     cfg.bulletLife,
                     cfg.bulletTexture,
-                    camera   // ✅ 注入相机
+                    camera   // ✅ 注入相机供旋转&射击方向计算
             ));
-    TextureRenderComponent tex = hero.getComponent(TextureRenderComponent.class);
-    if (tex != null) {
-      // 这里如果有 setOriginCenter() 方法就用，没有的话不用写，
-      // 因为我们在 draw() 已经指定绕中心旋转了
-      // tex.setOriginCenter();
-    }
 
+    // 确保有可见尺寸；测试里一般用 (1,1)
+    hero.setScale(1f, 1f);
     return hero;
   }
 }
+

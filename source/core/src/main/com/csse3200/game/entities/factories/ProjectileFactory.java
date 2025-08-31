@@ -10,46 +10,79 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.components.projectile.DestroyOnHitComponent;
-import com.csse3200.game.entities.configs.DamageTypeConfig; // 👈 重要：导入伤害类型
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 
+/**
+ * Factory class for creating projectile (bullet) entities.
+ * <p>
+ * Provides standard methods for constructing bullets with:
+ * - Physics and hitbox for collision handling.
+ * - Render component for visuals.
+ * - {@link ProjectileComponent} for velocity and lifetime control.
+ * - {@link CombatStatsComponent} to store bullet damage.
+ * - {@link TouchAttackComponent} to apply damage to enemies.
+ * - {@link DestroyOnHitComponent} to destroy the bullet on collision.
+ * </p>
+ */
 public final class ProjectileFactory {
   private ProjectileFactory() { throw new IllegalStateException("Static factory class, do not instantiate"); }
 
-  // 保持你原来的五参调用
+  /**
+   * Create a bullet with default damage.
+   *
+   * @param texture  path to bullet texture
+   * @param startPos initial spawn position
+   * @param vx       horizontal velocity
+   * @param vy       vertical velocity
+   * @param life     lifetime in seconds
+   * @return a new bullet entity
+   */
   public static Entity createBullet(String texture, Vector2 startPos, float vx, float vy, float life) {
     int defaultDamage = 25;
     return createBullet(texture, startPos, vx, vy, life, defaultDamage);
   }
 
-  // 自定义伤害版本
+  /**
+   * Create a bullet with custom damage.
+   *
+   * @param texture  path to bullet texture
+   * @param startPos initial spawn position
+   * @param vx       horizontal velocity
+   * @param vy       vertical velocity
+   * @param life     lifetime in seconds
+   * @param damage   bullet damage
+   * @return a new bullet entity
+   */
   public static Entity createBullet(String texture, Vector2 startPos, float vx, float vy, float life, int damage) {
     PhysicsComponent physics = new PhysicsComponent();
     physics.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.KinematicBody);
 
-    // ⚠️ 不要链式，避免类型降级
     HitboxComponent hitbox = new HitboxComponent();
     hitbox.setLayer(PhysicsLayer.PROJECTILE);
-    hitbox.setSensor(true); // Hitbox 的 create() 里本来也会 setSensor(true)，写不写都行
+    hitbox.setSensor(true); // Marks bullet hitbox as sensor (detects collision without physical response)
 
     Entity bullet = new Entity()
             .addComponent(physics)
             .addComponent(hitbox)
             .addComponent(new TextureRenderComponent(texture))
             .addComponent(new ProjectileComponent(vx, vy, life))
-            // 👇 关键：按你们的构造签名补齐 4 个参数
+            // Store bullet damage via CombatStatsComponent
             .addComponent(new CombatStatsComponent(
-                    1,                               // maxHealth：子弹自身血量，给个最小值
-                    damage,                          // baseAttack：子弹伤害
-                    DamageTypeConfig.None,           // 子弹伤害类型（可按需换）
-                    DamageTypeConfig.None            // 子弹的抗性（对子弹来说无所谓）
+                    1,                               // Bullet health (minimal, effectively 1)
+                    damage,                          // Bullet damage value
+                    DamageTypeConfig.None,           // Damage type (can be customized)
+                    DamageTypeConfig.None            // Resistance type (not relevant for bullets)
             ))
-            .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 5f)) // 只打 NPC（你的敌人层）
-            .addComponent(new DestroyOnHitComponent(PhysicsLayer.NPC));   // 命中即销毁
+            // Applies damage to enemies (NPC layer) on collision
+            .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 5f))
+            // Destroys bullet upon hitting enemy
+            .addComponent(new DestroyOnHitComponent(PhysicsLayer.NPC));
 
     bullet.setPosition(startPos);
     return bullet;
   }
 }
+
 
 
 

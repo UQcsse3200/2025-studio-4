@@ -12,10 +12,25 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 
+/**
+ * Factory class for creating hero entities.
+ * <p>
+ * Provides a method to construct a stationary "turret-style" hero:
+ * - Has no movement logic.
+ * - Can rotate to face the mouse cursor.
+ * - Fires bullets in the aimed direction using {@link HeroTurretAttackComponent}.
+ * </p>
+ */
 public final class HeroFactory {
   private HeroFactory() { throw new IllegalStateException("Instantiating static util class"); }
 
-  /** 用配置构建固定炮台英雄（无移动，只射击） */
+  /**
+   * Create a hero entity based on a {@link HeroConfig}.
+   *
+   * @param cfg     hero configuration (stats, cooldown, bullet properties, textures)
+   * @param camera  the active game camera (used for aiming & rotation)
+   * @return a new hero entity configured as a turret-style shooter
+   */
   public static Entity createHero(HeroConfig cfg, Camera camera) {
     var resistance = DamageTypeConfig.None;
     var weakness   = DamageTypeConfig.None;
@@ -24,20 +39,23 @@ public final class HeroFactory {
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            // ✅ 用可旋转贴图组件
+            // Renderable texture with rotation support
             .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
+            // Combat stats (health and base attack)
             .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
+            // Turret attack logic (fires bullets at mouse direction)
             .addComponent(new HeroTurretAttackComponent(
                     cfg.attackCooldown,
                     cfg.bulletSpeed,
                     cfg.bulletLife,
                     cfg.bulletTexture,
-                    camera   // ✅ 注入相机供旋转&射击方向计算
+                    camera // Inject camera for rotation & aiming
             ));
 
-    // 确保有可见尺寸；测试里一般用 (1,1)
+    // Ensure the entity has a visible scale (default to 1x1 for testing)
     hero.setScale(1f, 1f);
     return hero;
   }
 }
+
 

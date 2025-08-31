@@ -8,7 +8,7 @@ import com.csse3200.game.services.ServiceLocator;
 /** Render a static texture using entity's position (x,y) and scale as width/height. */
 public class TextureRenderComponent extends RenderComponent {
   private final Texture texture;
-  private float rotationDeg = 0f; // 测试用不到，保留接口
+  private float rotationDeg = 0f;
 
   public TextureRenderComponent(String texturePath) {
     this(ServiceLocator.getResourceService().getAsset(texturePath, Texture.class));

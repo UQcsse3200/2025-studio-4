@@ -11,10 +11,10 @@ import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * 固定炮台式英雄攻击组件：
- * - 不处理移动
- * - 冷却结束时，朝着鼠标方向发射子弹
- * - 同步旋转英雄贴图指向鼠标
+ * Hero turret-style attack component:
+ * - Does not handle movement.
+ * - Fires bullets towards the mouse cursor when cooldown expires.
+ * - Rotates the hero sprite to face the mouse direction.
  */
 public class HeroTurretAttackComponent extends Component {
   private final float cooldown;
@@ -26,11 +26,12 @@ public class HeroTurretAttackComponent extends Component {
   private float cdTimer = 0f;
   private final Vector3 tmp3 = new Vector3();
   private final Vector2 mouseWorld = new Vector2();
-  private final Vector2 dir = new Vector2(); // 复用，避免频繁分配
+  private final Vector2 dir = new Vector2(); // Reused to avoid frequent allocation
 
   private int damage = 25;
 
-  // 若你的英雄贴图默认朝“右”，设为 0；若默认朝“上”，一般设为 -90。
+  // If the hero sprite faces "right" by default, keep as 0.
+  // If it faces "up" by default, usually set to -90.
   private static final float SPRITE_FACING_OFFSET_DEG = -90f;
 
   public HeroTurretAttackComponent(float cooldown, float bulletSpeed, float bulletLife,
@@ -46,25 +47,25 @@ public class HeroTurretAttackComponent extends Component {
   public void update() {
     if (entity == null) return;
 
-    // 用 Gdx 的 deltaTime；若不可用再兜底 1/60
+    // Use Gdx deltaTime; fallback to 1/60 if unavailable
     float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
 
     if (cdTimer > 0f) {
       cdTimer -= dt;
     }
 
-    // 计算朝向
+    // Calculate aiming direction
     Vector2 firePos = getEntityCenter(entity);
     if (!computeAimDirection(firePos, dir)) return;
 
-    // 设置贴图旋转（RotatingTextureRenderComponent）
+    // Rotate sprite towards aim direction (RotatingTextureRenderComponent)
     RotatingTextureRenderComponent rot = entity.getComponent(RotatingTextureRenderComponent.class);
     if (rot != null) {
       float angleDeg = dir.angleDeg() + SPRITE_FACING_OFFSET_DEG;
       rot.setRotation(angleDeg);
     }
 
-    // 冷却结束才开火
+    // Only fire when cooldown has finished
     if (cdTimer <= 0f) {
       float vx = dir.x * bulletSpeed;
       float vy = dir.y * bulletSpeed;
@@ -75,7 +76,7 @@ public class HeroTurretAttackComponent extends Component {
 
       var es = ServiceLocator.getEntityService();
       if (es != null) {
-        // 避免在实体遍历中修改集合
+        // Avoid modifying entity collection during iteration
         Gdx.app.postRunnable(() -> es.register(bullet));
       } else {
         Gdx.app.error("HeroTurret", "EntityService is null; skip bullet spawn this frame");
@@ -86,7 +87,10 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * 计算从 firePos 指向鼠标的单位向量；dir 为输出（已归一化）
+   * Compute a normalized direction vector from fire position to the mouse cursor.
+   * @param firePos The starting position of the bullet.
+   * @param outDir  The output vector (will be normalized).
+   * @return true if direction is valid, false if cursor overlaps firePos.
    */
   private boolean computeAimDirection(Vector2 firePos, Vector2 outDir) {
     if (camera == null) return false;
@@ -102,13 +106,16 @@ public class HeroTurretAttackComponent extends Component {
     return true;
   }
 
-  /** 获取实体中心点（若没有 getCenterPosition，就用 position+scale/2 计算） */
+  /**
+   * Get the center position of an entity.
+   * If the entity implements getCenterPosition(), use that.
+   * Otherwise, fallback to position + scale/2.
+   */
   private static Vector2 getEntityCenter(Entity e) {
     try {
-      // 如果你的 Entity 实现了 getCenterPosition()，优先用它
       Vector2 center = e.getCenterPosition();
       if (center != null) return center;
-    } catch (Throwable ignored) { /* 无该方法就走下方逻辑 */ }
+    } catch (Throwable ignored) { /* fallback if method not available */ }
 
     Vector2 pos = e.getPosition();
     Vector2 scale = e.getScale();
@@ -117,11 +124,17 @@ public class HeroTurretAttackComponent extends Component {
     return new Vector2(cx, cy);
   }
 
+  /**
+   * Set the damage value of bullets fired by this component.
+   * @param damage Damage per bullet
+   * @return this (for chaining)
+   */
   public HeroTurretAttackComponent setDamage(int damage) {
     this.damage = damage;
     return this;
   }
 }
+
 
 
 

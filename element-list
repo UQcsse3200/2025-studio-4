@@ -10,6 +10,7 @@ com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
 com.csse3200.game.components.npc
 com.csse3200.game.components.player
+com.csse3200.game.components.rewards
 com.csse3200.game.components.settingsmenu
 com.csse3200.game.components.tasks
 com.csse3200.game.concurrency
@@ -31,3 +32,4 @@ com.csse3200.game.ui.terminal
 com.csse3200.game.ui.terminal.commands
 com.csse3200.game.utils
 com.csse3200.game.utils.math
+com.deco2800.game.components.player

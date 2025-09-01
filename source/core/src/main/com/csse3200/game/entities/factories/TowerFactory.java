@@ -30,7 +30,7 @@ public class TowerFactory {
     public static Entity createArcherTower() {
         TowerConfig.TowerStats stats = towers.archerTower;
         return new Entity()
-                .addComponent(new TowerComponent("archer", 1, 1))
+                .addComponent(new TowerComponent("archer", 2, 2))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
                 .addComponent(new TextureRenderComponent("images/archer.png"));
     }

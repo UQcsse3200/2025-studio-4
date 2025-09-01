@@ -24,7 +24,6 @@ public class SimplePlacementController extends Component {
     private boolean needRelease = false;
     private String pendingType = "base";
     private OrthographicCamera camera;
-    private final float minSpacing = 1.0f;
 
     private Entity ghostTower = null;
 
@@ -33,7 +32,7 @@ public class SimplePlacementController extends Component {
         entity.getEvents().addListener("startPlacementBase", this::armBase);
         entity.getEvents().addListener("startPlacementSun", this::armSun);
         entity.getEvents().addListener("startPlacementArcher", this::armArcher);
-        System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
+        System.out.println(">>> SimplePlacementController ready");
     }
 
     private void armBase() { startPlacement("base"); }
@@ -45,7 +44,6 @@ public class SimplePlacementController extends Component {
         placementActive = true;
         needRelease = true;
 
-        // Create ghost tower
         if ("sun".equalsIgnoreCase(type)) {
             ghostTower = TowerFactory.createSunTower();
         } else if ("archer".equalsIgnoreCase(type)) {
@@ -86,26 +84,26 @@ public class SimplePlacementController extends Component {
 
             GridPoint2 mapBounds = terrain.getMapBounds(0);
 
-            // Ensure tile is within bounds
-            if (tile.x < 0 || tile.y < 0 || tile.x + towerWidth > mapBounds.x || tile.y + towerHeight > mapBounds.y) {
-                return; // do nothing if outside map
+            // Ensure the tower stays within map bounds
+            if (tile.x < 0 || tile.y < 0
+                    || tile.x + towerWidth > mapBounds.x
+                    || tile.y + towerHeight > mapBounds.y) {
+                return;
             }
 
             snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
         } else {
-            return; // no terrain, no placement
+            return;
         }
 
-        // Move ghost tower
         ghostTower.setPosition(snapPos);
 
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (!isPositionFree(snapPos, minSpacing, towerWidth, towerHeight, terrain)) {
+            if (!isPositionFree(snapPos, towerWidth, towerHeight, terrain)) {
                 System.out.println(">>> blocked: cannot place " + pendingType + " at " + snapPos);
                 return;
             }
 
-            // Place actual tower
             Entity newTower;
             if ("sun".equalsIgnoreCase(pendingType)) {
                 newTower = TowerFactory.createSunTower();
@@ -119,17 +117,19 @@ public class SimplePlacementController extends Component {
             ServiceLocator.getEntityService().register(newTower);
             System.out.println(">>> placed " + pendingType + " at " + snapPos);
 
-            // Stop placement and hide ghost
             ghostTower = null;
             placementActive = false;
         }
     }
 
-    private boolean isPositionFree(Vector2 candidate, float spacing, int towerWidth, int towerHeight, TerrainComponent terrain) {
+    /**
+     * Checks if a tower can be placed at the given position.
+     * Towers are allowed to be adjacent (no spacing required).
+     */
+    private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
-        if (all == null || candidate == null || !Float.isFinite(spacing)) return true;
+        if (all == null || candidate == null) return true;
 
-        float spacing2 = spacing * spacing;
         float tileSize = terrain != null ? terrain.getTileSize() : 1.0f;
 
         for (int tx = 0; tx < towerWidth; tx++) {
@@ -141,11 +141,19 @@ public class SimplePlacementController extends Component {
                     if (tower == null) continue;
 
                     Vector2 pos = e.getPosition();
-                    if (pos == null || !Float.isFinite(pos.x) || !Float.isFinite(pos.y)) continue;
+                    if (pos == null) continue;
 
-                    float dx = pos.x - tilePos.x;
-                    float dy = pos.y - tilePos.y;
-                    if (dx * dx + dy * dy < spacing2) return false;
+                    int existingWidth = tower.getWidth();
+                    int existingHeight = tower.getHeight();
+                    float existingTileSize = tileSize;
+
+                    // Check if this tile overlaps any existing tower
+                    if (tilePos.x < pos.x + existingWidth * existingTileSize &&
+                            tilePos.x + tileSize > pos.x &&
+                            tilePos.y < pos.y + existingHeight * existingTileSize &&
+                            tilePos.y + tileSize > pos.y) {
+                        return false;
+                    }
                 }
             }
         }
@@ -180,8 +188,6 @@ public class SimplePlacementController extends Component {
             CameraComponent cc = e.getComponent(CameraComponent.class);
             if (cc != null && cc.getCamera() instanceof OrthographicCamera) {
                 camera = (OrthographicCamera) cc.getCamera();
-                System.out.println(">>> world camera found; vp=" +
-                        camera.viewportWidth + "x" + camera.viewportHeight);
                 return;
             }
         }

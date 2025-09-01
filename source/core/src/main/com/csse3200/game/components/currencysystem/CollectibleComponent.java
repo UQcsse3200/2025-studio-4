@@ -25,6 +25,9 @@ public class CollectibleComponent extends Component {
     private boolean isCollected;
     private float clickRadius = 1.0f;
 
+    public CollectibleComponent() {
+        isCollected = false;
+    }
     public void update () {
         if (Gdx.input.justTouched()) {
             Vector2 entityPos = entity.getPosition();
@@ -37,7 +40,7 @@ public class CollectibleComponent extends Component {
 
             if (Math.abs(worldClickPos.x - entityPos.x) < this.clickRadius &&
                     Math.abs(worldClickPos.y - entityPos.y) < this.clickRadius) {
-
+                isCollected = true;
                 entity.getEvents().trigger("collectCurrency", this.entity);
                 Gdx.app.postRunnable(entity::dispose);
 
@@ -57,5 +60,8 @@ public class CollectibleComponent extends Component {
         return null;
     }
 
+    public boolean isCollected() {
+        return isCollected;
+    }
 
 }

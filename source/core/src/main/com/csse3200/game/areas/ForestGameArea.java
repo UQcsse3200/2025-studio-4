@@ -81,8 +81,8 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
 
-    // MapHighlighter needs terrain and placementController
-    MapHighlighter mapHighlighter = new MapHighlighter(terrain, placementController);
+    // MapHighlighter needs terrain and placementController and TowerFactory
+    MapHighlighter mapHighlighter = new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
     Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
     spawnEntity(highlighterEntity);
 

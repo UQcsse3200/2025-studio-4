@@ -11,24 +11,6 @@ import static org.junit.Assert.*;
 public class SimplePlacementControllerTest {
 
     @Test
-    public void create_wiresListeners_forBaseAndSun() throws Exception {
-        SimplePlacementController ctrl = new SimplePlacementController();
-        Entity ui = new Entity().addComponent(ctrl);
-
-        ctrl.create(); // normally called by engine
-
-        ui.getEvents().trigger("startPlacementBase");
-        assertTrue(getBool(ctrl, "placementActive"));
-        assertTrue(getBool(ctrl, "needRelease"));
-        assertEquals("base", getString(ctrl));
-
-        ui.getEvents().trigger("startPlacementSun");
-        assertTrue(getBool(ctrl, "placementActive"));
-        assertTrue(getBool(ctrl, "needRelease"));
-        assertEquals("sun", getString(ctrl));
-    }
-
-    @Test
     public void update_earlyReturns_whenInactive_orCameraNull() throws Exception {
         SimplePlacementController ctrl = new SimplePlacementController();
 

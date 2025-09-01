@@ -17,6 +17,7 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 
 /**
  * Simple controller to place towers snapped to tile corners, supporting multi-tile towers.
+ * Supports drag placement and exposes pendingType for grey radius circle.
  */
 public class SimplePlacementController extends Component {
     private boolean placementActive = false;
@@ -92,7 +93,7 @@ public class SimplePlacementController extends Component {
             );
 
             GridPoint2 mapBounds = terrain.getMapBounds(0);
-            if (tile.x < 0|| tile.y < 0 || tile.x >= mapBounds.x ||  tile.y >= mapBounds.y - 1) {
+            if (tile.x < 0 || tile.y < 0 || tile.x >= mapBounds.x || tile.y >= mapBounds.y - 1) {
                 snapPos = mouseWorld;
             } else {
                 snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
@@ -100,6 +101,9 @@ public class SimplePlacementController extends Component {
         }
 
         draggingTower.setPosition(snapPos);
+
+        // The grey radius circle should be drawn based on draggingTower's position and pendingType.
+        // (Assumed to be handled in rendering code elsewhere, using getPendingType())
 
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (!isPositionFree(snapPos, minSpacing, towerWidth, towerHeight, terrain)) {
@@ -117,7 +121,7 @@ public class SimplePlacementController extends Component {
 
     private boolean isPositionFree(Vector2 candidate, float spacing, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
-        if (all == null || candidate == null || !Float.isNaN(candidate.x) || !Float.isFinite(spacing)) return true;
+        if (all == null || candidate == null || !Float.isFinite(spacing)) return true;
 
         float spacing2 = spacing * spacing;
         float tileSize = terrain != null ? terrain.getTileSize() : 1.0f;
@@ -133,12 +137,13 @@ public class SimplePlacementController extends Component {
                     Vector2 pos = e.getPosition();
                     if (pos == null || !Float.isFinite(pos.x) || !Float.isFinite(pos.y)) continue;
 
-                    float dx = pos.x = tilePos.x;
-                    float dy = pos.y = tilePos.y;
+                    float dx = pos.x - tilePos.x;
+                    float dy = pos.y - tilePos.y;
                     if (dx * dx + dy * dy < spacing2) return false;
                 }
             }
         }
+
         return true;
     }
 
@@ -179,5 +184,9 @@ public class SimplePlacementController extends Component {
 
     public boolean isPlacementActive() {
         return placementActive;
+    }
+
+    public String getPendingType() {
+        return pendingType;
     }
 }

@@ -9,9 +9,8 @@ public class TowerComponent extends Component {
     private final int width;  // in tiles
     private final int height; // in tiles
 
-    // Existing constructor: keep as-is if already used
     public TowerComponent(String type) {
-        this(type, 2, 2); // default 1x1
+        this(type, 1, 1); // default is 1x1
     }
 
     // New constructor for multi-tile towers

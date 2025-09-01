@@ -14,7 +14,7 @@ public class TowerFactory {
     public static Entity createBaseTower() {
         TowerConfig.TowerStats stats = towers.baseTower;
         return new Entity()
-                .addComponent(new TowerComponent("base"))
+                .addComponent(new TowerComponent("base", 2, 2)) // revert to 2x2
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
                 .addComponent(new TextureRenderComponent("images/base_tower.png"));
     }

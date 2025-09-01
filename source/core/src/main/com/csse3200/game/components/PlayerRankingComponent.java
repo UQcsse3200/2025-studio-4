@@ -1,6 +1,6 @@
-package com.deco2800.game.components;
+package com.csse3200.game.components;
 
-import com.deco2800.game.components.Component;
+import com.csse3200.game.components.Component;
 import java.util.Timer;
 import java.util.TimerTask;
 

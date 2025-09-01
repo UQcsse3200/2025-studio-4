@@ -23,6 +23,12 @@ import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.factories.HeroFactory;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.math.MathUtils;
 
 /** Forest area for the demo game with trees, a player, and some enemies. */
 public class ForestGameArea extends GameArea {
@@ -62,6 +68,9 @@ public class ForestGameArea extends GameArea {
   private final TerrainFactory terrainFactory;
 
   private Entity player;
+    // --- New: One-time start interaction for hero placement ---
+  private boolean heroPlaced = false;
+  private InputAdapter placementInput;  //
 
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
@@ -86,9 +95,10 @@ public class ForestGameArea extends GameArea {
     spawnDrones();
     spawnGrunts();
     spawnTanks();
-    spawnHero();
+    enableHeroPlacement();
 
-    playMusic();
+
+      playMusic();
   }
 
   private void displayUI() {
@@ -177,23 +187,77 @@ public class ForestGameArea extends GameArea {
     }
   }
 
-  private void spawnHero() {
-    HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
-    if (heroCfg == null) {
-      logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
-      heroCfg = new HeroConfig(); // 不让游戏崩
-    }
+  private void spawnHeroAt(GridPoint2 cell) {
+           HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
+            if (heroCfg == null) {
+                 logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
+                  heroCfg = new HeroConfig();
+                }
+            Renderer r = Renderer.getCurrentRenderer();
+            if (r == null || r.getCamera() == null) {
+                  logger.warn("Renderer/Camera not ready, skip spawnHeroAt.");
+                  return;
+                }
+            Camera cam = r.getCamera().getCamera();
+            Entity hero = HeroFactory.createHero(heroCfg, cam);
+            spawnEntityAt(hero, cell, true, true);
+          }
 
-    Renderer r = Renderer.getCurrentRenderer();
-    if (r == null || r.getCamera() == null) {
-      logger.warn("Renderer/Camera not ready, skip spawnHero this frame.");
-      return;
-    }
-    Camera cam = r.getCamera().getCamera();
+    // Enable one-time placement logic: wait for right click to determine drop point (only uses Gdx.input, does not overwrite global chain)
+          private void enableHeroPlacement() {
+                    if (placementInput != null) return; //
 
-    Entity hero = HeroFactory.createHero(heroCfg, cam);
-    spawnEntityAt(hero, new GridPoint2(5, 5), true, true);
-  }
+              final float tileSize = terrain.getTileSize();
+                    final GridPoint2 bounds = terrain.getMapBounds(0);
+
+                            // Get the current processor; if it is not a multiplexer, wrap it to avoid overwriting the existing chain
+              final com.badlogic.gdx.InputProcessor prev = Gdx.input.getInputProcessor();
+                    final boolean createdNewMux;
+                    final InputMultiplexer mux;
+                    if (prev instanceof InputMultiplexer m) {
+                          mux = m;
+                          createdNewMux = false;
+                        } else {
+                          mux = new InputMultiplexer();
+                          if (prev != null) mux.addProcessor(prev);
+                          Gdx.input.setInputProcessor(mux);
+                          createdNewMux = true;
+                        }
+
+                            placementInput = new InputAdapter() {
+              @Override
+              public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                                if (heroPlaced || button != Input.Buttons.RIGHT) return false;
+
+                        Renderer r = Renderer.getCurrentRenderer();
+                              if (r == null || r.getCamera() == null) return false;
+                              Camera cam = r.getCamera().getCamera();
+                                Vector3 world = new Vector3(screenX, screenY, 0);
+                                cam.unproject(world);
+
+                               int gx = Math.max(0, Math.min((int)(world.x / tileSize), bounds.x - 1));
+                                int gy = Math.max(0, Math.min((int)(world.y / tileSize), bounds.y - 1));
+                                GridPoint2 cell = new GridPoint2(gx, gy);
+
+                                        spawnHeroAt(cell);
+                                heroPlaced = true;
+
+
+
+                                mux.removeProcessor(placementInput);
+                                placementInput = null;
+                                if (createdNewMux) {
+                                      Gdx.input.setInputProcessor(prev);
+                                    }
+                                logger.info("Hero placed at grid ({}, {}).", gx, gy);
+                                return true;
+                              }
+            };
+
+
+                        mux.addProcessor(0, placementInput);
+                    logger.info("Right-click to place the hero at start.");
+                  }
 
 
   private void playMusic() {
@@ -231,5 +295,13 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
+      // If still in the placement phase, remove the temporary processor
+      if (placementInput != null) {
+          com.badlogic.gdx.InputProcessor cur = Gdx.input.getInputProcessor();
+          if (cur instanceof InputMultiplexer m) {
+              m.removeProcessor(placementInput);
+          }
+          placementInput = null;
+      }
   }
 }

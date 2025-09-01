@@ -20,45 +20,48 @@ public class TowerHotbarDisplay extends UIComponent {
         table.bottom().left();
         table.setFillParent(true);
 
-        TextureRegionDrawable sunImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/sun.png")));
-        TextureRegionDrawable baseImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/base_tower.png")));
-        TextureRegionDrawable archerImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/archer.png")));
+        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/dino.png")));
+        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/bone.png")));
+        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/cavemen.png")));
 
-        ImageButton baseBtn = new ImageButton(baseImage);
-        baseBtn.addListener(new ChangeListener() {
+        ImageButton boneBtn = new ImageButton(boneImage);
+        boneBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, Actor actor) {
-                System.out.println(">>> startPlacementBase fired");
-                entity.getEvents().trigger("startPlacementBase");
+                System.out.println(">>> startPlacementBone fired");
+                entity.getEvents().trigger("startPlacementBone");
             }
         });
 
-        ImageButton sunBtn = new ImageButton(sunImage);
-        sunBtn.addListener(new ChangeListener() {
+
+        ImageButton dinoBtn = new ImageButton(dinoImage);
+        dinoBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, Actor actor) {
-                System.out.println(">>> startPlacementSun fired");
-                entity.getEvents().trigger("startPlacementSun");
+                System.out.println(">>> startPlacementDino fired");
+                entity.getEvents().trigger("startPlacementDino");
             }
         });
 
-        // Archer Tower button
-        ImageButton archerBtn = new ImageButton(archerImage);
-        archerBtn.addListener(new ChangeListener() {
+        // Cavemen Tower button
+        ImageButton cavemenBtn = new ImageButton(cavemenImage);
+        cavemenBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                System.out.println(">>> startPlacementArcher fired");
-                entity.getEvents().trigger("startPlacementArcher"); // <-- trigger new event
+                System.out.println(">>> startPlacementCavemen fired");
+                entity.getEvents().trigger("startPlacementCavemen"); // <-- trigger new event
             }
         });
 
-        sunBtn.getImageCell().size(100, 100);
-        baseBtn.getImageCell().size(100, 100);
-        archerBtn.getImageCell().size(100, 100);
+        dinoBtn.getImageCell().size(100, 100);
+        boneBtn.getImageCell().size(100, 100);
+        cavemenBtn.getImageCell().size(100, 100);
 
-        table.add(baseBtn).pad(8f);
+        table.add(boneBtn).pad(8f);
         table.row();
-        table.add(sunBtn).pad(8f);
+        table.add(dinoBtn).pad(8f);
+        table.row();
+        table.add(cavemenBtn).pad(8f);
         stage.addActor(table);
-        table.add(archerBtn).pad(8f);
+
     }
 
     @Override public void draw(SpriteBatch batch) { /* stage draws */ }

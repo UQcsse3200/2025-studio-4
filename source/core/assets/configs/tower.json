@@ -1,15 +1,15 @@
 {
-  "baseTower": {
+  "boneTower": {
     "damage": 5,
     "range": 3.0,
     "cooldown": 1.0
   },
-  "sunTower": {
+  "dinoTower": {
     "damage": 8,
     "range": 2.0,
     "cooldown": 0.8
   },
-  "archerTower": {
+  "cavemenTower": {
     "damage": 3,
     "range": 5.0,
     "cooldown": 0.8

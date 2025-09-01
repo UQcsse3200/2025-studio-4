@@ -97,12 +97,12 @@ public class MapHighlighter extends UIComponent {
             TowerComponent placingTower = null;
             String pendingType = placementController.getPendingType();
             Entity pendingEntity;
-            if ("sun".equalsIgnoreCase(pendingType)) {
-                pendingEntity = towerFactory.createSunTower();
-            } else if ("archer".equalsIgnoreCase(pendingType)) {
-                pendingEntity = towerFactory.createArcherTower();
+            if ("Dino".equalsIgnoreCase(pendingType)) {
+                pendingEntity = towerFactory.createDinoTower();
+            } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
+                pendingEntity = towerFactory.createCavemenTower();
             } else {
-                pendingEntity = towerFactory.createBaseTower();
+                pendingEntity = towerFactory.createBoneTower();
             }
             placingTower = pendingEntity.getComponent(TowerComponent.class);
             int towerWidth = placingTower != null ? placingTower.getWidth() : 2;

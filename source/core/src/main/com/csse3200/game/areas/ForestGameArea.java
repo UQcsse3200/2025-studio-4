@@ -6,11 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.DroneEnemyFactory;
-import com.csse3200.game.entities.factories.TankEnemyFactory;
-import com.csse3200.game.entities.factories.GruntEnemyFactory;
-import com.csse3200.game.entities.factories.ObstacleFactory;
-import com.csse3200.game.entities.factories.PlayerFactory;
+import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
@@ -42,9 +38,10 @@ public class ForestGameArea extends GameArea {
     "images/placeholder-enemy.png",
     "images/drone_enemy.png",
     "images/base_enemy.png",
-    "images/tank_enemy.png"
-
+    "images/tank_enemy.png",
+    "images/boss_enemy.png"
   };
+
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
   };
@@ -79,6 +76,7 @@ public class ForestGameArea extends GameArea {
     spawnDrones();
     spawnGrunts();
     spawnTanks();
+    spawnBosses();
 
     playMusic();
   }
@@ -166,6 +164,17 @@ public class ForestGameArea extends GameArea {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
       Entity tank = TankEnemyFactory.createTankEnemy(player);
       spawnEntityAt(tank, randomPos, true, true);
+    }
+  }
+
+  private void spawnBosses() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    for (int i = 0; i < 3; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      Entity boss = BossEnemyFactory.createBossEnemy(player);
+      spawnEntityAt(boss, randomPos, true, true);
     }
   }
 

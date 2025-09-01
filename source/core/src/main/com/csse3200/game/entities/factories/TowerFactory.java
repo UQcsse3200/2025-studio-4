@@ -5,7 +5,7 @@ import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.TowerComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
-import core.src.main.com.csse3200.game.entities.configs.TowerConfig;
+import com.csse3200.game.entities.configs.TowerConfig;
 
 public class TowerFactory {
     private static final TowerConfig towers =

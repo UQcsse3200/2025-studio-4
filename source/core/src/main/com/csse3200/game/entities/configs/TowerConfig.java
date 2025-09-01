@@ -1,4 +1,4 @@
-package core.src.main.com.csse3200.game.entities.configs;
+package com.csse3200.game.entities.configs;
 
 /** Config class to load tower stats from JSON */
 public class TowerConfig {

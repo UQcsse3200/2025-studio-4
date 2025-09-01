@@ -25,6 +25,8 @@ public class SimplePlacementController extends Component {
     private OrthographicCamera camera;
     private final float minSpacing = 1.0f; // fallback if no terrain
 
+    private Entity draggingTower = null;
+
     @Override
     public void create() {
         entity.getEvents().addListener("startPlacementBase", this::armBase);
@@ -34,114 +36,95 @@ public class SimplePlacementController extends Component {
     }
 
     private void armBase() {
-        pendingType = "base";
-        placementActive = true;
-        needRelease = true;
-        System.out.println(">>> placement ON (Base)");
+        startPlacement("base");
     }
 
     private void armSun() {
-        pendingType = "sun";
-        placementActive = true;
-        needRelease = true;
-        System.out.println(">>> placement ON (Sun)");
+        startPlacement("sun");
     }
 
     private void armArcher() {
-        pendingType = "archer";
+        startPlacement("archer");
+    }
+
+    private void startPlacement(String type) {
+        pendingType = type;
         placementActive = true;
         needRelease = true;
-        System.out.println(">>> placement ON (Archer)");
+
+        if ("sun".equalsIgnoreCase(type)) {
+            draggingTower = TowerFactory.createSunTower();
+        } else if ("archer".equalsIgnoreCase(type)) {
+            draggingTower = TowerFactory.createArcherTower();
+        } else {
+            draggingTower = TowerFactory.createBaseTower();
+        }
+
+        ServiceLocator.getEntityService().register(draggingTower);
+
+        System.out.println(">>> placement ON (" + type + ")");
     }
 
     @Override
     public void update() {
         if (camera == null) findWorldCamera();
-        if (!placementActive || camera == null) return;
+        if (!placementActive || camera == null || draggingTower == null) return;
 
         if (needRelease) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) needRelease = false;
             return;
         }
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            Vector3 v = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
-            camera.unproject(v);
-            Vector2 clickWorld = new Vector2(v.x, v.y);
+        Vector3 mousePos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
+        camera.unproject(mousePos3D);
+        Vector2 mouseWorld = new Vector2(mousePos3D.x, mousePos3D.y);
 
-            TerrainComponent terrain = findTerrain();
-            Vector2 snapPos = clickWorld;
-            int towerWidth = 1;
-            int towerHeight = 1;
+        TerrainComponent terrain = findTerrain();
+        Vector2 snapPos = mouseWorld;
+        int towerWidth = 1;
+        int towerHeight = 1;
 
-            if (terrain != null) {
-                float tileSize = terrain.getTileSize();
-                GridPoint2 tile = new GridPoint2(
-                        (int) (clickWorld.x / tileSize),
-                        (int) (clickWorld.y / tileSize)
-                );
+        if (terrain != null) {
+            float tileSize = terrain.getTileSize();
+            GridPoint2 tile = new GridPoint2(
+                    (int) (mouseWorld.x / tileSize),
+                    (int) (mouseWorld.y / tileSize)
+            );
 
-                GridPoint2 mapBounds = terrain.getMapBounds(0);
-                if (tile.x < 0 || tile.y < 0 || tile.x >= mapBounds.x || tile.y >= mapBounds.y - 1) {
-                    // Note: mapBounds.y - 1 excludes the top row
-                    System.out.println(">>> invalid: tile outside terrain map or top row");
-                    placementActive = false;
-                    return;
-                }
-
+            GridPoint2 mapBounds = terrain.getMapBounds(0);
+            if (tile.x < 0|| tile.y < 0 || tile.x >= mapBounds.x ||  tile.y >= mapBounds.y - 1) {
+                snapPos = mouseWorld;
+            } else {
                 snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
-
-                // Determine tower size in tiles
-                if ("sun".equalsIgnoreCase(pendingType)) {
-                    towerWidth = 1;
-                    towerHeight = 1;
-                } else if ("base".equalsIgnoreCase(pendingType)) {
-                    towerWidth = 1;
-                    towerHeight = 1;
-                } else if ("archer".equalsIgnoreCase(pendingType)) {
-                    towerWidth = 1;
-                    towerHeight = 1;
-                }
-
             }
+        }
 
-            // Check if placement area is free
+        draggingTower.setPosition(snapPos);
+
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (!isPositionFree(snapPos, minSpacing, towerWidth, towerHeight, terrain)) {
                 System.out.println(">>> blocked: cannot place " + pendingType + " at " + snapPos);
+                draggingTower = null;
                 placementActive = false;
                 return;
             }
 
-            // Place tower
-            Entity tower;
-            if ("sun".equalsIgnoreCase(pendingType)) {
-                tower = TowerFactory.createSunTower();
-            } else if ("archer".equalsIgnoreCase(pendingType)) {
-                tower = TowerFactory.createArcherTower();
-            } else { // base
-                tower = TowerFactory.createBaseTower();
-            }
-            tower.setPosition(snapPos);
-            ServiceLocator.getEntityService().register(tower);
             System.out.println(">>> placed " + pendingType + " at " + snapPos);
-
-
+            draggingTower = null;
             placementActive = false;
         }
     }
 
     private boolean isPositionFree(Vector2 candidate, float spacing, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
-        if (all == null || candidate == null || !Float.isFinite(spacing)) return true;
+        if (all == null || candidate == null || !Float.isNaN(candidate.x) || !Float.isFinite(spacing)) return true;
 
         float spacing2 = spacing * spacing;
         float tileSize = terrain != null ? terrain.getTileSize() : 1.0f;
 
-        // Check all tiles covered by this tower
         for (int tx = 0; tx < towerWidth; tx++) {
             for (int ty = 0; ty < towerHeight; ty++) {
                 Vector2 tilePos = new Vector2(candidate.x + tx * tileSize, candidate.y + ty * tileSize);
-
                 for (Entity e : all) {
                     if (e == null || e == entity) continue;
                     TowerComponent tower = e.getComponent(TowerComponent.class);
@@ -150,13 +133,12 @@ public class SimplePlacementController extends Component {
                     Vector2 pos = e.getPosition();
                     if (pos == null || !Float.isFinite(pos.x) || !Float.isFinite(pos.y)) continue;
 
-                    float dx = pos.x - tilePos.x;
-                    float dy = pos.y - tilePos.y;
+                    float dx = pos.x = tilePos.x;
+                    float dy = pos.y = tilePos.y;
                     if (dx * dx + dy * dy < spacing2) return false;
                 }
             }
         }
-
         return true;
     }
 

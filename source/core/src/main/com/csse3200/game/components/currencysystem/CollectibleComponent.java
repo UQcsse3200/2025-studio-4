@@ -25,9 +25,20 @@ public class CollectibleComponent extends Component {
     private boolean isCollected;
     private float clickRadius = 1.0f;
 
+    /**
+     * Creates a new collectible component, initially not collected.
+     */
     public CollectibleComponent() {
         isCollected = false;
     }
+
+    /**
+     * Handles player interaction for collecting the entity.
+     *
+     * When the player clicks within the defined click radius of the entity,
+     * this method marks the entity as collected, triggers a "collectCurrency" event,
+     * and schedules the entity for disposal.
+     */
     public void update () {
         if (Gdx.input.justTouched()) {
             Vector2 entityPos = entity.getPosition();
@@ -51,6 +62,8 @@ public class CollectibleComponent extends Component {
 
     /**
      * Get the camera from the current Renderer.
+     *
+     * @return the active Camera, or null if no renderer/camera is available
      */
     private Camera getCamera() {
         Renderer renderer = Renderer.getCurrentRenderer();

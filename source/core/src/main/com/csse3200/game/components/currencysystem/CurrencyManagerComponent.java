@@ -56,7 +56,8 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
-     * Add the Currency entity to the list if it is not already present. And add event listeners to handle on collect action.
+     * Add the Currency entity to the list if it is not already present.
+     * And add event listeners to handle on collect action.
      *
      * @param entity
      */

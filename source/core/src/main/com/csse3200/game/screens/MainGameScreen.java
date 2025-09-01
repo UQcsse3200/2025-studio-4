@@ -1,4 +1,6 @@
 package com.csse3200.game.screens;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
+import com.csse3200.game.services.leaderboard.LeaderboardService; // 如果用到了接口
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
+
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
   private static final String[] mainGameTextures = {"images/heart.png"};
@@ -49,8 +52,10 @@ public class MainGameScreen extends ScreenAdapter {
   
   public MainGameScreen(GdxGame game, boolean isContinue) {
     this.game = game;
+    ServiceLocator.registerLeaderboardService(
+            new InMemoryLeaderboardService("player-001"));
 
-    logger.debug("Initialising main game screen services (Continue: {})", isContinue);
+      logger.debug("Initialising main game screen services (Continue: {})", isContinue);
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -62,9 +67,10 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
-    
-    
-    saveGameService = new SaveGameService(ServiceLocator.getEntityService());
+
+
+
+      saveGameService = new SaveGameService(ServiceLocator.getEntityService());
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
@@ -148,20 +154,24 @@ public class MainGameScreen extends ScreenAdapter {
    * capturing and handling ui input.
    */
   private void createUI() {
-    logger.debug("Creating ui");
+      logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-    Entity ui = new Entity();
-    ui.addComponent(new InputDecorator(stage, 10))
-        .addComponent(new PerformanceDisplay())
-        .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
-        .addComponent(new Terminal())
-        .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
+      Entity ui = new Entity();
+      ui.addComponent(new InputDecorator(stage, 10))
+              .addComponent(new PerformanceDisplay())
+              .addComponent(new MainGameActions(this.game))
+              .addComponent(new MainGameExitDisplay())
+              .addComponent(new Terminal())
+              .addComponent(inputComponent)
+              .addComponent(new TerminalDisplay())
+              // ★ 新增：排行榜按钮 + 弹窗
+              .addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
 
-    ServiceLocator.getEntityService().register(ui);
+        ServiceLocator.getEntityService().register(ui);
+      ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
+
   }
 }

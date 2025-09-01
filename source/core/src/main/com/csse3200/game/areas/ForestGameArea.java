@@ -204,14 +204,15 @@ public class ForestGameArea extends GameArea {
           }
 
     // Enable one-time placement logic: wait for right click to determine drop point (only uses Gdx.input, does not overwrite global chain)
+
           private void enableHeroPlacement() {
                     if (placementInput != null) return; //
 
               final float tileSize = terrain.getTileSize();
                     final GridPoint2 bounds = terrain.getMapBounds(0);
 
-                            // Get the current processor; if it is not a multiplexer, wrap it to avoid overwriting the existing chain
-              final com.badlogic.gdx.InputProcessor prev = Gdx.input.getInputProcessor();
+
+              final com.badlogic.gdx.InputProcessor prev = Gdx.input.getInputProcessor();// Get the current processor; if it is not a multiplexer, wrap it to avoid overwriting the existing chain
                     final boolean createdNewMux;
                     final InputMultiplexer mux;
                     if (prev instanceof InputMultiplexer m) {
@@ -295,7 +296,8 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
-      
+
+    //to avoid
       if (placementInput != null) {
           com.badlogic.gdx.InputProcessor cur = Gdx.input.getInputProcessor();
           if (cur instanceof InputMultiplexer m) {

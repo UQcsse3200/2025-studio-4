@@ -25,6 +25,9 @@ import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.maingame.PauseInputComponent;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +38,11 @@ import org.slf4j.LoggerFactory;
  */
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png"};
+  private static final String[] mainGameTextures = {
+          "images/heart.png",
+          "images/pause_button.png",
+          "images/dim_bg.jpeg"
+  };
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
@@ -153,15 +160,18 @@ public class MainGameScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
+// AFTER
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
-        .addComponent(new PerformanceDisplay())
-        .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
-        .addComponent(new Terminal())
-        .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
-
+            .addComponent(new PerformanceDisplay())
+            .addComponent(new MainGameActions(this.game))
+            .addComponent(new SettingsMenuDisplay(this.game, true))
+            .addComponent(new PauseMenuDisplay(this.game))
+            .addComponent(new PauseInputComponent())
+            .addComponent(new MainGameExitDisplay())
+            .addComponent(new Terminal())
+            .addComponent(inputComponent)
+            .addComponent(new TerminalDisplay());
     ServiceLocator.getEntityService().register(ui);
   }
 }

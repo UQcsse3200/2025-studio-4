@@ -83,7 +83,8 @@ public class CurrencyManagerComponent extends Component {
      */
     private void collectCurrency(Entity entity) {
         CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
-        this.addCurrencyAmount(type, 1);
+        int amount = entity.getComponent(CurrencyComponent.class).getValue();
+        this.addCurrencyAmount(type, amount);
         this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
     }
 

@@ -37,7 +37,7 @@ public class CurrencyFactory {
     /**
      * Creates a currency entity representing a piece of metal scrap.
      *
-     * The created entity has a default value of 5 and uses the
+     * The created entity has a default value of 1 and uses the
      * predefined metal scrap texture.
      *
      * @param x the x-coordinate position of the entity
@@ -45,7 +45,7 @@ public class CurrencyFactory {
      * @return a metal scrap currency entity
      */
     public static Entity createMetalScrap(float x, float y) {
-        return createCurrency(CurrencyType.METAL_SCRAP, 5, x, y, "images/metal-scrap-currency.png");
+        return createCurrency(CurrencyType.METAL_SCRAP, 1, x, y, "images/metal-scrap-currency.png");
     }
 }
 

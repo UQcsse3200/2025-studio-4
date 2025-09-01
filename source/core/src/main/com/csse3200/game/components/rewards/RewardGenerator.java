@@ -1,5 +1,5 @@
-package com.deco2800.game.components.rewards;
-import com.deco2800.game.components.PlayerRankingComponent;
+package com.csse3200.game.components.rewards;
+import com.csse3200.game.components.PlayerRankingComponent;
 import java.util.ArrayList;
 import java.util.List;
 public class RewardGenerator {

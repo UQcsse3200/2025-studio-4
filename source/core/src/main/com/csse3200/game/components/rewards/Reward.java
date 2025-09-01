@@ -1,4 +1,4 @@
-package com.deco2800.game.components.rewards;
+package com.csse3200.game.components.rewards;
 
 public class Reward {
     private String name;

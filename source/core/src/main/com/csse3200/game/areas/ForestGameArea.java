@@ -295,7 +295,7 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
-      // If still in the placement phase, remove the temporary processor
+      
       if (placementInput != null) {
           com.badlogic.gdx.InputProcessor cur = Gdx.input.getInputProcessor();
           if (cur instanceof InputMultiplexer m) {

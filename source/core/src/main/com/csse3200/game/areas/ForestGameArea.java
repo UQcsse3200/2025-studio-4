@@ -71,15 +71,22 @@ public class ForestGameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    displayUI();
+    // Create UI entity and keep reference
+    Entity ui = new Entity();
+    ui.addComponent(new GameAreaDisplay("Box Forest"));
+    ui.addComponent(new TowerHotbarDisplay());
+    SimplePlacementController placementController = new SimplePlacementController();
+    ui.addComponent(placementController);   // this listens and places the sprite
+    spawnEntity(ui);
 
     spawnTerrain();
 
-      MapHighlighter mapHighlighter = new MapHighlighter(terrain);
-      Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
-      spawnEntity(highlighterEntity);
+    // MapHighlighter needs terrain and placementController
+    MapHighlighter mapHighlighter = new MapHighlighter(terrain, placementController);
+    Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+    spawnEntity(highlighterEntity);
 
-    spawnTrees();
+    // spawnTrees();
     player = spawnPlayer();
     //spawnGhosts();
     //spawnGhostKing();
@@ -94,14 +101,6 @@ public class ForestGameArea extends GameArea {
 //    spawnEntityAt(sunTower, sunTowerPos, true, false);
 
     playMusic();
-  }
-
-  private void displayUI() {
-    Entity ui = new Entity();
-    ui.addComponent(new GameAreaDisplay("Box Forest"));
-    ui.addComponent(new TowerHotbarDisplay());
-    ui.addComponent(new SimplePlacementController());   // this listens and places the sprite
-    spawnEntity(ui);
   }
 
 

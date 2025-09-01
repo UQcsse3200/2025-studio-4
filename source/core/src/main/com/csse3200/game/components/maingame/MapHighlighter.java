@@ -22,14 +22,22 @@ import com.csse3200.game.ui.UIComponent;
 public class MapHighlighter extends UIComponent {
     private final TerrainComponent terrain;
     private final ShapeRenderer shapeRenderer;
+    private final SimplePlacementController placementController; // Add reference
 
-    public MapHighlighter(TerrainComponent terrain) {
+    // Update constructor to accept placementController
+    public MapHighlighter(TerrainComponent terrain, SimplePlacementController placementController) {
         this.terrain = terrain;
         this.shapeRenderer = new ShapeRenderer();
+        this.placementController = placementController;
     }
 
     @Override
     public void draw(com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {
+        // Only show grid if placement mode is active
+        if (placementController == null || !placementController.isPlacementActive()) {
+            return;
+        }
+
         batch.end();
 
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());

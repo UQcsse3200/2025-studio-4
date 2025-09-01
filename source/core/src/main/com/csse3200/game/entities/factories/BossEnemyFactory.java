@@ -48,6 +48,15 @@ public class BossEnemyFactory {
                 .addComponent(imageTexture)
                 .addComponent(new clickable(displayName));
 
+        // Makes the visual scale match the texture scale so proportions are correct (image is not just a 1x1 square)
+        imageTexture.scaleEntity();
+        // Scale up x and y coordinates, keeping same proportions
+        boss.setScale(boss.getScale().x * 1.8f, boss.getScale().y * 1.8f);
+
+        // Update physics engine to suit a large boss
+        PhysicsUtils.setScaledCollider(boss, 0.8f, 0.6f);    // unsure if these numbers are suitable
+        boss.getComponent(ColliderComponent.class).setDensity(1.5f);
+
         return boss;
     }
 

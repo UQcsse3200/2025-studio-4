@@ -9,14 +9,14 @@ class TowerComponentTest {
 
     @Test
     void canCreateTowerComponent() {
-        TowerComponent tower = new TowerComponent("base");
+        TowerComponent tower = new TowerComponent("bone");
         assertNotNull(tower);
-        assertEquals("base", tower.getType());
+        assertEquals("bone", tower.getType());
     }
 
     @Test
     void canAttachTowerComponentToEntity() {
-        Entity entity = new Entity().addComponent(new TowerComponent("base"));
+        Entity entity = new Entity().addComponent(new TowerComponent("bone"));
         assertNotNull(entity.getComponent(TowerComponent.class));
     }
 }

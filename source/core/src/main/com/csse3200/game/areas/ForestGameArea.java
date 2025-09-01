@@ -41,7 +41,9 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-          "images"
+          "images/bone.png",
+          "images/cavemen.png",
+          "images/dino.png"
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
@@ -69,7 +71,7 @@ public class ForestGameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    // Create UI entity and keep reference
+    // Create UI entikty and keep reference
     Entity ui = new Entity();
     ui.addComponent(new GameAreaDisplay("Box Forest"));
     ui.addComponent(new TowerHotbarDisplay());

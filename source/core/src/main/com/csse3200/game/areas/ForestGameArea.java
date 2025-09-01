@@ -86,20 +86,10 @@ public class ForestGameArea extends GameArea {
     Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
     spawnEntity(highlighterEntity);
 
-    // spawnTrees();
+    spawnTrees();
     player = spawnPlayer();
     //spawnGhosts();
     //spawnGhostKing();
-
-    // Add base tower at a chosen position
-//    GridPoint2 baseTowerPos = new GridPoint2(5, 5); // Choose your desired position
-//    Entity baseTower = TowerFactory.createBaseTower();
-//    spawnEntityAt(baseTower, baseTowerPos, true, false);
-//
-//    GridPoint2 sunTowerPos = new GridPoint2(12, 12); // Choose your desired position
-//    Entity sunTower = TowerFactory.createSunTower();
-//    spawnEntityAt(sunTower, sunTowerPos, true, false);
-
     playMusic();
   }
 

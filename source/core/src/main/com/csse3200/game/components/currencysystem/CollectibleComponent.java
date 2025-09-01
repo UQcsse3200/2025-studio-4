@@ -60,6 +60,11 @@ public class CollectibleComponent extends Component {
         return null;
     }
 
+    /**
+     * Returns true if it has been collected, false otherwise.
+     *
+     * @return isCollected
+     */
     public boolean isCollected() {
         return isCollected;
     }

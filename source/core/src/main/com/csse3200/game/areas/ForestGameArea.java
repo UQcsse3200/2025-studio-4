@@ -3,6 +3,7 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.maingame.MapHighlighter;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.components.maingame.SimplePlacementController;
@@ -41,7 +42,8 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
     "images/base_tower.png",
-    "images/sun.png"
+    "images/sun.png",
+    "images/archer.png"
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
@@ -72,6 +74,11 @@ public class ForestGameArea extends GameArea {
     displayUI();
 
     spawnTerrain();
+
+      MapHighlighter mapHighlighter = new MapHighlighter(terrain);
+      Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+      spawnEntity(highlighterEntity);
+
     spawnTrees();
     player = spawnPlayer();
     //spawnGhosts();
@@ -93,8 +100,8 @@ public class ForestGameArea extends GameArea {
     Entity ui = new Entity();
     ui.addComponent(new GameAreaDisplay("Box Forest"));
     ui.addComponent(new TowerHotbarDisplay());
-      ui.addComponent(new SimplePlacementController());   // this listens and places the sprite
-      spawnEntity(ui);
+    ui.addComponent(new SimplePlacementController());   // this listens and places the sprite
+    spawnEntity(ui);
   }
 
 

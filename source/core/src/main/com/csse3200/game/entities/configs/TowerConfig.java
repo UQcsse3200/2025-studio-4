@@ -4,6 +4,7 @@ package core.src.main.com.csse3200.game.entities.configs;
 public class TowerConfig {
     public TowerStats baseTower;
     public TowerStats sunTower;
+    public TowerStats archerTower;
 
     public static class TowerStats {
         public int damage;

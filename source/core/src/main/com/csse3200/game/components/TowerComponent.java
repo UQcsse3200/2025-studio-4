@@ -5,6 +5,30 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 public class TowerComponent extends Component {
+    private final String type;
+    private final int width;  // in tiles
+    private final int height; // in tiles
+
+    // Existing constructor: keep as-is if already used
+    public TowerComponent(String type) {
+        this(type, 2, 2); // default 1x1
+    }
+
+    // New constructor for multi-tile towers
+    public TowerComponent(String type, int width, int height) {
+        this.type = type;
+        this.width = width;
+        this.height = height;
+    }
+
+    // Keep existing getType()
+    public String getType() {
+        return type;
+    }
+
+    public int getWidth() { return width; }
+    public int getHeight() { return height; }
+
 
     @Override
     public void update() {

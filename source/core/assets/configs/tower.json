@@ -8,5 +8,10 @@
     "damage": 8,
     "range": 2.0,
     "cooldown": 0.8
+  },
+  "archerTower": {
+    "damage": 3,
+    "range": 5.0,
+    "cooldown": 0.8
   }
 }

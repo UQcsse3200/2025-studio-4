@@ -14,7 +14,7 @@ public class TowerFactory {
     public static Entity createBaseTower() {
         TowerConfig.TowerStats stats = towers.baseTower;
         return new Entity()
-                .addComponent(new TowerComponent())
+                .addComponent(new TowerComponent("base"))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
                 .addComponent(new TextureRenderComponent("images/base_tower.png"));
     }
@@ -22,8 +22,16 @@ public class TowerFactory {
     public static Entity createSunTower() {
         TowerConfig.TowerStats stats = towers.sunTower;
         return new Entity()
-                .addComponent(new TowerComponent())
+                .addComponent(new TowerComponent("sun", 2, 2))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
                 .addComponent(new TextureRenderComponent("images/sun.png"));
+    }
+
+    public static Entity createArcherTower() {
+        TowerConfig.TowerStats stats = towers.archerTower;
+        return new Entity()
+                .addComponent(new TowerComponent("archer", 1, 1))
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TextureRenderComponent("images/archer.png"));
     }
 }

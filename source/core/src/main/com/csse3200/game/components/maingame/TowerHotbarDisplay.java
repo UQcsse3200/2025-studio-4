@@ -22,6 +22,7 @@ public class TowerHotbarDisplay extends UIComponent {
 
         TextureRegionDrawable sunImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/sun.png")));
         TextureRegionDrawable baseImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/base_tower.png")));
+        TextureRegionDrawable archerImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/archer.png")));
 
         ImageButton baseBtn = new ImageButton(baseImage);
         baseBtn.addListener(new ChangeListener() {
@@ -39,13 +40,25 @@ public class TowerHotbarDisplay extends UIComponent {
             }
         });
 
+        // Archer Tower button
+        ImageButton archerBtn = new ImageButton(archerImage);
+        archerBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println(">>> startPlacementArcher fired");
+                entity.getEvents().trigger("startPlacementArcher"); // <-- trigger new event
+            }
+        });
+
         sunBtn.getImageCell().size(100, 100);
         baseBtn.getImageCell().size(100, 100);
+        archerBtn.getImageCell().size(100, 100);
 
         table.add(baseBtn).pad(8f);
         table.row();
         table.add(sunBtn).pad(8f);
         stage.addActor(table);
+        table.add(archerBtn).pad(8f);
     }
 
     @Override public void draw(SpriteBatch batch) { /* stage draws */ }

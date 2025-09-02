@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.services.ServiceLocator;
+
 
 /**
  * Component used to store information related to combat such as health, attack, etc. Any entities
@@ -120,5 +123,9 @@ public class CombatStatsComponent extends Component {
   public void hit(CombatStatsComponent attacker) {
     int newHealth = getHealth() - attacker.getBaseAttack();
     setHealth(newHealth);
+    if (getHealth() <= 0) {
+        entity.getEvents().trigger("death");
+        entity.getEvents().trigger("setDead", true); // optional
+    }
   }
 }

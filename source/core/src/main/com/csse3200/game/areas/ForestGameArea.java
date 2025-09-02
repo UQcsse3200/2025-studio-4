@@ -89,7 +89,7 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
-    //spawnDrones();
+    spawnDrones();
 
     spawnTestMetalScraps();
 

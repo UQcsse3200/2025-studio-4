@@ -321,7 +321,6 @@ public class MapEditor extends InputAdapter {
         layer.setCell(pos.x, pos.y, cell);
     }
 
-
     // /** 在指定格子生成石头（防止重叠） */
     // public void spawnRock(GridPoint2 pos) {
     //     String key = pos.x + "," + pos.y;

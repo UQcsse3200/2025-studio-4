@@ -29,7 +29,6 @@ public class ObstacleFactory {
         PhysicsUtils.setScaledCollider(tree, 1f, 1f);
         return tree;
     }
-
     // public static Entity createRock() {
     //     Entity rock = new Entity()
     //             .addComponent(new TextureRenderComponent("images/rock.png"))

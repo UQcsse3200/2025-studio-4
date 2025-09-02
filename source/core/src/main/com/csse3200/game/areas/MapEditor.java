@@ -240,9 +240,6 @@ public class MapEditor extends InputAdapter {
             GridPoint2 center = RandomUtils.random(new GridPoint2(0,0), terrain.getMapBounds(0).sub(8,8));
             paintBiomeBlock(layer, center, 7, "images/snow.png");
         }
-        // 一条横向河流
-//        generateRiver(layer);
-//        System.out.println("✅ Biomes + 河流 已生成");
     }
 
     private void paintBiomeBlock(TiledMapTileLayer layer, GridPoint2 center, int size, String texPath) {
@@ -261,21 +258,6 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-//    private void generateRiver(TiledMapTileLayer layer) {
-//        int y = MathUtils.random(5, layer.getHeight() - 5);
-//
-//        for (int x = 0; x < layer.getWidth(); x++) {
-//            GridPoint2 pos = new GridPoint2(x, y);
-//            if (canPaintTile(pos)) {
-//                String key = pos.x + "," + pos.y;
-//                if (occupiedTiles.contains(key)) continue;
-//                Entity river = ObstacleFactory.createRiver();
-//                river.setPosition(terrain.tileToWorldPosition(pos));
-//                ServiceLocator.getEntityService().register(river);
-//                occupiedTiles.add(key);
-//            }
-//        }
-//    }
 
 
     /** 不允许覆盖路径或塔防区 */

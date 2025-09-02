@@ -30,16 +30,16 @@ public class ObstacleFactory {
         return tree;
     }
 
-    public static Entity createRock() {
-        Entity rock = new Entity()
-                .addComponent(new TextureRenderComponent("images/rock.png"))
-                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+    // public static Entity createRock() {
+    //     Entity rock = new Entity()
+    //             .addComponent(new TextureRenderComponent("images/rock.png"))
+    //             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+    //             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
-        rock.getComponent(TextureRenderComponent.class).scaleEntity();
-        PhysicsUtils.setScaledCollider(rock, 1f, 1f);
-        return rock;
-    }
+    //     rock.getComponent(TextureRenderComponent.class).scaleEntity();
+    //     PhysicsUtils.setScaledCollider(rock, 1f, 1f);
+    //     return rock;
+    // }
 
     public static Entity createRiver() {
         Entity river = new Entity()
@@ -50,6 +50,21 @@ public class ObstacleFactory {
         river.getComponent(TextureRenderComponent.class).scaleEntity();
         PhysicsUtils.setScaledCollider(river, 1f, 1f);
         return river;
+    }
+
+    /**
+     * Creates a crystal entity (占 1 个 tile).
+     * @return entity
+     */
+    public static Entity createCrystal() {
+        Entity crystal = new Entity()
+                .addComponent(new TextureRenderComponent("images/crystal.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+        crystal.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(crystal, 1f, 1f);
+        return crystal;
     }
 
 

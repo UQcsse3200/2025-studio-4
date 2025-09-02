@@ -49,7 +49,8 @@ public class ForestGameArea extends GameArea {
             "images/desert.png",
             "images/snow.png",
             "images/river.png",
-            "images/rock.png"
+            //"images/rock.png",
+            "images/crystal.png"
     };
 
     private static final String[] forestTextureAtlases = {
@@ -77,7 +78,7 @@ public class ForestGameArea extends GameArea {
         player = spawnPlayer();        // 初始化 mapEditor
         mapEditor.generateEnemyPath(); // 在 player 生成后调用
         generateBiomesAndRivers();     // 生成沙漠/雪地/河流
-        mapEditor.spawnRandomRocks(NUM_ROCKS);
+        //mapEditor.spawnRandomRocks(NUM_ROCKS);
         spawnGhosts();
         spawnGhostKing();
         playMusic();
@@ -120,6 +121,7 @@ public class ForestGameArea extends GameArea {
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.enableEditor();
         mapEditor.generateEnemyPath();
+        mapEditor.spawnCrystal();
 
         return newPlayer;
     }

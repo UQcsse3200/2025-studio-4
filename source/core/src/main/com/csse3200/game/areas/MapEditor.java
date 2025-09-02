@@ -297,32 +297,50 @@ public class MapEditor extends InputAdapter {
     }
 
 
-    /** 在指定格子生成石头（防止重叠） */
-    public void spawnRock(GridPoint2 pos) {
+    // /** 在指定格子生成石头（防止重叠） */
+    // public void spawnRock(GridPoint2 pos) {
+    //     String key = pos.x + "," + pos.y;
+    //     if (occupiedTiles.contains(key)) {
+    //         return;
+    //     }
+    //     Entity rock = ObstacleFactory.createRock();
+    //     rock.setPosition(terrain.tileToWorldPosition(pos));
+    //     ServiceLocator.getEntityService().register(rock);
+    //     occupiedTiles.add(key);
+    //     System.out.println("🪨 Rock 已放置在 " + pos);
+    // }
+
+    /** 在指定格子生成水晶（防止重叠） */
+    public void spawnCrystal(GridPoint2 pos) {
         String key = pos.x + "," + pos.y;
         if (occupiedTiles.contains(key)) {
             return;
         }
-        Entity rock = ObstacleFactory.createRock();
-        rock.setPosition(terrain.tileToWorldPosition(pos));
-        ServiceLocator.getEntityService().register(rock);
+        Entity crystal = ObstacleFactory.createCrystal();
+        crystal.setPosition(terrain.tileToWorldPosition(pos));
+        ServiceLocator.getEntityService().register(crystal);
         occupiedTiles.add(key);
-        System.out.println("🪨 Rock 已放置在 " + pos);
+        System.out.println("💎 Crystal 已放置在 " + pos);
+    }
+
+    /** 在路径终点生成水晶 */
+    public void spawnCrystal() {
+        spawnCrystal(new GridPoint2(29, 6));
     }
 
 
-    /** 随机生成多个石头障碍物 */
-    public void spawnRandomRocks(int count) {
-        if (terrain == null) return;
+    // /** 随机生成多个石头障碍物 */
+    // public void spawnRandomRocks(int count) {
+    //     if (terrain == null) return;
 
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+    //     GridPoint2 minPos = new GridPoint2(0, 0);
+    //     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-        for (int i = 0; i < count; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            spawnRock(randomPos);
-        }
-    }
+    //     for (int i = 0; i < count; i++) {
+    //         GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+    //         spawnRock(randomPos);
+    //     }
+    // }
 
 
     /** 替换某个格子的贴图 */

@@ -10,11 +10,8 @@ public class InMemoryLeaderboardService implements LeaderboardService {
 
     public InMemoryLeaderboardService(String myId) {
         this.myId = myId;
-        // 造点假数据，方便先看 UI
-        for (int i = 1; i <= 200; i++) {
-            all.add(new LeaderboardEntry(i, "p"+i, "Player"+i,
-                    10000 - i * 37, System.currentTimeMillis() - i * 60000L));
-        }
+
+
     }
 
     @Override
@@ -31,6 +28,6 @@ public class InMemoryLeaderboardService implements LeaderboardService {
 
     @Override
     public void submitScore(long score) {
-        // TODO: 插入并重排；示例略
+
     }
 }

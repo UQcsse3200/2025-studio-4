@@ -22,16 +22,15 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 
-
 public class ForestGameArea extends GameArea {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
     private static final int NUM_TREES = 7;
-    private static final int NUM_ROCKS = 10;
     private static final int NUM_GHOSTS = 2;
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
     private static final float WALL_WIDTH = 0.1f;
 
     private static final String[] forestTextures = {
+            "images/mmap.png",
             "images/box_boy_leaf.png",
             "images/crystal.png",
             "images/tree.png",
@@ -50,9 +49,7 @@ public class ForestGameArea extends GameArea {
             "images/iso_grass_3.png",
             "images/desert.png",
             "images/snow.png",
-            "images/river.png",
-            //"images/rock.png",
-            "images/crystal.png"
+            "images/river.png"
     };
 
     private static final String[] forestTextureAtlases = {
@@ -76,13 +73,16 @@ public class ForestGameArea extends GameArea {
     public void create() {
         loadAssets();
         displayUI();
-        spawnTerrain();                // 保留原始地形，不要全覆盖成 grass
-        player = spawnPlayer();        // 初始化 mapEditor
-        mapEditor.generateEnemyPath(); // 在 player 生成后调用
+
+        spawnTerrain();                // 生成地形并填充草地
+        player = spawnPlayer();        // 初始化玩家和mapEditor
+        mapEditor.generateEnemyPath(); // 生成固定敌人路径
         generateBiomesAndRivers();     // 生成沙漠/雪地/河流
-        //mapEditor.spawnRandomRocks(NUM_ROCKS);
-        spawnGhosts();
-        spawnGhostKing();
+
+        //spawnTrees();                  // 生成树木
+        //spawnGhosts();                 // 生成幽灵
+       // spawnGhostKing();              // 生成幽灵王
+
         playMusic();
     }
 
@@ -95,10 +95,13 @@ public class ForestGameArea extends GameArea {
     private void spawnTerrain() {
         terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
         spawnEntity(new Entity().addComponent(terrain));
+
+        // 获取瓦片层（现在回到索引0）
         TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
         Texture grassTex = ServiceLocator.getResourceService().getAsset("images/grass_1.png", Texture.class);
         TiledMapTile grassTile = new StaticTiledMapTile(new TextureRegion(grassTex));
 
+        // 用草地填充所有瓦片
         for (int x = 0; x < layer.getWidth(); x++) {
             for (int y = 0; y < layer.getHeight(); y++) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
@@ -106,46 +109,73 @@ public class ForestGameArea extends GameArea {
                 layer.setCell(x, y, cell);
             }
         }
+
+        // 创建边界墙
         float tileSize = terrain.getTileSize();
         GridPoint2 tileBounds = terrain.getMapBounds(0);
         Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-        spawnEntityAt(ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
-        spawnEntityAt(ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), new GridPoint2(tileBounds.x, 0), false, false);
-        spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), new GridPoint2(0, tileBounds.y), false, false);
-        spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+
+        spawnEntityAt(
+                ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
+                GridPoint2Utils.ZERO, false, false);
+        spawnEntityAt(
+                ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
+                new GridPoint2(tileBounds.x, 0),
+                false,
+                false);
+        spawnEntityAt(
+                ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
+                new GridPoint2(0, tileBounds.y),
+                false,
+                false);
+        spawnEntityAt(
+                ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
+                GridPoint2Utils.ZERO, false, false);
     }
+
+//    private void spawnTrees() {
+//        GridPoint2 minPos = new GridPoint2(0, 0);
+//        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//        for (int i = 0; i < NUM_TREES; i++) {
+//            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//            Entity tree = ObstacleFactory.createTree();
+//            spawnEntityAt(tree, randomPos, true, false);
+//        }
+//    }
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
+        // 初始化地图编辑器
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.enableEditor();
-        mapEditor.generateEnemyPath();
-        mapEditor.spawnCrystal();
+        mapEditor.generateEnemyPath();  // 生成固定敌人路径
+        mapEditor.spawnCrystal();       // 生成水晶
 
         return newPlayer;
     }
 
-    private void spawnGhosts() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//    private void spawnGhosts() {
+//        GridPoint2 minPos = new GridPoint2(0, 0);
+//        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//        for (int i = 0; i < NUM_GHOSTS; i++) {
+//            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//            Entity ghost = NPCFactory.createGhost(player);
+//            spawnEntityAt(ghost, randomPos, true, true);
+//        }
+//    }
 
-        for (int i = 0; i < NUM_GHOSTS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity ghost = NPCFactory.createGhost(player);
-            spawnEntityAt(ghost, randomPos, true, true);
-        }
-    }
-
-    private void spawnGhostKing() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-        GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-        Entity ghostKing = NPCFactory.createGhostKing(player);
-        spawnEntityAt(ghostKing, randomPos, true, true);
-    }
+//    private void spawnGhostKing() {
+//        GridPoint2 minPos = new GridPoint2(0, 0);
+//        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//        GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//        Entity ghostKing = NPCFactory.createGhostKing(player);
+//        spawnEntityAt(ghostKing, randomPos, true, true);
+//    }
 
     private void playMusic() {
         Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);

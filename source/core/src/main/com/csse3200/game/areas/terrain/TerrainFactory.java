@@ -7,6 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
+import com.badlogic.gdx.maps.tiled.TiledMapImageLayer;
 import com.badlogic.gdx.maps.tiled.renderers.HexagonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.IsometricTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -57,38 +58,52 @@ public class TerrainFactory {
     ResourceService resourceService = ServiceLocator.getResourceService();
     switch (terrainType) {
       case FOREST_DEMO:
+        // 使用简化的地图创建方式（只有mmap图层）
+        return createForestDemoTerrain(0.5f);
+      case FOREST_DEMO_DETAILED:
+        // 使用详细的地图创建方式（草地+随机装饰）
         TextureRegion orthoGrass =
-            new TextureRegion(resourceService.getAsset("images/grass_1.png", Texture.class));
+                new TextureRegion(resourceService.getAsset("images/grass_1.png", Texture.class));
         TextureRegion orthoTuft =
-            new TextureRegion(resourceService.getAsset("images/grass_2.png", Texture.class));
+                new TextureRegion(resourceService.getAsset("images/grass_2.png", Texture.class));
         TextureRegion orthoRocks =
-            new TextureRegion(resourceService.getAsset("images/grass_3.png", Texture.class));
-        return createForestDemoTerrain(0.5f, orthoGrass, orthoTuft, orthoRocks);
+                new TextureRegion(resourceService.getAsset("images/grass_3.png", Texture.class));
+        return createDetailedForestTerrain(0.5f, orthoGrass, orthoTuft, orthoRocks);
       case FOREST_DEMO_ISO:
         TextureRegion isoGrass =
-            new TextureRegion(resourceService.getAsset("images/iso_grass_1.png", Texture.class));
+                new TextureRegion(resourceService.getAsset("images/iso_grass_1.png", Texture.class));
         TextureRegion isoTuft =
-            new TextureRegion(resourceService.getAsset("images/iso_grass_2.png", Texture.class));
+                new TextureRegion(resourceService.getAsset("images/iso_grass_2.png", Texture.class));
         TextureRegion isoRocks =
-            new TextureRegion(resourceService.getAsset("images/iso_grass_3.png", Texture.class));
-        return createForestDemoTerrain(1f, isoGrass, isoTuft, isoRocks);
+                new TextureRegion(resourceService.getAsset("images/iso_grass_3.png", Texture.class));
+        return createDetailedForestTerrain(1f, isoGrass, isoTuft, isoRocks);
       case FOREST_DEMO_HEX:
         TextureRegion hexGrass =
-            new TextureRegion(resourceService.getAsset("images/hex_grass_1.png", Texture.class));
+                new TextureRegion(resourceService.getAsset("images/hex_grass_1.png", Texture.class));
         TextureRegion hexTuft =
-            new TextureRegion(resourceService.getAsset("images/hex_grass_2.png", Texture.class));
+                new TextureRegion(resourceService.getAsset("images/hex_grass_2.png", Texture.class));
         TextureRegion hexRocks =
-            new TextureRegion(resourceService.getAsset("images/hex_grass_3.png", Texture.class));
-        return createForestDemoTerrain(1f, hexGrass, hexTuft, hexRocks);
+                new TextureRegion(resourceService.getAsset("images/hex_grass_3.png", Texture.class));
+        return createDetailedForestTerrain(1f, hexGrass, hexTuft, hexRocks);
       default:
         return null;
     }
   }
 
-  private TerrainComponent createForestDemoTerrain(
-      float tileWorldSize, TextureRegion grass, TextureRegion grassTuft, TextureRegion rocks) {
+  // 简化的地形创建方法（只有mmap图层）
+  private TerrainComponent createForestDemoTerrain(float tileWorldSize) {
+    // Fixed tile pixel size (e.g., 32x32). No grass filling.
+    GridPoint2 tilePixelSize = new GridPoint2(32, 32);
+    TiledMap tiledMap = createForestDemoTiles(tilePixelSize);
+    TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
+    return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
+  }
+
+  // 详细的地形创建方法（有草地和随机装饰）
+  private TerrainComponent createDetailedForestTerrain(
+          float tileWorldSize, TextureRegion grass, TextureRegion grassTuft, TextureRegion rocks) {
     GridPoint2 tilePixelSize = new GridPoint2(grass.getRegionWidth(), grass.getRegionHeight());
-    TiledMap tiledMap = createForestDemoTiles(tilePixelSize, grass, grassTuft, rocks);
+    TiledMap tiledMap = createDetailedForestTiles(tilePixelSize, grass, grassTuft, rocks);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
@@ -106,8 +121,26 @@ public class TerrainFactory {
     }
   }
 
-  private TiledMap createForestDemoTiles(
-      GridPoint2 tileSize, TextureRegion grass, TextureRegion grassTuft, TextureRegion rocks) {
+  // 简化的地图创建（只有mmap图层）
+  private TiledMap createForestDemoTiles(GridPoint2 tileSize) {
+    TiledMap tiledMap = new TiledMap();
+    TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
+    tiledMap.getLayers().add(layer);
+
+    // Add mmap as image layer above base tiles (index 1)
+    Texture mmapTex = ServiceLocator.getResourceService().getAsset("images/mmap.png", Texture.class);
+    // 使用最近邻过滤，保持像素风格
+    mmapTex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    TiledMapImageLayer mmapLayer = new TiledMapImageLayer(new TextureRegion(mmapTex), 0, 0);
+    mmapLayer.setName("mmap");
+    tiledMap.getLayers().add(mmapLayer);
+
+    return tiledMap;
+  }
+
+  // 详细的地图创建（有草地和随机装饰）
+  private TiledMap createDetailedForestTiles(
+          GridPoint2 tileSize, TextureRegion grass, TextureRegion grassTuft, TextureRegion rocks) {
     TiledMap tiledMap = new TiledMap();
     TerrainTile grassTile = new TerrainTile(grass);
     TerrainTile grassTuftTile = new TerrainTile(grassTuft);
@@ -126,14 +159,16 @@ public class TerrainFactory {
   }
 
   private static void fillTilesAtRandom(
-      TiledMapTileLayer layer, GridPoint2 mapSize, TerrainTile tile, int amount) {
+          TiledMapTileLayer layer, GridPoint2 mapSize, TerrainTile tile, int amount) {
     GridPoint2 min = new GridPoint2(0, 0);
     GridPoint2 max = new GridPoint2(mapSize.x - 1, mapSize.y - 1);
 
     for (int i = 0; i < amount; i++) {
       GridPoint2 tilePos = RandomUtils.random(min, max);
       Cell cell = layer.getCell(tilePos.x, tilePos.y);
-      cell.setTile(tile);
+      if (cell != null) {
+        cell.setTile(tile);
+      }
     }
   }
 
@@ -149,12 +184,13 @@ public class TerrainFactory {
 
   /**
    * This enum should contain the different terrains in your game, e.g. forest, cave, home, all with
-   * the same oerientation. But for demonstration purposes, the base code has the same level in 3
+   * the same orientation. But for demonstration purposes, the base code has the same level in 3
    * different orientations.
    */
   public enum TerrainType {
-    FOREST_DEMO,
-    FOREST_DEMO_ISO,
-    FOREST_DEMO_HEX
+    FOREST_DEMO,           // 简化版本（只有mmap图层）
+    FOREST_DEMO_DETAILED,  // 详细版本（草地+随机装饰）
+    FOREST_DEMO_ISO,       // 等距版本
+    FOREST_DEMO_HEX        // 六边形版本
   }
 }

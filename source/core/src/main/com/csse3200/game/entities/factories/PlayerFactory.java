@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
-import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.PlayerCombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -26,6 +27,13 @@ public class PlayerFactory {
   private static final PlayerConfig stats =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
+    public static Entity createTree() {
+        Entity tree = new Entity()
+                .addComponent(new TextureRenderComponent("images/tree.png"))
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent());
+        return tree;
+    }
   /**
    * Create a player entity.
    * @return entity
@@ -41,10 +49,11 @@ public class PlayerFactory {
             .addComponent(new ColliderComponent())
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new PlayerActions())
-            .addComponent(new CombatStatsComponent(stats.health, stats.baseAttack))
+            .addComponent(new PlayerCombatStatsComponent(stats.health, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
-            .addComponent(new PlayerStatsDisplay());
+            .addComponent(new PlayerStatsDisplay())
+                    .addComponent(new CurrencyManagerComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);

@@ -3,6 +3,7 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
@@ -46,6 +47,14 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private void addActors() {
+    // 添加背景图片
+    Image backgroundImage =
+        new Image(
+            ServiceLocator.getResourceService()
+                .getAsset("images/main_menu_background.png", Texture.class));
+    backgroundImage.setFillParent(true);
+    stage.addActor(backgroundImage);
+    
     Label title = new Label("Settings", skin, "title");
     Table settingsTable = makeSettingsTable();
     Table menuBtns = makeMenuBtns();

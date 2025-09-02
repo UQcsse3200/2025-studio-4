@@ -20,7 +20,10 @@ public class Renderer implements Disposable {
   private static final float GAME_SCREEN_WIDTH = 20f;
   private static final Logger logger = LoggerFactory.getLogger(Renderer.class);
 
-  private CameraComponent camera;
+
+  private static Renderer currentRenderer;
+
+  public CameraComponent camera;
   private float gameWidth;
   private SpriteBatch batch;
   private Stage stage;
@@ -84,10 +87,18 @@ public class Renderer implements Disposable {
     renderService.setStage(stage);
     renderService.setDebug(debugRenderer);
     resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+    // ADD THIS LINE TO STORE STATIC REFERENCE
+    currentRenderer = this;
   }
 
   public CameraComponent getCamera() {
     return camera;
+  }
+
+  // ADD THIS STATIC METHOD FOR ACCESSING CURRENT RENDERER
+  public static Renderer getCurrentRenderer() {
+    return currentRenderer;
   }
 
   /** Render everything to the render service. */

@@ -3,6 +3,8 @@ package com.csse3200.game.components;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 
 public class TowerComponent extends Component {
     private final String type;
@@ -49,7 +51,9 @@ public class TowerComponent extends Component {
 
             Vector2 direction = other.getCenterPosition().cpy().sub(entity.getCenterPosition());
             if (direction.len() <= stats.getRange()) {
-                targetStats.hit(new CombatStatsComponent(0, (int) stats.getDamage()));
+                targetStats.hit(
+                    new CombatStatsComponent(0, (int) stats.getDamage(), DamageTypeConfig.None, DamageTypeConfig.None)
+                );
                 stats.resetAttackTimer();
                 break; // attack one target per update
             }

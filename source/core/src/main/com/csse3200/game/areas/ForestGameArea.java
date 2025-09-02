@@ -8,7 +8,10 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.maingame.TowerHotbarDisplay;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.DroneEnemyFactory;
+import com.csse3200.game.entities.factories.CurrencyFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -43,7 +46,11 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_3.png",
           "images/bone.png",
           "images/cavemen.png",
-          "images/dino.png"
+          "images/dino.png",
+    "images/metal-scrap-currency.png", // Testing spawn metal scrap currency
+    "images/iso_grass_3.png",
+    "images/placeholder-enemy.png",
+    "images/drone_enemy.png",
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
@@ -80,16 +87,15 @@ public class ForestGameArea extends GameArea {
     spawnEntity(ui);
 
     spawnTerrain();
+    spawnTrees();
+    player = spawnPlayer();
+    //spawnDrones();
 
-    // MapHighlighter needs terrain and placementController and TowerFactory
+    spawnTestMetalScraps();
+
     MapHighlighter mapHighlighter = new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
     Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
     spawnEntity(highlighterEntity);
-
-    // spawnTrees();
-    player = spawnPlayer();
-    //spawnGhosts();
-    //spawnGhostKing();
     playMusic();
   }
 
@@ -152,6 +158,17 @@ public class ForestGameArea extends GameArea {
     }
   }
 
+  private void spawnDrones() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    for (int i = 0; i < 3; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      Entity drone = DroneEnemyFactory.createDroneEnemy(player);
+      spawnEntityAt(drone, randomPos, true, true);
+    }
+  }
+
   private void spawnGhostKing() {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
@@ -196,5 +213,23 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
+  }
+
+  // Testing purpose only
+  private void spawnTestMetalScraps() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    final int METAL_SCRAPS_COUNT = 10;
+
+    for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      float x = randomPos.x * terrain.getTileSize();
+      float y = randomPos.y * terrain.getTileSize();
+
+      Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
+      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
+      spawnEntity(metalScrap);
+    }
   }
 }

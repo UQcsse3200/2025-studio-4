@@ -10,5 +10,6 @@ public class TowerConfig {
         public int damage;
         public float range;
         public float cooldown;
+        public int cost;
     }
 }

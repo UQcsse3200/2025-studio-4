@@ -75,12 +75,9 @@ public class SimplePlacementController extends Component {
         TerrainComponent terrain = findTerrain();
 
         // Set tower size based on type
-        int towerWidth = 1;
-        int towerHeight = 1;
-        if ("cavemen".equalsIgnoreCase(pendingType)) {
-            towerWidth = 2;
-            towerHeight = 2;
-        }
+        int towerWidth = 2;
+        int towerHeight = 2;
+
 
         Vector2 snapPos = mouseWorld;
         boolean inBounds = true;
@@ -207,6 +204,17 @@ public class SimplePlacementController extends Component {
             }
         }
     }
+
+    public void cancelPlacement() {
+        if (ghostTower != null) {
+            ghostTower.dispose(); // or remove from EntityService if needed
+            ghostTower = null;
+        }
+        placementActive = false;
+        needRelease = false;
+        System.out.println(">>> placement OFF");
+    }
+
 
     public boolean isPlacementActive() { return placementActive; }
     public String getPendingType() { return pendingType; }

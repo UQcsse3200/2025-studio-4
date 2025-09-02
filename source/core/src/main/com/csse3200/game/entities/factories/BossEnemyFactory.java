@@ -46,7 +46,7 @@ public class BossEnemyFactory {
         boss
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
                 .addComponent(imageTexture)
-                .addComponent(new clickable(displayName));
+                .addComponent(new clickable());
 
         // Makes the visual scale match the texture scale so proportions are correct (image is not just a 1x1 square)
         imageTexture.scaleEntity();

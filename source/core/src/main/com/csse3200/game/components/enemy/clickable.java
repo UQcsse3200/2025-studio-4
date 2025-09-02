@@ -10,11 +10,6 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.Renderer;
 
 public class clickable extends Component{
-    private String name;
-
-    public clickable(String name) {
-        this.name = name;
-  }
     
     @Override
     public void update() {

@@ -41,7 +41,7 @@ public class TankEnemyFactory {
         tank
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new TextureRenderComponent(texturePath))
-            .addComponent(new clickable(displayName));
+            .addComponent(new clickable());
 
         return tank;
     }

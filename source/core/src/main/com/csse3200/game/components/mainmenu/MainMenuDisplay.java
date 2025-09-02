@@ -114,6 +114,8 @@ public class MainMenuDisplay extends UIComponent {
     return Z_INDEX;
   }
 
+
+
   @Override
   public void dispose() {
     table.clear();

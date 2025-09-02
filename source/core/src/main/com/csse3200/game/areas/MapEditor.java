@@ -56,32 +56,27 @@ public class MapEditor extends InputAdapter {
     // 瓦片类型
     private TiledMapTile pathTile;
     private TiledMapTile placeableAreaTile;
+    private TiledMapTile keypointTile;
+
 
     // 放置范围：路径周围 n 格内可以放树
     private int placeableRange = 2;
+
+    private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
         this.player = player;
         initializePathTile();
         initializePlaceableAreaTile();
+        initializeKeypointTile();
     }
 
     /** 初始化路径瓦片 */
     private void initializePathTile() {
         try {
             Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
-            // 避免放大时模糊
-            pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-            // 使路径瓦片尺寸与基础图层瓦片一致，防止尺寸异常
-            TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-            int tileW = baseLayer.getTileWidth();
-            int tileH = baseLayer.getTileHeight();
-            int regionW = Math.min(tileW, pathTexture.getWidth());
-            int regionH = Math.min(tileH, pathTexture.getHeight());
-            TextureRegion region = new TextureRegion(pathTexture, 0, 0, regionW, regionH);
-            pathTile = new StaticTiledMapTile(region);
+            pathTile = new StaticTiledMapTile(new TextureRegion(pathTexture));
             System.out.println("✅ path.png 瓦片初始化成功");
         } catch (Exception e) {
             System.out.println("⚠️ path.png 初始化失败: " + e.getMessage());
@@ -98,9 +93,7 @@ public class MapEditor extends InputAdapter {
             pixmap.fill();
             pixmap.setColor(1f, 1f, 1f, 1f);
             pixmap.drawRectangle(0, 0, 32, 32);
-            Texture areaTexture = new Texture(pixmap);
-            areaTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-            placeableAreaTile = new StaticTiledMapTile(new TextureRegion(areaTexture));
+            placeableAreaTile = new StaticTiledMapTile(new TextureRegion(new Texture(pixmap)));
             pixmap.dispose();
             System.out.println("✅ 白色可放置瓦片初始化成功");
         } catch (Exception e) {
@@ -109,6 +102,16 @@ public class MapEditor extends InputAdapter {
         }
     }
 
+    private void initializeKeypointTile() {
+        try {
+            Texture tex = ServiceLocator.getResourceService().getAsset("images/path_keypoint.png", Texture.class);
+            keypointTile = new StaticTiledMapTile(new TextureRegion(tex));
+            System.out.println("path_keypoint.png initialize success ");
+        } catch (Exception e) {
+            System.out.println("path_keypoint.png initialize failed" + e.getMessage());
+            keypointTile = null;
+        }
+    }
     /** 启用编辑器 */
     public void enableEditor() {
         if (!editorEnabled) {
@@ -154,33 +157,19 @@ public class MapEditor extends InputAdapter {
 
     /** 创建路径瓦片 */
     private void createPathTile(int tx, int ty) {
-        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
-        if (tx < 0 || ty < 0 || tx >= pathLayer.getWidth() || ty >= pathLayer.getHeight()) return;
+        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        if (tx < 0 || ty < 0 || tx >= layer.getWidth() || ty >= layer.getHeight()) return;
         String key = tx + "," + ty;
         if (pathTiles.containsKey(key)) return;
+
         if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
 
         if (pathTile != null) {
             TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
             cell.setTile(pathTile);
-            pathLayer.setCell(tx, ty, cell);
+            layer.setCell(tx, ty, cell);
         }
         pathTiles.put(key, new GridPoint2(tx, ty));
-    }
-
-    /** 获取或创建用于路径的图层，始终追加到末尾，保证在基础层与mmap之上 */
-    private TiledMapTileLayer getOrCreatePathLayer(TiledMapTileLayer baseLayer) {
-        int count = terrain.getMap().getLayers().getCount();
-        if (count > 1 && terrain.getMap().getLayers().get(count - 1) instanceof TiledMapTileLayer) {
-            return (TiledMapTileLayer) terrain.getMap().getLayers().get(count - 1);
-        }
-        TiledMapTileLayer newLayer = new TiledMapTileLayer(
-                baseLayer.getWidth(), baseLayer.getHeight(),
-                baseLayer.getTileWidth(), baseLayer.getTileHeight());
-        newLayer.setName("path-layer");
-        terrain.getMap().getLayers().add(newLayer);
-        return newLayer;
     }
 
     /** 自动生成敌人路径 */
@@ -189,6 +178,8 @@ public class MapEditor extends InputAdapter {
 
         // 清空现有路径
         pathTiles.clear();
+        keyWaypoints.clear();
+
 
         // 预定义固定路径坐标 (x, y)
         int[][] fixedPath = {
@@ -219,12 +210,38 @@ public class MapEditor extends InputAdapter {
             int x = fixedPath[i][0];
             int y = fixedPath[i][1];
             createPathTile(x, y);
+
+            keyWaypoints.add(new GridPoint2(0, 10));
+            keyWaypoints.add(new GridPoint2(5, 10));
+            keyWaypoints.add(new GridPoint2(5, 6));
+            keyWaypoints.add(new GridPoint2(12, 6));
+            keyWaypoints.add(new GridPoint2(12, 12));
+            keyWaypoints.add(new GridPoint2(25, 12));
+            keyWaypoints.add(new GridPoint2(25, 6));
+            keyWaypoints.add(new GridPoint2(29, 6));
+
+            for (GridPoint2 wp : keyWaypoints) {
+                markKeypoint(wp);
+            }
+
         }
 
         generatePlaceableAreas();
         System.out.println("✅ 固定路径生成完成, 数量=" + pathTiles.size());
+        System.out.println("Keypoints count =" + keyWaypoints.size());
+
     }
 
+    private void markKeypoint(GridPoint2 pos) {
+        if (keypointTile == null) return;
+        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0); // 默认用第0层
+        TiledMapTileLayer.Cell cell = layer.getCell(pos.x, pos.y);
+        if (cell == null) {
+            cell = new TiledMapTileLayer.Cell();
+            layer.setCell(pos.x, pos.y, cell);
+        }
+        cell.setTile(keypointTile);
+    }
 
     /** 生成路径周围的可放置区域 */
     private void generatePlaceableAreas() {
@@ -305,32 +322,50 @@ public class MapEditor extends InputAdapter {
     }
 
 
-    /** 在指定格子生成石头（防止重叠） */
-    public void spawnRock(GridPoint2 pos) {
+    // /** 在指定格子生成石头（防止重叠） */
+    // public void spawnRock(GridPoint2 pos) {
+    //     String key = pos.x + "," + pos.y;
+    //     if (occupiedTiles.contains(key)) {
+    //         return;
+    //     }
+    //     Entity rock = ObstacleFactory.createRock();
+    //     rock.setPosition(terrain.tileToWorldPosition(pos));
+    //     ServiceLocator.getEntityService().register(rock);
+    //     occupiedTiles.add(key);
+    //     System.out.println("🪨 Rock 已放置在 " + pos);
+    // }
+
+    /** 在指定格子生成水晶（防止重叠） */
+    public void spawnCrystal(GridPoint2 pos) {
         String key = pos.x + "," + pos.y;
         if (occupiedTiles.contains(key)) {
             return;
         }
-        Entity rock = ObstacleFactory.createRock();
-        rock.setPosition(terrain.tileToWorldPosition(pos));
-        ServiceLocator.getEntityService().register(rock);
+        Entity crystal = ObstacleFactory.createCrystal();
+        crystal.setPosition(terrain.tileToWorldPosition(pos));
+        ServiceLocator.getEntityService().register(crystal);
         occupiedTiles.add(key);
-        System.out.println("🪨 Rock 已放置在 " + pos);
+        System.out.println("💎 Crystal 已放置在 " + pos);
+
     }
 
-
-    /** 随机生成多个石头障碍物 */
-    public void spawnRandomRocks(int count) {
-        if (terrain == null) return;
-
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-        for (int i = 0; i < count; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            spawnRock(randomPos);
-        }
+    /** 在路径终点生成水晶 */
+    public void spawnCrystal() {
+        spawnCrystal(new GridPoint2(29, 6));
     }
+
+//    /** 随机生成多个石头障碍物 */
+//    public void spawnRandomRocks(int count) {
+//        if (terrain == null) return;
+//
+//        GridPoint2 minPos = new GridPoint2(0, 0);
+//        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//        for (int i = 0; i < count; i++) {
+//            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//            spawnRock(randomPos);
+//        }
+//    }
 
 
     /** 替换某个格子的贴图 */

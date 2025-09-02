@@ -16,6 +16,12 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+
 
 public class ForestGameArea extends GameArea {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
@@ -26,10 +32,11 @@ public class ForestGameArea extends GameArea {
     private static final float WALL_WIDTH = 0.1f;
 
     private static final String[] forestTextures = {
-            "images/mmap.png",
             "images/box_boy_leaf.png",
+            "images/crystal.png",
             "images/tree.png",
             "images/path.png",
+            "images/path_keypoint.png",
             "images/ghost_king.png",
             "images/ghost_1.png",
             "images/grass_1.png",
@@ -44,7 +51,8 @@ public class ForestGameArea extends GameArea {
             "images/desert.png",
             "images/snow.png",
             "images/river.png",
-            "images/rock.png"
+            //"images/rock.png",
+            "images/crystal.png"
     };
 
     private static final String[] forestTextureAtlases = {
@@ -68,18 +76,13 @@ public class ForestGameArea extends GameArea {
     public void create() {
         loadAssets();
         displayUI();
-
-        spawnTerrain();
-        spawnTrees();
-        spawnRocks();
-        player = spawnPlayer();
-
-        generateBiomesAndRivers();
-        mapEditor.generateEnemyPath();
-
+        spawnTerrain();                // 保留原始地形，不要全覆盖成 grass
+        player = spawnPlayer();        // 初始化 mapEditor
+        mapEditor.generateEnemyPath(); // 在 player 生成后调用
+        generateBiomesAndRivers();     // 生成沙漠/雪地/河流
+        //mapEditor.spawnRandomRocks(NUM_ROCKS);
         spawnGhosts();
         spawnGhostKing();
-
         playMusic();
     }
 
@@ -92,52 +95,26 @@ public class ForestGameArea extends GameArea {
     private void spawnTerrain() {
         terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
         spawnEntity(new Entity().addComponent(terrain));
+        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        Texture grassTex = ServiceLocator.getResourceService().getAsset("images/grass_1.png", Texture.class);
+        TiledMapTile grassTile = new StaticTiledMapTile(new TextureRegion(grassTex));
 
+        for (int x = 0; x < layer.getWidth(); x++) {
+            for (int y = 0; y < layer.getHeight(); y++) {
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(grassTile);
+                layer.setCell(x, y, cell);
+            }
+        }
         float tileSize = terrain.getTileSize();
         GridPoint2 tileBounds = terrain.getMapBounds(0);
         Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-
-        // mmap 已作为 TiledMap 图片层插入（索引1），无需实体覆盖层
-
-        // mmap 由 TerrainFactory 作为 TiledMap 图片层插入，无需实体覆盖层
-
-        spawnEntityAt(
-                ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
-        spawnEntityAt(
-                ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
-                new GridPoint2(tileBounds.x, 0),
-                false,
-                false);
-        spawnEntityAt(
-                ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
-                new GridPoint2(0, tileBounds.y),
-                false,
-                false);
-        spawnEntityAt(
-                ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
+        spawnEntityAt(ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
+        spawnEntityAt(ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), new GridPoint2(tileBounds.x, 0), false, false);
+        spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), new GridPoint2(0, tileBounds.y), false, false);
+        spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
     }
 
-    private void spawnTrees() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-        for (int i = 0; i < NUM_TREES; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity tree = ObstacleFactory.createTree();
-            spawnEntityAt(tree, randomPos, true, false);
-        }
-    }
-
-    private void spawnRocks() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-        for (int i = 0; i < NUM_ROCKS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity rock = ObstacleFactory.createRock();
-            spawnEntityAt(rock, randomPos, true, false);
-        }
-    }
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();
@@ -146,6 +123,7 @@ public class ForestGameArea extends GameArea {
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.enableEditor();
         mapEditor.generateEnemyPath();
+        mapEditor.spawnCrystal();
 
         return newPlayer;
     }

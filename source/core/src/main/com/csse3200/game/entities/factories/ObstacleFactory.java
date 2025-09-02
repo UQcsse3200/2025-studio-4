@@ -67,7 +67,6 @@ public class ObstacleFactory {
         return crystal;
     }
 
-
     /**
      * Creates an invisible physics wall.
      * @param width Wall width in world units

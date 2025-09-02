@@ -159,7 +159,6 @@ public class MapEditor extends InputAdapter {
         if (tx < 0 || ty < 0 || tx >= pathLayer.getWidth() || ty >= pathLayer.getHeight()) return;
         String key = tx + "," + ty;
         if (pathTiles.containsKey(key)) return;
-
         if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
 
         if (pathTile != null) {

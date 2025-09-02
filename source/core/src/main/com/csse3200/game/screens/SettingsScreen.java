@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 /** The game screen containing the settings. */
 public class SettingsScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(SettingsScreen.class);
+  private static final String[] settingsTextures = {"images/main_menu_background.png"};
 
   private final GdxGame game;
   private final Renderer renderer;
@@ -37,6 +38,7 @@ public class SettingsScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(5f, 5f);
 
+    loadAssets();
     createUI();
   }
 
@@ -53,11 +55,27 @@ public class SettingsScreen extends ScreenAdapter {
 
   @Override
   public void dispose() {
+    logger.debug("Disposing settings screen");
+    
     renderer.dispose();
+    unloadAssets();
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
 
     ServiceLocator.clear();
+  }
+
+  private void loadAssets() {
+    logger.debug("Loading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.loadTextures(settingsTextures);
+    ServiceLocator.getResourceService().loadAll();
+  }
+
+  private void unloadAssets() {
+    logger.debug("Unloading assets");
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    resourceService.unloadAssets(settingsTextures);
   }
 
   /**

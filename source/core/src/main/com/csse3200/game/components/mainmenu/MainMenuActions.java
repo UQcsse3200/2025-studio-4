@@ -2,6 +2,7 @@ package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.services.SaveGameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class MainMenuActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("start", this::onStart);
-    entity.getEvents().addListener("load", this::onLoad);
+    entity.getEvents().addListener("continue", this::onContinue);
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("settings", this::onSettings);
   }
@@ -33,12 +34,19 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.MAIN_GAME);
   }
 
-  /**
-   * Intended for loading a saved game state.
-   * Load functionality is not actually implemented.
-   */
-  private void onLoad() {
-    logger.info("Load game");
+  private void onContinue() {
+    logger.info("Attempting to continue saved game");
+    
+    SaveGameService saveGameService = new SaveGameService(null);
+    
+    if (saveGameService.hasSaveFile()) {
+      logger.info("Save file found, loading game");
+      
+      game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    } else {
+      logger.warn("No save file found, cannot continue");
+      
+    }
   }
 
   /**

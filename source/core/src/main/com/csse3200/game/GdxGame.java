@@ -25,8 +25,8 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
+    // Sets background to black (transparent for background images)
+    Gdx.gl.glClearColor(0f, 0f, 0f, 1);
 
     setScreen(ScreenType.MAIN_MENU);
   }
@@ -52,6 +52,20 @@ public class GdxGame extends Game {
     }
     setScreen(newScreen(screenType));
   }
+  
+  /**
+   * Sets the game's screen to a new screen of the provided type with additional parameters.
+   * @param screenType screen type
+   * @param isContinue true if this is a continue operation, false for new game
+   */
+  public void setScreen(ScreenType screenType, boolean isContinue) {
+    logger.info("Setting game screen to {} (Continue: {})", screenType, isContinue);
+    Screen currentScreen = getScreen();
+    if (currentScreen != null) {
+      currentScreen.dispose();
+    }
+    setScreen(newScreen(screenType, isContinue));
+  }
 
   @Override
   public void dispose() {
@@ -65,11 +79,15 @@ public class GdxGame extends Game {
    * @return new screen
    */
   private Screen newScreen(ScreenType screenType) {
+    return newScreen(screenType, false);
+  }
+   
+  private Screen newScreen(ScreenType screenType, boolean isContinue) {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case MAIN_GAME:
-        return new MainGameScreen(this);
+        return new MainGameScreen(this, isContinue);
       case SETTINGS:
         return new SettingsScreen(this);
       default:

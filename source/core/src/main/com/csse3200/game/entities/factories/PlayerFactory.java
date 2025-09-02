@@ -27,6 +27,13 @@ public class PlayerFactory {
   private static final PlayerConfig stats =
       FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
+    public static Entity createTree() {
+        Entity tree = new Entity()
+                .addComponent(new TextureRenderComponent("images/tree.png"))
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent());
+        return tree;
+    }
   /**
    * Create a player entity.
    * @return entity

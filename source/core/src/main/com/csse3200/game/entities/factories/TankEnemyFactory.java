@@ -5,7 +5,6 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.rendering.TextureRenderComponent;
 
 public class TankEnemyFactory {
     // Default tank configuration
@@ -36,11 +35,11 @@ public class TankEnemyFactory {
      * @return entity
      */
     public static Entity createTankEnemy(Entity target) {
-        Entity tank = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+        Entity tank = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f);
 
         tank
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new clickable(displayName));
 
         return tank;

@@ -5,7 +5,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.rendering.TextureRenderComponent;
+
 
 public class GruntEnemyFactory {
     // Default grunt configuration
@@ -36,15 +36,14 @@ public class GruntEnemyFactory {
      * @return entity
      */
     public static Entity createGruntEnemy(Entity target) {
-        Entity grunt = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
-
+        Entity grunt = EnemyFactory.createBaseEnemyAnimated(target, new Vector2(speed),
+        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f);
         grunt
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new clickable(displayName));
-
         return grunt;
     }
+
         
     // Getters    
     public static DamageTypeConfig getResistance() {

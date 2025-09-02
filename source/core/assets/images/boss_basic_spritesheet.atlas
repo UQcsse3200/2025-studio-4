@@ -1,0 +1,26 @@
+boss_basic_spritesheet.png
+size: 2048,1536
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+walk
+  rotate: false
+  xy: 0, 0
+  size: 1024, 1536
+  orig: 1024, 1536
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 1024, 0
+  size: 1024, 1536
+  orig: 1024, 1536
+  offset: 0, 0
+  index: 1
+idle
+  rotate: false
+  xy: 0, 0
+  size: 1024, 1536
+  orig: 1024, 1536
+  offset: 0, 0
+  index: 0

@@ -55,9 +55,13 @@ public class MainGameScreen extends ScreenAdapter {
   }
   
   public MainGameScreen(GdxGame game, boolean isContinue) {
+    this(game, isContinue, null);
+  }
+
+  public MainGameScreen(GdxGame game, boolean isContinue, String saveFileName) {
     this.game = game;
 
-    logger.debug("Initialising main game screen services (Continue: {})", isContinue);
+    logger.debug("Initialising main game screen services (Continue: {}, Save: {})", isContinue, saveFileName);
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -81,23 +85,35 @@ public class MainGameScreen extends ScreenAdapter {
     createUI();
 
     logger.debug("Initialising main game screen entities");
+    
+    // Handle save loading first
+    boolean hasExistingPlayer = false;
+    if (isContinue && saveFileName != null) {
+      logger.info("Loading specific save file: {}", saveFileName);
+      boolean success = saveGameService.loadGame(saveFileName);
+      if (success) {
+        logger.info("Save file loaded successfully");
+        hasExistingPlayer = true;
+      } else {
+        logger.warn("Failed to load save file, starting new game");
+      }
+    } else if (isContinue && saveGameService.hasSaveFile()) {
+      logger.info("Loading default saved game state for continue");
+      boolean success = saveGameService.loadGame();
+      if (success) {
+        hasExistingPlayer = true;
+      }
+    } else if (!isContinue) {
+      logger.info("Creating new player for new game");
+    }
+    
+    // Create game area after loading save (or for new game)
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
+    
+    // Pass information about existing player to game area
+    forestGameArea.setHasExistingPlayer(hasExistingPlayer);
     forestGameArea.create();
-    
-    
-    if (isContinue && saveGameService.hasSaveFile()) {
-      logger.info("Loading saved game state for continue");
-      saveGameService.loadGame();
-      
-      TerrainFactory terrainFactory2 = new TerrainFactory(renderer.getCamera());
-      ForestGameArea forestGameArea2 = new ForestGameArea(terrainFactory2);
-      forestGameArea2.create();
-    } else if (!isContinue) {
-     
-      logger.info("Creating new player for new game");
-      
-    }
   }
 
   @Override

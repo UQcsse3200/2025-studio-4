@@ -160,16 +160,45 @@ public class MapEditor extends InputAdapter {
     /** 自动生成敌人路径 */
     public void generateEnemyPath() {
         if (terrain == null) return;
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        int w = layer.getWidth(), h = layer.getHeight();
-        int y = h / 2;
 
-        for (int x = 0; x < w; x++) {
-            createPathTile(x, y + (x / 6 % 2 == 0 ? 0 : -3));
+        // 清空现有路径
+        pathTiles.clear();
+
+        // 预定义固定路径坐标 (x, y)
+        int[][] fixedPath = {
+                // 起点从左边开始
+                {0, 10}, {1, 10}, {2, 10}, {3, 10}, {4, 10},
+
+                // 第一个转弯向上
+                {5, 10}, {5, 9}, {5, 8}, {5, 7}, {5, 6},
+
+                // 向右走第一段
+                {6, 6}, {7, 6}, {8, 6}, {9, 6}, {10, 6}, {11, 6},
+
+                // 向下转弯
+                {12, 6}, {12, 7}, {12, 8}, {12, 9}, {12, 10}, {12, 11}, {12, 12},
+
+                // 向右继续走更长距离
+                {13, 12}, {14, 12}, {15, 12}, {16, 12}, {17, 12}, {18, 12},
+                {19, 12}, {20, 12}, {21, 12}, {22, 12}, {23, 12}, {24, 12},
+
+                // 最后向上到终点
+                {25, 12}, {25, 11}, {25, 10}, {25, 9}, {25, 8}, {25, 7}, {25, 6},
+                //最后终点
+                {26, 6}, {27, 6}, {28, 6}, {29, 6}
+        };
+
+        // 根据预定义路径创建路径瓦片
+        for (int i = 0; i < fixedPath.length; i++) {
+            int x = fixedPath[i][0];
+            int y = fixedPath[i][1];
+            createPathTile(x, y);
         }
+
         generatePlaceableAreas();
-        System.out.println("✅ 路径生成完成, 数量=" + pathTiles.size());
+        System.out.println("✅ 固定路径生成完成, 数量=" + pathTiles.size());
     }
+
 
     /** 生成路径周围的可放置区域 */
     private void generatePlaceableAreas() {
@@ -212,8 +241,8 @@ public class MapEditor extends InputAdapter {
             paintBiomeBlock(layer, center, 7, "images/snow.png");
         }
         // 一条横向河流
-        generateRiver(layer);
-        System.out.println("✅ Biomes + 河流 已生成");
+//        generateRiver(layer);
+//        System.out.println("✅ Biomes + 河流 已生成");
     }
 
     private void paintBiomeBlock(TiledMapTileLayer layer, GridPoint2 center, int size, String texPath) {
@@ -232,21 +261,21 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-    private void generateRiver(TiledMapTileLayer layer) {
-        int y = MathUtils.random(5, layer.getHeight() - 5);
-
-        for (int x = 0; x < layer.getWidth(); x++) {
-            GridPoint2 pos = new GridPoint2(x, y);
-            if (canPaintTile(pos)) {
-                String key = pos.x + "," + pos.y;
-                if (occupiedTiles.contains(key)) continue;
-                Entity river = ObstacleFactory.createRiver();
-                river.setPosition(terrain.tileToWorldPosition(pos));
-                ServiceLocator.getEntityService().register(river);
-                occupiedTiles.add(key);
-            }
-        }
-    }
+//    private void generateRiver(TiledMapTileLayer layer) {
+//        int y = MathUtils.random(5, layer.getHeight() - 5);
+//
+//        for (int x = 0; x < layer.getWidth(); x++) {
+//            GridPoint2 pos = new GridPoint2(x, y);
+//            if (canPaintTile(pos)) {
+//                String key = pos.x + "," + pos.y;
+//                if (occupiedTiles.contains(key)) continue;
+//                Entity river = ObstacleFactory.createRiver();
+//                river.setPosition(terrain.tileToWorldPosition(pos));
+//                ServiceLocator.getEntityService().register(river);
+//                occupiedTiles.add(key);
+//            }
+//        }
+//    }
 
 
     /** 不允许覆盖路径或塔防区 */

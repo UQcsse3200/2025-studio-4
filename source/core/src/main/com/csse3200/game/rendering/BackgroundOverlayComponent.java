@@ -39,8 +39,8 @@ public class BackgroundOverlayComponent extends RenderComponent {
 
   @Override
   public int getLayer() {
-    // Draw before the terrain (TiledMap) so paths (in TiledMap) appear above it
-    return -1;
+    // Draw far below the terrain to guarantee all TiledMap layers render above it
+    return -1000;
   }
 }
 

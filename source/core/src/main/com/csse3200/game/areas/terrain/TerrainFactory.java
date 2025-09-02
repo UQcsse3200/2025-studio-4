@@ -54,6 +54,7 @@ public class TerrainFactory {
 
   private TerrainComponent createForestDemoTerrain(
           float tileWorldSize) {
+    // Fixed tile pixel size (e.g., 32x32). No grass filling.
     GridPoint2 tilePixelSize = new GridPoint2(32, 32);
     TiledMap tiledMap = createForestDemoTiles(tilePixelSize);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
@@ -70,18 +71,13 @@ public class TerrainFactory {
     TiledMapTileLayer layer = new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
     tiledMap.getLayers().add(layer);
 
-    // Add mmap as image layer above base tiles (index 1) if available
-    try {
-      Texture mmapTex = ServiceLocator.getResourceService().getAsset("images/mmap.png", Texture.class);
-      if (mmapTex != null) {
-        mmapTex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-        TiledMapImageLayer mmapLayer = new TiledMapImageLayer(new TextureRegion(mmapTex), 0, 0);
-        mmapLayer.setName("mmap");
-        tiledMap.getLayers().add(mmapLayer);
-      }
-    } catch (Exception ignored) {
-      // If asset not loaded, skip adding the image layer to avoid crashing
-    }
+    // Add mmap as image layer above base tiles (index 1)
+    Texture mmapTex = ServiceLocator.getResourceService().getAsset("images/mmap.png", Texture.class);
+    // 使用最近邻过滤，保持像素风格
+    mmapTex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+    TiledMapImageLayer mmapLayer = new TiledMapImageLayer(new TextureRegion(mmapTex), 0, 0);
+    mmapLayer.setName("mmap");
+    tiledMap.getLayers().add(mmapLayer);
 
     return tiledMap;
   }

@@ -12,7 +12,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMapTile;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
@@ -187,27 +192,73 @@ public class MapEditor extends InputAdapter {
         return placeableAreaTiles.containsKey(tx + "," + ty);
     }
 
-    /** ---------------- 新增功能 ---------------- */
-
-    /** 自动生成沙漠、雪地、河流 */
     public void generateBiomesAndRivers() {
-        GridPoint2 min = new GridPoint2(0, 0);
-        GridPoint2 max = terrain.getMapBounds(0).sub(2, 2);
+        if (terrain == null) return;
+        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
 
-        for (int i = 0; i < 20; i++)
-            paintTile(RandomUtils.random(min, max), "images/desert.png");
-
-        for (int i = 0; i < 20; i++)
-            paintTile(RandomUtils.random(min, max), "images/snow.png");
-
-        for (int i = 0; i < 5; i++) {
-            GridPoint2 pos = RandomUtils.random(min, max);
-            Entity river = ObstacleFactory.createRiver();
-            ServiceLocator.getEntityService().register(river);
-            river.setPosition(pos.x, pos.y);  // 手动设置位置
+        // 沙漠 (3 个 5x5 区域)
+        for (int i = 0; i < 3; i++) {
+            GridPoint2 center = RandomUtils.random(new GridPoint2(0,0), terrain.getMapBounds(0).sub(6,6));
+            paintBiomeBlock(layer, center, 5, "images/desert.png");
         }
-        System.out.println("✅ Biomes+河流 已生成");
+
+        // 雪地 (2 个 7x7 区域)
+        for (int i = 0; i < 2; i++) {
+            GridPoint2 center = RandomUtils.random(new GridPoint2(0,0), terrain.getMapBounds(0).sub(8,8));
+            paintBiomeBlock(layer, center, 7, "images/snow.png");
+        }
+
+        // 一条横向河流
+        generateRiver(layer);
+
+        System.out.println("✅ Biomes + 河流 已生成");
     }
+
+    private void paintBiomeBlock(TiledMapTileLayer layer, GridPoint2 center, int size, String texPath) {
+        Texture tex = ServiceLocator.getResourceService().getAsset(texPath, Texture.class);
+        TiledMapTile tile = new StaticTiledMapTile(new TextureRegion(tex));
+        int half = size / 2;
+        for (int dx = -half; dx <= half; dx++) {
+            for (int dy = -half; dy <= half; dy++) {
+                GridPoint2 pos = new GridPoint2(center.x + dx, center.y + dy);
+                if (canPaintTile(pos)) {
+                    TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                    cell.setTile(tile);
+                    layer.setCell(pos.x, pos.y, cell);
+                }
+            }
+        }
+    }
+
+    private void generateRiver(TiledMapTileLayer layer) {
+        int y = MathUtils.random(5, layer.getHeight() - 5);
+        Texture tex = ServiceLocator.getResourceService().getAsset("images/river.png", Texture.class);
+        TiledMapTile tile = new StaticTiledMapTile(new TextureRegion(tex));
+
+        for (int x = 0; x < layer.getWidth(); x++) {
+            GridPoint2 pos = new GridPoint2(x, y);
+            if (canPaintTile(pos)) {
+                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+                cell.setTile(tile);
+                layer.setCell(pos.x, pos.y, cell);
+            }
+        }
+    }
+
+
+    private boolean canPaintTile(GridPoint2 pos) {
+        String key = pos.x + "," + pos.y;
+        return !pathTiles.containsKey(key) && !placeableAreaTiles.containsKey(key);
+    }
+
+    private void paintTile(TiledMapTileLayer layer, GridPoint2 pos, String texPath) {
+        Texture tex = ServiceLocator.getResourceService().getAsset(texPath, Texture.class);
+        TiledMapTile tile = new StaticTiledMapTile(new TextureRegion(tex));
+        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
+        cell.setTile(tile);
+        layer.setCell(pos.x, pos.y, cell);
+    }
+
 
     /** 生成石头障碍物 */
     public void spawnObstacle(GridPoint2 pos) {

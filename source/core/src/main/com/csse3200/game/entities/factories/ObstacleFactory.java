@@ -7,7 +7,6 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 
 /**
  * Factory to create obstacle entities.
@@ -17,43 +16,41 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 public class ObstacleFactory {
 
     /**
-     * Creates a tree entity.
+     * Creates a tree entity (占 1 个 tile).
      * @return entity
      */
     public static Entity createTree() {
-        Entity tree =
-                new Entity()
-                        .addComponent(new TextureRenderComponent("images/tree.png"))
-                        .addComponent(new PhysicsComponent())
-                        .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+        Entity tree = new Entity()
+                .addComponent(new TextureRenderComponent("images/tree.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
-        tree.getComponent(PhysicsComponent.class).setBodyType(BodyType.StaticBody);
         tree.getComponent(TextureRenderComponent.class).scaleEntity();
-        tree.scaleHeight(2.5f);
-        PhysicsUtils.setScaledCollider(tree, 0.5f, 0.2f);
+        PhysicsUtils.setScaledCollider(tree, 1f, 1f);
         return tree;
     }
-    public static Entity createRiver() {
-        Entity river = new Entity()
-                .addComponent(new TextureRenderComponent("images/river.png"))
-                .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.StaticBody))
-                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-        river.getComponent(TextureRenderComponent.class).scaleEntity();
-        return river;
-    }
-
 
     public static Entity createRock() {
         Entity rock = new Entity()
-                .addComponent(new TextureRenderComponent("images/rock.png")) // 渲染
-                .addComponent(new PhysicsComponent().setBodyType(BodyDef.BodyType.StaticBody)) // 固定物体
-                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));        // 碰撞层（障碍物）
+                .addComponent(new TextureRenderComponent("images/rock.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
-        rock.getComponent(TextureRenderComponent.class).scaleEntity(); // 自动缩放
-        rock.scaleHeight(2.0f);  // 可选：调大小
+        rock.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(rock, 1f, 1f);
         return rock;
     }
 
+    public static Entity createRiver() {
+        Entity river = new Entity()
+                .addComponent(new TextureRenderComponent("images/river.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+        river.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(river, 1f, 1f);
+        return river;
+    }
 
 
     /**
@@ -66,6 +63,7 @@ public class ObstacleFactory {
         Entity wall = new Entity()
                 .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
                 .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
         wall.setScale(width, height);
         return wall;
     }

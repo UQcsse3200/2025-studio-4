@@ -15,15 +15,13 @@ public class LeaderboardUI extends Component {
     public void create() {
         Stage stage = ServiceLocator.getRenderService().getStage();
         skin = MinimalSkinFactory.create();
-
-        // 如果没注册过，就注册一个默认实现（只需一次）
         if (ServiceLocator.getLeaderboardService() == null) {
             ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
         }
 
         root = new Table();
         root.setFillParent(true);
-        root.top().right().pad(10);
+        root.bottom().right().pad(10);
         TextButton open = new TextButton("Leaderboard", skin);
         root.add(open).width(160).height(44);
         stage.addActor(root);

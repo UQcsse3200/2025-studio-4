@@ -167,7 +167,6 @@ public class MainGameScreen extends ScreenAdapter {
               .addComponent(new Terminal())
               .addComponent(inputComponent)
               .addComponent(new TerminalDisplay())
-              // ★ 新增：排行榜按钮 + 弹窗
               .addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
 
         ServiceLocator.getEntityService().register(ui);

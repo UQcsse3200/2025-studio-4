@@ -30,7 +30,7 @@ public class TowerFactory {
     public static Entity createCavemenTower() {
         TowerConfig.TowerStats stats = towers.cavemenTower;
         return new Entity()
-                .addComponent(new TowerComponent("cavemen", 1, 1))
+                .addComponent(new TowerComponent("cavemen", 2, 2))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
                 .addComponent(new TextureRenderComponent("images/cavemen.png"));
     }

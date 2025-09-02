@@ -86,7 +86,7 @@ public class ForestGameArea extends GameArea {
     Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
     spawnEntity(highlighterEntity);
 
-    spawnTrees();
+    // spawnTrees();
     player = spawnPlayer();
     //spawnGhosts();
     //spawnGhostKing();

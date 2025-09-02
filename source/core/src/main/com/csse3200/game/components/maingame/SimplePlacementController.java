@@ -70,17 +70,26 @@ public class SimplePlacementController extends Component {
         // Mouse world position
         Vector3 mousePos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
         camera.unproject(mousePos3D);
-        Vector2 snapPos = new Vector2(mousePos3D.x, mousePos3D.y);
+        Vector2 mouseWorld = new Vector2(mousePos3D.x, mousePos3D.y);
 
         TerrainComponent terrain = findTerrain();
-        int towerWidth = ghostTower.getComponent(TowerComponent.class).getWidth();
-        int towerHeight = ghostTower.getComponent(TowerComponent.class).getHeight();
+
+        // Set tower size based on type
+        int towerWidth = 1;
+        int towerHeight = 1;
+        if ("cavemen".equalsIgnoreCase(pendingType)) {
+            towerWidth = 2;
+            towerHeight = 2;
+        }
+
+        Vector2 snapPos = mouseWorld;
+        boolean inBounds = true;
 
         if (terrain != null) {
             float tileSize = terrain.getTileSize();
             GridPoint2 tile = new GridPoint2(
-                    (int) (snapPos.x / tileSize),
-                    (int) (snapPos.y / tileSize)
+                    (int) (mouseWorld.x / tileSize),
+                    (int) (mouseWorld.y / tileSize)
             );
 
             GridPoint2 mapBounds = terrain.getMapBounds(0);
@@ -89,10 +98,10 @@ public class SimplePlacementController extends Component {
             if (tile.x < 0 || tile.y < 0
                     || tile.x + towerWidth > mapBounds.x
                     || tile.y + towerHeight > mapBounds.y) {
-                return;
+                inBounds = false;
+            } else {
+                snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
             }
-
-            snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
         } else {
             return;
         }
@@ -100,6 +109,11 @@ public class SimplePlacementController extends Component {
         ghostTower.setPosition(snapPos);
 
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            // Prevent placement if out of bounds
+            if (!inBounds) {
+                System.out.println(">>> blocked: cannot place " + pendingType + " outside map bounds");
+                return;
+            }
             if (!isPositionFree(snapPos, towerWidth, towerHeight, terrain)) {
                 System.out.println(">>> blocked: cannot place " + pendingType + " at " + snapPos);
                 return;
@@ -197,4 +211,3 @@ public class SimplePlacementController extends Component {
     public boolean isPlacementActive() { return placementActive; }
     public String getPendingType() { return pendingType; }
 }
-

@@ -7,6 +7,7 @@ import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
+import com.csse3200.game.screens.SaveSelectionScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,12 +60,22 @@ public class GdxGame extends Game {
    * @param isContinue true if this is a continue operation, false for new game
    */
   public void setScreen(ScreenType screenType, boolean isContinue) {
-    logger.info("Setting game screen to {} (Continue: {})", screenType, isContinue);
+    setScreen(screenType, isContinue, null);
+  }
+
+  /**
+   * Sets the game's screen to a new screen of the provided type with additional parameters.
+   * @param screenType screen type
+   * @param isContinue true if this is a continue operation, false for new game
+   * @param saveFileName specific save file to load (for continue operations)
+   */
+  public void setScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
+    logger.info("Setting game screen to {} (Continue: {}, Save: {})", screenType, isContinue, saveFileName);
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
     }
-    setScreen(newScreen(screenType, isContinue));
+    setScreen(newScreen(screenType, isContinue, saveFileName));
   }
 
   @Override
@@ -79,24 +90,30 @@ public class GdxGame extends Game {
    * @return new screen
    */
   private Screen newScreen(ScreenType screenType) {
-    return newScreen(screenType, false);
+    return newScreen(screenType, false, null);
   }
    
   private Screen newScreen(ScreenType screenType, boolean isContinue) {
+    return newScreen(screenType, isContinue, null);
+  }
+
+  private Screen newScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
     switch (screenType) {
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case MAIN_GAME:
-        return new MainGameScreen(this, isContinue);
+        return new MainGameScreen(this, isContinue, saveFileName);
       case SETTINGS:
         return new SettingsScreen(this);
+      case SAVE_SELECTION:
+        return new SaveSelectionScreen(this);
       default:
         return null;
     }
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION
   }
 
   /**

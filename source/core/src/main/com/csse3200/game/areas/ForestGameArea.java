@@ -5,8 +5,10 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.DroneEnemyFactory;
+import com.csse3200.game.entities.factories.CurrencyFactory;
 import com.csse3200.game.entities.factories.NPCFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
@@ -39,8 +41,10 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
+    "images/metal-scrap-currency.png", // Testing spawn metal scrap currency
+    "images/iso_grass_3.png",
     "images/placeholder-enemy.png",
-    "images/drone_enemy.png"
+    "images/drone_enemy.png",
   };
   private static final String[] forestTextureAtlases = {
     "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
@@ -74,6 +78,10 @@ public class ForestGameArea extends GameArea {
     spawnTrees();
     player = spawnPlayer();
     spawnDrones();
+
+    // Testing spawn metal scrap currency
+    spawnTestMetalScraps();
+    /////////////////////////
 
     playMusic();
   }
@@ -197,5 +205,23 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
+  }
+
+  // Testing purpose only
+  private void spawnTestMetalScraps() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+    final int METAL_SCRAPS_COUNT = 10;
+
+    for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      float x = randomPos.x * terrain.getTileSize();
+      float y = randomPos.y * terrain.getTileSize();
+
+      Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
+      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
+      spawnEntity(metalScrap);
+    }
   }
 }

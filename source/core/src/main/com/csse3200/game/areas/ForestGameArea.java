@@ -52,6 +52,7 @@ public class ForestGameArea extends GameArea {
   private final TerrainFactory terrainFactory;
 
   private Entity player;
+  private boolean hasExistingPlayer = false;
 
   /**
    * Initialise this ForestGameArea to use the provided TerrainFactory.
@@ -63,6 +64,14 @@ public class ForestGameArea extends GameArea {
     this.terrainFactory = terrainFactory;
   }
 
+  /**
+   * Set whether this game area already has an existing player entity.
+   * @param hasExistingPlayer true if player already exists, false otherwise
+   */
+  public void setHasExistingPlayer(boolean hasExistingPlayer) {
+    this.hasExistingPlayer = hasExistingPlayer;
+  }
+
   /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
   @Override
   public void create() {
@@ -72,7 +81,19 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
-    player = spawnPlayer();
+    
+    // Only spawn new player if one doesn't already exist
+    if (!hasExistingPlayer) {
+      player = spawnPlayer();
+    } else {
+      // Find existing player entity
+      player = findExistingPlayer();
+      if (player == null) {
+        logger.warn("Expected existing player not found, creating new one");
+        player = spawnPlayer();
+      }
+    }
+    
     spawnDrones();
 
     playMusic();
@@ -129,6 +150,19 @@ public class ForestGameArea extends GameArea {
     Entity newPlayer = PlayerFactory.createPlayer();
     spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
     return newPlayer;
+  }
+
+  /**
+   * Find an existing player entity in the game.
+   * @return existing player entity or null if not found
+   */
+  private Entity findExistingPlayer() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null) {
+        return entity;
+      }
+    }
+    return null;
   }
 
   private void spawnGhosts() {

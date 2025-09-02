@@ -77,8 +77,7 @@ public class ForestGameArea extends GameArea {
         player = spawnPlayer();        // 初始化 mapEditor
         mapEditor.generateEnemyPath(); // 在 player 生成后调用
         generateBiomesAndRivers();     // 生成沙漠/雪地/河流
-        spawnTrees();                  // 障碍物
-        spawnRocks();
+        mapEditor.spawnRandomRocks(NUM_ROCKS);
         spawnGhosts();
         spawnGhostKing();
         playMusic();
@@ -113,27 +112,6 @@ public class ForestGameArea extends GameArea {
         spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
     }
 
-    private void spawnTrees() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-        for (int i = 0; i < NUM_TREES; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity tree = ObstacleFactory.createTree();
-            spawnEntityAt(tree, randomPos, true, false);
-        }
-    }
-
-    private void spawnRocks() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-        for (int i = 0; i < NUM_ROCKS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity rock = ObstacleFactory.createRock();
-            spawnEntityAt(rock, randomPos, true, false);
-        }
-    }
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();

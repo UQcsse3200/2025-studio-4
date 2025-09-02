@@ -23,7 +23,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.RandomUtils;
-
+import java.util.Set;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +37,9 @@ import java.util.Map;
  * ✅ 自动生成 Biomes（沙漠/雪地）和河流
  * ✅ 支持生成障碍物（rock）
  */
+
+
+
 public class MapEditor extends InputAdapter {
     private TerrainComponent terrain;
     private boolean editorEnabled = false;
@@ -46,6 +50,8 @@ public class MapEditor extends InputAdapter {
     private Map<String, Entity> placedTrees = new HashMap<>();
     private Map<String, GridPoint2> pathTiles = new HashMap<>();
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
+    // 已占用的格子，避免障碍物/冰川重叠
+    private Set<String> occupiedTiles = new HashSet<>();
 
     // 瓦片类型
     private TiledMapTile pathTile;
@@ -195,22 +201,18 @@ public class MapEditor extends InputAdapter {
     public void generateBiomesAndRivers() {
         if (terrain == null) return;
         TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-
-        // 沙漠 (3 个 5x5 区域)
+        // 沙漠
         for (int i = 0; i < 3; i++) {
             GridPoint2 center = RandomUtils.random(new GridPoint2(0,0), terrain.getMapBounds(0).sub(6,6));
             paintBiomeBlock(layer, center, 5, "images/desert.png");
         }
-
-        // 雪地 (2 个 7x7 区域)
+        // 雪地
         for (int i = 0; i < 2; i++) {
             GridPoint2 center = RandomUtils.random(new GridPoint2(0,0), terrain.getMapBounds(0).sub(8,8));
             paintBiomeBlock(layer, center, 7, "images/snow.png");
         }
-
         // 一条横向河流
         generateRiver(layer);
-
         System.out.println("✅ Biomes + 河流 已生成");
     }
 
@@ -232,24 +234,30 @@ public class MapEditor extends InputAdapter {
 
     private void generateRiver(TiledMapTileLayer layer) {
         int y = MathUtils.random(5, layer.getHeight() - 5);
-        Texture tex = ServiceLocator.getResourceService().getAsset("images/river.png", Texture.class);
-        TiledMapTile tile = new StaticTiledMapTile(new TextureRegion(tex));
 
         for (int x = 0; x < layer.getWidth(); x++) {
             GridPoint2 pos = new GridPoint2(x, y);
             if (canPaintTile(pos)) {
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(tile);
-                layer.setCell(pos.x, pos.y, cell);
+                String key = pos.x + "," + pos.y;
+                if (occupiedTiles.contains(key)) continue;
+                Entity river = ObstacleFactory.createRiver();
+                river.setPosition(terrain.tileToWorldPosition(pos));
+                ServiceLocator.getEntityService().register(river);
+                occupiedTiles.add(key);
             }
         }
     }
 
 
+    /** 不允许覆盖路径或塔防区 */
     private boolean canPaintTile(GridPoint2 pos) {
         String key = pos.x + "," + pos.y;
-        return !pathTiles.containsKey(key) && !placeableAreaTiles.containsKey(key);
+        if (pathTiles.containsKey(key) || placeableAreaTiles.containsKey(key)) {
+            return false;
+        }
+        return true;
     }
+
 
     private void paintTile(TiledMapTileLayer layer, GridPoint2 pos, String texPath) {
         Texture tex = ServiceLocator.getResourceService().getAsset(texPath, Texture.class);
@@ -260,13 +268,33 @@ public class MapEditor extends InputAdapter {
     }
 
 
-    /** 生成石头障碍物 */
-    public void spawnObstacle(GridPoint2 pos) {
+    /** 在指定格子生成石头（防止重叠） */
+    public void spawnRock(GridPoint2 pos) {
+        String key = pos.x + "," + pos.y;
+        if (occupiedTiles.contains(key)) {
+            return;
+        }
         Entity rock = ObstacleFactory.createRock();
-        rock.setPosition(pos.x, pos.y);
+        rock.setPosition(terrain.tileToWorldPosition(pos));
         ServiceLocator.getEntityService().register(rock);
+        occupiedTiles.add(key);
         System.out.println("🪨 Rock 已放置在 " + pos);
     }
+
+
+    /** 随机生成多个石头障碍物 */
+    public void spawnRandomRocks(int count) {
+        if (terrain == null) return;
+
+        GridPoint2 minPos = new GridPoint2(0, 0);
+        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+        for (int i = 0; i < count; i++) {
+            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            spawnRock(randomPos);
+        }
+    }
+
 
     /** 替换某个格子的贴图 */
     private void paintTile(GridPoint2 pos, String texPath) {

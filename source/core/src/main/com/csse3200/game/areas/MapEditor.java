@@ -71,7 +71,17 @@ public class MapEditor extends InputAdapter {
     private void initializePathTile() {
         try {
             Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
-            pathTile = new StaticTiledMapTile(new TextureRegion(pathTexture));
+            // 避免放大时模糊
+            pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+
+            // 使路径瓦片尺寸与基础图层瓦片一致，防止尺寸异常
+            TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+            int tileW = baseLayer.getTileWidth();
+            int tileH = baseLayer.getTileHeight();
+            int regionW = Math.min(tileW, pathTexture.getWidth());
+            int regionH = Math.min(tileH, pathTexture.getHeight());
+            TextureRegion region = new TextureRegion(pathTexture, 0, 0, regionW, regionH);
+            pathTile = new StaticTiledMapTile(region);
             System.out.println("✅ path.png 瓦片初始化成功");
         } catch (Exception e) {
             System.out.println("⚠️ path.png 初始化失败: " + e.getMessage());
@@ -88,7 +98,9 @@ public class MapEditor extends InputAdapter {
             pixmap.fill();
             pixmap.setColor(1f, 1f, 1f, 1f);
             pixmap.drawRectangle(0, 0, 32, 32);
-            placeableAreaTile = new StaticTiledMapTile(new TextureRegion(new Texture(pixmap)));
+            Texture areaTexture = new Texture(pixmap);
+            areaTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+            placeableAreaTile = new StaticTiledMapTile(new TextureRegion(areaTexture));
             pixmap.dispose();
             System.out.println("✅ 白色可放置瓦片初始化成功");
         } catch (Exception e) {
@@ -142,8 +154,9 @@ public class MapEditor extends InputAdapter {
 
     /** 创建路径瓦片 */
     private void createPathTile(int tx, int ty) {
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        if (tx < 0 || ty < 0 || tx >= layer.getWidth() || ty >= layer.getHeight()) return;
+        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
+        if (tx < 0 || ty < 0 || tx >= pathLayer.getWidth() || ty >= pathLayer.getHeight()) return;
         String key = tx + "," + ty;
         if (pathTiles.containsKey(key)) return;
 
@@ -152,9 +165,23 @@ public class MapEditor extends InputAdapter {
         if (pathTile != null) {
             TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
             cell.setTile(pathTile);
-            layer.setCell(tx, ty, cell);
+            pathLayer.setCell(tx, ty, cell);
         }
         pathTiles.put(key, new GridPoint2(tx, ty));
+    }
+
+    /** 获取或创建用于路径的图层，始终追加到末尾，保证在基础层与mmap之上 */
+    private TiledMapTileLayer getOrCreatePathLayer(TiledMapTileLayer baseLayer) {
+        int count = terrain.getMap().getLayers().getCount();
+        if (count > 1 && terrain.getMap().getLayers().get(count - 1) instanceof TiledMapTileLayer) {
+            return (TiledMapTileLayer) terrain.getMap().getLayers().get(count - 1);
+        }
+        TiledMapTileLayer newLayer = new TiledMapTileLayer(
+                baseLayer.getWidth(), baseLayer.getHeight(),
+                baseLayer.getTileWidth(), baseLayer.getTileHeight());
+        newLayer.setName("path-layer");
+        terrain.getMap().getLayers().add(newLayer);
+        return newLayer;
     }
 
     /** 自动生成敌人路径 */

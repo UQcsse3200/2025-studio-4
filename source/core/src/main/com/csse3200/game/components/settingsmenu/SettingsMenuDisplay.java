@@ -3,12 +3,18 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
@@ -55,7 +61,7 @@ public class SettingsMenuDisplay extends UIComponent {
     backgroundImage.setFillParent(true);
     stage.addActor(backgroundImage);
     
-    Label title = new Label("Settings", skin, "title");
+    Label title = createTitleLabel();
     Table settingsTable = makeSettingsTable();
     Table menuBtns = makeMenuBtns();
 
@@ -167,8 +173,18 @@ public class SettingsMenuDisplay extends UIComponent {
   }
 
   private Table makeMenuBtns() {
-    TextButton exitBtn = new TextButton("Exit", skin);
-    TextButton applyBtn = new TextButton("Apply", skin);
+    // 创建自定义按钮样式
+    TextButtonStyle customButtonStyle = createCustomButtonStyle();
+    
+    TextButton exitBtn = new TextButton("Exit", customButtonStyle);
+    TextButton applyBtn = new TextButton("Apply", customButtonStyle);
+    
+    // 设置按钮大小
+    float buttonWidth = 150f;
+    float buttonHeight = 50f;
+    
+    exitBtn.getLabel().setColor(Color.WHITE);
+    applyBtn.getLabel().setColor(Color.WHITE);
 
     exitBtn.addListener(
         new ChangeListener() {
@@ -189,8 +205,8 @@ public class SettingsMenuDisplay extends UIComponent {
         });
 
     Table table = new Table();
-    table.add(exitBtn).expandX().left().pad(0f, 15f, 15f, 0f);
-    table.add(applyBtn).expandX().right().pad(0f, 0f, 15f, 15f);
+    table.add(exitBtn).size(buttonWidth, buttonHeight).expandX().left().pad(0f, 15f, 15f, 0f);
+    table.add(applyBtn).size(buttonWidth, buttonHeight).expandX().right().pad(0f, 0f, 15f, 15f);
     return table;
   }
 
@@ -229,6 +245,55 @@ public class SettingsMenuDisplay extends UIComponent {
   @Override
   public void update() {
     stage.act(ServiceLocator.getTimeSource().getDeltaTime());
+  }
+
+  /**
+   * 创建使用Arial Black字体的标题标签
+   */
+  private Label createTitleLabel() {
+    BitmapFont arialBlackFont = skin.getFont("arial_black");
+    Label titleLabel = new Label("Settings", new Label.LabelStyle(arialBlackFont, Color.WHITE));
+    titleLabel.setFontScale(1.5f);
+    titleLabel.setColor(Color.WHITE);
+    return titleLabel;
+  }
+
+  /**
+   * 创建自定义按钮样式，使用按钮背景图片
+   */
+  private TextButtonStyle createCustomButtonStyle() {
+    TextButtonStyle style = new TextButtonStyle();
+    
+    // 使用Segoe UI字体
+    style.font = skin.getFont("segoe_ui");
+    
+    // 加载按钮背景图片
+    Texture buttonTexture = ServiceLocator.getResourceService()
+        .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+    TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+    
+    // 创建NinePatch用于可缩放的按钮背景
+    NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+    
+    // 创建按下状态的NinePatch（稍微变暗）
+    NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+    pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+    
+    // 创建悬停状态的NinePatch（稍微变亮）
+    NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+    hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+    
+    // 设置按钮状态
+    style.up = new NinePatchDrawable(buttonPatch);
+    style.down = new NinePatchDrawable(pressedPatch);
+    style.over = new NinePatchDrawable(hoverPatch);
+    
+    // 设置字体颜色
+    style.fontColor = Color.WHITE;
+    style.downFontColor = Color.LIGHT_GRAY;
+    style.overFontColor = Color.WHITE;
+    
+    return style;
   }
 
   @Override

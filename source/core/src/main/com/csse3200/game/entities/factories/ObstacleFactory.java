@@ -52,6 +52,20 @@ public class ObstacleFactory {
         return river;
     }
 
+    /**
+     * Creates a crystal entity (占 1 个 tile).
+     * @return entity
+     */
+    public static Entity createCrystal() {
+        Entity crystal = new Entity()
+                .addComponent(new TextureRenderComponent("images/crystal.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+        crystal.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(crystal, 1f, 1f);
+        return crystal;
+    }
 
     /**
      * Creates an invisible physics wall.

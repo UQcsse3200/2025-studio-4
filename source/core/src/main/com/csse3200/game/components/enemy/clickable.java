@@ -10,6 +10,11 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.Renderer;
 
 public class clickable extends Component{
+    private float clickRadius;
+
+    public clickable(float clickRadius) {
+        this.clickRadius = clickRadius;
+    }
     
     @Override
     public void update() {
@@ -26,9 +31,8 @@ public class clickable extends Component{
                 camera.unproject(worldClickPos);
                 
                 // Check if click is close to enemy
-                float clickRadius = 0.7f; // Adjust this value as needed (world units)
-                if (Math.abs(worldClickPos.x - entityPos.x) < clickRadius && 
-                    Math.abs(worldClickPos.y - entityPos.y) < clickRadius) {
+                if (Math.abs(worldClickPos.x - (entityPos.x + clickRadius/2)) < clickRadius && 
+                    Math.abs(worldClickPos.y - (entityPos.y + clickRadius)) < clickRadius) {
                     entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageTypeConfig.None);
                 }
             }

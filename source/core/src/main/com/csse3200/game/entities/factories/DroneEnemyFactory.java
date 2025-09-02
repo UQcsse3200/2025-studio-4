@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.enemy.clickable;
@@ -17,6 +18,7 @@ public class DroneEnemyFactory {
     private static final Vector2 DEFAULT_SPEED = new Vector2(1f, 1f);
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
+    private static final float DEFAULT_CLICKRADIUS = 0.7f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -27,6 +29,7 @@ public class DroneEnemyFactory {
     private static Vector2 speed = new Vector2(DEFAULT_SPEED);
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
+    private static float clickRadius = DEFAULT_CLICKRADIUS;
     
     /**
      * Creates a drone enemy with current configuration.
@@ -40,9 +43,16 @@ public class DroneEnemyFactory {
 
         drone
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new clickable(displayName));
+            .addComponent(new clickable(clickRadius));
 
+        drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
         return drone;
+    }
+
+    private static void destroyEnemy(Entity entity) {
+        System.out.println("custom drone death logic");
+        Gdx.app.postRunnable(entity::dispose);
+        //Eventually add point/score logic here maybe?
     }
         
     // Getters    

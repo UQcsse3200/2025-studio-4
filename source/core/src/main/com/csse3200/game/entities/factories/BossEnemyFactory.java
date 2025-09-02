@@ -19,6 +19,7 @@ public class BossEnemyFactory {
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
     private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
     private static final String DEFAULT_NAME = "Boss Enemy";
+    private static final float DEFAULT_CLICKRADIUS = 1.2f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -29,6 +30,7 @@ public class BossEnemyFactory {
     private static Vector2 speed = new Vector2(DEFAULT_SPEED);
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
+    private static float clickRadius = DEFAULT_CLICKRADIUS;
 
     /**
      * Creates a boss enemy with current configuration.
@@ -42,14 +44,14 @@ public class BossEnemyFactory {
 
         boss
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-                .addComponent(new clickable(displayName));
+                .addComponent(new clickable(clickRadius));
 
         //Set Custom boss size               
         var sz = boss.getScale(); 
         boss.setScale(sz.x * 1.8f, sz.y * 1.8f);
 
         // Update physics engine to suit a large boss
-        PhysicsUtils.setScaledCollider(boss, 0.8f, 0.6f);    // unsure if these numbers are suitable
+        PhysicsUtils.setScaledCollider(boss, 0.6f, 0.6f);    // unsure if these numbers are suitable
         boss.getComponent(ColliderComponent.class).setDensity(1.5f);
 
         return boss;

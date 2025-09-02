@@ -17,6 +17,7 @@ public class TankEnemyFactory {
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.2f, 0.2f);
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
+    private static final float DEFAULT_CLICKRADIUS = 0.7f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -27,6 +28,7 @@ public class TankEnemyFactory {
     private static Vector2 speed = new Vector2(DEFAULT_SPEED);
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
+    private static float clickRadius = DEFAULT_CLICKRADIUS;
     
     /**
      * Creates a tank enemy with current configuration.
@@ -40,7 +42,7 @@ public class TankEnemyFactory {
 
         tank
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new clickable(displayName));
+            .addComponent(new clickable(clickRadius));
 
         return tank;
     }

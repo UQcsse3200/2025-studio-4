@@ -53,7 +53,7 @@ public class BossEnemyFactory {
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
                 .addComponent(new clickable(clickRadius));
 
-        //Set Custom boss size               
+        // Set custom boss size
         var sz = boss.getScale(); 
         boss.setScale(sz.x * 1.8f, sz.y * 1.8f);
 
@@ -147,4 +147,30 @@ public class BossEnemyFactory {
     private BossEnemyFactory() {
         throw new IllegalStateException("Instantiating static util class");
     }
+
+    /*
+    // Should I add?????
+
+    // Setters
+    public static void setHealth(int health) {
+        if (health >= 0) { // Add a simple check to prevent negative health
+            BossEnemyFactory.health = health;
+        }
+    }
+    public static void setDamage(int damage) {
+        if (damage >= 0) { // Add a simple check to prevent negative damage
+            BossEnemyFactory.damage = damage;
+        }
+    }
+
+    // Getters
+    public static int getHealth() {
+        return health;
+    }
+    public static int getDamage() {
+        return damage;
+    }
+    */
+
+
 }

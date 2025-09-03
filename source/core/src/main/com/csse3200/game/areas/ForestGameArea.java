@@ -3,233 +3,249 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.maingame.MapHighlighter;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
-import com.csse3200.game.components.maingame.SimplePlacementController;
-import com.csse3200.game.components.maingame.TowerHotbarDisplay;
-import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.hero.HeroPlacementComponent;
+import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.factories.DroneEnemyFactory;
-import com.csse3200.game.entities.factories.CurrencyFactory;
-import com.csse3200.game.entities.factories.NPCFactory;
+import com.csse3200.game.entities.factories.GruntEnemyFactory;
+import com.csse3200.game.entities.factories.HeroFactory;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
+import com.csse3200.game.entities.factories.TankEnemyFactory;
+import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.utils.math.GridPoint2Utils;
+import com.csse3200.game.utils.math.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.badlogic.gdx.graphics.Camera;
+import com.csse3200.game.entities.factories.CurrencyFactory;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 
-/** Forest area for the demo game with trees, a player, and some enemies. */
+
+/**
+ * Forest area for the demo game with trees, a player, and some enemies.
+ */
 public class ForestGameArea extends GameArea {
-  private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
-  private static final int NUM_TREES = 7;
-  private static final int NUM_GHOSTS = 2;
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
-  private static final float WALL_WIDTH = 0.1f;
-  private static final String[] forestTextures = {
-    "images/box_boy_leaf.png",
-    "images/tree.png",
-    "images/ghost_king.png",
-    "images/ghost_1.png",
-    "images/grass_1.png",
-    "images/grass_2.png",
-    "images/grass_3.png",
-    "images/hex_grass_1.png",
-    "images/hex_grass_2.png",
-    "images/hex_grass_3.png",
-    "images/iso_grass_1.png",
-    "images/iso_grass_2.png",
-    "images/iso_grass_3.png",
-          "images/bone.png",
-          "images/cavemen.png",
-          "images/dino.png",
-    "images/metal-scrap-currency.png", // Testing spawn metal scrap currency
-    "images/iso_grass_3.png",
-    "images/placeholder-enemy.png",
-    "images/drone_enemy.png",
-  };
-  private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas"
-  };
-  private static final String[] forestSounds = {"sounds/Impact4.ogg"};
-  private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
-  private static final String[] forestMusic = {backgroundMusic};
+    private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
 
-  private final TerrainFactory terrainFactory;
+    private static final int NUM_TREES = 7;
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
+    private static final float WALL_WIDTH = 0.1f;
 
-  private Entity player;
+    private static final String[] forestTextures = {
+            "images/box_boy_leaf.png",
+            "images/tree.png",
+            "images/ghost_king.png",
+            "images/ghost_1.png",
+            "images/grass_1.png",
+            "images/grass_2.png",
+            "images/grass_3.png",
+            "images/hex_grass_1.png",
+            "images/hex_grass_2.png",
+            "images/hex_grass_3.png",
+            "images/iso_grass_1.png",
+            "images/iso_grass_2.png",
+            "images/iso_grass_3.png",
+            "images/placeholder-enemy.png",
+            "images/drone_enemy.png",
+            "images/base_enemy.png",
+            "images/tank_enemy.png",
+            "images/hero/Heroshoot.png",
+            "images/hero/Bullet.png",
+            "images/metal-scrap-currency.png",
+    };
 
-  /**
-   * Initialise this ForestGameArea to use the provided TerrainFactory.
-   * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
-   * @requires terrainFactory != null
-   */
-  public ForestGameArea(TerrainFactory terrainFactory) {
-    super();
-    this.terrainFactory = terrainFactory;
-  }
+    private static final String[] forestTextureAtlases = {
+            "images/terrain_iso_grass.atlas",
+            "images/ghost.atlas",
+            "images/ghostKing.atlas"
+    };
 
-  /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
-  @Override
-  public void create() {
-    loadAssets();
+    private static final String[] forestSounds = {"sounds/Impact4.ogg"};
+    private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+    private static final String[] forestMusic = {backgroundMusic};
 
-    // Create UI entikty and keep reference
-    Entity ui = new Entity();
-    ui.addComponent(new GameAreaDisplay("Box Forest"));
-    ui.addComponent(new TowerHotbarDisplay());
-    SimplePlacementController placementController = new SimplePlacementController();
-    ui.addComponent(placementController);   // this listens and places the sprite
-    spawnEntity(ui);
+    private final TerrainFactory terrainFactory;
+    private Entity player;
 
-    spawnTerrain();
-    spawnTrees();
-    player = spawnPlayer();
-    spawnDrones();
-
-    spawnTestMetalScraps();
-
-    MapHighlighter mapHighlighter = new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
-    Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
-    spawnEntity(highlighterEntity);
-    playMusic();
-  }
-
-
-  private void spawnTerrain() {
-    // Background terrain
-    terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
-    spawnEntity(new Entity().addComponent(terrain));
-
-    // Terrain walls
-    float tileSize = terrain.getTileSize();
-    GridPoint2 tileBounds = terrain.getMapBounds(0);
-    Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
-
-    // Left
-    spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
-    // Right
-    spawnEntityAt(
-        ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
-        new GridPoint2(tileBounds.x, 0),
-        false,
-        false);
-    // Top
-    spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
-        new GridPoint2(0, tileBounds.y),
-        false,
-        false);
-    // Bottom
-    spawnEntityAt(
-        ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
-  }
-
-  private void spawnTrees() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    for (int i = 0; i < NUM_TREES; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity tree = ObstacleFactory.createTree();
-      spawnEntityAt(tree, randomPos, true, false);
+    /**
+     * Initialise this ForestGameArea to use the provided TerrainFactory.
+     *
+     * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
+     * @requires terrainFactory != null
+     */
+    public ForestGameArea(TerrainFactory terrainFactory) {
+        super();
+        this.terrainFactory = terrainFactory;
     }
-  }
 
-  private Entity spawnPlayer() {
-    Entity newPlayer = PlayerFactory.createPlayer();
-    spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
-    return newPlayer;
-  }
+    /**
+     * Create the game area, including terrain, static entities (trees), dynamic entities (player)
+     */
+    @Override
+    public void create() {
+        loadAssets();
+        displayUI();
 
-  private void spawnGhosts() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+        spawnTerrain();
+        spawnTrees();
+        player = spawnPlayer();
+        spawnDrones();
+        spawnGrunts();
+        spawnTanks();
+        spawnTestMetalScraps();
 
-    for (int i = 0; i < NUM_GHOSTS; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity ghost = NPCFactory.createGhost(player);
-      spawnEntityAt(ghost, randomPos, true, true);
+        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
+        spawnEntity(placement);
+
+        playMusic();
     }
-  }
 
-  private void spawnDrones() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    for (int i = 0; i < 3; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity drone = DroneEnemyFactory.createDroneEnemy(player);
-      spawnEntityAt(drone, randomPos, true, true);
+    private void displayUI() {
+        Entity ui = new Entity();
+        ui.addComponent(new GameAreaDisplay("Box Forest"));
+        spawnEntity(ui);
     }
-  }
 
-  private void spawnGhostKing() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+    private void spawnTerrain() {
+        terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
+        spawnEntity(new Entity().addComponent(terrain));
 
-    GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-    Entity ghostKing = NPCFactory.createGhostKing(player);
-    spawnEntityAt(ghostKing, randomPos, true, true);
-  }
+        float tileSize = terrain.getTileSize();
+        GridPoint2 tileBounds = terrain.getMapBounds(0);
+        Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
 
-  private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-    music.setLooping(true);
-    music.setVolume(0.3f);
-    music.play();
-  }
-
-  private void loadAssets() {
-    logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(forestTextures);
-    resourceService.loadTextureAtlases(forestTextureAtlases);
-    resourceService.loadSounds(forestSounds);
-    resourceService.loadMusic(forestMusic);
-
-    while (!resourceService.loadForMillis(10)) {
-      // This could be upgraded to a loading screen
-      logger.info("Loading... {}%", resourceService.getProgress());
+        // Left
+        spawnEntityAt(ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), GridPoint2Utils.ZERO, false, false);
+        // Right
+        spawnEntityAt(ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y), new GridPoint2(tileBounds.x, 0), false, false);
+        // Top
+        spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), new GridPoint2(0, tileBounds.y), false, false);
+        // Bottom
+        spawnEntityAt(ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH), GridPoint2Utils.ZERO, false, false);
     }
-  }
 
-  private void unloadAssets() {
-    logger.debug("Unloading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.unloadAssets(forestTextures);
-    resourceService.unloadAssets(forestTextureAtlases);
-    resourceService.unloadAssets(forestSounds);
-    resourceService.unloadAssets(forestMusic);
-  }
+    private void spawnTrees() {
+        GridPoint2 minPos = new GridPoint2(0, 0);
+        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-  @Override
-  public void dispose() {
-    super.dispose();
-    ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
-    this.unloadAssets();
-  }
-
-  // Testing purpose only
-  private void spawnTestMetalScraps() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    final int METAL_SCRAPS_COUNT = 10;
-
-    for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      float x = randomPos.x * terrain.getTileSize();
-      float y = randomPos.y * terrain.getTileSize();
-
-      Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
-      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
-      spawnEntity(metalScrap);
+        for (int i = 0; i < NUM_TREES; i++) {
+            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            Entity tree = ObstacleFactory.createTree();
+            spawnEntityAt(tree, randomPos, true, false);
+        }
     }
-  }
+
+    private Entity spawnPlayer() {
+        Entity newPlayer = PlayerFactory.createPlayer();
+        spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
+        return newPlayer;
+    }
+
+    private void spawnDrones() {
+        GridPoint2 minPos = new GridPoint2(0, 0);
+        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+        for (int i = 0; i < 3; i++) {
+            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            Entity drone = DroneEnemyFactory.createDroneEnemy(player);
+            spawnEntityAt(drone, randomPos, true, true);
+        }
+    }
+
+    private void spawnGrunts() {
+        GridPoint2 minPos = new GridPoint2(0, 0);
+        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+        for (int i = 0; i < 1; i++) {
+            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            Entity grunt = GruntEnemyFactory.createGruntEnemy(player);
+            spawnEntityAt(grunt, randomPos, true, true);
+        }
+    }
+
+    private void spawnTanks() {
+        GridPoint2 minPos = new GridPoint2(0, 0);
+        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+
+        for (int i = 0; i < 1; i++) {
+            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            Entity tank = TankEnemyFactory.createTankEnemy(player);
+            spawnEntityAt(tank, randomPos, true, true);
+        }
+    }
+
+    private void spawnHeroAt(GridPoint2 cell) {
+        HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
+        if (heroCfg == null) {
+            logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
+            heroCfg = new HeroConfig();
+        }
+        Renderer r = Renderer.getCurrentRenderer();
+        if (r == null || r.getCamera() == null) {
+            logger.warn("Renderer/Camera not ready, skip spawnHeroAt.");
+            return;
+        }
+        Camera cam = r.getCamera().getCamera();
+        Entity hero = HeroFactory.createHero(heroCfg, cam);
+        spawnEntityAt(hero, cell, true, true);
+    }
+
+    private void playMusic() {
+        Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+        music.setLooping(true);
+        music.setVolume(0.3f);
+        music.play();
+    }
+
+    private void loadAssets() {
+        logger.debug("Loading assets");
+        ResourceService resourceService = ServiceLocator.getResourceService();
+        resourceService.loadTextures(forestTextures);
+        resourceService.loadTextureAtlases(forestTextureAtlases);
+        resourceService.loadSounds(forestSounds);
+        resourceService.loadMusic(forestMusic);
+
+        while (!resourceService.loadForMillis(10)) {
+            logger.info("Loading... {}%", resourceService.getProgress());
+        }
+    }
+
+    private void unloadAssets() {
+        logger.debug("Unloading assets");
+        ResourceService resourceService = ServiceLocator.getResourceService();
+        resourceService.unloadAssets(forestTextures);
+        resourceService.unloadAssets(forestTextureAtlases);
+        resourceService.unloadAssets(forestSounds);
+        resourceService.unloadAssets(forestMusic);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        this.unloadAssets();
+    }
+
+
+    private void spawnTestMetalScraps() {
+        GridPoint2 minPos = new GridPoint2(0, 0);
+        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+        final int METAL_SCRAPS_COUNT = 10;
+        for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
+            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+            float x = randomPos.x * terrain.getTileSize();
+            float y = randomPos.y * terrain.getTileSize();
+            Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
+            player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
+            spawnEntity(metalScrap);
+        }
+    }
 }
+

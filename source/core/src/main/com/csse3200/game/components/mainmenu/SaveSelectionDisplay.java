@@ -132,11 +132,12 @@ public class SaveSelectionDisplay extends UIComponent {
     nameLabel.setColor(Color.WHITE);
     
     // Last modified date
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateStr = sdf.format(new Date(saveFile.lastModified()));
     Label dateLabel = new Label(dateStr, skin);
+    Label nameLabel1 = new Label("Save point:", skin);
     dateLabel.setColor(Color.WHITE);
-    
+    nameLabel1.setColor(Color.RED);
     // Load button
     TextButton loadBtn = new TextButton("Load", skin);
     loadBtn.getLabel().setColor(Color.WHITE);
@@ -162,7 +163,7 @@ public class SaveSelectionDisplay extends UIComponent {
         });
 
     // Layout
-    rowTable.add(nameLabel).width(200f).left();
+    rowTable.add(nameLabel1).width(200f).left();
     rowTable.add(dateLabel).width(150f).left();
     rowTable.add(loadBtn).width(80f).padLeft(20f);
     rowTable.add(deleteBtn).width(80f).padLeft(10f);

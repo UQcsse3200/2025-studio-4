@@ -33,7 +33,7 @@ public final class UiKit {
      * 不使用 NinePatch，避免构造参数问题。
      *
      * @param fillColor    填充色（含透明度）
-     * @param borderColor  边框色；为 null 或 borderWidth<=0 则不绘制边框
+     * @param borderColor  边框色；为 null 或 borderWidth;=0 则不绘制边框
      * @param cornerRadius 圆角半径（像素）
      * @param borderWidth  边框像素宽度
      */

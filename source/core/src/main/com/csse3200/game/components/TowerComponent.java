@@ -6,31 +6,49 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
+/**
+ * Component representing a tower entity, including its type and size.
+ * Handles tower attack logic in the update method.
+ */
 public class TowerComponent extends Component {
     private final String type;
     private final int width;  // in tiles
     private final int height; // in tiles
 
+    /**
+     * Constructs a single-tile tower component.
+     * @param type The type of the tower
+     */
     public TowerComponent(String type) {
         this(type, 1, 1); // default is 1x1
     }
 
-    // New constructor for multi-tile towers
+    /**
+     * Constructs a multi-tile tower component.
+     * @param type The type of the tower
+     * @param width Width in tiles
+     * @param height Height in tiles
+     */
     public TowerComponent(String type, int width, int height) {
         this.type = type;
         this.width = width;
         this.height = height;
     }
 
-    // Keep existing getType()
+    /** @return The type of the tower */
     public String getType() {
         return type;
     }
 
+    /** @return Width of the tower in tiles */
     public int getWidth() { return width; }
+
+    /** @return Height of the tower in tiles */
     public int getHeight() { return height; }
 
-
+    /**
+     * Updates the tower logic, including attack timer and attacking entities in range.
+     */
     @Override
     public void update() {
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);

@@ -17,29 +17,46 @@ import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.entities.factories.TowerFactory;
 
 /**
- * Highlights the map tiles with semi-transparent colors.
- * Tiles with towers are red, empty tiles are green.
- * Every tile has a constant black border.
- * Multi-tile towers occupy multiple tiles.
+ * A grid overlay that visually highlights map tiles during tower placement and
+ * shows tower attack ranges when a tower is selected.
+ *
+ * Features:
+ * - Highlights every tile: green if free, red if occupied.
+ * - Draws black borders around every tile.
+ * - Shows a semi-transparent preview of the pending tower’s footprint.
+ * - Allows players to click towers and see their attack range visualised as a circle.
  */
 public class MapHighlighter extends UIComponent {
     private final TerrainComponent terrain;
     private final ShapeRenderer shapeRenderer;
     private final SimplePlacementController placementController;
-    private final TowerFactory towerFactory; // Add reference
-    private Entity selectedTower = null; // Track selected tower
+    private final TowerFactory towerFactory;
 
-    // Update constructor to accept placementController
-    public MapHighlighter(TerrainComponent terrain, SimplePlacementController placementController, TowerFactory towerFactory) {
+    private Entity selectedTower = null; // currently selected tower
+
+    /**
+     * Creates a new MapHighlighter.
+     *
+     * @param terrain             The terrain component used to get tile size and bounds.
+     * @param placementController Controller for placement state (used to check pending tower).
+     * @param towerFactory        Factory used to query tower types for size info.
+     */
+    public MapHighlighter(TerrainComponent terrain,
+                          SimplePlacementController placementController,
+                          TowerFactory towerFactory) {
         this.terrain = terrain;
         this.shapeRenderer = new ShapeRenderer();
         this.placementController = placementController;
         this.towerFactory = towerFactory;
     }
 
+    /**
+     * Updates game logic each frame:
+     * - Detects tower selection by clicking on them.
+     * - Deselects if clicking empty space.
+     */
     @Override
     public void update() {
-        // Detect click on towers
         if (Gdx.input.justTouched()) {
             Vector2 clickWorld = getWorldClickPosition();
             if (clickWorld != null) {
@@ -47,38 +64,53 @@ public class MapHighlighter extends UIComponent {
                 for (Entity e : entities) {
                     TowerComponent tower = e.getComponent(TowerComponent.class);
                     if (tower == null) continue;
+
                     Vector2 pos = e.getPosition();
                     float tileSize = terrain.getTileSize();
-                    // Check if click is within tower's bounds
+
+                    // Check if click lands inside this tower's footprint
                     if (clickWorld.x >= pos.x && clickWorld.x <= pos.x + tower.getWidth() * tileSize &&
                             clickWorld.y >= pos.y && clickWorld.y <= pos.y + tower.getHeight() * tileSize) {
                         selectedTower = e;
                         return;
                     }
                 }
-                // If no tower clicked, deselect
+                // Deselect if no tower clicked
                 selectedTower = null;
             }
         }
     }
 
+    /**
+     * Converts the most recent mouse click position into world coordinates.
+     *
+     * @return World-space position of the click, or null if no camera is found.
+     */
     private Vector2 getWorldClickPosition() {
-        // Get camera from ServiceLocator
         com.badlogic.gdx.graphics.Camera camera = null;
         Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
         for (Entity e : entities) {
-            com.csse3200.game.components.CameraComponent cc = e.getComponent(com.csse3200.game.components.CameraComponent.class);
+            com.csse3200.game.components.CameraComponent cc =
+                    e.getComponent(com.csse3200.game.components.CameraComponent.class);
             if (cc != null) {
                 camera = cc.getCamera();
                 break;
             }
         }
         if (camera == null) return null;
+
         Vector3 screenPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
         camera.unproject(screenPos);
         return new Vector2(screenPos.x, screenPos.y);
     }
 
+    /**
+     * Renders overlays:
+     * - Green/red semi-transparent tiles for placement validity.
+     * - Black grid lines.
+     * - Preview outline of the pending tower footprint.
+     * - Range circle for the selected tower.
+     */
     @Override
     public void draw(com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {
         boolean showGrid = placementController != null && placementController.isPlacementActive();
@@ -86,17 +118,16 @@ public class MapHighlighter extends UIComponent {
         batch.end();
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
         Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, Gdx.gl.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         if (showGrid) {
             GridPoint2 mapBounds = terrain.getMapBounds(0);
             float tileSize = terrain.getTileSize();
             Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
 
-            // Use TowerFactory to get the pending tower's component
-            TowerComponent placingTower = null;
-            String pendingType = placementController.getPendingType();
+            // Determine footprint of pending tower type
             Entity pendingEntity;
+            String pendingType = placementController.getPendingType();
             if ("Dino".equalsIgnoreCase(pendingType)) {
                 pendingEntity = towerFactory.createDinoTower();
             } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
@@ -104,11 +135,11 @@ public class MapHighlighter extends UIComponent {
             } else {
                 pendingEntity = towerFactory.createBoneTower();
             }
-            placingTower = pendingEntity.getComponent(TowerComponent.class);
+            TowerComponent placingTower = pendingEntity.getComponent(TowerComponent.class);
             int towerWidth = placingTower != null ? placingTower.getWidth() : 2;
             int towerHeight = placingTower != null ? placingTower.getHeight() : 2;
 
-            // Draw semi-transparent tile fills
+            // Fill tiles with green (free) or red (blocked)
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
             for (int x = 0; x < mapBounds.x; x++) {
                 for (int y = 0; y < mapBounds.y; y++) {
@@ -124,11 +155,10 @@ public class MapHighlighter extends UIComponent {
             }
             shapeRenderer.end();
 
-            // Draw black borders over the area the tower will occupy
+            // Draw preview of tower footprint at mouse position
             shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
             shapeRenderer.setColor(Color.BLACK);
 
-            // Example: highlight all tiles that would be covered by the tower at mouse position
             Vector2 mouseWorld = getWorldClickPosition();
             if (mouseWorld != null) {
                 int baseTileX = (int) (mouseWorld.x / tileSize);
@@ -145,7 +175,7 @@ public class MapHighlighter extends UIComponent {
                 }
             }
 
-            // Draw constant black borders for all tiles
+            // Always draw grid borders
             for (int x = 0; x < mapBounds.x; x++) {
                 for (int y = 0; y < mapBounds.y; y++) {
                     Vector2 worldPos = terrain.tileToWorldPosition(x, y);
@@ -155,7 +185,7 @@ public class MapHighlighter extends UIComponent {
             shapeRenderer.end();
         }
 
-        // Draw tower range if a tower is selected (always, not just in placement mode)
+        // Draw tower range if one is selected
         if (selectedTower != null) {
             TowerComponent tower = selectedTower.getComponent(TowerComponent.class);
             if (tower != null) {
@@ -166,8 +196,8 @@ public class MapHighlighter extends UIComponent {
                 float centerY = pos.y + terrain.getTileSize() * tower.getHeight() / 2f;
 
                 shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-                shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.3f)); // grey, semi-transparent
-                shapeRenderer.circle(centerX, centerY, range, 60); // Use 60 segments for smoothness
+                shapeRenderer.setColor(new Color(0.5f, 0.5f, 0.5f, 0.3f)); // grey transparent
+                shapeRenderer.circle(centerX, centerY, range, 60);
                 shapeRenderer.end();
             }
         }
@@ -176,7 +206,12 @@ public class MapHighlighter extends UIComponent {
     }
 
     /**
-     * Returns false if the tile is occupied by any tower (including multi-tile towers)
+     * Returns whether a given tile is free (no tower occupies it).
+     *
+     * @param tileX   X coordinate of the tile.
+     * @param tileY   Y coordinate of the tile.
+     * @param entities All entities in the world.
+     * @return true if free, false if occupied by any tower.
      */
     private boolean isTileFree(int tileX, int tileY, Array<Entity> entities) {
         if (entities == null) return true;
@@ -197,15 +232,13 @@ public class MapHighlighter extends UIComponent {
                     (int) (pos.y / terrain.getTileSize())
             );
 
-            // Check if this tile is inside the tower's area
             if (tileX >= towerTile.x && tileX < towerTile.x + towerWidth &&
                     tileY >= towerTile.y && tileY < towerTile.y + towerHeight) {
-                return false; // tile occupied
+                return false; // occupied
             }
         }
-        return true; // free
+        return true;
     }
-
 
     @Override
     public void dispose() {

@@ -16,18 +16,29 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 
 /**
- * Controller for tower placement with a ghost preview following the mouse.
- * Snaps towers to map tiles, enforces map boundaries, and prevents overlap.
+ * Controller for managing tower placement within the game world.
+ * <p>
+ * Handles the "ghost" tower preview that follows the mouse, snaps towers to tiles,
+ * ensures placement is within bounds, and prevents overlap with other towers.
+ * </p>
  */
 public class SimplePlacementController extends Component {
+    /** Whether tower placement is currently active */
     private boolean placementActive = false;
+    /** Whether the mouse button must be released before placing */
     private boolean needRelease = false;
+    /** The type of tower pending placement (bone, dino, cavemen) */
     private String pendingType = "bone";
+    /** Camera used to project mouse coordinates into world space */
     private OrthographicCamera camera;
+    /** Minimum spacing between towers (currently unused, adjacency is allowed) */
     private final float minSpacing = 1.0f;
-
+    /** Ghost tower entity that previews placement before confirming */
     private Entity ghostTower = null;
 
+    /**
+     * Registers event listeners for starting tower placement.
+     */
     @Override
     public void create() {
         entity.getEvents().addListener("startPlacementBone", this::armBone);
@@ -36,10 +47,18 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
+    /** Arms placement for a Bone Tower. */
     private void armBone() { startPlacement("bone"); }
+    /** Arms placement for a Dino Tower. */
     private void armDino() { startPlacement("dino"); }
+    /** Arms placement for a Cavemen Tower. */
     private void armCavemen() { startPlacement("cavemen"); }
 
+    /**
+     * Starts placement of a tower of the given type.
+     *
+     * @param type tower type ("bone", "dino", "cavemen")
+     */
     private void startPlacement(String type) {
         pendingType = type;
         placementActive = true;
@@ -57,6 +76,15 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> placement ON (" + type + ")");
     }
 
+    /**
+     * Updates the placement logic each frame.
+     * <p>
+     * - Moves the ghost tower to follow the mouse.<br>
+     * - Snaps the ghost to valid tiles.<br>
+     * - Ensures placement is in bounds and not overlapping.<br>
+     * - Places the tower when the mouse is clicked.
+     * </p>
+     */
     @Override
     public void update() {
         if (camera == null) findWorldCamera();
@@ -74,10 +102,9 @@ public class SimplePlacementController extends Component {
 
         TerrainComponent terrain = findTerrain();
 
-        // Set tower size based on type
+        // Tower size (width x height in tiles)
         int towerWidth = 2;
         int towerHeight = 2;
-
 
         Vector2 snapPos = mouseWorld;
         boolean inBounds = true;
@@ -135,8 +162,13 @@ public class SimplePlacementController extends Component {
     }
 
     /**
-     * Checks if a tower can be placed at the given position.
-     * Towers are allowed to be adjacent (no spacing required).
+     * Checks if the candidate position is free for tower placement.
+     *
+     * @param candidate   position to test
+     * @param towerWidth  tower width in tiles
+     * @param towerHeight tower height in tiles
+     * @param terrain     terrain reference for tile size
+     * @return true if no overlap with existing towers
      */
     private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
@@ -172,6 +204,11 @@ public class SimplePlacementController extends Component {
         return true;
     }
 
+    /**
+     * Finds the terrain entity in the world.
+     *
+     * @return TerrainComponent if found, null otherwise
+     */
     private TerrainComponent findTerrain() {
         Array<Entity> all = safeEntities();
         if (all == null) return null;
@@ -183,6 +220,11 @@ public class SimplePlacementController extends Component {
         return null;
     }
 
+    /**
+     * Safely retrieves a copy of all active entities.
+     *
+     * @return list of entities or null on failure
+     */
     private Array<Entity> safeEntities() {
         try {
             return ServiceLocator.getEntityService().getEntitiesCopy();
@@ -192,6 +234,9 @@ public class SimplePlacementController extends Component {
         }
     }
 
+    /**
+     * Finds the active world camera (OrthographicCamera).
+     */
     private void findWorldCamera() {
         Array<Entity> all = safeEntities();
         if (all == null) return;
@@ -205,6 +250,12 @@ public class SimplePlacementController extends Component {
         }
     }
 
+    /**
+     * Cancels the current placement.
+     * <p>
+     * Disposes of the ghost tower and resets placement state.
+     * </p>
+     */
     public void cancelPlacement() {
         if (ghostTower != null) {
             ghostTower.dispose(); // or remove from EntityService if needed
@@ -215,7 +266,13 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> placement OFF");
     }
 
-
+    /**
+     * @return true if placement is currently active
+     */
     public boolean isPlacementActive() { return placementActive; }
+
+    /**
+     * @return the type of tower pending placement
+     */
     public String getPendingType() { return pendingType; }
 }

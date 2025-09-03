@@ -75,7 +75,7 @@ public class HeroPlacementComponent extends Component {
         input = new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
-                if (keycode == Input.Keys.ESCAPE) {
+                if (keycode == Input.Keys.ENTER || keycode == Input.Keys.NUMPAD_ENTER) {
                     // ESC cancels the current preview but does not exit placement mode
                     Gdx.app.postRunnable(() -> {
                         removeGhost();

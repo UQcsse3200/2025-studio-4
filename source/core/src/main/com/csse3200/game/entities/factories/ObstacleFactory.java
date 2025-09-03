@@ -29,27 +29,6 @@ public class ObstacleFactory {
         PhysicsUtils.setScaledCollider(tree, 0.5f, 0.5f);
         return tree;
     }
-    // public static Entity createRock() {
-    //     Entity rock = new Entity()
-    //             .addComponent(new TextureRenderComponent("images/rock.png"))
-    //             .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-    //             .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-    //     rock.getComponent(TextureRenderComponent.class).scaleEntity();
-    //     PhysicsUtils.setScaledCollider(rock, 1f, 1f);
-    //     return rock;
-    // }
-
-    public static Entity createRiver() {
-        Entity river = new Entity()
-                .addComponent(new TextureRenderComponent("images/river.png"))
-                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-        river.getComponent(TextureRenderComponent.class).scaleEntity();
-        PhysicsUtils.setScaledCollider(river, 1f, 1f);
-        return river;
-    }
 
     /**
      * Creates a crystal entity (占 1 个 tile).

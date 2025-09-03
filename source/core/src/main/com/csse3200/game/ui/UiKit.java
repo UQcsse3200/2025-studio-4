@@ -29,11 +29,11 @@ public final class UiKit {
     }
 
     /**
-     * Generates a rounded rectangle background (with optional border), returns a Drawable that can be used directly with Table#setBackground(drawable).
+     * Generates a rounded rectangle background (with optional border), returns a Drawable that can be used directly with Table.setBackground(drawable).
      * Does not use NinePatch to avoid constructor parameter issues.
      *
      * @param fillColor    fill color (with transparency)
-     * @param borderColor  border color; if null or borderWidth<=0, no border will be drawn
+     * @param borderColor  border color; if null or borderWidth less than or equal to 0, no border will be drawn
      * @param cornerRadius corner radius in pixels
      * @param borderWidth  border width in pixels
      */

@@ -118,7 +118,7 @@ public class BossEnemyFactory {
     }
 
     public static void setDamage(int damage) {
-        if (damage >= 0) { // Add a simple check to prevent negative damage
+        if (damage >= 0) {
             BossEnemyFactory.damage = damage;
         }
     }

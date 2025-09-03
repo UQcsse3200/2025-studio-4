@@ -54,4 +54,101 @@ public class DroneEnemyFactoryTest {
         // No isFlaggedForDelete, so just check health is 0 and entityDeath event triggers
         assertEquals(0, stats.getHealth());
     }
+    @Test
+    void droneEnemyResistanceSetAndGet() {
+        // Setting resistance with an expected value
+        DroneEnemyFactory.setResistance(DamageTypeConfig.Electricity);
+        assertEquals(DamageTypeConfig.Electricity, DroneEnemyFactory.getResistance());
+        // Setting resistance to null should default to None
+        DroneEnemyFactory.setResistance(null);
+        assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getResistance());
+    }
+
+    @Test
+    void droneEnemyWeaknessSetAndGet() {
+        // Setting weakness with an expected value
+        DroneEnemyFactory.setWeakness(DamageTypeConfig.Electricity);
+        assertEquals(DamageTypeConfig.Electricity, DroneEnemyFactory.getWeakness());
+        // Setting weakness to null should default to None
+        DroneEnemyFactory.setWeakness(null);
+        assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getWeakness());
+    }
+
+    @Test
+    void droneEnemySpeedSetAndGet() {
+        // Setting speed with first overload method and an expected value
+        Vector2 sampleSpeed = new Vector2(5f, 5f);
+        DroneEnemyFactory.setSpeed(sampleSpeed);
+        assertEquals(sampleSpeed, DroneEnemyFactory.getSpeed());
+        // Setting speed with second overload method and an expected value
+        DroneEnemyFactory.setSpeed(5f, 5f);
+        assertEquals(new Vector2(5f, 5f), DroneEnemyFactory.getSpeed());
+        // Setting speed to null should keep the current speed
+        Vector2 firstSpeed = DroneEnemyFactory.getSpeed();
+        DroneEnemyFactory.setSpeed(null);
+        assertEquals(firstSpeed, DroneEnemyFactory.getSpeed());
+    }
+
+    @Test
+    void droneEnemyTexturePathSetAndGet() {
+        // Setting texture path with an expected value
+        String sampleTexture = "images/drone_enemy.png";
+        DroneEnemyFactory.setTexturePath(sampleTexture);
+        assertEquals(sampleTexture, DroneEnemyFactory.getTexturePath());
+        // Setting texture path to null should default
+        DroneEnemyFactory.setTexturePath(null);
+        assertEquals("images/drone_enemy.png", DroneEnemyFactory.getTexturePath());
+        // Setting texture path to empty string should default
+        DroneEnemyFactory.setTexturePath("");
+        assertEquals("images/drone_enemy.png", DroneEnemyFactory.getTexturePath());
+        // Setting texture path to whitespace should default
+        DroneEnemyFactory.setTexturePath("     ");
+        assertEquals("images/drone_enemy.png", DroneEnemyFactory.getTexturePath());
+    }
+
+    @Test
+    void droneEnemyDisplayNameSetAndGet() {
+        // Setting display name with an expected value
+        String displayName = "Drone Enemy";
+        DroneEnemyFactory.setDisplayName(displayName);
+        assertEquals(displayName, DroneEnemyFactory.getDisplayName());
+        // Setting display name to null should default
+        DroneEnemyFactory.setDisplayName(null);
+        assertEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
+        // Setting display name to empty string should default
+        DroneEnemyFactory.setDisplayName("");
+        assertEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
+        // Setting display name to whitespace should default
+        DroneEnemyFactory.setDisplayName("     ");
+        assertEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
+    }
+
+    @Test
+    void droneEnemyResetsToDefaults() {
+        // Change default values to something else for a drone enemy
+        DroneEnemyFactory.setResistance(DamageTypeConfig.Electricity);
+        DroneEnemyFactory.setWeakness(DamageTypeConfig.Electricity);
+        DroneEnemyFactory.setSpeed(new Vector2(5f, 5f));
+        DroneEnemyFactory.setTexturePath("images/different_enemy.png");
+        DroneEnemyFactory.setDisplayName("Different Enemy");
+
+        // Verify that default values have been changed
+        assertNotEquals(DamageTypeConfig.None, DroneEnemyFactory.getResistance());
+        assertNotEquals(DamageTypeConfig.None, DroneEnemyFactory.getWeakness());
+        assertNotEquals(new Vector2(1f, 1f), DroneEnemyFactory.getSpeed());
+        assertNotEquals("images/drone_enemy.png", DroneEnemyFactory.getTexturePath());
+        assertNotEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
+
+        // Reset values to defaults
+        DroneEnemyFactory.resetToDefaults();
+
+        // Verify the values have actually been reset to default values
+        assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getWeakness());
+        assertEquals(new Vector2(1f, 1f), DroneEnemyFactory.getSpeed());
+        assertEquals("images/drone_enemy.png", DroneEnemyFactory.getTexturePath());
+        assertEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
+    }
+
+
 }

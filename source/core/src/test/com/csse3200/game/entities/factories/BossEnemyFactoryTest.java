@@ -78,12 +78,12 @@ public class BossEnemyFactoryTest {
     @Test
     void bossEnemySpeedSetAndGet() {
         // Setting speed with first overload method and an expected value
-        Vector2 sampleSpeed = new Vector2(1f, 1f);
+        Vector2 sampleSpeed = new Vector2(5f, 5f);
         BossEnemyFactory.setSpeed(sampleSpeed);
         assertEquals(sampleSpeed, BossEnemyFactory.getSpeed());
         // Setting speed with second overload method and an expected value
-        BossEnemyFactory.setSpeed(3f, 3f);
-        assertEquals(new Vector2(3f, 3f), BossEnemyFactory.getSpeed());
+        BossEnemyFactory.setSpeed(5f, 5f);
+        assertEquals(new Vector2(5f, 5f), BossEnemyFactory.getSpeed());
         // Setting speed to null should keep the current speed
         Vector2 firstSpeed = BossEnemyFactory.getSpeed();
         BossEnemyFactory.setSpeed(null);
@@ -130,8 +130,8 @@ public class BossEnemyFactoryTest {
         BossEnemyFactory.setResistance(DamageTypeConfig.Electricity);
         BossEnemyFactory.setWeakness(DamageTypeConfig.Electricity);
         BossEnemyFactory.setSpeed(new Vector2(5f, 5f));
-        BossEnemyFactory.setTexturePath("images/drone_enemy.png");
-        BossEnemyFactory.setDisplayName("Drone Enemy");
+        BossEnemyFactory.setTexturePath("images/different_enemy.png");
+        BossEnemyFactory.setDisplayName("Different Enemy");
 
         // Verify that default values have been changed
         assertNotEquals(DamageTypeConfig.None, BossEnemyFactory.getResistance());

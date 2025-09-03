@@ -166,11 +166,12 @@ public class MainGameScreen extends ScreenAdapter {
               .addComponent(new MainGameExitDisplay())
               .addComponent(new Terminal())
               .addComponent(inputComponent)
-              .addComponent(new TerminalDisplay())
-              .addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
+              .addComponent(new TerminalDisplay());
+
+
 
         ServiceLocator.getEntityService().register(ui);
-      ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
+
 
   }
 }

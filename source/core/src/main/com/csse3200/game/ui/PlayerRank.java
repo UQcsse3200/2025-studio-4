@@ -5,7 +5,7 @@ public class PlayerRank {
     public String name;
     public int rank;
     public int score;
-    /** 名次变化：负数=上升；正数=下降；0=不变 */
+    /** Ranking change: Negative=Rising; Positive number=decrease; 0=Unchanged */
     public int delta;
     public String mode; // Global / Friends / Endless...
 
@@ -18,7 +18,7 @@ public class PlayerRank {
         this.mode = mode;
     }
 
-    /** 提供一条假数据，演示用 */
+    /** Provide a piece of fake data for demonstration purposes */
     public static PlayerRank mock() {
         return new PlayerRank("local-001", "Mengdie", 17, 84210, -2, "Global");
     }

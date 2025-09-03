@@ -39,8 +39,9 @@ public final class HeroFactory {
    *       {@link HeroTurretAttackComponent}.</li>
    * </ul>
    *
-   * @param cfg    Hero configuration (stats, cooldown, bullet properties, textures)
-   * @param camera The active game camera (used for aiming and rotation)
+
+   * @param cfg     hero configuration (stats, cooldown, bullet properties, textures)
+   * @param camera  the active game camera (used for aiming and rotation)
    * @return a new hero entity configured as a turret-style shooter
    */
   public static Entity createHero(HeroConfig cfg, Camera camera) {

@@ -21,6 +21,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
+import com.csse3200.game.components.maingame.MapHighlighter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.badlogic.gdx.graphics.Camera;
@@ -59,6 +60,9 @@ public class ForestGameArea extends GameArea {
             "images/hero/Heroshoot.png",
             "images/hero/Bullet.png",
             "images/metal-scrap-currency.png",
+            "images/bone.png",
+            "images/cavemen.png",
+            "images/dino.png",
     };
 
     private static final String[] forestTextureAtlases = {
@@ -90,22 +94,44 @@ public class ForestGameArea extends GameArea {
      */
     @Override
     public void create() {
+        // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
+
+        // Set up the UI display for the game area
         displayUI();
 
+        // Create the main UI entity that will handle area info, hotbar, and tower placement
+        Entity ui = new Entity();
+        ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
+        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
+        com.csse3200.game.components.maingame.SimplePlacementController placementController =
+                new com.csse3200.game.components.maingame.SimplePlacementController();
+        ui.addComponent(placementController); // Handles user input for tower placement
+        spawnEntity(ui);
+
+        // Spawn the world terrain and game entities
         spawnTerrain();
-        spawnTrees();
+        //spawnTrees();
         player = spawnPlayer();
         spawnDrones();
         spawnGrunts();
         spawnTanks();
         spawnTestMetalScraps();
 
+        // Set up map highlighting for tower placement feedback
+        MapHighlighter mapHighlighter =
+                new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
+        Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+        spawnEntity(highlighterEntity);
+
+        // Add hero placement system
         Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
         spawnEntity(placement);
 
+        // Play background music for the level
         playMusic();
     }
+
 
     private void displayUI() {
         Entity ui = new Entity();

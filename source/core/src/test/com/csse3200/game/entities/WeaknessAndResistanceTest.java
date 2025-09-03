@@ -1,6 +1,5 @@
 package com.csse3200.game.entities;
 
-import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.entities.factories.DroneEnemyFactory;

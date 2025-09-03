@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ public class MainMenuDisplay extends UIComponent {
   public void create() {
     super.create();
     addActors();
+    ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
   }
 
   private void addActors() {

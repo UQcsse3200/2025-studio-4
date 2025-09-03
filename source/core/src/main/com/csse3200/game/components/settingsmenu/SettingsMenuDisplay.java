@@ -82,7 +82,7 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     private void addActors() {
-        // 背景图片 (only create when not overlaying in-game)
+        // Background image (only create when not overlaying in-game)
         if (!overlayMode) {
             backgroundImage =
                     new Image(

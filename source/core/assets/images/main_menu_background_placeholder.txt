@@ -1,1 +1,1 @@
-请将您重新设计的背景图片重命名为 main_menu_background.png 并放置在此目录中
+Please rename your redesigned background image to main_menu_background.png and place it in this directory

@@ -34,6 +34,14 @@ public class CombatStatsComponent extends Component {
     return weaknesses;
   }
 
+  public void setResistances(DamageTypeConfig type) {
+    this.resistances = type;
+  }
+
+  public void setWeaknesses(DamageTypeConfig type) {
+    this.weaknesses = type;
+  }
+
   /**
    * Returns true if the entity's has 0 health, otherwise false.
    *

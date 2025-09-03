@@ -61,7 +61,6 @@ public class CombatStatsComponent extends Component {
     if (health >= 0) {
       this.health = health;
     } else {
-      //Enemy Death Logic
       this.health = 0;
     }
     if (entity != null) {

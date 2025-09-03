@@ -7,11 +7,14 @@ import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
+import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
+import com.csse3200.game.components.maingame.MainGameWin;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,12 @@ import org.slf4j.LoggerFactory;
 public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
   private static final int NUM_TREES = 7;
+  private static final int NUM_DRONES = 5;
+  private static final int NUM_GRUNTS = 3;
+  private static final int NUM_TANKS = 2;
+  private static final int NUM_BOSSES = 1;
+  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS;
+  public static int NUM_ENEMIES_DEFEATED = 0;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
@@ -35,7 +44,6 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
-    "images/placeholder-enemy.png",
     "images/drone_enemy.png",
     "images/base_enemy.png",
     "images/tank_enemy.png",
@@ -138,7 +146,7 @@ public class ForestGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < NUM_DRONES; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
       Entity drone = DroneEnemyFactory.createDroneEnemy(player);
       spawnEntityAt(drone, randomPos, true, true);
@@ -149,7 +157,7 @@ public class ForestGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < NUM_GRUNTS; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
       Entity grunt = GruntEnemyFactory.createGruntEnemy(player);
       spawnEntityAt(grunt, randomPos, true, true);
@@ -160,7 +168,7 @@ public class ForestGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < NUM_TANKS; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
       Entity tank = TankEnemyFactory.createTankEnemy(player);
       spawnEntityAt(tank, randomPos, true, true);
@@ -171,7 +179,7 @@ public class ForestGameArea extends GameArea {
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < NUM_BOSSES; i++) {
       GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
       Entity boss = BossEnemyFactory.createBossEnemy(player);
       spawnEntityAt(boss, randomPos, true, true);
@@ -213,5 +221,11 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
+  }
+
+  public static void checkEnemyCount() {
+    if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+      MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
+    }
   }
 }

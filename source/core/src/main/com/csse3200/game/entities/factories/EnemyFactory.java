@@ -24,7 +24,7 @@ public class EnemyFactory {
   public static Entity createBaseEnemy(Entity target, Vector2 speed) {
     AITaskComponent aiComponent =
         new AITaskComponent()
-            .addTask(new ChaseTask(target, 10, 100f, 100f, speed));
+            .addTask(new ChaseTask(target, 1, 100f, 100f, speed));
     Entity npc =
         new Entity()
             .addComponent(new PhysicsComponent())
@@ -41,7 +41,7 @@ public class EnemyFactory {
   }
   
   private static void destroyEnemy(Entity entity) {
-    Gdx.app.postRunnable(entity::dispose);
+    //Gdx.app.postRunnable(entity::dispose);
     //Eventually add point/score logic here maybe?
   }
 

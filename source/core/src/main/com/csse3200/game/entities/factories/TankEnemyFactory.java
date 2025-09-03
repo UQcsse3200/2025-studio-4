@@ -1,8 +1,12 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.rendering.TextureRenderComponent;
@@ -30,7 +34,10 @@ public class TankEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    
+    private static Entity self;
+    private static Entity currentTarget;
+    private static int priorityTaskCount = 1;
+
     /**
      * Creates a tank enemy with current configuration.
      *
@@ -45,8 +52,26 @@ public class TankEnemyFactory {
             .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new clickable(clickRadius));
 
+        tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
+
+        self = tank;
+        currentTarget = target;
+
         return tank;
     }
+
+    private static void destroyEnemy(Entity entity) {
+        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        ForestGameArea.checkEnemyCount();
+        Gdx.app.postRunnable(entity::dispose);
+        //Eventually add point/score logic here maybe?
+    }
+
+    private static void updateSpeed(Vector2 speed) {
+        priorityTaskCount += 1;
+        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    }
+        
         
     // Getters    
     public static DamageTypeConfig getResistance() {

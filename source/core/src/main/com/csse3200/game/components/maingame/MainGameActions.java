@@ -20,6 +20,8 @@ public class MainGameActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
+    entity.getEvents().addListener("gameover", this::onExit);
+    entity.getEvents().addListener("gamewin", this::onExit);
   }
 
   /**

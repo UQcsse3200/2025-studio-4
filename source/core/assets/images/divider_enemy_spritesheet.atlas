@@ -1,0 +1,26 @@
+divider_basic_spritesheet.png
+size: 2038,863
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+walk
+  rotate: false
+  xy: 0, 0
+  size: 1019, 863
+  orig: 1019, 863
+  offset: 0, 0
+  index: 0
+walk
+  rotate: false
+  xy: 1019, 0
+  size: 1019, 863
+  orig: 1019, 863
+  offset: 0, 0
+  index: 1
+idle
+  rotate: false
+  xy: 0, 0
+  size: 1019, 863
+  orig: 1019, 863
+  offset: 0, 0
+  index: 0

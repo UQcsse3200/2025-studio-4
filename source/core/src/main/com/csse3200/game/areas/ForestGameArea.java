@@ -26,7 +26,8 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_GRUNTS = 3;
   private static final int NUM_TANKS = 2;
   private static final int NUM_BOSSES = 1;
-  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS;
+  private static final int NUM_DIVIDERS = 1;
+  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_DIVIDERS;
   public static int NUM_ENEMIES_DEFEATED = 0;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final float WALL_WIDTH = 0.1f;
@@ -87,6 +88,7 @@ public class ForestGameArea extends GameArea {
     spawnGrunts();
     spawnTanks();
     spawnBosses();
+    spawnDividers();
 
     playMusic();
   }
@@ -186,6 +188,21 @@ public class ForestGameArea extends GameArea {
       Entity boss = BossEnemyFactory.createBossEnemy(player);
       spawnEntityAt(boss, randomPos, true, true);
     }
+  }
+
+  private void spawnDividers() {
+    DividerEnemyFactory.DividerGroup group = new DividerEnemyFactory.DividerGroup(player);
+
+    // Set positions
+    Vector2 pos = new Vector2(10f, 5f);
+    group.parent.setPosition(pos);
+    group.mini1.setPosition(pos.cpy().add(0.5f, 0));
+    group.mini2.setPosition(pos.cpy().add(-0.5f, 0));
+
+    // Spawn entities in the ForestGameArea
+    spawnEntity(group.parent);
+    spawnEntity(group.mini1);
+    spawnEntity(group.mini2);
   }
 
   private void playMusic() {

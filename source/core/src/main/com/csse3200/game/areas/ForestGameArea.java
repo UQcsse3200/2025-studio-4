@@ -78,7 +78,7 @@ public class ForestGameArea extends GameArea {
         player = spawnPlayer();        // Initialize player and mapEditor初始化玩家和mapEditor
         mapEditor.generateEnemyPath(); // Generate fixed enemy path生成固定敌人路径
         generateBiomesAndRivers();     // Generate desert/snow/rivers生成沙漠/雪地/河流
-
+        mapEditor.generatePlaceableAreas(); // 显示可放置防御塔区域
         //spawnTrees();                  // Generate trees生成树木
         //spawnGhosts();                 // Generate ghosts生成幽灵
        // spawnGhostKing();              // 生成幽灵王

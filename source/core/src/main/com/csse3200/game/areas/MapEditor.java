@@ -216,6 +216,20 @@ public class MapEditor extends InputAdapter {
         return newLayer;
     }
 
+    private TiledMapTileLayer getOrCreateLayer(String name, TiledMapTileLayer baseLayer) {
+        for (int i = 0; i < terrain.getMap().getLayers().getCount(); i++) {
+            if (terrain.getMap().getLayers().get(i).getName().equals(name)) {
+                return (TiledMapTileLayer) terrain.getMap().getLayers().get(i);
+            }
+        }
+        TiledMapTileLayer newLayer = new TiledMapTileLayer(
+                baseLayer.getWidth(), baseLayer.getHeight(),
+                baseLayer.getTileWidth(), baseLayer.getTileHeight());
+        newLayer.setName(name);
+        terrain.getMap().getLayers().add(newLayer);
+        return newLayer;
+    }
+
     /** Automatically generate enemy paths自动生成敌人路径 */
     public void generateEnemyPath() {
         if (terrain == null) return;
@@ -290,27 +304,31 @@ public class MapEditor extends InputAdapter {
     }
 
     /** Generate placeable areas around the path生成路径周围的可放置区域 */
-    private void generatePlaceableAreas() {
+    public void generatePlaceableAreas() {
         if (terrain == null || pathTiles.isEmpty()) return;
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+
+        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        TiledMapTileLayer placeableLayer = getOrCreateLayer("placeable-layer", baseLayer);
+
         for (GridPoint2 p : pathTiles.values()) {
             for (int dx = -placeableRange; dx <= placeableRange; dx++) {
                 for (int dy = -placeableRange; dy <= placeableRange; dy++) {
                     int ax = p.x + dx, ay = p.y + dy;
-                    if (ax < 0 || ay < 0 || ax >= layer.getWidth() || ay >= layer.getHeight()) continue;
+                    if (ax < 0 || ay < 0 || ax >= placeableLayer.getWidth() || ay >= placeableLayer.getHeight()) continue;
                     String k = ax + "," + ay;
                     if (pathTiles.containsKey(k) || placeableAreaTiles.containsKey(k)) continue;
 
                     if (placeableAreaTile != null) {
                         TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
                         cell.setTile(placeableAreaTile);
-                        layer.setCell(ax, ay, cell);
+                        placeableLayer.setCell(ax, ay, cell);
                     }
                     placeableAreaTiles.put(k, new GridPoint2(ax, ay));
                 }
             }
         }
     }
+
 
     private boolean isPlaceableArea(int tx, int ty) {
         return placeableAreaTiles.containsKey(tx + "," + ty);

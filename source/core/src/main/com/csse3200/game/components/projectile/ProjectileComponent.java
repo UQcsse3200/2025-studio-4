@@ -8,9 +8,9 @@ import com.csse3200.game.services.ServiceLocator;
  * Projectile component:
  * <p>
  * Handles projectile velocity and lifetime. When the lifetime expires,
- * the projectile is safely destroyed via the {@link ServiceLocator}'s
- * EntityService. Destruction is deferred to the next frame to avoid
- * concurrent modification during entity iteration.
+ * the projectile is safely disposed (which will also unregister it from
+ * the EntityService via Entity#dispose()).
+ * Destruction is deferred to the next frame to avoid concurrent modification.
  * </p>
  */
 public class ProjectileComponent extends Component {
@@ -40,10 +40,7 @@ public class ProjectileComponent extends Component {
     this.life = life;
   }
 
-  /**
-   * On creation, initialize the lifetime timer and apply velocity
-   * to the physics body if available.
-   */
+  /** Apply initial velocity on creation. */
   @Override
   public void create() {
     physics = entity.getComponent(PhysicsComponent.class);
@@ -54,10 +51,7 @@ public class ProjectileComponent extends Component {
     }
   }
 
-  /**
-   * Updates the lifetime timer and schedules entity destruction
-   * when the projectile expires.
-   */
+  /** Tick lifetime; when expired, stop physics and dispose next frame. */
   @Override
   public void update() {
     float dt = ServiceLocator.getTimeSource().getDeltaTime();
@@ -67,18 +61,18 @@ public class ProjectileComponent extends Component {
       if (dead) return;
       dead = true;
 
-      // 1) Stop physics (prevent collisions in the same frame)
+      // 1) Stop physics immediately to prevent further collisions this frame
       if (physics != null && physics.getBody() != null) {
         physics.getBody().setLinearVelocity(0, 0);
         physics.getBody().setActive(false);
       }
 
-      // 2) Schedule destruction in the next frame to avoid concurrent modification
+      // 2) Defer disposal to next frame (Entity.dispose() will unregister internally)
       com.badlogic.gdx.Gdx.app.postRunnable(() -> {
         try {
-          entity.dispose(); // Dispose of components (render, physics, etc.)
-        } finally {
-          ServiceLocator.getEntityService().unregister(entity); // Remove from entity system
+          entity.dispose(); // Will call ServiceLocator.getEntityService().unregister(this)
+        } catch (Exception ignored) {
+          // Swallow to avoid crashing render thread; entity will be cleaned up by service.
         }
       });
     }

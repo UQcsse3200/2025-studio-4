@@ -106,7 +106,7 @@ public class MainMenuDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    
   }
 
   @Override

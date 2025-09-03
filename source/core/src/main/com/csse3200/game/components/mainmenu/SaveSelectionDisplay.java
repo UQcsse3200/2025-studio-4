@@ -19,10 +19,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-/**
- * A UI component for displaying the save selection interface.
- * Shows available save files and allows users to select or delete them.
- */
+
 public class SaveSelectionDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SaveSelectionDisplay.class);
   private static final float Z_INDEX = 2f;
@@ -35,7 +32,6 @@ public class SaveSelectionDisplay extends UIComponent {
     saveGameService = new SaveGameService(null);
     addActors();
     
-    // Listen for refresh events
     entity.getEvents().addListener("refreshSaveList", this::refreshSaveList);
   }
 
@@ -43,7 +39,6 @@ public class SaveSelectionDisplay extends UIComponent {
     table = new Table();
     table.setFillParent(true);
     
-    // Add background image (same as main menu)
     Image backgroundImage =
         new Image(
             ServiceLocator.getResourceService()
@@ -51,11 +46,9 @@ public class SaveSelectionDisplay extends UIComponent {
     backgroundImage.setFillParent(true);
     stage.addActor(backgroundImage);
 
-    // Create title
     Label title = new Label("Select Save File", skin, "title");
     title.setColor(Color.WHITE);
     
-    // Create new save button
     TextButton newSaveBtn = new TextButton("New Save", skin);
     newSaveBtn.getLabel().setColor(Color.WHITE);
     newSaveBtn.addListener(
@@ -67,10 +60,8 @@ public class SaveSelectionDisplay extends UIComponent {
           }
         });
     
-    // Create save file list
     Table saveListTable = createSaveFileList();
     
-    // Create back button
     TextButton backBtn = new TextButton("Back to Main Menu", skin);
     backBtn.getLabel().setColor(Color.WHITE);
     backBtn.addListener(
@@ -82,7 +73,6 @@ public class SaveSelectionDisplay extends UIComponent {
           }
         });
 
-    // Layout
     table.add(title).expandX().top().padTop(30f);
     table.row().padTop(20f);
     table.add(newSaveBtn).padBottom(20f);
@@ -97,7 +87,6 @@ public class SaveSelectionDisplay extends UIComponent {
   private Table createSaveFileList() {
     Table saveTable = new Table();
     
-    // Check if saves directory exists and has save files
     File savesDir = new File("saves");
     if (!savesDir.exists() || savesDir.listFiles() == null || savesDir.listFiles().length == 0) {
       Label noSavesLabel = new Label("No save files found", skin);
@@ -106,13 +95,12 @@ public class SaveSelectionDisplay extends UIComponent {
       return saveTable;
     }
 
-    // Add header
     Label headerLabel = new Label("Available Saves:", skin);
     headerLabel.setColor(Color.WHITE);
     saveTable.add(headerLabel).padBottom(20f);
     saveTable.row();
 
-    // List save files
+    
     File[] saveFiles = savesDir.listFiles((dir, name) -> name.endsWith(".json"));
     if (saveFiles != null) {
       for (File saveFile : saveFiles) {
@@ -127,18 +115,15 @@ public class SaveSelectionDisplay extends UIComponent {
   private Table createSaveFileRow(File saveFile) {
     Table rowTable = new Table();
     
-    // Save file name
     Label nameLabel = new Label(saveFile.getName().replace(".json", ""), skin);
     nameLabel.setColor(Color.WHITE);
     
-    // Last modified date
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateStr = sdf.format(new Date(saveFile.lastModified()));
     Label dateLabel = new Label(dateStr, skin);
     Label nameLabel1 = new Label("Save point:", skin);
     dateLabel.setColor(Color.WHITE);
     nameLabel1.setColor(Color.RED);
-    // Load button
     TextButton loadBtn = new TextButton("Load", skin);
     loadBtn.getLabel().setColor(Color.WHITE);
     loadBtn.addListener(
@@ -149,8 +134,6 @@ public class SaveSelectionDisplay extends UIComponent {
             entity.getEvents().trigger("loadSave", saveFile.getName());
           }
         });
-
-    // Delete button
     TextButton deleteBtn = new TextButton("Delete", skin);
     deleteBtn.getLabel().setColor(Color.WHITE);
     deleteBtn.addListener(
@@ -162,7 +145,6 @@ public class SaveSelectionDisplay extends UIComponent {
           }
         });
 
-    // Layout
     rowTable.add(nameLabel1).width(200f).left();
     rowTable.add(dateLabel).width(150f).left();
     rowTable.add(loadBtn).width(80f).padLeft(20f);
@@ -173,7 +155,7 @@ public class SaveSelectionDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+  
   }
 
   @Override
@@ -181,12 +163,9 @@ public class SaveSelectionDisplay extends UIComponent {
     return Z_INDEX;
   }
 
-  /**
-   * Refreshes the save file list by recreating the UI.
-   */
+
   private void refreshSaveList() {
     logger.debug("Refreshing save file list");
-    // Clear current table and recreate
     table.clear();
     addActors();
   }

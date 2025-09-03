@@ -1,7 +1,6 @@
 package com.csse3200.game.services;
 
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsService;
@@ -27,6 +26,7 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static GdxGame gameService;
 
+  private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -60,6 +60,16 @@ public class ServiceLocator {
     logger.debug("Registering entity service {}", service);
     entityService = service;
   }
+
+
+    public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
+        leaderboardService = service;
+    }
+    public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
+        return leaderboardService;
+    }
+
+
 
   public static void registerRenderService(RenderService service) {
     logger.debug("Registering render service {}", service);
@@ -99,6 +109,7 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
+    leaderboardService = null;
   }
 
   private ServiceLocator() {

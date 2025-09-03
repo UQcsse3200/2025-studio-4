@@ -17,8 +17,18 @@ import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
+import com.csse3200.game.components.hero.HeroPlacementComponent;
+import com.csse3200.game.entities.configs.HeroConfig;
+import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.components.maingame.MapHighlighter;
+import com.badlogic.gdx.graphics.Camera;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 
-/** Forest area for the demo game with trees, a player, and some enemies. */
+
+/**
+ * Forest area for the demo game with trees, a player, and some enemies.
+ */
 public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
   private static final int NUM_TREES = 7;
@@ -48,7 +58,13 @@ public class ForestGameArea extends GameArea {
     "images/drone_enemy.png",
     "images/base_enemy.png",
     "images/tank_enemy.png",
-    "images/boss_enemy.png"
+    "images/boss_enemy.png",
+    "images/hero/Heroshoot.png",
+    "images/hero/Bullet.png",
+    "images/metal-scrap-currency.png",
+    "images/bone.png",
+    "images/cavemen.png",
+    "images/dino.png"
   };
 
   private static final String[] forestTextureAtlases = {
@@ -61,24 +77,28 @@ public class ForestGameArea extends GameArea {
   private static final String[] forestMusic = {backgroundMusic};
 
   private final TerrainFactory terrainFactory;
-
   private Entity player;
 
   /**
-   * Initialise this ForestGameArea to use the provided TerrainFactory.
-   * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
-   * @requires terrainFactory != null
-   */
+  * Initialise this ForestGameArea to use the provided TerrainFactory.
+  *
+  * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
+  * @requires terrainFactory != null
+  */
   public ForestGameArea(TerrainFactory terrainFactory) {
-    super();
-    this.terrainFactory = terrainFactory;
+      super();
+      this.terrainFactory = terrainFactory;
   }
 
-  /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
+  /**
+  * Create the game area, including terrain, static entities (trees), dynamic entities (player)
+  */
   @Override
   public void create() {
+    // Load assets (textures, sounds, etc.) before creating anything that needs them
     loadAssets();
 
+    // Set up the UI display for the game area
     displayUI();
 
     spawnTerrain();
@@ -89,6 +109,27 @@ public class ForestGameArea extends GameArea {
     spawnTanks();
     spawnBosses();
     spawnDividers();
+    
+    spawnTestMetalScraps();
+
+    // Create the main UI entity that will handle area info, hotbar, and tower placement
+    Entity ui = new Entity();
+    ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
+    ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
+    com.csse3200.game.components.maingame.SimplePlacementController placementController =
+            new com.csse3200.game.components.maingame.SimplePlacementController();
+    ui.addComponent(placementController); // Handles user input for tower placement
+    spawnEntity(ui);
+
+    // Set up map highlighting for tower placement feedback
+    MapHighlighter mapHighlighter =
+            new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
+    Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+    spawnEntity(highlighterEntity);
+
+    // Add hero placement system
+    Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
+    spawnEntity(placement);
 
     playMusic();
   }
@@ -206,25 +247,61 @@ public class ForestGameArea extends GameArea {
     spawnEntityAt(entity, location, true, true);
   }
 
+  public static void checkEnemyCount() {
+    if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+      MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
+    }
+  }
+
+  private void spawnHeroAt(GridPoint2 cell) {
+        HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
+        if (heroCfg == null) {
+            logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
+            heroCfg = new HeroConfig();
+        }
+        Renderer r = Renderer.getCurrentRenderer();
+        if (r == null || r.getCamera() == null) {
+            logger.warn("Renderer/Camera not ready, skip spawnHeroAt.");
+            return;
+        }
+        Camera cam = r.getCamera().getCamera();
+        Entity hero = HeroFactory.createHero(heroCfg, cam);
+        spawnEntityAt(hero, cell, true, true);
+  }
+
+  private void spawnTestMetalScraps() {
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+    final int METAL_SCRAPS_COUNT = 10;
+
+    for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      float x = randomPos.x * terrain.getTileSize();
+      float y = randomPos.y * terrain.getTileSize();
+      Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
+      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
+      spawnEntity(metalScrap);
+      }
+  }
+
   private void playMusic() {
-    Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-    music.setLooping(true);
-    music.setVolume(0.3f);
-    music.play();
+        Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+        music.setLooping(true);
+        music.setVolume(0.3f);
+        music.play();
   }
 
   private void loadAssets() {
-    logger.debug("Loading assets");
-    ResourceService resourceService = ServiceLocator.getResourceService();
-    resourceService.loadTextures(forestTextures);
-    resourceService.loadTextureAtlases(forestTextureAtlases);
-    resourceService.loadSounds(forestSounds);
-    resourceService.loadMusic(forestMusic);
+        logger.debug("Loading assets");
+        ResourceService resourceService = ServiceLocator.getResourceService();
+        resourceService.loadTextures(forestTextures);
+        resourceService.loadTextureAtlases(forestTextureAtlases);
+        resourceService.loadSounds(forestSounds);
+        resourceService.loadMusic(forestMusic);
 
-    while (!resourceService.loadForMillis(10)) {
-      // This could be upgraded to a loading screen
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
+        while (!resourceService.loadForMillis(10)) {
+            logger.info("Loading... {}%", resourceService.getProgress());
+        }
   }
 
   private void unloadAssets() {
@@ -241,11 +318,5 @@ public class ForestGameArea extends GameArea {
     super.dispose();
     ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
     this.unloadAssets();
-  }
-
-  public static void checkEnemyCount() {
-    if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-      MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
-    }
   }
 }

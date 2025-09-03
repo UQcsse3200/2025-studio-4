@@ -17,8 +17,8 @@ public class MyRankDemoScreen extends ScreenAdapter {
         Gdx.input.setInputProcessor(stage);
 
         MyRankCard card = new MyRankCard();
-        card.setPosition(50, Gdx.graphics.getHeight() - 150); // 左上角
-        card.setData(PlayerRank.mock()); // 用本地假数据
+        card.setPosition(50, Gdx.graphics.getHeight() - 150);
+        card.setData(PlayerRank.mock()); // Using local fake data
         stage.addActor(card);
     }
 

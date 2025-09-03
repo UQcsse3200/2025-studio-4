@@ -11,7 +11,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 
 public class BossEnemyFactory {
     // Default boss configuration
@@ -47,20 +46,16 @@ public class BossEnemyFactory {
      * @return entity
      */
     public static Entity createBossEnemy(Entity target) {
-        Entity boss = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
-
-        // Loads image at texturePath and keeps in memory
-        TextureRenderComponent imageTexture = new TextureRenderComponent(texturePath);
+        Entity boss = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+        "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f);
 
         boss
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-                .addComponent(imageTexture)
                 .addComponent(new clickable(clickRadius));
 
-        // Makes the visual scale match the texture scale so proportions are correct (image is not just a 1x1 square)
-        imageTexture.scaleEntity();
-        // Scale up x and y coordinates, keeping same proportions
-        boss.setScale(boss.getScale().x * 1.8f, boss.getScale().y * 1.8f);
+        //Set Custom boss size               
+        var sz = boss.getScale(); 
+        boss.setScale(sz.x * 1.8f, sz.y * 1.8f);
 
         // Update physics engine to suit a large boss
         PhysicsUtils.setScaledCollider(boss, 0.6f, 0.6f);    // unsure if these numbers are suitable

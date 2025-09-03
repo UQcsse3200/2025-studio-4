@@ -9,7 +9,6 @@ import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.rendering.TextureRenderComponent;
 
 public class DroneEnemyFactory {
     // Default drone configuration
@@ -46,11 +45,11 @@ public class DroneEnemyFactory {
      * @return entity
      */
     public static Entity createDroneEnemy(Entity target) {
-        Entity drone = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+        Entity drone = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f);
 
         drone
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new TextureRenderComponent(texturePath))
             .addComponent(new clickable(clickRadius));
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));

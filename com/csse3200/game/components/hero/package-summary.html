@@ -89,7 +89,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">One-time component for placing a hero with a right-click.</div>
+<div class="block">Two-phase hero placement component:
+ 
+   Right-click: Create a semi-transparent ghost preview at the clicked grid cell.
+   Left-click: If the preview is active and the click hits the preview cell,
+       confirm placement by calling <code>onPlace(cell)</code>.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">

@@ -93,11 +93,11 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Factory class for creating hero entities.
  <p>
- Provides a method to construct a stationary "turret-style" hero:
- - Has no movement logic.
- - Can rotate to face the mouse cursor.
- - Fires bullets in the aimed direction using <a href="../../components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero"><code>HeroTurretAttackComponent</code></a>.
- </p></div>
+ Provides methods for constructing:
+ <ul>
+   <li>A fully functional turret-style hero that can rotate and shoot.</li>
+   <li>A "ghost hero" used for placement previews (render-only, no logic).</li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -117,6 +117,11 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.graphics.Camera&nbsp;camera)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a hero entity based on a <a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs"><code>HeroConfig</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createHeroGhost(float)" class="member-name-link">createHeroGhost</a><wbr>(float&nbsp;alpha)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create a "ghost hero" entity used only for placement previews.</div>
 </div>
 </div>
 </div>
@@ -140,13 +145,42 @@ loadScripts(document, 'script');</script>
 <h3>createHero</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHero</span><wbr><span class="parameters">(<a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a>&nbsp;cfg,
  com.badlogic.gdx.graphics.Camera&nbsp;camera)</span></div>
-<div class="block">Create a hero entity based on a <a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs"><code>HeroConfig</code></a>.</div>
+<div class="block">Create a hero entity based on a <a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs"><code>HeroConfig</code></a>.
+ <p>
+ The hero is built as a stationary, turret-style shooter:
+ <ul>
+   <li>Includes a rotating render component.</li>
+   <li>Has combat stats and hitbox on the PLAYER layer.</li>
+   <li>Can aim toward the mouse cursor and fire bullets using
+       <a href="../../components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero"><code>HeroTurretAttackComponent</code></a>.</li>
+ </ul></div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>cfg</code> - hero configuration (stats, cooldown, bullet properties, textures)</dd>
 <dd><code>camera</code> - the active game camera (used for aiming and rotation)</dd>
 <dt>Returns:</dt>
 <dd>a new hero entity configured as a turret-style shooter</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createHeroGhost(float)">
+<h3>createHeroGhost</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createHeroGhost</span><wbr><span class="parameters">(float&nbsp;alpha)</span></div>
+<div class="block">Create a "ghost hero" entity used only for placement previews.
+ <p>
+ Characteristics:
+ <ul>
+   <li>Contains only a <a href="../../rendering/TextureRenderComponent.html" title="class in com.csse3200.game.rendering"><code>TextureRenderComponent</code></a>.</li>
+   <li>Renders semi-transparently using the provided alpha value.</li>
+   <li>No physics, collisions, AI, or attack logic.</li>
+   <li>Not registered to any physics layer.</li>
+ </ul></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>alpha</code> - Transparency (0–1). Recommended values: 0.4–0.6</dd>
+<dt>Returns:</dt>
+<dd>a new ghost hero entity (render-only)</dd>
 </dl>
 </section>
 </li>

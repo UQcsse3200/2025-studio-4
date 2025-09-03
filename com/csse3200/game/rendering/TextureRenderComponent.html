@@ -99,7 +99,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TextureRenderComponent</span>
 <span class="extends-implements">extends <a href="RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
-<div class="block">Render a static texture using entity's position (x,y) and scale as width/height.</div>
+<div class="block">A render component for drawing a static texture.
+ <p>
+ The entity's position defines the bottom-left corner of the texture.
+ The entity's scale defines the width and height.
+ Supports tinting (including transparency) and rotation (not applied in draw yet).</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -121,9 +125,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.badlogic.gdx.graphics.Texture)" class="member-name-link">TextureRenderComponent</a><wbr>(com.badlogic.gdx.graphics.Texture&nbsp;texture)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Create a render component with an already loaded texture.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">TextureRenderComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Load the texture from the asset service by its path.</div>
+</div>
 </div>
 </section>
 </li>
@@ -145,15 +153,29 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRotation()" class="member-name-link">getRotation</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get current rotation in degrees.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scaleEntity()" class="member-name-link">scaleEntity</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">兼容旧工厂代码；并与测试期望一致：设为 1x1</div>
+<div class="block">Compatibility helper for legacy factory code.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAlpha(float)" class="member-name-link">setAlpha</a><wbr>(float&nbsp;a)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set only the alpha (transparency) value, clamped to [0,1].</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setColor(com.badlogic.gdx.graphics.Color)" class="member-name-link">setColor</a><wbr>(com.badlogic.gdx.graphics.Color&nbsp;color)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set the tint color (including alpha).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRotation(float)" class="member-name-link">setRotation</a><wbr>(float&nbsp;degrees)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set rotation in degrees (not applied in draw yet).</div>
+</div>
 </div>
 </div>
 </div>
@@ -181,12 +203,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(java.lang.String)">
 <h3>TextureRenderComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TextureRenderComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</span></div>
+<div class="block">Load the texture from the asset service by its path.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="&lt;init&gt;(com.badlogic.gdx.graphics.Texture)">
 <h3>TextureRenderComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TextureRenderComponent</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.Texture&nbsp;texture)</span></div>
+<div class="block">Create a render component with an already loaded texture.</div>
 </section>
 </li>
 </ul>
@@ -201,19 +225,36 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="scaleEntity()">
 <h3>scaleEntity</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">scaleEntity</span>()</div>
-<div class="block">兼容旧工厂代码；并与测试期望一致：设为 1x1</div>
+<div class="block">Compatibility helper for legacy factory code.
+ Sets the entity scale to 1x1 so the texture renders at natural size.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setRotation(float)">
 <h3>setRotation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRotation</span><wbr><span class="parameters">(float&nbsp;degrees)</span></div>
+<div class="block">Set rotation in degrees (not applied in draw yet).</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getRotation()">
 <h3>getRotation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getRotation</span>()</div>
+<div class="block">Get current rotation in degrees.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setColor(com.badlogic.gdx.graphics.Color)">
+<h3>setColor</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setColor</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.Color&nbsp;color)</span></div>
+<div class="block">Set the tint color (including alpha).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setAlpha(float)">
+<h3>setAlpha</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAlpha</span><wbr><span class="parameters">(float&nbsp;a)</span></div>
+<div class="block">Set only the alpha (transparency) value, clamped to [0,1].</div>
 </section>
 </li>
 <li>

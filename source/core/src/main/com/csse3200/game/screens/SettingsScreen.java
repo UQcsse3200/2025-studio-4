@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 /** The game screen containing the settings. */
 public class SettingsScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(SettingsScreen.class);
-  private static final String[] settingsTextures = {"images/main_menu_background.png"};
+  private static final String[] settingsTextures = {"images/settings_ui.jpg"};
 
   private final GdxGame game;
   private final Renderer renderer;

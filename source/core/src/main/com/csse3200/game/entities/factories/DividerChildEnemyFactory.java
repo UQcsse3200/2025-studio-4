@@ -11,18 +11,18 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
-public class DividerEnemyFactory {
+public class DividerChildEnemyFactory {
     // Default drone configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 150;
-    private static final int DEFAULT_DAMAGE = 5;
+    private static final int DEFAULT_HEALTH = 50;
+    private static final int DEFAULT_DAMAGE = 20;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(0.75f, 0.75f);
-    private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
-    private static final String DEFAULT_NAME = "Divider Enemy";
-    private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final Vector2 DEFAULT_SPEED = new Vector2(2f, 2f);
+    private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
+    private static final String DEFAULT_NAME = "Divider Child Enemy";
+    private static final float DEFAULT_CLICKRADIUS = 0.3f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -38,45 +38,35 @@ public class DividerEnemyFactory {
     private static Entity self;
     private static Entity currentTarget;
     private static int priorityTaskCount = 1;
-    private static GameArea gameArea;
 
     /**
-     * Creates a divider enemy with current configuration. The divider is capable of spawning multiple other enemies upon death
+     * Creates a DividerChild enemy with current configuration. The DividerChild is capable of spawning multiple other enemies upon death
      *
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerEnemy(Entity target, GameArea area) {
-        Entity divider = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
-        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
+    public static Entity createDividerChildChildEnemy(Entity target) {
+        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
 
-        divider
+        DividerChild
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
-        divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider));
+        DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
 
-        var sz = divider.getScale(); 
-        divider.setScale(sz.x * 1.5f, sz.y * 1.5f);
+        var sz = DividerChild.getScale(); 
+        DividerChild.setScale(sz.x * 0.85f, sz.y * 0.85f);
 
-        self = divider;
+        self = DividerChild;
         currentTarget = target;
-        gameArea = area;
 
-        return divider;
+        return DividerChild;
     }
 
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
-
-        // Spawn Children upon defeat
-        for (int i = 0; i < 3; i++) {
-            Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(currentTarget);
-            Vector2 entityPos = entity.getPosition();
-            gameArea.customSpawnEntityAt(child, entityPos);
-        }
-
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
@@ -109,30 +99,30 @@ public class DividerEnemyFactory {
     
     // Setters   
     public static void setResistance(DamageTypeConfig resistance) {
-        DividerEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
+        DividerChildEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
     }
     
     public static void setWeakness(DamageTypeConfig weakness) {
-        DividerEnemyFactory.weakness = (weakness != null) ? weakness : DEFAULT_WEAKNESS;
+        DividerChildEnemyFactory.weakness = (weakness != null) ? weakness : DEFAULT_WEAKNESS;
     }
     
     public static void setSpeed(Vector2 speed) {
         if (speed != null) {
-            DividerEnemyFactory.speed.set(speed);
+            DividerChildEnemyFactory.speed.set(speed);
         }
     }
     
     public static void setSpeed(float x, float y) {
-        DividerEnemyFactory.speed.set(x, y);
+        DividerChildEnemyFactory.speed.set(x, y);
     }
     
     public static void setTexturePath(String texturePath) {
-        DividerEnemyFactory.texturePath = (texturePath != null && !texturePath.trim().isEmpty()) 
+        DividerChildEnemyFactory.texturePath = (texturePath != null && !texturePath.trim().isEmpty()) 
             ? texturePath : DEFAULT_TEXTURE;
     }
     
     public static void setDisplayName(String displayName) {
-        DividerEnemyFactory.displayName = (displayName != null && !displayName.trim().isEmpty()) 
+        DividerChildEnemyFactory.displayName = (displayName != null && !displayName.trim().isEmpty()) 
             ? displayName : DEFAULT_NAME;
     }
     
@@ -149,7 +139,7 @@ public class DividerEnemyFactory {
         displayName = DEFAULT_NAME;
     }
 
-    private DividerEnemyFactory() {
+    private DividerChildEnemyFactory() {
         throw new IllegalStateException("Instantiating static util class");
     }
 }

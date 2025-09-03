@@ -54,4 +54,16 @@ public class EntityService {
       entity.dispose();
     }
   }
+
+  public Array<Entity> getEntitiesCopy() {
+      return new Array<Entity>(entities);
+  }
+  
+  /**
+   * Get all registered entities.
+   * @return Array of all registered entities
+   */
+  public Array<Entity> getEntities() {
+    return entities;
+  }
 }

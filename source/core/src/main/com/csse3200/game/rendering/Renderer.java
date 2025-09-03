@@ -20,6 +20,7 @@ public class Renderer implements Disposable {
   private static final float GAME_SCREEN_WIDTH = 20f;
   private static final Logger logger = LoggerFactory.getLogger(Renderer.class);
 
+  // Static reference to the current renderer (for places that need to access it globally)
   private static Renderer currentRenderer;
 
   public CameraComponent camera;
@@ -30,7 +31,7 @@ public class Renderer implements Disposable {
   private DebugRenderer debugRenderer;
 
   /**
-   * Create a new renderer with default settings
+   * Create a new renderer with default settings.
    * @param camera camera to render to
    */
   public Renderer(CameraComponent camera) {
@@ -39,42 +40,42 @@ public class Renderer implements Disposable {
     debugRenderer.setActive(false);
 
     init(
-        camera,
-        GAME_SCREEN_WIDTH,
-        spriteBatch,
-        new Stage(new ScreenViewport(), spriteBatch),
-        ServiceLocator.getRenderService(),
-        debugRenderer);
+            camera,
+            GAME_SCREEN_WIDTH,
+            spriteBatch,
+            new Stage(new ScreenViewport(), spriteBatch),
+            ServiceLocator.getRenderService(),
+            debugRenderer);
   }
 
   /**
-   * Create a renderer
+   * Create a renderer.
    *
    * @param camera Camera to use for rendering.
-   * @param gameWidth Desired game width in metres the screen should show. Height is then based on *
-   *     the aspect ratio.
+   * @param gameWidth Desired game width in metres the screen should show. Height is then based on
+   *                  the aspect ratio.
    * @param batch Batch to render to.
-   * @param stage Scene2D stage for UI rendering
-   * @param renderService Render service to use
-   * @param debugRenderer Debug renderer to render
+   * @param stage Scene2D stage for UI rendering.
+   * @param renderService Render service to use.
+   * @param debugRenderer Debug renderer to render.
    */
   public Renderer(
-      CameraComponent camera,
-      float gameWidth,
-      SpriteBatch batch,
-      Stage stage,
-      RenderService renderService,
-      DebugRenderer debugRenderer) {
+          CameraComponent camera,
+          float gameWidth,
+          SpriteBatch batch,
+          Stage stage,
+          RenderService renderService,
+          DebugRenderer debugRenderer) {
     init(camera, gameWidth, batch, stage, renderService, debugRenderer);
   }
 
   private void init(
-      CameraComponent camera,
-      float gameWidth,
-      SpriteBatch batch,
-      Stage stage,
-      RenderService renderService,
-      DebugRenderer debugRenderer) {
+          CameraComponent camera,
+          float gameWidth,
+          SpriteBatch batch,
+          Stage stage,
+          RenderService renderService,
+          DebugRenderer debugRenderer) {
 
     this.camera = camera;
     this.gameWidth = gameWidth;
@@ -85,19 +86,22 @@ public class Renderer implements Disposable {
 
     renderService.setStage(stage);
     renderService.setDebug(debugRenderer);
+
+    // Ensure initial sizing
     resizeCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-    
-    // ADD THIS LINE TO STORE STATIC REFERENCE
+
+    // Set static current renderer for global access
     currentRenderer = this;
   }
 
-  public CameraComponent getCamera() {
-    return camera;
-  }
-
-  // ADD THIS STATIC METHOD FOR ACCESSING CURRENT RENDERER
+  /** Access the current active renderer (may be null if not yet constructed). */
   public static Renderer getCurrentRenderer() {
     return currentRenderer;
+  }
+
+  /** Get the camera component used by this renderer. */
+  public CameraComponent getCamera() {
+    return camera;
   }
 
   /** Render everything to the render service. */
@@ -109,6 +113,7 @@ public class Renderer implements Disposable {
     batch.begin();
     renderService.render(batch);
     batch.end();
+
     debugRenderer.render(projMatrix);
 
     stage.act();
@@ -127,7 +132,7 @@ public class Renderer implements Disposable {
     logger.debug("Resizing to ({}x{})", width, height);
   }
 
-  /** @return The debug renderer attached to this renderer */
+  /** @return The debug renderer attached to this renderer. */
   public DebugRenderer getDebug() {
     return debugRenderer;
   }
@@ -140,13 +145,17 @@ public class Renderer implements Disposable {
     stage.getViewport().update(screenWidth, screenHeight, true);
   }
 
+  public Stage getStage() {
+    return stage;
+  }
+
   @Override
   public void dispose() {
     stage.dispose();
     batch.dispose();
-  }
-
-  public Stage getStage() {
-    return stage;
+    // Clear static reference if this is the active one
+    if (currentRenderer == this) {
+      currentRenderer = null;
+    }
   }
 }

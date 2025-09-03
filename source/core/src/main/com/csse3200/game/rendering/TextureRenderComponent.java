@@ -1,32 +1,66 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.services.ServiceLocator;
 
-/** Render a static texture using entity's position (x,y) and scale as width/height. */
+/**
+ * A render component for drawing a static texture.
+ * <p>
+ * The entity's position defines the bottom-left corner of the texture.
+ * The entity's scale defines the width and height.
+ * Supports tinting (including transparency) and rotation (not applied in draw yet).
+ */
 public class TextureRenderComponent extends RenderComponent {
   private final Texture texture;
   private float rotationDeg = 0f;
 
+  // Tint color applied when drawing (RGBA, includes alpha)
+  private final Color tint = new Color(1f, 1f, 1f, 1f);
+
+  /**
+   * Load the texture from the asset service by its path.
+   */
   public TextureRenderComponent(String texturePath) {
     this(ServiceLocator.getResourceService().getAsset(texturePath, Texture.class));
   }
 
+  /**
+   * Create a render component with an already loaded texture.
+   */
   public TextureRenderComponent(Texture texture) {
     this.texture = texture;
   }
 
-  /** 兼容旧工厂代码；并与测试期望一致：设为 1x1 */
+  /**
+   * Compatibility helper for legacy factory code.
+   * Sets the entity scale to 1x1 so the texture renders at natural size.
+   */
   public void scaleEntity() {
     if (entity != null) {
       entity.setScale(1f, 1f);
     }
   }
 
+  /** Set rotation in degrees (not applied in draw yet). */
   public void setRotation(float degrees) { this.rotationDeg = degrees; }
+
+  /** Get current rotation in degrees. */
   public float getRotation() { return rotationDeg; }
+
+  /** Set the tint color (including alpha). */
+  public void setColor(Color color) {
+    if (color != null) {
+      this.tint.set(color);
+    }
+  }
+
+  /** Set only the alpha (transparency) value, clamped to [0,1]. */
+  public void setAlpha(float a) {
+    this.tint.a = Math.max(0f, Math.min(a, 1f));
+  }
 
   @Override
   protected void draw(SpriteBatch batch) {
@@ -37,7 +71,14 @@ public class TextureRenderComponent extends RenderComponent {
     float w = (size == null ? 1f : size.x);
     float h = (size == null ? 1f : size.y);
 
-    // 与测试期望完全一致：draw(texture, x, y, width, height)
+    // Temporarily apply the tint color (with alpha), then restore old color
+    Color old = batch.getColor();
+    batch.setColor(tint);
+
+    // Draw texture at (x, y) with width and height from entity scale
     batch.draw(texture, pos.x, pos.y, w, h);
+
+    batch.setColor(old);
   }
 }
+

@@ -82,6 +82,14 @@ public class BossEnemyFactory {
     }
 
     // Getters
+    public static int getHealth() {
+        return health;
+    }
+
+    public static int getDamage() {
+        return damage;
+    }
+
     public static DamageTypeConfig getResistance() {
         return resistance;
     }
@@ -103,6 +111,18 @@ public class BossEnemyFactory {
     }
 
     // Setters
+    public static void setHealth(int health) {
+        if (health >= 0) { // Add a simple check to prevent negative health
+            BossEnemyFactory.health = health;
+        }
+    }
+
+    public static void setDamage(int damage) {
+        if (damage >= 0) { // Add a simple check to prevent negative damage
+            BossEnemyFactory.damage = damage;
+        }
+    }
+
     public static void setResistance(DamageTypeConfig resistance) {
         BossEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;
     }
@@ -147,30 +167,5 @@ public class BossEnemyFactory {
     private BossEnemyFactory() {
         throw new IllegalStateException("Instantiating static util class");
     }
-
-    /*
-    // Should I add?????
-
-    // Setters
-    public static void setHealth(int health) {
-        if (health >= 0) { // Add a simple check to prevent negative health
-            BossEnemyFactory.health = health;
-        }
-    }
-    public static void setDamage(int damage) {
-        if (damage >= 0) { // Add a simple check to prevent negative damage
-            BossEnemyFactory.damage = damage;
-        }
-    }
-
-    // Getters
-    public static int getHealth() {
-        return health;
-    }
-    public static int getDamage() {
-        return damage;
-    }
-    */
-
 
 }

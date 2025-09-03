@@ -74,13 +74,13 @@ public class ForestGameArea extends GameArea {
         loadAssets();
         displayUI();
 
-        spawnTerrain();                // 生成地形并填充草地
-        player = spawnPlayer();        // 初始化玩家和mapEditor
-        mapEditor.generateEnemyPath(); // 生成固定敌人路径
-        generateBiomesAndRivers();     // 生成沙漠/雪地/河流
+        spawnTerrain();                // Generate terrain and fill the grassland生成地形并填充草地
+        player = spawnPlayer();        // Initialize player and mapEditor初始化玩家和mapEditor
+        mapEditor.generateEnemyPath(); // Generate fixed enemy path生成固定敌人路径
+        generateBiomesAndRivers();     // Generate desert/snow/rivers生成沙漠/雪地/河流
 
-        //spawnTrees();                  // 生成树木
-        //spawnGhosts();                 // 生成幽灵
+        //spawnTrees();                  // Generate trees生成树木
+        //spawnGhosts();                 // Generate ghosts生成幽灵
        // spawnGhostKing();              // 生成幽灵王
 
         playMusic();
@@ -96,12 +96,12 @@ public class ForestGameArea extends GameArea {
         terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
         spawnEntity(new Entity().addComponent(terrain));
 
-        // 获取瓦片层（现在回到索引0）
+        // Get the tile layer (now back to index 0)获取瓦片层（现在回到索引0）
         TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
         Texture grassTex = ServiceLocator.getResourceService().getAsset("images/grass_1.png", Texture.class);
         TiledMapTile grassTile = new StaticTiledMapTile(new TextureRegion(grassTex));
 
-        // 用草地填充所有瓦片
+        // Fill all tiles with grass用草地填充所有瓦片
         for (int x = 0; x < layer.getWidth(); x++) {
             for (int y = 0; y < layer.getHeight(); y++) {
                 TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
@@ -110,7 +110,7 @@ public class ForestGameArea extends GameArea {
             }
         }
 
-        // 创建边界墙
+        // Create boundary walls创建边界墙
         float tileSize = terrain.getTileSize();
         GridPoint2 tileBounds = terrain.getMapBounds(0);
         Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);
@@ -148,11 +148,11 @@ public class ForestGameArea extends GameArea {
         Entity newPlayer = PlayerFactory.createPlayer();
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
-        // 初始化地图编辑器
+        // Initialize map editor初始化地图编辑器
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.enableEditor();
-        mapEditor.generateEnemyPath();  // 生成固定敌人路径
-        mapEditor.spawnCrystal();       // 生成水晶
+        mapEditor.generateEnemyPath();  // Generate fixed enemy path生成固定敌人路径
+        mapEditor.spawnCrystal();       // Generate crystal生成水晶
 
         return newPlayer;
     }

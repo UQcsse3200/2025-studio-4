@@ -50,14 +50,14 @@ public class TerrainFactory {
   public TerrainComponent createTerrain(TerrainType terrainType) {
     switch (terrainType) {
       case FOREST_DEMO:
-        // 使用简化的地图创建方式（只有 mmap 图层）
+        // Use a simplified map creation method (with only mmap layers)使用简化的地图创建方式（只有 mmap 图层）
         return createForestDemoTerrain(0.5f);
       default:
         return null;
     }
   }
 
-  // 简化的地形创建方法（只有 mmap 图层）
+  // A simplified terrain creation method (with only mmap layers)简化的地形创建方法（只有 mmap 图层）
   private TerrainComponent createForestDemoTerrain(float tileWorldSize) {
     GridPoint2 tilePixelSize = new GridPoint2(32, 32);
     TiledMap tiledMap = createForestDemoTiles(tilePixelSize);
@@ -74,7 +74,7 @@ public class TerrainFactory {
     }
   }
 
-  // 创建只包含 mmap 图层的地图
+  // Create a map with only mmap layers只包含 mmap 图层的地图
   private TiledMap createForestDemoTiles(GridPoint2 tileSize) {
     TiledMap tiledMap = new TiledMap();
     TiledMapTileLayer dummyLayer =
@@ -90,8 +90,8 @@ public class TerrainFactory {
     return tiledMap;
   }
 
-  /** 只保留简化版（mmap） */
+  /** Only keep the simplified version (mmap)只保留简化版（mmap） */
   public enum TerrainType {
-    FOREST_DEMO  // 仅 mmap 图层
+    FOREST_DEMO  // Only mmap layers仅 mmap 图层
   }
 }

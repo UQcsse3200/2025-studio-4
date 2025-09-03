@@ -93,9 +93,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">CombatStatsComponent</span>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Component used to store information related to combat such as health, attack, etc. Any entities
- which engage it combat should have an instance of this class registered. This class can be
- extended for more specific combat needs.</div>
+<div class="block">Stores combat stats like health and base attack.
+ Any entity engaging in combat should have this component.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -136,21 +135,17 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addHealth(int,com.csse3200.game.entities.configs.DamageTypeConfig)" class="member-name-link">addHealth</a><wbr>(int&nbsp;health,
- <a href="../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;damagetype)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addHealth(int,com.csse3200.game.entities.configs.DamageTypeConfig)" class="member-name-link">addHealth</a><wbr>(int&nbsp;healthDelta,
+ <a href="../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;damageType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds to the player's health.</div>
+<div class="block">Add (or subtract) health with damage type adjustment.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBaseAttack()" class="member-name-link">getBaseAttack</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the entity's base attack damage.</div>
-</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealth()" class="member-name-link">getHealth</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the entity's health.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getResistances()" class="member-name-link">getResistances</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -159,21 +154,19 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hit(com.csse3200.game.components.CombatStatsComponent)" class="member-name-link">hit</a><wbr>(<a href="CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a>&nbsp;attacker)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDead()" class="member-name-link">isDead</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns true if the entity's has 0 health, otherwise false.</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Apply damage equal to attacker's base attack.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDead()" class="member-name-link">isDead</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBaseAttack(int)" class="member-name-link">setBaseAttack</a><wbr>(int&nbsp;attack)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the entity's attack damage.</div>
-</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHealth(int)" class="member-name-link">setHealth</a><wbr>(int&nbsp;health)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the entity's health.</div>
+<div class="block">Set health (min 0).</div>
 </div>
 </div>
 </div>
@@ -227,11 +220,10 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="isDead()">
 <h3>isDead</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">isDead</span>()</div>
-<div class="block">Returns true if the entity's has 0 health, otherwise false.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isDead</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>is player dead</dd>
+<dd>true if health is 0.</dd>
 </dl>
 </section>
 </li>
@@ -239,62 +231,42 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getHealth()">
 <h3>getHealth</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getHealth</span>()</div>
-<div class="block">Returns the entity's health.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>entity's health</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setHealth(int)">
 <h3>setHealth</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setHealth</span><wbr><span class="parameters">(int&nbsp;health)</span></div>
-<div class="block">Sets the entity's health. Health has a minimum bound of 0.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>health</code> - health</dd>
-</dl>
+<div class="block">Set health (min 0). Triggers UI and death events when appropriate.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="addHealth(int,com.csse3200.game.entities.configs.DamageTypeConfig)">
 <h3>addHealth</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addHealth</span><wbr><span class="parameters">(int&nbsp;health,
- <a href="../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;damagetype)</span></div>
-<div class="block">Adds to the player's health. The amount added can be negative.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>health</code> - health to add</dd>
-</dl>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addHealth</span><wbr><span class="parameters">(int&nbsp;healthDelta,
+ <a href="../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;damageType)</span></div>
+<div class="block">Add (or subtract) health with damage type adjustment.
+ Negative 'health' means damage.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getBaseAttack()">
 <h3>getBaseAttack</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getBaseAttack</span>()</div>
-<div class="block">Returns the entity's base attack damage.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>base attack damage</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setBaseAttack(int)">
 <h3>setBaseAttack</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBaseAttack</span><wbr><span class="parameters">(int&nbsp;attack)</span></div>
-<div class="block">Sets the entity's attack damage. Attack damage has a minimum bound of 0.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>attack</code> - Attack damage</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="hit(com.csse3200.game.components.CombatStatsComponent)">
 <h3>hit</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">hit</span><wbr><span class="parameters">(<a href="CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a>&nbsp;attacker)</span></div>
+<div class="block">Apply damage equal to attacker's base attack.
+ Event dispatching is centralized in setHealth() to avoid duplicates.</div>
 </section>
 </li>
 </ul>

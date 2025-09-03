@@ -126,7 +126,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent)" class="member-name-link">Renderer</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Create a new renderer with default settings</div>
+<div class="block">Create a new renderer with default settings.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.CameraComponent,float,com.badlogic.gdx.graphics.g2d.SpriteBatch,com.badlogic.gdx.scenes.scene2d.Stage,com.csse3200.game.rendering.RenderService,com.csse3200.game.rendering.DebugRenderer)" class="member-name-link">Renderer</a><wbr>(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera,
  float&nbsp;gameWidth,
@@ -135,7 +135,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
  <a href="RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a>&nbsp;renderService,
  <a href="DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a>&nbsp;debugRenderer)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Create a renderer</div>
+<div class="block">Create a renderer.</div>
 </div>
 </div>
 </section>
@@ -156,10 +156,14 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCamera()" class="member-name-link">getCamera</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the camera component used by this renderer.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getCurrentRenderer()" class="member-name-link">getCurrentRenderer</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Access the current active renderer (may be null if not yet constructed).</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDebug()" class="member-name-link">getDebug</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -212,7 +216,7 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.components.CameraComponent)">
 <h3>Renderer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Renderer</span><wbr><span class="parameters">(<a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a>&nbsp;camera)</span></div>
-<div class="block">Create a new renderer with default settings</div>
+<div class="block">Create a new renderer with default settings.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>camera</code> - camera to render to</dd>
@@ -228,16 +232,16 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
  com.badlogic.gdx.scenes.scene2d.Stage&nbsp;stage,
  <a href="RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a>&nbsp;renderService,
  <a href="DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a>&nbsp;debugRenderer)</span></div>
-<div class="block">Create a renderer</div>
+<div class="block">Create a renderer.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>camera</code> - Camera to use for rendering.</dd>
-<dd><code>gameWidth</code> - Desired game width in metres the screen should show. Height is then based on *
-     the aspect ratio.</dd>
+<dd><code>gameWidth</code> - Desired game width in metres the screen should show. Height is then based on
+                  the aspect ratio.</dd>
 <dd><code>batch</code> - Batch to render to.</dd>
-<dd><code>stage</code> - Scene2D stage for UI rendering</dd>
-<dd><code>renderService</code> - Render service to use</dd>
-<dd><code>debugRenderer</code> - Debug renderer to render</dd>
+<dd><code>stage</code> - Scene2D stage for UI rendering.</dd>
+<dd><code>renderService</code> - Render service to use.</dd>
+<dd><code>debugRenderer</code> - Debug renderer to render.</dd>
 </dl>
 </section>
 </li>
@@ -250,15 +254,17 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getCamera()">
-<h3>getCamera</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a></span>&nbsp;<span class="element-name">getCamera</span>()</div>
-</section>
-</li>
-<li>
 <section class="detail" id="getCurrentRenderer()">
 <h3>getCurrentRenderer</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></span>&nbsp;<span class="element-name">getCurrentRenderer</span>()</div>
+<div class="block">Access the current active renderer (may be null if not yet constructed).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getCamera()">
+<h3>getCamera</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a></span>&nbsp;<span class="element-name">getCamera</span>()</div>
+<div class="block">Get the camera component used by this renderer.</div>
 </section>
 </li>
 <li>
@@ -287,8 +293,14 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="DebugRenderer.html" title="class in com.csse3200.game.rendering">DebugRenderer</a></span>&nbsp;<span class="element-name">getDebug</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The debug renderer attached to this renderer</dd>
+<dd>The debug renderer attached to this renderer.</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getStage()">
+<h3>getStage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.Stage</span>&nbsp;<span class="element-name">getStage</span>()</div>
 </section>
 </li>
 <li>
@@ -299,12 +311,6 @@ implements com.badlogic.gdx.utils.Disposable</span></div>
 <dt>Specified by:</dt>
 <dd><code>dispose</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.utils.Disposable</code></dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="getStage()">
-<h3>getStage</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.Stage</span>&nbsp;<span class="element-name">getStage</span>()</div>
 </section>
 </li>
 </ul>

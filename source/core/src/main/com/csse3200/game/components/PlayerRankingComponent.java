@@ -15,7 +15,6 @@ public class PlayerRankingComponent extends Component {
     private TimerTask timerTask;
 
     public PlayerRankingComponent() {
-        // 启动计时器，记录关卡持续时间（每秒 +1）
         timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -35,7 +34,6 @@ public class PlayerRankingComponent extends Component {
         }
     }
 
-    // === 更新指标 ===
 
     public void addKill() {
         enemiesKilled++;
@@ -62,7 +60,6 @@ public class PlayerRankingComponent extends Component {
         }
     }
 
-    // === 获取数据用于显示或上传排行榜 ===
 
     public int getEnemiesKilled() {
         return enemiesKilled;

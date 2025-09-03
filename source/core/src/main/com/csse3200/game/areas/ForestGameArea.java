@@ -3,8 +3,11 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.maingame.MapHighlighter;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.maingame.SimplePlacementController;
+import com.csse3200.game.components.maingame.TowerHotbarDisplay;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.DroneEnemyFactory;
@@ -41,6 +44,9 @@ public class ForestGameArea extends GameArea {
     "images/iso_grass_1.png",
     "images/iso_grass_2.png",
     "images/iso_grass_3.png",
+          "images/bone.png",
+          "images/cavemen.png",
+          "images/dino.png",
     "images/metal-scrap-currency.png", // Testing spawn metal scrap currency
     "images/iso_grass_3.png",
     "images/placeholder-enemy.png",
@@ -72,25 +78,27 @@ public class ForestGameArea extends GameArea {
   public void create() {
     loadAssets();
 
-    displayUI();
+    // Create UI entikty and keep reference
+    Entity ui = new Entity();
+    ui.addComponent(new GameAreaDisplay("Box Forest"));
+    ui.addComponent(new TowerHotbarDisplay());
+    SimplePlacementController placementController = new SimplePlacementController();
+    ui.addComponent(placementController);   // this listens and places the sprite
+    spawnEntity(ui);
 
     spawnTerrain();
     spawnTrees();
     player = spawnPlayer();
     spawnDrones();
 
-    // Testing spawn metal scrap currency
     spawnTestMetalScraps();
-    /////////////////////////
 
+    MapHighlighter mapHighlighter = new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
+    Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+    spawnEntity(highlighterEntity);
     playMusic();
   }
 
-  private void displayUI() {
-    Entity ui = new Entity();
-    ui.addComponent(new GameAreaDisplay("Box Forest"));
-    spawnEntity(ui);
-  }
 
   private void spawnTerrain() {
     // Background terrain

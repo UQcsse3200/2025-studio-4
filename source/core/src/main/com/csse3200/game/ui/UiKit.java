@@ -9,51 +9,51 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
- * 轻量 UI 工具：提供（1）简单的 BitmapFont 缩放；（2）圆角矩形背景（可带边框）。
- * 不依赖外部 skin/ttf。
+ * Lightweight UI toolkit: provides (1) simple BitmapFont scaling; (2) rounded rectangle backgrounds with optional borders.
+ * Does not depend on external skin/ttf files.
  */
 public final class UiKit {
     private UiKit() {}
 
     /**
-     * 生成一个缩放后的 BitmapFont（不依赖 TTF）。
-     * @param size  目标字号（像素级，内部按 16px 基准等比缩放）
-     * @param color 字色（你也可以在 LabelStyle 里设置 fontColor）
+     * Generates a scaled BitmapFont (without TTF dependency).
+     * @param size   target font size in pixels (internally scales based on 16px baseline)
+     * @param color  font color (you can also set fontColor in LabelStyle)
      */
     public static BitmapFont font(int size, Color color) {
-        BitmapFont f = new BitmapFont();           // 默认位图字体
-        float scale = Math.max(1f, size / 16f);    // 以 16 为基准等比缩放
+        BitmapFont f = new BitmapFont();           // Default bitmap font
+        float scale = Math.max(1f, size / 16f);    // Scale proportionally based on 16px baseline
         f.getData().setScale(scale);
         f.setColor(color);
         return f;
     }
 
     /**
-     * 生成圆角矩形背景（可选边框），返回 Drawable，可直接 Table#setBackground(drawable)。
-     * 不使用 NinePatch，避免构造参数问题。
+     * Generates a rounded rectangle background (with optional border), returns a Drawable that can be used directly with Table.setBackground(drawable).
+     * Does not use NinePatch to avoid constructor parameter issues.
      *
-     * @param fillColor    填充色（含透明度）
-     * @param borderColor  边框色；为 null 或 borderWidth;=0 则不绘制边框
-     * @param cornerRadius 圆角半径（像素）
-     * @param borderWidth  边框像素宽度
+     * @param fillColor    fill color (with transparency)
+     * @param borderColor  border color; if null or borderWidth less than or equal to 0, no border will be drawn
+     * @param cornerRadius corner radius in pixels
+     * @param borderWidth  border width in pixels
      */
     public static Drawable roundRect(Color fillColor,
                                      Color borderColor,
                                      int cornerRadius,
                                      int borderWidth) {
-        // 为了作为“背景”可伸缩，做一块小贴图即可（大小由圆角+边框决定）
+        // To make it scalable as a "background", create a small texture (size determined by corner radius + border)
         int pad = Math.max(1, cornerRadius + Math.max(0, borderWidth));
         int w = pad * 2 + 1;
         int h = w;
 
         Pixmap pm = new Pixmap(w, h, Pixmap.Format.RGBA8888);
-        // setBlending 是实例方法
+        // setBlending is an instance method
         pm.setBlending(Pixmap.Blending.SourceOver);
 
-        // 先画填充的圆角矩形（坐标固定从 0,0 开始，避免未使用参数的警告）
+        // First draw the filled rounded rectangle (coordinates fixed from 0,0 to avoid unused parameter warnings)
         fillRoundRect(pm, w, h, cornerRadius, fillColor);
 
-        // 再画边框
+        // Then draw the border
         if (borderColor != null && borderWidth > 0) {
             strokeRoundRect(pm, w, h, cornerRadius, borderWidth, borderColor);
         }
@@ -64,20 +64,20 @@ public final class UiKit {
         return new TextureRegionDrawable(new TextureRegion(texture));
     }
 
-    // ----------------- 私有绘制工具 -----------------
+    // ----------------- Private drawing utilities -----------------
 
     private static void fillRoundRect(Pixmap p, int w, int h, int r, Color color) {
         p.setColor(color);
         int right = w - 1;
         int top = h - 1;
 
-        // 中间矩形
+        // Center rectangle
         p.fillRectangle(r, 0, w - 2 * r, h);
-        // 左右竖条
+        // Left and right vertical bars
         p.fillRectangle(0, r, r, h - 2 * r);
         p.fillRectangle(right - r + 1, r, r, h - 2 * r);
 
-        // 四个圆角
+        // Four rounded corners
         p.fillCircle(r, r, r);
         p.fillCircle(right - r, r, r);
         p.fillCircle(r, top - r, r);
@@ -91,13 +91,13 @@ public final class UiKit {
         int top = h - 1;
 
         for (int i = 0; i < bw; i++) {
-            // 四边
-            p.drawRectangle(r + i, i, w - 2 * (r + i), 1);          // 下
-            p.drawRectangle(r + i, top - i, w - 2 * (r + i), 1);    // 上
-            p.drawRectangle(i, r + i, 1, h - 2 * (r + i));          // 左
-            p.drawRectangle(right - i, r + i, 1, h - 2 * (r + i));  // 右
+            // Four sides
+            p.drawRectangle(r + i, i, w - 2 * (r + i), 1);          // Bottom
+            p.drawRectangle(r + i, top - i, w - 2 * (r + i), 1);    // Top
+            p.drawRectangle(i, r + i, 1, h - 2 * (r + i));          // Left
+            p.drawRectangle(right - i, r + i, 1, h - 2 * (r + i));  // Right
 
-            // 四角
+            // Four corners
             p.drawCircle(r, r, r - i);
             p.drawCircle(right - r, r, r - i);
             p.drawCircle(r, top - r, r - i);

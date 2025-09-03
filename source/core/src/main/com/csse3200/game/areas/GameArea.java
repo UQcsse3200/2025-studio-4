@@ -67,4 +67,15 @@ public abstract class GameArea implements Disposable {
     entity.setPosition(worldPos);
     spawnEntity(entity);
   }
+
+    /**
+   * Spawn entity at a given Vector
+   *
+   * @param entity Entity (not yet registered)
+   * @param spawnPos Vector coords to spawn at
+   */
+  public void customSpawnEntityAt(Entity entity, Vector2 spawnPos) {
+    entity.setPosition(spawnPos);
+    spawnEntity(entity);
+  }
 }

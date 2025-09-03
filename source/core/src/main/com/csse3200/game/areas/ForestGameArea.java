@@ -22,12 +22,12 @@ import com.csse3200.game.components.maingame.MainGameWin;
 public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
   private static final int NUM_TREES = 7;
-  private static final int NUM_DRONES = 5;
-  private static final int NUM_GRUNTS = 3;
+  private static final int NUM_DRONES = 3;
+  private static final int NUM_GRUNTS = 2;
   private static final int NUM_TANKS = 2;
   private static final int NUM_BOSSES = 1;
   private static final int NUM_DIVIDERS = 1;
-  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_DIVIDERS;
+  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
   public static int NUM_ENEMIES_DEFEATED = 0;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final float WALL_WIDTH = 0.1f;
@@ -191,18 +191,19 @@ public class ForestGameArea extends GameArea {
   }
 
   private void spawnDividers() {
-    DividerEnemyFactory.DividerGroup group = new DividerEnemyFactory.DividerGroup(player);
+    GridPoint2 minPos = new GridPoint2(0, 0);
+    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 
-    // Set positions
-    Vector2 pos = new Vector2(10f, 5f);
-    group.parent.setPosition(pos);
-    group.mini1.setPosition(pos.cpy().add(0.5f, 0));
-    group.mini2.setPosition(pos.cpy().add(-0.5f, 0));
+    for (int i = 0; i < 1; i++) {
+      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+      Entity divider2 = DividerEnemyFactory.createDividerEnemy(player, this);
+      spawnEntityAt(divider2, randomPos, true, true);
+    }
+  }
 
-    // Spawn entities in the ForestGameArea
-    spawnEntity(group.parent);
-    spawnEntity(group.mini1);
-    spawnEntity(group.mini2);
+  public void spawnEntityAt(Entity entity, GridPoint2 location) {
+    location = new GridPoint2(5,5);
+    spawnEntityAt(entity, location, true, true);
   }
 
   private void playMusic() {

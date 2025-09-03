@@ -3,89 +3,99 @@ package com.csse3200.game.components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.csse3200.game.entities.configs.DamageTypeConfig;
+
 /**
- * Component used to store information related to combat such as health, attack, etc. Any entities
- * which engage it combat should have an instance of this class registered. This class can be
- * extended for more specific combat needs.
+ * Stores combat stats like health and base attack.
+ * Any entity engaging in combat should have this component.
  */
 public class CombatStatsComponent extends Component {
-
   private static final Logger logger = LoggerFactory.getLogger(CombatStatsComponent.class);
+
   private int health;
   private int baseAttack;
+  private DamageTypeConfig resistances;
+  private DamageTypeConfig weaknesses;
 
-  public CombatStatsComponent(int health, int baseAttack) {
+  public CombatStatsComponent(int health, int baseAttack,
+                              DamageTypeConfig resistances, DamageTypeConfig weaknesses) {
     setHealth(health);
     setBaseAttack(baseAttack);
+    this.resistances = resistances;
+    this.weaknesses = weaknesses;
   }
 
-  /**
-   * Returns true if the entity's has 0 health, otherwise false.
-   *
-   * @return is player dead
-   */
-  public Boolean isDead() {
+  public DamageTypeConfig getResistances() {
+    return resistances;
+  }
+
+  public DamageTypeConfig getWeaknesses() {
+    return weaknesses;
+  }
+
+  /** @return true if health is 0. */
+  public boolean isDead() {
     return health == 0;
   }
 
-  /**
-   * Returns the entity's health.
-   *
-   * @return entity's health
-   */
   public int getHealth() {
     return health;
   }
 
   /**
-   * Sets the entity's health. Health has a minimum bound of 0.
-   *
-   * @param health health
+   * Set health (min 0). Triggers UI and death events when appropriate.
    */
   public void setHealth(int health) {
-    if (health >= 0) {
-      this.health = health;
-    } else {
-      this.health = 0;
-    }
+    this.health = Math.max(0, health);
+
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
+      if (this.health == 0) {
+        // Keep both to be compatible with existing listeners in different branches
+        entity.getEvents().trigger("death");
+        entity.getEvents().trigger("entityDeath");
+        entity.getEvents().trigger("setDead", true); // optional flag some systems expect
+      }
     }
   }
 
   /**
-   * Adds to the player's health. The amount added can be negative.
-   *
-   * @param health health to add
+   * Add (or subtract) health with damage type adjustment.
+   * Negative 'health' means damage.
    */
-  public void addHealth(int health) {
-    setHealth(this.health + health);
+  public void addHealth(int healthDelta, DamageTypeConfig damageType) {
+    if (damageType == DamageTypeConfig.None) {
+      setHealth(this.health + healthDelta);
+      return;
+    }
+    if (damageType == getWeaknesses()) {
+      setHealth(this.health + (healthDelta * 2));
+      return;
+    }
+    if (damageType == getResistances()) {
+      setHealth(this.health + (int) Math.round(healthDelta * 0.5));
+      return;
+    }
+    setHealth(this.health + healthDelta);
   }
 
-  /**
-   * Returns the entity's base attack damage.
-   *
-   * @return base attack damage
-   */
   public int getBaseAttack() {
     return baseAttack;
   }
 
-  /**
-   * Sets the entity's attack damage. Attack damage has a minimum bound of 0.
-   *
-   * @param attack Attack damage
-   */
   public void setBaseAttack(int attack) {
     if (attack >= 0) {
       this.baseAttack = attack;
     } else {
-      logger.error("Can not set base attack to a negative attack value");
+      logger.error("Cannot set base attack to a negative value");
     }
   }
 
+  /**
+   * Apply damage equal to attacker's base attack.
+   * Event dispatching is centralized in setHealth() to avoid duplicates.
+   */
   public void hit(CombatStatsComponent attacker) {
-    int newHealth = getHealth() - attacker.getBaseAttack();
-    setHealth(newHealth);
+    setHealth(getHealth() - attacker.getBaseAttack());
   }
 }

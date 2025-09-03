@@ -64,6 +64,14 @@ public class TouchAttackComponent extends Component {
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null) {
       targetStats.hit(combatStats);
+      // Add trigger damage popup on target
+      target.getEvents().trigger("showDamage", combatStats.getBaseAttack(), target.getCenterPosition().cpy());
+    } else {
+      Entity target2 = ((BodyUserData) other.getBody().getUserData()).entity;
+      PlayerCombatStatsComponent playerStats = target2.getComponent(PlayerCombatStatsComponent.class);
+      if (playerStats != null) {
+        playerStats.hit(combatStats);
+      }
     }
 
     // Apply knockback

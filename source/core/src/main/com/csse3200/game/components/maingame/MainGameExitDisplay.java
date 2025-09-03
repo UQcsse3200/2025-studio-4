@@ -5,9 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.csse3200.game.ui.MockRanks;
+import com.csse3200.game.ui.PlayerRank;
+import com.csse3200.game.ui.RankingDialog;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * Displays a button to exit the Main Game screen to the Main Menu screen.
@@ -28,9 +33,21 @@ public class MainGameExitDisplay extends UIComponent {
     table.top().right();
     table.setFillParent(true);
 
+    TextButton saveBtn = new TextButton("Save", skin);
     TextButton mainMenuBtn = new TextButton("Exit", skin);
+    TextButton rankingBtn = new TextButton("Ranking", skin);
 
-    // Triggers an event when the button is pressed.
+    
+    saveBtn.addListener(
+      new ChangeListener() {
+        @Override
+        public void changed(ChangeEvent changeEvent, Actor actor) {
+          logger.debug("Save button clicked");
+          entity.getEvents().trigger("save");
+        }
+      });
+
+    
     mainMenuBtn.addListener(
       new ChangeListener() {
         @Override
@@ -40,7 +57,19 @@ public class MainGameExitDisplay extends UIComponent {
         }
       });
 
-    table.add(mainMenuBtn).padTop(10f).padRight(10f);
+      rankingBtn.addListener(new ChangeListener() {
+          @Override public void changed(ChangeEvent event, Actor actor) {
+              List<PlayerRank> players = MockRanks.make(30);     // 一次生成 30 条
+              new RankingDialog("Leaderboard", players, 12).show(stage);
+          }
+      });
+
+
+      table.add(saveBtn).padTop(10f).padRight(10f);
+    table.row();
+    table.add(mainMenuBtn).padTop(5f).padRight(10f);
+    table.row();
+    table.add(rankingBtn).padTop(5f).padRight(10f);
 
     stage.addActor(table);
   }

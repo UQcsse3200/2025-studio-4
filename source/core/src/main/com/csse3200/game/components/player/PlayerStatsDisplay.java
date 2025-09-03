@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -16,6 +16,8 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
+  private Image scrapImage;
+  private Label scrapLabel;
 
   /**
    * Creates reusable ui styles and adds actors to the stage.
@@ -26,6 +28,7 @@ public class PlayerStatsDisplay extends UIComponent {
     addActors();
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
+    entity.getEvents().addListener("updateScrap", this::updatePlayerScrapUI);
   }
 
   /**
@@ -39,16 +42,29 @@ public class PlayerStatsDisplay extends UIComponent {
     table.padTop(45f).padLeft(5f);
 
     // Heart image
-    float heartSideLength = 30f;
+    float heartSideLength = 60f;
     heartImage = new Image(ServiceLocator.getResourceService().getAsset("images/heart.png", Texture.class));
 
     // Health text
-    int health = entity.getComponent(CombatStatsComponent.class).getHealth();
+    int health = entity.getComponent(PlayerCombatStatsComponent.class).getHealth();
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, "large");
 
+    // Scrap image
+    float scrapSideLength = 128f;
+    scrapImage = new Image(ServiceLocator.getResourceService().getAsset("images/scrap.png", Texture.class));
+
+    // Scrap text
+    int scrap = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
+    CharSequence scrapText = String.format("Scrap: %d", scrap);
+    scrapLabel = new Label(scrapText, skin, "large");
+
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);
+    table.row();
+    table.add(scrapImage).size(scrapSideLength).pad(5);
+    table.add(scrapLabel);
+
     stage.addActor(table);
   }
 
@@ -66,10 +82,21 @@ public class PlayerStatsDisplay extends UIComponent {
     healthLabel.setText(text);
   }
 
+  /**
+   * Updates the player's scrap on the ui.
+   * @param scrap player scrap
+   */
+  public void updatePlayerScrapUI(int scrap) {
+    CharSequence text = String.format("Scrap: %d", scrap);
+    scrapLabel.setText(text);
+  }
+
   @Override
   public void dispose() {
     super.dispose();
     heartImage.remove();
     healthLabel.remove();
+    scrapImage.remove();
+    scrapLabel.remove();
   }
 }

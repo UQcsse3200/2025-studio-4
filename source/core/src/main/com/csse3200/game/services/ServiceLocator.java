@@ -23,7 +23,7 @@ public class ServiceLocator {
   private static GameTime timeSource;
   private static InputService inputService;
   private static ResourceService resourceService;
-
+  private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
   public static EntityService getEntityService() {
     return entityService;
@@ -53,6 +53,16 @@ public class ServiceLocator {
     logger.debug("Registering entity service {}", service);
     entityService = service;
   }
+
+
+    public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
+        leaderboardService = service;
+    }
+    public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
+        return leaderboardService;
+    }
+
+
 
   public static void registerRenderService(RenderService service) {
     logger.debug("Registering render service {}", service);
@@ -86,6 +96,7 @@ public class ServiceLocator {
     timeSource = null;
     inputService = null;
     resourceService = null;
+    leaderboardService = null;
   }
 
   private ServiceLocator() {

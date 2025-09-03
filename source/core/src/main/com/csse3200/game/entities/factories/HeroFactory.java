@@ -28,7 +28,7 @@ public final class HeroFactory {
    * Create a hero entity based on a {@link HeroConfig}.
    *
    * @param cfg     hero configuration (stats, cooldown, bullet properties, textures)
-   * @param camera  the active game camera (used for aiming & rotation)
+   * @param camera  the active game camera (used for aiming and rotation)
    * @return a new hero entity configured as a turret-style shooter
    */
   public static Entity createHero(HeroConfig cfg, Camera camera) {

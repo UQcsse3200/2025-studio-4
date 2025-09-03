@@ -20,7 +20,7 @@ public class GruntEnemyFactory {
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
-    private static final String DEFAULT_TEXTURE = "images/base_enemy.png";
+    private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     ///////////////////////////////////////////////////////////////////////////////////////////////

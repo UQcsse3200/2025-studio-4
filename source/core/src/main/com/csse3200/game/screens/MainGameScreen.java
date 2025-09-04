@@ -47,7 +47,9 @@ public class MainGameScreen extends ScreenAdapter {
   private static final String[] mainGameTextures = {
           "images/heart.png",
           "images/pause_button.png",
-          "images/dim_bg.jpeg"
+          "images/dim_bg.jpeg",
+          "images/Main_Menu_Button_Background.png",
+          "images/scrap.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);

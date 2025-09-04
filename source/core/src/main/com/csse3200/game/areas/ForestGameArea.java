@@ -90,6 +90,7 @@ public class ForestGameArea extends GameArea {
 
   private final TerrainFactory terrainFactory;
   private Entity player;
+  private boolean hasExistingPlayer = false;
   private MapEditor mapEditor;
 
   /**
@@ -104,8 +105,14 @@ public class ForestGameArea extends GameArea {
   }
 
   /**
-  * Create the game area, including terrain, static entities (trees), dynamic entities (player)
-  */
+   * Set whether this game area already has an existing player entity.
+   * @param hasExistingPlayer true if player already exists, false otherwise
+   */
+  public void setHasExistingPlayer(boolean hasExistingPlayer) {
+    this.hasExistingPlayer = hasExistingPlayer;
+  }
+
+  /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
   @Override
   public void create() {
     // Load assets (textures, sounds, etc.) before creating anything that needs them
@@ -125,7 +132,20 @@ public class ForestGameArea extends GameArea {
 
     spawnTerrain();
     spawnTrees();
-    player = spawnPlayer();
+
+    
+    // Only spawn new player if one doesn't already exist
+    if (!hasExistingPlayer) {
+      player = spawnPlayer();
+    } else {
+      // Find existing player entity
+      player = findExistingPlayer();
+      if (player == null) {
+        logger.warn("Expected existing player not found, creating new one");
+        player = spawnPlayer();
+      }
+    }
+    
 
     // Spawn Enemies
     spawnDrones();
@@ -244,7 +264,21 @@ public class ForestGameArea extends GameArea {
     }
   }
 
+  /**
+   * Find an existing player entity in the game.
+   * @return existing player entity or null if not found
+   */
+  private Entity findExistingPlayer() {
+    for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+      if (entity.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null) {
+        return entity;
+      }
+    }
+    return null;
+  }
+
   private void spawnGrunts() {
+
     GridPoint2 minPos = new GridPoint2(0, 0);
     GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
 

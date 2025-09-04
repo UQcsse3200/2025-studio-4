@@ -29,6 +29,9 @@ import com.csse3200.game.components.maingame.MainGameOver;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
+import com.csse3200.game.components.maingame.PauseMenuDisplay;
+import com.csse3200.game.components.maingame.PauseInputComponent;
+import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +43,13 @@ import org.slf4j.LoggerFactory;
 
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
-  private static final String[] mainGameTextures = {"images/heart.png", "images/scrap.png"};
+
+  private static final String[] mainGameTextures = {
+          "images/heart.png",
+          "images/pause_button.png",
+          "images/dim_bg.jpeg"
+  };
+
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
@@ -54,12 +63,17 @@ public class MainGameScreen extends ScreenAdapter {
   }
   
   public MainGameScreen(GdxGame game, boolean isContinue) {
+    this(game, isContinue, null);
+  }
+
+  public MainGameScreen(GdxGame game, boolean isContinue, String saveFileName) {
     this.game = game;
     ServiceLocator.registerGameService(game);
     ServiceLocator.registerLeaderboardService(
             new InMemoryLeaderboardService("player-001"));
 
-      logger.debug("Initialising main game screen services (Continue: {})", isContinue);
+    logger.debug("Initialising main game screen services (Continue: {}, Save: {})", isContinue, saveFileName);
+
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -84,23 +98,35 @@ public class MainGameScreen extends ScreenAdapter {
     ui = createUI();
 
     logger.debug("Initialising main game screen entities");
+    
+    // Handle save loading first
+    boolean hasExistingPlayer = false;
+    if (isContinue && saveFileName != null) {
+      logger.info("Loading specific save file: {}", saveFileName);
+      boolean success = saveGameService.loadGame(saveFileName);
+      if (success) {
+        logger.info("Save file loaded successfully");
+        hasExistingPlayer = true;
+      } else {
+        logger.warn("Failed to load save file, starting new game");
+      }
+    } else if (isContinue && saveGameService.hasSaveFile()) {
+      logger.info("Loading default saved game state for continue");
+      boolean success = saveGameService.loadGame();
+      if (success) {
+        hasExistingPlayer = true;
+      }
+    } else if (!isContinue) {
+      logger.info("Creating new player for new game");
+    }
+    
+    // Create game area after loading save (or for new game)
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
     ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
+    
+    // Pass information about existing player to game area
+    forestGameArea.setHasExistingPlayer(hasExistingPlayer);
     forestGameArea.create();
-    
-    
-    if (isContinue && saveGameService.hasSaveFile()) {
-      logger.info("Loading saved game state for continue");
-      saveGameService.loadGame();
-      
-      TerrainFactory terrainFactory2 = new TerrainFactory(renderer.getCamera());
-      ForestGameArea forestGameArea2 = new ForestGameArea(terrainFactory2);
-      forestGameArea2.create();
-    } else if (!isContinue) {
-     
-      logger.info("Creating new player for new game");
-      
-    }
   }
 
   @Override
@@ -163,16 +189,18 @@ public class MainGameScreen extends ScreenAdapter {
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
+// AFTER
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
-        .addComponent(new PerformanceDisplay())
-        .addComponent(new MainGameActions(this.game))
-        .addComponent(new MainGameExitDisplay())
-        .addComponent(new MainGameOver())
-        .addComponent(new MainGameWin())
-        .addComponent(new Terminal())
-        .addComponent(inputComponent)
-        .addComponent(new TerminalDisplay());
+            .addComponent(new PerformanceDisplay())
+            .addComponent(new MainGameActions(this.game))
+            .addComponent(new SettingsMenuDisplay(this.game, true))
+            .addComponent(new PauseMenuDisplay(this.game))
+            .addComponent(new PauseInputComponent())
+            .addComponent(new MainGameExitDisplay())
+            .addComponent(new Terminal())
+            .addComponent(inputComponent)
+            .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
     ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());

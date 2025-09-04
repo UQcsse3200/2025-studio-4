@@ -1,0 +1,1 @@
+Please rename your redesigned background image to main_menu_background.png and place it in this directory

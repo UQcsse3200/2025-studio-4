@@ -7,7 +7,7 @@ import com.csse3200.game.components.TowerComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.entities.configs.TowerConfig;
-import core.src.main.com.csse3200.game.components.TowerCostComponent;
+import com.csse3200.game.components.TowerCostComponent;
 
 /**
  * Factory class for creating different types of tower entities.

@@ -1,11 +1,15 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.rendering.TextureRenderComponent;
+
 
 public class GruntEnemyFactory {
     // Default grunt configuration
@@ -16,8 +20,9 @@ public class GruntEnemyFactory {
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
-    private static final String DEFAULT_TEXTURE = "images/base_enemy.png";
+    private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
+    private static final float DEFAULT_CLICKRADIUS = 0.7f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -28,6 +33,10 @@ public class GruntEnemyFactory {
     private static Vector2 speed = new Vector2(DEFAULT_SPEED);
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
+    private static float clickRadius = DEFAULT_CLICKRADIUS;
+    private static Entity self;
+    private static Entity currentTarget;
+    private static int priorityTaskCount = 1;
     
     /**
      * Creates a grunt enemy with current configuration.
@@ -36,15 +45,32 @@ public class GruntEnemyFactory {
      * @return entity
      */
     public static Entity createGruntEnemy(Entity target) {
-        Entity grunt = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
-
+        Entity grunt = EnemyFactory.createBaseEnemyAnimated(target, new Vector2(speed),
+        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f);
         grunt
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new TextureRenderComponent(texturePath))
-            .addComponent(new clickable(displayName));
+            .addComponent(new clickable(clickRadius));
+
+        grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
+
+        self = grunt;
+        currentTarget = target;
 
         return grunt;
     }
+
+    private static void destroyEnemy(Entity entity) {
+        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        ForestGameArea.checkEnemyCount();
+        Gdx.app.postRunnable(entity::dispose);
+        //Eventually add point/score logic here maybe?
+    }
+
+    private static void updateSpeed(Vector2 speed) {
+        priorityTaskCount += 1;
+        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    }
+        
         
     // Getters    
     public static DamageTypeConfig getResistance() {

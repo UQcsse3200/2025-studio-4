@@ -33,8 +33,20 @@ public class CombatStatsComponent extends Component {
     return weaknesses;
   }
 
-  /** @return true if health is 0. */
-  public boolean isDead() {
+  public void setResistances(DamageTypeConfig type) {
+    this.resistances = type;
+  }
+
+  public void setWeaknesses(DamageTypeConfig type) {
+    this.weaknesses = type;
+  }
+
+  /**
+   * Returns true if the entity's has 0 health, otherwise false.
+   *
+   * @return is player dead
+   */
+  public Boolean isDead() {
     return health == 0;
   }
 
@@ -46,8 +58,11 @@ public class CombatStatsComponent extends Component {
    * Set health (min 0). Triggers UI and death events when appropriate.
    */
   public void setHealth(int health) {
-    this.health = Math.max(0, health);
-
+    if (health >= 0) {
+      this.health = health;
+    } else {
+      this.health = 0;
+    }
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
       if (this.health == 0) {

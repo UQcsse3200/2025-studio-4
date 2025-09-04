@@ -25,6 +25,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.MainGameOver;
+import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import org.slf4j.Logger;
@@ -44,6 +46,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  public static Entity ui;
   private SaveGameService saveGameService;
 
   public MainGameScreen(GdxGame game) {
@@ -52,6 +55,7 @@ public class MainGameScreen extends ScreenAdapter {
   
   public MainGameScreen(GdxGame game, boolean isContinue) {
     this.game = game;
+    ServiceLocator.registerGameService(game);
     ServiceLocator.registerLeaderboardService(
             new InMemoryLeaderboardService("player-001"));
 
@@ -77,7 +81,7 @@ public class MainGameScreen extends ScreenAdapter {
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
-    createUI();
+    ui = createUI();
 
     logger.debug("Initialising main game screen entities");
     TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
@@ -153,25 +157,25 @@ public class MainGameScreen extends ScreenAdapter {
    * Creates the main game's ui including components for rendering ui elements to the screen and
    * capturing and handling ui input.
    */
-  private void createUI() {
-      logger.debug("Creating ui");
+  private Entity createUI() {
+    logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
         ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-      Entity ui = new Entity();
-      ui.addComponent(new InputDecorator(stage, 10))
-              .addComponent(new PerformanceDisplay())
-              .addComponent(new MainGameActions(this.game))
-              .addComponent(new MainGameExitDisplay())
-              .addComponent(new Terminal())
-              .addComponent(inputComponent)
-              .addComponent(new TerminalDisplay());
+    Entity ui = new Entity();
+    ui.addComponent(new InputDecorator(stage, 10))
+        .addComponent(new PerformanceDisplay())
+        .addComponent(new MainGameActions(this.game))
+        .addComponent(new MainGameExitDisplay())
+        .addComponent(new MainGameOver())
+        .addComponent(new MainGameWin())
+        .addComponent(new Terminal())
+        .addComponent(inputComponent)
+        .addComponent(new TerminalDisplay());
 
-
-
-        ServiceLocator.getEntityService().register(ui);
-
-
+    ServiceLocator.getEntityService().register(ui);
+    ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
+    return ui;
   }
 }

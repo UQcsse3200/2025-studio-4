@@ -3,6 +3,10 @@ package com.csse3200.game.components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.csse3200.game.components.maingame.MainGameOver;
+import com.csse3200.game.screens.MainGameScreen;
+import com.csse3200.game.services.ServiceLocator;
+
 /**
  * Component used to store information related to combat such as health, attack, etc. Any entities
  * which engage it combat should have an instance of this class registered. This class can be
@@ -50,8 +54,13 @@ public class PlayerCombatStatsComponent extends Component {
     }
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
+      if (this.health == 0) {
+        // Lose Condition
+        ServiceLocator.getEntityService().unregister(entity);
+        MainGameScreen.ui.getComponent(MainGameOver.class).addActors();
+        }
+      }
     }
-  }
 
   /**
    * Adds to the player's health. The amount added can be negative.

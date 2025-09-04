@@ -1,14 +1,11 @@
-package com.csse3200.game.entities.factories;
+package com.csse3200.game.entities;
 
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.physics.PhysicsService;
-import com.csse3200.game.physics.PhysicsTestUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +24,6 @@ class ObstacleFactoryTest {
         ServiceLocator.registerEntityService(new EntityService());
         ServiceLocator.registerPhysicsService(new PhysicsService());
     }
-
-
 
     @Test
     void createWall_setsScaleAndHasPhysicsAndCollider() {

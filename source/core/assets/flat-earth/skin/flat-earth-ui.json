@@ -15,6 +15,12 @@ com.badlogic.gdx.graphics.g2d.BitmapFont: {
 	font_large: {
 		file: fonts/pixel_26.fnt
 	}
+	arial_black: {
+		file: fonts/arial_black_32.fnt
+	}
+	segoe_ui: {
+		file: fonts/segoe_ui_18.fnt
+	}
 }
 com.badlogic.gdx.graphics.Color: {
 	black: {

@@ -1,4 +1,6 @@
 package com.csse3200.game.screens;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
+import com.csse3200.game.services.leaderboard.LeaderboardService; // 如果用到了接口
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -23,6 +25,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
+import com.csse3200.game.components.maingame.MainGameOver;
+import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
@@ -36,18 +40,22 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
  */
+
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);
+
   private static final String[] mainGameTextures = {
           "images/heart.png",
           "images/pause_button.png",
           "images/dim_bg.jpeg"
   };
+
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
 
   private final GdxGame game;
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
+  public static Entity ui;
   private SaveGameService saveGameService;
 
   public MainGameScreen(GdxGame game) {
@@ -60,8 +68,12 @@ public class MainGameScreen extends ScreenAdapter {
 
   public MainGameScreen(GdxGame game, boolean isContinue, String saveFileName) {
     this.game = game;
+    ServiceLocator.registerGameService(game);
+    ServiceLocator.registerLeaderboardService(
+            new InMemoryLeaderboardService("player-001"));
 
     logger.debug("Initialising main game screen services (Continue: {}, Save: {})", isContinue, saveFileName);
+
     ServiceLocator.registerTimeSource(new GameTime());
 
     PhysicsService physicsService = new PhysicsService();
@@ -73,16 +85,17 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
-    
-    
-    saveGameService = new SaveGameService(ServiceLocator.getEntityService());
+
+
+
+      saveGameService = new SaveGameService(ServiceLocator.getEntityService());
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
 
     loadAssets();
-    createUI();
+    ui = createUI();
 
     logger.debug("Initialising main game screen entities");
     
@@ -170,7 +183,7 @@ public class MainGameScreen extends ScreenAdapter {
    * Creates the main game's ui including components for rendering ui elements to the screen and
    * capturing and handling ui input.
    */
-  private void createUI() {
+  private Entity createUI() {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
@@ -188,6 +201,9 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new Terminal())
             .addComponent(inputComponent)
             .addComponent(new TerminalDisplay());
+
     ServiceLocator.getEntityService().register(ui);
+    ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
+    return ui;
   }
 }

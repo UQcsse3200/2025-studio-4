@@ -20,9 +20,11 @@ public abstract class GameArea implements Disposable {
   protected TerrainComponent terrain;
   protected List<Entity> areaEntities;
 
+
   protected GameArea() {
     areaEntities = new ArrayList<>();
   }
+
 
   /** Create the game area in the world. */
   public abstract void create();
@@ -65,6 +67,17 @@ public abstract class GameArea implements Disposable {
     }
 
     entity.setPosition(worldPos);
+    spawnEntity(entity);
+  }
+
+    /**
+   * Spawn entity at a given Vector
+   *
+   * @param entity Entity (not yet registered)
+   * @param spawnPos Vector coords to spawn at
+   */
+  public void customSpawnEntityAt(Entity entity, Vector2 spawnPos) {
+    entity.setPosition(spawnPos);
     spawnEntity(entity);
   }
 }

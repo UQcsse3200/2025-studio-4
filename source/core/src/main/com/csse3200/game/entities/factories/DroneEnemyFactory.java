@@ -1,11 +1,14 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.ai.tasks.AITaskComponent;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.rendering.TextureRenderComponent;
 
 public class DroneEnemyFactory {
     // Default drone configuration
@@ -16,8 +19,9 @@ public class DroneEnemyFactory {
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(1f, 1f);
-    private static final String DEFAULT_TEXTURE = "images/placeholder-enemy.png";
+    private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
+    private static final float DEFAULT_CLICKRADIUS = 0.7f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -28,7 +32,12 @@ public class DroneEnemyFactory {
     private static Vector2 speed = new Vector2(DEFAULT_SPEED);
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
-    
+    private static float clickRadius = DEFAULT_CLICKRADIUS;
+
+    private static Entity self;
+    private static Entity currentTarget;
+    private static int priorityTaskCount = 1;
+
     /**
      * Creates a drone enemy with current configuration.
      *
@@ -36,14 +45,31 @@ public class DroneEnemyFactory {
      * @return entity
      */
     public static Entity createDroneEnemy(Entity target) {
-        Entity drone = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+        Entity drone = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f);
 
         drone
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
-            .addComponent(new TextureRenderComponent(texturePath))
-            .addComponent(new clickable(displayName));
+            .addComponent(new clickable(clickRadius));
+
+        drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
+
+        self = drone;
+        currentTarget = target;
 
         return drone;
+    }
+
+    private static void destroyEnemy(Entity entity) {
+        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        ForestGameArea.checkEnemyCount();
+        Gdx.app.postRunnable(entity::dispose);
+        //Eventually add point/score logic here maybe?
+    }
+
+    private static void updateSpeed(Vector2 speed) {
+        priorityTaskCount += 1;
+        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
     }
         
     // Getters    

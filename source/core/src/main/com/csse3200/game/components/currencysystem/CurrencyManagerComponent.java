@@ -88,4 +88,28 @@ public class CurrencyManagerComponent extends Component {
         this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
     }
 
+    /**
+     * Spawns currency entities at the given position based on the specified drops.
+     * Consider spreading them slightly so they don’t all spawn exactly at the same position.
+     *
+     * @param drops a map of {@link CurrencyType} to the amount to drop for each type
+     * @param x     the x-coordinate where the currency should appear
+     * @param y     the y-coordinate where the currency should appear
+     */
+    public void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
+
+    }
+
+    /**
+     * Checks if the player has enough currency to cover the specified cost,
+     * and if so, deducts the amount and returns true. Otherwise, returns false
+     * and does not deduct anything.
+     *
+     * @param cost a map of {@link CurrencyType} to the required amount for each type
+     * @return true if the player can afford the cost and it was deducted,
+     *         false if the player cannot afford the cost
+     */
+    public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> cost) {
+        return false;
+    }
 }

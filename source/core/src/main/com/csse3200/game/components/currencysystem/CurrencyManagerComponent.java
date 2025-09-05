@@ -30,7 +30,7 @@ public class CurrencyManagerComponent extends Component {
      * @param type   the type of currency to add
      * @param amount the amount to add
      */
-    public void addCurrencyAmount(CurrencyType type, int amount) {
+    private void addCurrencyAmount(CurrencyType type, int amount) {
         currencies.put(type, currencies.getOrDefault(type, 0) + amount);
     }
 
@@ -41,7 +41,7 @@ public class CurrencyManagerComponent extends Component {
      * @param type   the type of currency to subtract
      * @param amount the amount to subtract
      */
-    public void subtractCurrencyAmount(CurrencyType type, int amount) {
+    private void subtractCurrencyAmount(CurrencyType type, int amount) {
         currencies.put(type, Math.max(0, currencies.getOrDefault(type, 0) - amount));
     }
 

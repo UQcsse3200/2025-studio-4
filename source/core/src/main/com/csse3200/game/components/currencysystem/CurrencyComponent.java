@@ -13,7 +13,19 @@ public class CurrencyComponent extends Component {
      * Supported types of currencies in the game.
      */
     public enum CurrencyType {
-        METAL_SCRAP
+        METAL_SCRAP("images/metal_scrap_currency.png"),
+        TITANIUM_CORE("images/titanium_core_currency.png"),
+        NEUROCHIP("images/neurochip_currency.png");
+
+        private final String texturePath;
+
+        CurrencyType(String texturePath) {
+            this.texturePath = texturePath;
+        }
+
+        public String getTexturePath() {
+            return texturePath;
+        }
     }
 
     private CurrencyType type;

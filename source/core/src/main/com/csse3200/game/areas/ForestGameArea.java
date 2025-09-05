@@ -430,6 +430,9 @@ public class ForestGameArea extends GameArea {
       player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(neurochip);
       spawnEntity(neurochip);
     }
+
+    // Test
+
   }
 
     @Override

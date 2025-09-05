@@ -91,7 +91,9 @@ public class CurrencyManagerComponent extends Component {
     /**
      * Spawns currency entities at the given position based on the specified drops.
      * Consider spreading them slightly so they don’t all spawn exactly at the same position.
-     * Consider adding event listener "dropCurrency" to somewhere???
+     * Should add event listener "dropCurrency".
+     *
+     * Usage: playerEntity.getEvents().trigger("dropCurrency", dropsMap, x, y)
      *
      * @param drops a map of {@link CurrencyType} to the amount to drop for each type
      * @param x     the x-coordinate where the currency should appear
@@ -106,11 +108,13 @@ public class CurrencyManagerComponent extends Component {
      * and if so, deducts the amount and returns true. Otherwise, returns false
      * and does not deduct anything.
      *
+     * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)
+     *
      * @param cost a map of {@link CurrencyType} to the required amount for each type
      * @return true if the player can afford the cost and it was deducted,
      *         false if the player cannot afford the cost
      */
     public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> cost) {
-        return false;
+        return true;
     }
 }

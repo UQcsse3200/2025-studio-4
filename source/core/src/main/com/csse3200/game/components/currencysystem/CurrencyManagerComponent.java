@@ -91,12 +91,13 @@ public class CurrencyManagerComponent extends Component {
     /**
      * Spawns currency entities at the given position based on the specified drops.
      * Consider spreading them slightly so they don’t all spawn exactly at the same position.
+     * Consider adding event listener "dropCurrency" to somewhere???
      *
      * @param drops a map of {@link CurrencyType} to the amount to drop for each type
      * @param x     the x-coordinate where the currency should appear
      * @param y     the y-coordinate where the currency should appear
      */
-    public void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
+    private void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
 
     }
 

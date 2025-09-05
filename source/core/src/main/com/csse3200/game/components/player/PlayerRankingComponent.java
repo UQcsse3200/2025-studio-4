@@ -1,4 +1,4 @@
-package com.deco2800.game.components.player;
+package com.csse3200.game.components.player;
 
 public class PlayerRankingComponent {
     public int stageCompleted = 0;

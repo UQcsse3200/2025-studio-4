@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.csse3200.game.areas.ForestGameArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
@@ -29,6 +30,7 @@ public class MainMenuDisplay extends UIComponent {
   public void create() {
     super.create();
     addActors();
+    ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
   }
 
   private void addActors() {
@@ -115,7 +117,7 @@ public class MainMenuDisplay extends UIComponent {
 
   @Override
   public void draw(SpriteBatch batch) {
-    // draw is handled by the stage
+    
   }
 
   @Override
@@ -124,36 +126,36 @@ public class MainMenuDisplay extends UIComponent {
   }
 
   /**
-   * 创建自定义按钮样式，使用按钮背景图片
+   * Create custom button style using button background image
    */
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // 使用Segoe UI字体
+    // Use Segoe UI font
     style.font = skin.getFont("segoe_ui");
     
-    // 加载按钮背景图片
+    // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()
         .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
     TextureRegion buttonRegion = new TextureRegion(buttonTexture);
     
-    // 创建NinePatch用于可缩放的按钮背景
+    // Create NinePatch for scalable button background
     NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     
-    // 创建按下状态的NinePatch（稍微变暗）
+    // Create pressed state NinePatch (slightly darker)
     NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
     
-    // 创建悬停状态的NinePatch（稍微变亮）
+    // Create hover state NinePatch (slightly brighter)
     NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
     
-    // 设置按钮状态
+    // Set button states
     style.up = new NinePatchDrawable(buttonPatch);
     style.down = new NinePatchDrawable(pressedPatch);
     style.over = new NinePatchDrawable(hoverPatch);
     
-    // 设置字体颜色
+    // Set font colors
     style.fontColor = Color.WHITE;
     style.downFontColor = Color.LIGHT_GRAY;
     style.overFontColor = Color.WHITE;

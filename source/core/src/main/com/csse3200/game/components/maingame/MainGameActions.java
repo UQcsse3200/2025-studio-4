@@ -21,7 +21,44 @@ public class MainGameActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
+    entity.getEvents().addListener("gameover", this::onExit);
+    entity.getEvents().addListener("gamewin", this::onExit);
     entity.getEvents().addListener("save", this::onSave);
+    entity.getEvents().addListener("togglePause", this::onTogglePause);
+    entity.getEvents().addListener("resume", this::onResume);
+    entity.getEvents().addListener("openSettings", this::onOpenSettings);
+    entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
+  }
+
+  private boolean isPaused = false;
+
+  private void onTogglePause() {
+    if (isPaused) {
+      onResume();
+    } else {
+      onPause();
+    }
+  }
+
+  private void onPause() {
+    ServiceLocator.getTimeSource().setTimeScale(0f);
+    isPaused = true;
+    entity.getEvents().trigger("showPauseUI"); // tells UI to show overlay
+  }
+
+  private void onResume() {
+    ServiceLocator.getTimeSource().setTimeScale(1f);
+    isPaused = false;
+    entity.getEvents().trigger("hidePauseUI"); // tells UI to hide overlay
+  }
+
+  private void onOpenSettings() {
+    // Opens the same Settings screen you use from main menu
+    game.setScreen(GdxGame.ScreenType.SETTINGS);
+  }
+
+  private void onQuitToMenu() {
+    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 
   /**

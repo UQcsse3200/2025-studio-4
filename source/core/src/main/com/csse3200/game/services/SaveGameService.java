@@ -34,10 +34,11 @@ public class SaveGameService {
     }
     
     /**
-     * Save the current game state to file
+     * Save the current game state to file with a custom name
+     * @param saveName custom name for the save file (without .json extension)
      * @return true if save was successful, false otherwise
      */
-    public boolean saveGame() {
+    public boolean saveGame(String saveName) {
         try {
             GameSaveData saveData = createSaveData();
             String saveJson = json.toJson(saveData);
@@ -48,7 +49,12 @@ public class SaveGameService {
                 savesDir.mkdirs();
             }
             
-            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + SAVE_FILE_NAME);
+            // Use custom save name or default
+            String fileName = (saveName != null && !saveName.trim().isEmpty()) 
+                ? saveName.trim() + ".json" 
+                : SAVE_FILE_NAME;
+            
+            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName);
             saveFile.writeString(saveJson, false);
             
             logger.info("Game saved successfully to {}", saveFile.path());
@@ -58,16 +64,44 @@ public class SaveGameService {
             return false;
         }
     }
+
+    /**
+     * Save the current game state to default file
+     * @return true if save was successful, false otherwise
+     */
+    public boolean saveGame() {
+        return saveGame(null);
+    }
     
     /**
-     * Load the game state from file
+     * Load the game state from a specific save file
+     * @param saveName name of the save file to load (without .json extension)
      * @return true if load was successful, false otherwise
      */
-    public boolean loadGame() {
+    public boolean loadGame(String saveName) {
         try {
-            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + SAVE_FILE_NAME);
+            String fileName = saveName + ".json";
+            
+            // Try multiple possible save file locations
+            FileHandle saveFile = null;
+            
+            // First try local directory
+            saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName);
             if (!saveFile.exists()) {
-                logger.warn("No save file found");
+                // Try internal assets directory
+                saveFile = Gdx.files.internal(SAVE_DIRECTORY + "/" + fileName);
+            }
+            if (!saveFile.exists()) {
+                // Try relative path from current working directory
+                saveFile = Gdx.files.absolute("./saves/" + fileName);
+            }
+            if (!saveFile.exists()) {
+                // Try desktop build directory
+                saveFile = Gdx.files.absolute("./desktop/build/resources/main/saves/" + fileName);
+            }
+            
+            if (!saveFile.exists()) {
+                logger.warn("Save file not found in any location: {}", fileName);
                 return false;
             }
             
@@ -78,9 +112,17 @@ public class SaveGameService {
             logger.info("Game loaded successfully from {}", saveFile.path());
             return true;
         } catch (Exception e) {
-            logger.error("Failed to load game", e);
+            logger.error("Failed to load game from {}", saveName, e);
             return false;
         }
+    }
+
+    /**
+     * Load the game state from default file
+     * @return true if load was successful, false otherwise
+     */
+    public boolean loadGame() {
+        return loadGame(SAVE_FILE_NAME.replace(".json", ""));
     }
     
     /**
@@ -116,12 +158,18 @@ public class SaveGameService {
      * @param saveData the save data to restore from
      */
     private void restoreGameState(GameSaveData saveData) {
-        // Clear existing entities
-        clearExistingEntities();
+        // Find and remove existing player entity only (don't clear everything)
+        Entity existingPlayer = findPlayerEntity();
+        if (existingPlayer != null) {
+            entityService.unregister(existingPlayer);
+        }
         
         // Create new player at saved position
         Entity player = PlayerFactory.createPlayer();
-        player.setPosition(saveData.playerPosition);
+        
+        // Validate and adjust player position to be within game bounds
+        Vector2 validPosition = validatePlayerPosition(saveData.playerPosition);
+        player.setPosition(validPosition);
         
         // Restore player stats
         restorePlayerStats(player, saveData);
@@ -130,7 +178,7 @@ public class SaveGameService {
         entityService.register(player);
         
         // TODO: Restore other game entities (enemies, items, etc.)
-        // Note: Terrain will be recreated by the game area
+        // Note: Terrain and other game elements will be preserved
         logger.info("Game state restored - Player at position: {}", saveData.playerPosition);
     }
     
@@ -186,6 +234,30 @@ public class SaveGameService {
         }
     }
     
+    /**
+     * Validates and adjusts player position to be within valid game bounds
+     * @param position the original position to validate
+     * @return valid position within game bounds
+     */
+    private Vector2 validatePlayerPosition(Vector2 position) {
+        // Define game area bounds (adjust these values based on your game)
+        float minX = 0f;
+        float maxX = 15f;
+        float minY = 0f;
+        float maxY = 15f;
+        
+        float x = Math.max(minX, Math.min(maxX, position.x));
+        float y = Math.max(minY, Math.min(maxY, position.y));
+        
+        Vector2 validPosition = new Vector2(x, y);
+        
+        if (!validPosition.equals(position)) {
+            logger.warn("Player position adjusted from {} to {} to stay within bounds", position, validPosition);
+        }
+        
+        return validPosition;
+    }
+
     /**
      * Clear existing entities from the game
      */

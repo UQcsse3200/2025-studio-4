@@ -20,30 +20,31 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * Factory to create a player entity.
  *
- * <p>Predefined player properties are loaded from a config stored as a json file and should have
- * the properties stores in 'PlayerConfig'.
+ * <p>Predefined player properties are loaded from a config stored as a json file
+ * and should have the properties stored in 'PlayerConfig'.
  */
 public class PlayerFactory {
   private static final PlayerConfig stats =
-      FileLoader.readClass(PlayerConfig.class, "configs/player.json");
+          FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
-    public static Entity createTree() {
-        Entity tree = new Entity()
-                .addComponent(new TextureRenderComponent("images/tree.png"))
-                .addComponent(new PhysicsComponent())
-                .addComponent(new ColliderComponent());
-        return tree;
-    }
+  // (Optional) This helper probably belongs in a dedicated Obstacle/Tree factory,
+  // but keeping it here won't break anything.
+  public static Entity createTree() {
+    return new Entity()
+            .addComponent(new TextureRenderComponent("images/tree.png"))
+            .addComponent(new PhysicsComponent())
+            .addComponent(new ColliderComponent());
+  }
+
   /**
    * Create a player entity.
    * @return entity
    */
   public static Entity createPlayer() {
     InputComponent inputComponent =
-        ServiceLocator.getInputService().getInputFactory().createForPlayer();
+            ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
-    Entity player =
-        new Entity()
+    Entity player = new Entity()
             .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent())
@@ -53,7 +54,7 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
-                    .addComponent(new CurrencyManagerComponent());
+            .addComponent(new CurrencyManagerComponent());
 
     PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
     player.getComponent(ColliderComponent.class).setDensity(1.5f);
@@ -65,3 +66,4 @@ public class PlayerFactory {
     throw new IllegalStateException("Instantiating static util class");
   }
 }
+

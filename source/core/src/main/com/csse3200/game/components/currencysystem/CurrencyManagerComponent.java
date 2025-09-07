@@ -94,6 +94,11 @@ public class CurrencyManagerComponent extends Component {
         this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
     }
 
+    /**
+     * Plays the collection sound associated with the given currency type.
+     *
+     * @param type the {@link CurrencyType} whose collect sound should be played
+     */
     private void playCollectCurrencySound(CurrencyType type) {
         ServiceLocator.getResourceService()
                 .getAsset(type.getCollectSoundPath(), Sound.class)

@@ -33,20 +33,42 @@ public class CurrencyComponent extends Component {
         private final String displayName;
         private final String collectSoundPath;
 
+        /**
+         * Constructs a currency type with the specified display name, texture path, and collection sound path.
+         *
+         * @param displayName     the name shown to the player
+         * @param texturePath     the file path to the currency's texture/image
+         * @param collectSoundPath the file path to the sound played when the currency is collected
+         */
         CurrencyType(String displayName, String texturePath, String collectSoundPath) {
             this.texturePath = texturePath;
             this.displayName = displayName;
             this.collectSoundPath = collectSoundPath;
         }
 
+        /**
+         * Gets the display name of this currency type.
+         *
+         * @return the name of the currency shown in the UI
+         */
         public String getDisplayName() {
             return displayName;
         }
 
+        /**
+         * Gets the file path to the texture/image for this currency type.
+         *
+         * @return the path to the currency's texture
+         */
         public String getTexturePath() {
             return texturePath;
         }
 
+        /**
+         * Gets the file path to the sound played when this currency type is collected.
+         *
+         * @return the path to the collection sound
+         */
         public String getCollectSoundPath() {
             return collectSoundPath;
         }

@@ -118,5 +118,4 @@ class CurrencyManagerComponentTest {
         // Optionally verify that the sound was played
         verify(mockSound, never()).play(); // depends on how your CurrencyManager triggers Sound
     }
-
 }

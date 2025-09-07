@@ -1,8 +1,10 @@
 package com.csse3200.game.components.currencysystem;
 
+import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.services.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -83,10 +85,19 @@ public class CurrencyManagerComponent extends Component {
      */
     private void collectCurrency(Entity entity) {
         CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
-        int amount = entity.getComponent(CurrencyComponent.class).getValue();
-        this.addCurrencyAmount(type, amount);
-        int newAmount = getCurrencyAmount(type);
-        this.entity.getEvents().trigger("updateCurrencyUI", type, newAmount);
+        int value = entity.getComponent(CurrencyComponent.class).getValue();
+        this.addCurrencyAmount(type, value);
+
+        playCollectCurrencySound(type); // Play collecting sound
+
+        int amount = getCurrencyAmount(type);
+        this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+    }
+
+    private void playCollectCurrencySound(CurrencyType type) {
+        ServiceLocator.getResourceService()
+                .getAsset(type.getCollectSoundPath(), Sound.class)
+                .play(1.0f);
     }
 
     /**

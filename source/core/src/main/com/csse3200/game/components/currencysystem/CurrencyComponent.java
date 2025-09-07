@@ -13,24 +13,42 @@ public class CurrencyComponent extends Component {
      * Supported types of currencies in the game.
      */
     public enum CurrencyType {
-        METAL_SCRAP("images/metal_scrap_currency.png", "Metal Scrap"),
-        TITANIUM_CORE("images/titanium_core_currency.png", "Titanium Core"),
-        NEUROCHIP("images/neurochip_currency.png", "Neurochip");
+        METAL_SCRAP(
+                "Metal Scrap",
+                "images/metal_scrap_currency.png",
+                "sounds/metal_scrap_currency_collect.ogg"
+        ),
+        TITANIUM_CORE(
+                "Titanium Core",
+                "images/titanium_core_currency.png",
+                "sounds/titanium_core_currency_collect.ogg"
+        ),
+        NEUROCHIP(
+                "Neurochip",
+                "images/neurochip_currency.png",
+                "sounds/neurochip_currency_collect.ogg"
+        );
 
         private final String texturePath;
         private final String displayName;
+        private final String collectSoundPath;
 
-        CurrencyType(String texturePath, String displayName) {
+        CurrencyType(String displayName, String texturePath, String collectSoundPath) {
             this.texturePath = texturePath;
             this.displayName = displayName;
+            this.collectSoundPath = collectSoundPath;
+        }
+
+        public String getDisplayName() {
+            return displayName;
         }
 
         public String getTexturePath() {
             return texturePath;
         }
 
-        public String getDisplayName() {
-            return displayName;
+        public String getCollectSoundPath() {
+            return collectSoundPath;
         }
     }
 

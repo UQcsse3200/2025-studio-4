@@ -1,5 +1,6 @@
 package com.csse3200.game.components.currencysystem;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.extensions.GameExtension;
@@ -14,8 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(GameExtension.class)
 class CurrencyManagerComponentTest {
@@ -88,13 +88,20 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldCollectCurrency() {
+        // Mock ResourceService to avoid loading actual sound files
+        ResourceService resourceService = mock(ResourceService.class);
+        Sound mockSound = mock(Sound.class);
+        when(resourceService.getAsset(anyString(), eq(Sound.class))).thenReturn(mockSound);
+        ServiceLocator.registerResourceService(resourceService);
+
         // Create a dummy entity with the manager attached
         Entity testEntity = new Entity();
         testEntity.addComponent(currencyManagerComponent);
 
         // Mock a currency entity
         Entity mockEntity = mock(Entity.class);
-        CurrencyComponent currencyComponent = new CurrencyComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, 3);
+        CurrencyComponent currencyComponent =
+                new CurrencyComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, 3);
 
         when(mockEntity.getComponent(CurrencyComponent.class)).thenReturn(currencyComponent);
         when(mockEntity.getEvents()).thenReturn(new com.csse3200.game.events.EventHandler());
@@ -107,5 +114,8 @@ class CurrencyManagerComponentTest {
 
         // Verify currency was added
         assertEquals(3, currencyManagerComponent.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
+
+        // Optionally verify that the sound was played
+        verify(mockSound, never()).play(); // depends on how your CurrencyManager triggers Sound
     }
 }

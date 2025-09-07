@@ -6,8 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * A ui component for displaying player stats, e.g. health.
@@ -16,8 +21,9 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
-  private Image scrapImage;
-  private Label scrapLabel;
+
+  private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
+  private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
 
   /**
    * Creates reusable ui styles and adds actors to the stage.
@@ -28,7 +34,7 @@ public class PlayerStatsDisplay extends UIComponent {
     addActors();
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
-    entity.getEvents().addListener("updateScrap", this::updatePlayerScrapUI);
+    entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
   }
 
   /**
@@ -50,20 +56,33 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, "large");
 
-    // Scrap image
-    float scrapSideLength = 128f;
-    scrapImage = new Image(ServiceLocator.getResourceService().getAsset("images/scrap.png", Texture.class));
-
-    // Scrap text
-    int scrap = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
-    CharSequence scrapText = String.format("Scrap: %d", scrap);
-    scrapLabel = new Label(scrapText, skin, "large");
-
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);
     table.row();
-    table.add(scrapImage).size(scrapSideLength).pad(5);
-    table.add(scrapLabel);
+
+    // Dynamically render currencies
+    for (CurrencyType currencyType : CurrencyType.values()) {
+      Image currencyImage = new Image(
+              ServiceLocator.getResourceService().getAsset(
+                      currencyType.getTexturePath(),
+                      Texture.class
+              )
+      );
+      int currencyAmount = entity.getComponent(CurrencyManagerComponent.class).getCurrencyAmount(currencyType);
+      Label currencyLabel = new Label(
+              String.format("%s\n%d", currencyType.getDisplayName(), currencyAmount),
+              skin,
+              "large"
+      );
+
+      currencyImages.put(currencyType, currencyImage);
+      currencyLabels.put(currencyType, currencyLabel);
+
+      float sideLength = 64f;
+      table.add(currencyImage).size(sideLength).pad(5);
+      table.add(currencyLabel).left();
+      table.row();
+    }
 
     stage.addActor(table);
   }
@@ -83,12 +102,15 @@ public class PlayerStatsDisplay extends UIComponent {
   }
 
   /**
-   * Updates the player's scrap on the ui.
-   * @param scrap player scrap
+   * Updates the player's currency amount for certain type on the UI.
+   * @param type currency type to render
+   * @param amount player currency amount for certain type
    */
-  public void updatePlayerScrapUI(int scrap) {
-    CharSequence text = String.format("Scrap: %d", scrap);
-    scrapLabel.setText(text);
+  public void updatePlayerCurrencyAmountUI(CurrencyType type, int amount) {
+    Label label = currencyLabels.get(type);
+    if (label != null) {
+      label.setText(String.format("%s\n%d", type.getDisplayName(), amount));
+    }
   }
 
   @Override
@@ -96,7 +118,14 @@ public class PlayerStatsDisplay extends UIComponent {
     super.dispose();
     heartImage.remove();
     healthLabel.remove();
-    scrapImage.remove();
-    scrapLabel.remove();
+
+    for (Image image : currencyImages.values()) {
+      image.remove();
+    }
+    for (Label label : currencyLabels.values()) {
+      label.remove();
+    }
+    currencyImages.clear();
+    currencyLabels.clear();
   }
 }

@@ -45,10 +45,10 @@ public class DroneEnemyFactory {
      * @return entity
      */
     public static Entity createDroneEnemy(Entity target) {
-        Entity drone = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
-        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f);
-
+        // 使用基础敌人（无动画），并添加静态纹理，避免测试环境缺少 atlas/region 导致的异常
+        Entity drone = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
         drone
+            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 

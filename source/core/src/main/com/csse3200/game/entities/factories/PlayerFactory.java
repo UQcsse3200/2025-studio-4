@@ -18,36 +18,24 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * Factory to create a player entity.
- *
- * <p>Predefined player properties are loaded from a config stored as a json file
- * and should have the properties stored in 'PlayerConfig'.
+ * Basement factory (renamed from PlayerFactory).
+ * Loads original player stats from configs/player.json.
  */
 public class PlayerFactory {
   private static final PlayerConfig stats =
           FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
-  // (Optional) This helper probably belongs in a dedicated Obstacle/Tree factory,
-  // but keeping it here won't break anything.
-  public static Entity createTree() {
-    return new Entity()
-            .addComponent(new TextureRenderComponent("images/tree.png"))
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent());
-  }
-
   /**
-   * Create a player entity.
-   * @return entity
+   * Create a basement entity that inherits original player attributes (health, inventory, currency).
    */
   public static Entity createPlayer() {
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
-    Entity player = new Entity()
-            .addComponent(new TextureRenderComponent("images/box_boy_leaf.png"))
+    Entity basement = new Entity()
+            .addComponent(new TextureRenderComponent("images/basement.png"))
             .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
+            .addComponent(new ColliderComponent().setSensor(true))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
             .addComponent(new PlayerActions())
             .addComponent(new PlayerCombatStatsComponent(stats.health, stats.baseAttack))
@@ -56,10 +44,10 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new CurrencyManagerComponent());
 
-    PhysicsUtils.setScaledCollider(player, 0.6f, 0.3f);
-    player.getComponent(ColliderComponent.class).setDensity(1.5f);
-    player.getComponent(TextureRenderComponent.class).scaleEntity();
-    return player;
+    PhysicsUtils.setScaledCollider(basement, 0.6f, 0.3f);
+    basement.getComponent(ColliderComponent.class).setDensity(1.5f);
+    basement.getComponent(TextureRenderComponent.class).scaleEntity();
+    return basement;
   }
 
   private PlayerFactory() {

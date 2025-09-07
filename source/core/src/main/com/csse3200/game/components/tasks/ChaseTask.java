@@ -78,18 +78,15 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   private int getActivePriority() {
     float dst = getDistanceToTarget();
-    if (dst > maxChaseDistance || !isTargetVisible()) {
+    if (dst > maxChaseDistance) {
       return -1; // Too far, stop chasing
     }
     return priority;
   }
 
   private int getInactivePriority() {
-    float dst = getDistanceToTarget();
-    if (dst < viewDistance && isTargetVisible()) {
-      return priority;
-    }
-    return -1;
+    // Always allow chase to start immediately
+    return priority;
   }
 
   private boolean isTargetVisible() {

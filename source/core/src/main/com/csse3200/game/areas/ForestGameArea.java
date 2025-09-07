@@ -43,11 +43,11 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_DIVIDERS = 1;
   public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
   public static int NUM_ENEMIES_DEFEATED = 0;
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
+  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(30, 6);
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
     "images/mmap.png",
-    "images/box_boy_leaf.png",
+    "images/basement.png",
     "images/crystal.png",
     "images/tree.png",
     "images/path.png",
@@ -249,7 +249,7 @@ public class ForestGameArea extends GameArea {
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.enableEditor();
         mapEditor.generateEnemyPath();  // Generate fixed enemy path生成固定敌人路径
-        mapEditor.spawnCrystal();       // Generate crystal生成水晶
+        //mapEditor.spawnCrystal();       // Generate crystal生成水晶
 
         return newPlayer;
     }

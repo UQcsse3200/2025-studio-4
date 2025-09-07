@@ -378,24 +378,24 @@ public class MapEditor extends InputAdapter {
         return true;
     }
 
-    /** Spawn crystal in specified grid (to prevent overlap)在指定格子生成水晶（防止重叠） */
-    public void spawnCrystal(GridPoint2 pos) {
-        String key = pos.x + "," + pos.y;
-        if (occupiedTiles.contains(key)) {
-            return;
-        }
-        Entity crystal = ObstacleFactory.createCrystal();
-        crystal.setPosition(terrain.tileToWorldPosition(pos));
-        ServiceLocator.getEntityService().register(crystal);
-        occupiedTiles.add(key);
-        System.out.println("💎 Crystal placed at " + pos);
-    }
-
-    /** Spawn crystal at the end of the path在路径终点生成水晶 */
-    public void spawnCrystal() {
-        spawnCrystal(new GridPoint2(29, 6));
-    }
-
+  //  /** Spawn crystal in specified grid (to prevent overlap)在指定格子生成水晶（防止重叠） */
+  //  public void spawnCrystal(GridPoint2 pos) {
+  //      String key = pos.x + "," + pos.y;
+  //      if (occupiedTiles.contains(key)) {
+  //          return;
+  //      }
+  //      Entity crystal = ObstacleFactory.createCrystal();
+  //      crystal.setPosition(terrain.tileToWorldPosition(pos));
+  //      ServiceLocator.getEntityService().register(crystal);
+  //      occupiedTiles.add(key);
+  //      System.out.println("💎 Crystal placed at " + pos);
+  //  }
+//
+  //  /** Spawn crystal at the end of the path在路径终点生成水晶 */
+  //  public void spawnCrystal() {
+  //      spawnCrystal(new GridPoint2(29, 6));
+  //  }
+//
     /** Clean up all objects清理所有对象 */
     public void cleanup() {
         for (Entity tree : placedTrees.values()) tree.dispose();

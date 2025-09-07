@@ -73,7 +73,7 @@ public class DividerChildEnemyFactory {
 
     private static void updateSpeed(Vector2 speed) {
         priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 10000f, 10000f, speed));
     }
         
     // Getters    

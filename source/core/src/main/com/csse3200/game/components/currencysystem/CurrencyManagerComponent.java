@@ -88,4 +88,22 @@ public class CurrencyManagerComponent extends Component {
         this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
     }
 
+    /**
+     * Attempts to spend the given amount of currency.
+     *
+     * @param type   the type of currency to spend
+     * @param amount the amount to spend
+     * @return true if the spend was successful, false if not enough currency
+     */
+    public boolean trySpendCurrency(CurrencyType type, int amount) {
+        int current = getCurrencyAmount(type);
+        if (current < amount) {
+            return false; // 钱不够
+        }
+        subtractCurrencyAmount(type, amount);
+        // 通知 UI 更新
+        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
+        return true;
+    }
+
 }

@@ -2,6 +2,8 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.components.hero.HeroAppearanceComponent;
+import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -13,6 +15,9 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ResourceService;
+
+import java.util.LinkedHashSet;
 
 /**
  * Factory class for creating hero entities.
@@ -26,6 +31,28 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 public final class HeroFactory {
   private HeroFactory() {
     throw new IllegalStateException("Instantiating static util class");
+  }
+
+  public static void loadAssets(ResourceService rs, HeroConfig cfg) {
+    LinkedHashSet<String> textures = new LinkedHashSet<>();
+
+    if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
+      textures.add(cfg.heroTexture);
+    }
+    if (cfg.levelTextures != null) {
+      for (String s : cfg.levelTextures) {
+        if (s != null && !s.isBlank()) {
+          textures.add(s);
+        }
+      }
+    }
+    if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) {
+      textures.add(cfg.bulletTexture);
+    }
+
+    if (!textures.isEmpty()) {
+      rs.loadTextures(textures.toArray(new String[0]));
+    }
   }
 
   /**
@@ -63,7 +90,9 @@ public final class HeroFactory {
                     cfg.bulletLife,
                     cfg.bulletTexture,
                     camera // Inject camera for aiming & rotation
-            ));
+            ))
+            .addComponent(new HeroUpgradeComponent())
+    .addComponent(new HeroAppearanceComponent(cfg));
 
     // Default scale to 1x1 so the hero is visible during testing
     hero.setScale(1f, 1f);

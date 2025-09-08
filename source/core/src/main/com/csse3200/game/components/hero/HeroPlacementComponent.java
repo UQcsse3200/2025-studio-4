@@ -75,15 +75,17 @@ public class HeroPlacementComponent extends Component {
         input = new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
-                if (keycode == Input.Keys.ENTER || keycode == Input.Keys.NUMPAD_ENTER) {
-                    // ESC cancels the current preview but does not exit placement mode
-                    Gdx.app.postRunnable(() -> {
-                        removeGhost();
-                        placed = false;
-                    });
-                    logger.info("Hero preview cancelled (placement mode still active).");
-                    return true;
-                }
+                // 临时注释掉 Enter 的取消逻辑
+    /*
+    if (keycode == Input.Keys.ENTER || keycode == Input.Keys.NUMPAD_ENTER) {
+        Gdx.app.postRunnable(() -> {
+            removeGhost();
+            placed = false;
+        });
+        logger.info("Hero preview cancelled (placement mode still active).");
+        return true;
+    }
+    */
                 return false;
             }
 
@@ -133,7 +135,9 @@ public class HeroPlacementComponent extends Component {
         logger.info("Right-click to preview, left-click to confirm, ESC to cancel preview.");
     }
 
-    /** Convert screen coordinates to a clamped grid cell. */
+    /**
+     * Convert screen coordinates to a clamped grid cell.
+     */
     private GridPoint2 screenToGrid(int sx, int sy) {
         Renderer r = Renderer.getCurrentRenderer();
         if (r == null || r.getCamera() == null) return null;
@@ -149,7 +153,9 @@ public class HeroPlacementComponent extends Component {
         return new GridPoint2(gx, gy);
     }
 
-    /** Spawn a ghost entity at the given grid cell. */
+    /**
+     * Spawn a ghost entity at the given grid cell.
+     */
     private void spawnGhost(GridPoint2 cell) {
         ghostEntity = HeroFactory.createHeroGhost(ghostAlpha);
         ServiceLocator.getEntityService().register(ghostEntity);
@@ -161,13 +167,17 @@ public class HeroPlacementComponent extends Component {
         placeEntityAtCell(ghostEntity, cell);
     }
 
-    /** Place the given entity at the bottom-left of a grid cell. */
+    /**
+     * Place the given entity at the bottom-left of a grid cell.
+     */
     private void placeEntityAtCell(Entity e, GridPoint2 cell) {
         float tile = terrain.getTileSize();
         e.setPosition(cell.x * tile, cell.y * tile); // bottom-left aligned; add tile/2 for center alignment
     }
 
-    /** Check if a screen click falls within the ghost preview cell. */
+    /**
+     * Check if a screen click falls within the ghost preview cell.
+     */
     private boolean hitGhostByScreen(int sx, int sy) {
         if (ghostEntity == null || previewCell == null) return false;
         Renderer r = Renderer.getCurrentRenderer();
@@ -183,7 +193,9 @@ public class HeroPlacementComponent extends Component {
         return world.x >= gx0 && world.x <= gx1 && world.y >= gy0 && world.y <= gy1;
     }
 
-    /** Remove the ghost preview if it exists. */
+    /**
+     * Remove the ghost preview if it exists.
+     */
     private void removeGhost() {
         if (ghostEntity != null) {
             ghostEntity.dispose();
@@ -192,7 +204,9 @@ public class HeroPlacementComponent extends Component {
         previewCell = null;
     }
 
-    /** Detach this component’s input processor and optionally restore the previous one. */
+    /**
+     * Detach this component’s input processor and optionally restore the previous one.
+     */
     private void detachInput(boolean restorePrev) {
         if (input != null && muxSnapshot != null) {
             muxSnapshot.removeProcessor(input);

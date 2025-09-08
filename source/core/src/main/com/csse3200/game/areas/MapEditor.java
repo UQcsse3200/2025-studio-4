@@ -49,7 +49,7 @@ public class MapEditor extends InputAdapter {
     private Entity player;
 
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
-    private Map<String, Entity> placedTrees = new HashMap<>();
+    //private Map<String, Entity> placedTrees = new HashMap<>();
     private Map<String, GridPoint2> pathTiles = new HashMap<>();
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
     // Occupied tiles to avoid obstacle overlap已占用的格子，避免障碍物重叠
@@ -172,12 +172,12 @@ public class MapEditor extends InputAdapter {
         if (tx < 0 || ty < 0 || tx >= layer.getWidth() || ty >= layer.getHeight()) return;
 
         String key = tx + "," + ty;
-        if (!isPlaceableArea(tx, ty) || pathTiles.containsKey(key) || placedTrees.containsKey(key)) return;
+        if (!isPlaceableArea(tx, ty) || pathTiles.containsKey(key) ) return;
 
         Entity tree = ObstacleFactory.createTree();
         tree.setPosition(terrain.tileToWorldPosition(new GridPoint2(tx, ty)));
         ServiceLocator.getEntityService().register(tree);
-        placedTrees.put(key, tree);
+        //placedTrees.put(key, tree);
         System.out.println("🌲 tree placed at " + key);
     }
 
@@ -189,7 +189,7 @@ public class MapEditor extends InputAdapter {
         String key = tx + "," + ty;
         if (pathTiles.containsKey(key)) return;
 
-        if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
+        //if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
 
         if (pathTile != null) {
             TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
@@ -398,8 +398,8 @@ public class MapEditor extends InputAdapter {
 //
     /** Clean up all objects清理所有对象 */
     public void cleanup() {
-        for (Entity tree : placedTrees.values()) tree.dispose();
-        placedTrees.clear();
+        //for (Entity tree : placedTrees.values()) tree.dispose();
+        //placedTrees.clear();
         pathTiles.clear();
         placeableAreaTiles.clear();
         occupiedTiles.clear();

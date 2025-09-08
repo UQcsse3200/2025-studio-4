@@ -35,7 +35,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
  */
 public class ForestGameArea extends GameArea {
   private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
-  private static final int NUM_TREES = 7;
+  //private static final int NUM_TREES = 7;
   private static final int NUM_DRONES = 3;
   private static final int NUM_GRUNTS = 2;
   private static final int NUM_TANKS = 2;
@@ -49,7 +49,7 @@ public class ForestGameArea extends GameArea {
     "images/mmap.png",
     "images/basement.png",
     "images/crystal.png",
-    "images/tree.png",
+    //"images/tree.png",
     "images/path.png",
     "images/path_keypoint.png",
     "images/ghost_king.png",
@@ -131,7 +131,7 @@ public class ForestGameArea extends GameArea {
     spawnEntity(ui);
 
     spawnTerrain();
-    spawnTrees();
+    //spawnTrees();
 
     
     // Only spawn new player if one doesn't already exist
@@ -230,16 +230,16 @@ public class ForestGameArea extends GameArea {
             GridPoint2Utils.ZERO, false, false);
     }
 
-  private void spawnTrees() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    for (int i = 0; i < NUM_TREES; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      Entity tree = ObstacleFactory.createTree();
-      spawnEntityAt(tree, randomPos, true, false);
-    }
-  }
+//  private void spawnTrees() {
+//    GridPoint2 minPos = new GridPoint2(0, 0);
+//    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
+//
+//    for (int i = 0; i < NUM_TREES; i++) {
+//      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
+//      Entity tree = ObstacleFactory.createTree();
+//      spawnEntityAt(tree, randomPos, true, false);
+//    }
+//  }
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();

@@ -34,19 +34,13 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.MAIN_GAME);
   }
 
+  /**
+   * Opens the save selection interface.
+   * Users can choose which save file to load or delete.
+   */
   private void onContinue() {
-    logger.info("Attempting to continue saved game");
-    
-    SaveGameService saveGameService = new SaveGameService(null);
-    
-    if (saveGameService.hasSaveFile()) {
-      logger.info("Save file found, loading game");
-      
-      game.setScreen(GdxGame.ScreenType.MAIN_GAME);
-    } else {
-      logger.warn("No save file found, cannot continue");
-      
-    }
+    logger.info("Opening save selection interface");
+    game.setScreen(GdxGame.ScreenType.SAVE_SELECTION);
   }
 
   /**

@@ -40,20 +40,20 @@ public class MainGameExitDisplay extends UIComponent {
     table.top().right();
     table.setFillParent(true);
 
-    // 创建自定义按钮样式
+    // Create custom button style
     TextButtonStyle customButtonStyle = createCustomButtonStyle();
 
     TextButton saveBtn = new TextButton("Save", customButtonStyle);
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
 
-    // 设置按钮大小
+    // Set button size
     float buttonWidth = 120f;
     float buttonHeight = 40f;
     
-    saveBtn.getLabel().setColor(Color.BLUE); // 正常蓝色
-    mainMenuBtn.getLabel().setColor(Color.BLUE); // 正常蓝色
-    rankingBtn.getLabel().setColor(Color.BLUE); // 正常蓝色
+    saveBtn.getLabel().setColor(Color.CYAN);
+    mainMenuBtn.getLabel().setColor(Color.CYAN);
+    rankingBtn.getLabel().setColor(Color.CYAN);
     
     saveBtn.addListener(
       new ChangeListener() {
@@ -76,7 +76,7 @@ public class MainGameExitDisplay extends UIComponent {
 
       rankingBtn.addListener(new ChangeListener() {
           @Override public void changed(ChangeEvent event, Actor actor) {
-              List<PlayerRank> players = MockRanks.make(30);     // 一次生成 30 条
+              List<PlayerRank> players = MockRanks.make(30);     // Generate 30 entries
               new RankingDialog("Leaderboard", players, 12).show(stage);
           }
       });
@@ -102,39 +102,38 @@ public class MainGameExitDisplay extends UIComponent {
   }
 
   /**
-   * 创建自定义按钮样式，使用按钮背景图片
+   * Creates custom button style using button background image
    */
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // 使用Segoe UI字体
+    // Use Segoe UI font
     style.font = skin.getFont("segoe_ui");
     
-    // 加载按钮背景图片
+    // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()
         .getAsset("images/Main_Game_Button.png", Texture.class);
     TextureRegion buttonRegion = new TextureRegion(buttonTexture);
     
-    // 创建NinePatch用于可缩放的按钮背景
+    // Create NinePatch for scalable button background
     NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     
-    // 创建按下状态的NinePatch（稍微变暗）
+    // Create pressed state NinePatch (slightly darker)
     NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
     
-    // 创建悬停状态的NinePatch（稍微变亮）
+    // Create hover state NinePatch (slightly brighter)
     NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
     
-    // 设置按钮状态
+    // Set button states
     style.up = new NinePatchDrawable(buttonPatch);
     style.down = new NinePatchDrawable(pressedPatch);
     style.over = new NinePatchDrawable(hoverPatch);
     
-    // 设置字体颜色
-    style.fontColor = Color.BLUE; // 正常蓝色
-    style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f); // 深蓝色
-    style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f); // 亮蓝色
+    style.fontColor = Color.CYAN;
+    style.downFontColor = new Color(0.0f, 0.6f, 0.8f, 1.0f);
+    style.overFontColor = new Color(0.2f, 0.8f, 1.0f, 1.0f);
     
     return style;
   }

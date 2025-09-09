@@ -34,7 +34,7 @@ public class MainGameWin extends UIComponent {
     table.top().center();
     table.setFillParent(true);
 
-    // 创建自定义按钮样式
+    // Create custom button style
     TextButtonStyle customButtonStyle = createCustomButtonStyle();
 
     TextButton mainMenuBtn = new TextButton("You Won!", customButtonStyle);
@@ -64,39 +64,39 @@ public class MainGameWin extends UIComponent {
   }
 
   /**
-   * 创建自定义按钮样式，使用按钮背景图片
+   * Creates custom button style using button background image
    */
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // 使用Segoe UI字体
+    // Use Segoe UI font
     style.font = skin.getFont("segoe_ui");
     
-    // 加载按钮背景图片
+    // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()
         .getAsset("images/Main_Game_Button.png", Texture.class);
     TextureRegion buttonRegion = new TextureRegion(buttonTexture);
     
-    // 创建NinePatch用于可缩放的按钮背景
+    // Create NinePatch for scalable button background
     NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     
-    // 创建按下状态的NinePatch（稍微变暗）
+    // Create pressed state NinePatch (slightly darker)
     NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
     
-    // 创建悬停状态的NinePatch（稍微变亮）
+    // Create hover state NinePatch (slightly brighter)
     NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
     
-    // 设置按钮状态
+    // Set button states
     style.up = new NinePatchDrawable(buttonPatch);
     style.down = new NinePatchDrawable(pressedPatch);
     style.over = new NinePatchDrawable(hoverPatch);
     
-    // 设置字体颜色
-    style.fontColor = Color.BLUE; // 正常蓝色
-    style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f); // 深蓝色
-    style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f); // 亮蓝色
+    // Set font colors
+    style.fontColor = Color.BLUE; // Normal blue
+    style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f); // Dark blue
+    style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f); // Light blue
     
     return style;
   }

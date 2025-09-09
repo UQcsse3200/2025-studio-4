@@ -32,29 +32,29 @@ public class MainGameOver extends UIComponent {
 
   public void addActors() {
     try {
-      // 如果界面已经存在，先移除
+      // Remove existing UI if present
       if (table != null && table.getStage() != null) {
         table.remove();
       }
 
-      // 首先添加背景图片到舞台
+      // Add background image to stage
       Image gameOverBackground = new Image(ServiceLocator.getResourceService()
           .getAsset("images/Game_Over.png", Texture.class));
       gameOverBackground.setFillParent(true);
       stage.addActor(gameOverBackground);
 
-      // 创建主表格用于内容布局
+      // Create main table for content layout
       table = new Table();
       table.setFillParent(true);
 
-      // 创建按钮容器
+      // Create button container
       Table buttonTable = new Table();
       buttonTable.center();
 
-      // 创建自定义按钮样式
+      // Create custom button style
       TextButtonStyle customButtonStyle = createCustomButtonStyle();
 
-      // 重新开始按钮
+      // Restart button
       TextButton restartBtn = new TextButton("Restart Game", customButtonStyle);
       restartBtn.addListener(new ChangeListener() {
         @Override
@@ -64,7 +64,7 @@ public class MainGameOver extends UIComponent {
         }
       });
 
-      // 返回主菜单按钮
+      // Main menu button
       TextButton mainMenuBtn = new TextButton("Main Menu", customButtonStyle);
       mainMenuBtn.addListener(new ChangeListener() {
         @Override
@@ -74,20 +74,20 @@ public class MainGameOver extends UIComponent {
         }
       });
 
-      // 设置按钮样式
-      restartBtn.getLabel().setColor(Color.BLUE); // 正常蓝色
-      mainMenuBtn.getLabel().setColor(Color.BLUE); // 正常蓝色
+      // Set button colors
+      restartBtn.getLabel().setColor(Color.BLUE); // Normal blue
+      mainMenuBtn.getLabel().setColor(Color.BLUE); // Normal blue
 
-      // 将按钮添加到按钮表格
+      // Add buttons to button table
       buttonTable.add(restartBtn).size(250f, 60f).pad(15f);
       buttonTable.row();
       buttonTable.add(mainMenuBtn).size(250f, 60f).pad(15f);
 
-      // 添加空白空间到顶部
+      // Add space at top
       table.add().expand();
       table.row();
       
-      // 将按钮添加到主表格底部
+      // Add buttons to main table bottom
       table.add(buttonTable).bottom().padBottom(150f);
 
       stage.addActor(table);
@@ -108,39 +108,39 @@ public class MainGameOver extends UIComponent {
   }
 
   /**
-   * 创建自定义按钮样式，使用按钮背景图片
+   * Creates custom button style using button background image
    */
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // 使用Segoe UI字体
+    // Use Segoe UI font
     style.font = skin.getFont("segoe_ui");
     
-        // 加载按钮背景图片
+        // Load button background image
         Texture buttonTexture = ServiceLocator.getResourceService()
             .getAsset("images/Main_Game_Button.png", Texture.class);
     TextureRegion buttonRegion = new TextureRegion(buttonTexture);
     
-    // 创建NinePatch用于可缩放的按钮背景
+    // Create NinePatch for scalable button background
     NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     
-    // 创建按下状态的NinePatch（稍微变暗）
+    // Create pressed state NinePatch (slightly darker)
     NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
     
-    // 创建悬停状态的NinePatch（稍微变亮）
+    // Create hover state NinePatch (slightly brighter)
     NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
     
-    // 设置按钮状态
+    // Set button states
     style.up = new NinePatchDrawable(buttonPatch);
     style.down = new NinePatchDrawable(pressedPatch);
     style.over = new NinePatchDrawable(hoverPatch);
     
-    // 设置字体颜色
-    style.fontColor = Color.BLUE; // 正常蓝色
-    style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f); // 深蓝色
-    style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f); // 亮蓝色
+    // Set font colors
+    style.fontColor = Color.BLUE; // Normal blue
+    style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f); // Dark blue
+    style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f); // Light blue
     
     return style;
   }

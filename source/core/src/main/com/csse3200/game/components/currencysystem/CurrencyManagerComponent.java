@@ -127,22 +127,35 @@ public class CurrencyManagerComponent extends Component {
      *
      * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)
      *
-     * @param cost a map of {@link CurrencyType} to the required amount for each type
+     * @param costMap a map of {@link CurrencyType} to the required amount for each type
      * @return true if the player can afford the cost and the player's currencies are deducted,
      *         false if the player cannot afford the cost
      */
-    public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> cost) {
-        for (Map.Entry<CurrencyType, Integer> entry:  cost.entrySet()) {
+    public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> costMap) {
+        for (Map.Entry<CurrencyType, Integer> entry:  costMap.entrySet()) {
             // Check if the cost is larger than the player's currency
             if (entry.getValue() > this.getCurrencyAmount(entry.getKey())) {
                 return false;
             }
         }
         // Deduct currencies by the cost
-        cost.forEach(this::subtractCurrencyAmount);
+        costMap.forEach(this::subtractCurrencyAmount);
         return true;
     }
 
-
+    /**
+     * Refunds a portion of the tower’s cost according to the specified refund rate.
+     *
+     * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)
+     *
+     * @param costMap a map of {@link CurrencyType} to the required amount for each type
+     * @param refundRate the refund rate of the cost
+     *
+     */
+    public void refundCurrency(Map<CurrencyType, Integer> costMap, float refundRate) {
+        costMap.forEach((type, amount) ->
+            addCurrencyAmount(type, getCurrencyAmount(type) + (int)(amount* refundRate)
+        ));
+    }
 
 }

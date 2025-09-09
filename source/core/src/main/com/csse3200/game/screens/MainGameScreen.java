@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
-import com.csse3200.game.services.leaderboard.LeaderboardService; // 如果用到了接口
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -26,7 +25,6 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.MainGameOver;
-import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
@@ -49,7 +47,9 @@ public class MainGameScreen extends ScreenAdapter {
           "images/pause_button.png",
           "images/dim_bg.jpeg",
           "images/Main_Menu_Button_Background.png",
-          "images/scrap.png"
+          "images/Main_Game_Button.png",
+          "images/scrap.png",
+          "images/Game_Over.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -200,6 +200,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new PauseMenuDisplay(this.game))
             .addComponent(new PauseInputComponent())
             .addComponent(new MainGameExitDisplay())
+            .addComponent(new MainGameOver())
             .addComponent(new Terminal())
             .addComponent(inputComponent)
             .addComponent(new TerminalDisplay());

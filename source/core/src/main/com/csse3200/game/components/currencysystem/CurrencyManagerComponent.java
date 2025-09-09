@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
-    private List<Entity> currencyList = new ArrayList<>();
+    private List<Entity> currencyEntityList = new ArrayList<>();
 
     /**
      * Adds a specified amount of the given currency type.
@@ -64,8 +64,8 @@ public class CurrencyManagerComponent extends Component {
      * @param entity
      */
     public void addCurrencyEntity(Entity entity) {
-        if (!currencyList.contains(entity)){
-            currencyList.add(entity);
+        if (!currencyEntityList.contains(entity)){
+            currencyEntityList.add(entity);
             entity.getEvents().addListener("collectCurrency", this::collectCurrency);
         }
     }
@@ -75,8 +75,8 @@ public class CurrencyManagerComponent extends Component {
      *
      * @return the current list of currency entities
      */
-    public List<Entity> getCurrencyList() {
-        return currencyList;
+    public List<Entity> getCurrencyEntityList() {
+        return currencyEntityList;
     }
 
     /**
@@ -128,10 +128,21 @@ public class CurrencyManagerComponent extends Component {
      * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)
      *
      * @param cost a map of {@link CurrencyType} to the required amount for each type
-     * @return true if the player can afford the cost and it was deducted,
+     * @return true if the player can afford the cost and the player's currencies are deducted,
      *         false if the player cannot afford the cost
      */
     public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> cost) {
+        for (Map.Entry<CurrencyType, Integer> entry:  cost.entrySet()) {
+            // Check if the cost is larger than the player's currency
+            if (entry.getValue() > this.getCurrencyAmount(entry.getKey())) {
+                return false;
+            }
+        }
+        // Deduct currencies by the cost
+        cost.forEach(this::subtractCurrencyAmount);
         return true;
     }
+
+
+
 }

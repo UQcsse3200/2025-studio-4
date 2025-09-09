@@ -48,7 +48,7 @@ class CurrencyManagerComponentTest {
 
         currencyManagerComponent.addCurrencyEntity(mockEntity);
 
-        assertEquals(1, currencyManagerComponent.getCurrencyList().size());
+        assertEquals(1, currencyManagerComponent.getCurrencyEntityList().size());
     }
 
     @Test
@@ -64,7 +64,7 @@ class CurrencyManagerComponentTest {
         currencyManagerComponent.addCurrencyEntity(mockEntity);
         currencyManagerComponent.addCurrencyEntity(mockEntity);
 
-        assertEquals(1, currencyManagerComponent.getCurrencyList().size());
+        assertEquals(1, currencyManagerComponent.getCurrencyEntityList().size());
     }
 
     @Test
@@ -80,7 +80,7 @@ class CurrencyManagerComponentTest {
         currencyManagerComponent.addCurrencyEntity(metalScrap1);
         currencyManagerComponent.addCurrencyEntity(metalScrap2);
 
-        assertEquals(2, currencyManagerComponent.getCurrencyList().size());
+        assertEquals(2, currencyManagerComponent.getCurrencyEntityList().size());
 
         // Clean up so it doesn’t leak into other tests
         ServiceLocator.clear();

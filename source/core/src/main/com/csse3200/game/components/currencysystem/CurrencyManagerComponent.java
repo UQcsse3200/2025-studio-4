@@ -154,8 +154,8 @@ public class CurrencyManagerComponent extends Component {
      */
     public void refundCurrency(Map<CurrencyType, Integer> costMap, float refundRate) {
         costMap.forEach((type, amount) ->
-            addCurrencyAmount(type, getCurrencyAmount(type) + (int)(amount* refundRate)
-        ));
+            addCurrencyAmount(type, (int)(amount* refundRate))
+        );
     }
 
 }

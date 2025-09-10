@@ -11,12 +11,11 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.areas.terrain.TerrainComponent.TerrainOrientation;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Factory for creating game terrains. */
 public class TerrainFactory {
-  private static final GridPoint2 MAP_SIZE = new GridPoint2(31, 30);
+  private static final GridPoint2 MAP_SIZE = new GridPoint2(32, 32);
 
   private final OrthographicCamera camera;
   private final TerrainOrientation orientation;
@@ -59,8 +58,13 @@ public class TerrainFactory {
 
   // A simplified terrain creation method (with only mmap layers)简化的地形创建方法（只有 mmap 图层）
   private TerrainComponent createForestDemoTerrain(float tileWorldSize) {
-    GridPoint2 tilePixelSize = new GridPoint2(32, 32);
-    TiledMap tiledMap = createForestDemoTiles(tilePixelSize);
+    // 根据mmap原始尺寸与MAP_SIZE计算每格像素尺寸，确保贴图严格覆盖31x30格
+    Texture mmapTex = ServiceLocator.getResourceService().getAsset("images/mmap.png", Texture.class);
+    int tilePixelW = Math.max(1, Math.round((float) mmapTex.getWidth() / MAP_SIZE.x));
+    int tilePixelH = Math.max(1, Math.round((float) mmapTex.getHeight() / MAP_SIZE.y));
+    GridPoint2 tilePixelSize = new GridPoint2(tilePixelW, tilePixelH);
+
+    TiledMap tiledMap = createForestDemoTiles(tilePixelSize, mmapTex);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
@@ -75,13 +79,12 @@ public class TerrainFactory {
   }
 
   // Create a map with only mmap layers只包含 mmap 图层的地图
-  private TiledMap createForestDemoTiles(GridPoint2 tileSize) {
+  private TiledMap createForestDemoTiles(GridPoint2 tileSize, Texture mmapTex) {
     TiledMap tiledMap = new TiledMap();
     TiledMapTileLayer dummyLayer =
         new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
     tiledMap.getLayers().add(dummyLayer);
 
-    Texture mmapTex = ServiceLocator.getResourceService().getAsset("images/mmap.png", Texture.class);
     mmapTex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
     TiledMapImageLayer mmapLayer = new TiledMapImageLayer(new TextureRegion(mmapTex), 0, 0);
     mmapLayer.setName("mmap");

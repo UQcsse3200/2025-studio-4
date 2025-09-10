@@ -20,6 +20,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
+import com.csse3200.game.entities.configs.HeroConfig2;
+import com.csse3200.game.entities.configs.HeroConfig3;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
@@ -30,7 +32,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.graphics.Camera;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-
+import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 /**
  * Forest area for the demo game with trees, a player, and some enemies.
  */
@@ -74,6 +76,12 @@ public class ForestGameArea extends GameArea {
             "images/hero/Heroshoot.png",
             "images/hero/Hero_level2.png",
             "images/hero/Bullet.png",
+            "images/hero2/Heroshoot.png",
+            "images/hero2/Hero_level2.png",
+            "images/hero2/Bullet.png",
+            "images/hero3/Heroshoot.png",
+            "images/hero3/Hero_level2.png",
+            "images/hero3/Bullet.png",
             "images/metal-scrap-currency.png",
             "images/bone.png",
             "images/cavemen.png",
@@ -185,6 +193,26 @@ public class ForestGameArea extends GameArea {
         spawnEntity(placement);
 
         playMusic();
+
+        // 1) 准备三套配置（你已有 HeroConfig / HeroConfig2 / HeroConfig3）
+        HeroConfig  cfg1 = new HeroConfig();
+        cfg1.heroTexture   = "images/hero/Heroshoot.png";
+        cfg1.bulletTexture = "images/hero/Bullet.png";
+
+        HeroConfig2 cfg2 = new HeroConfig2();
+        cfg2.heroTexture   = "images/hero2/Heroshoot.png";
+        cfg2.bulletTexture = "images/hero2/Bullet.png";
+
+        HeroConfig3 cfg3 = new HeroConfig3();
+        cfg3.heroTexture   = "images/hero3/Heroshoot.png";
+        cfg3.bulletTexture = "images/hero3/Bullet.png";
+
+// 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
+        Entity skinSwitcher = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
+        );
+        com.csse3200.game.services.ServiceLocator.getEntityService().register(skinSwitcher);
+
     }
 
     private void displayUI() {
@@ -356,9 +384,21 @@ public class ForestGameArea extends GameArea {
             heroCfg = new HeroConfig();
         }
 
+        HeroConfig2 heroCfg2 = FileLoader.readClass(HeroConfig2.class, "configs/hero2.json");
+        if (heroCfg2 == null) {
+            logger.warn("Failed to load configs/hero2.json, using default HeroConfig.");
+            heroCfg2 = new HeroConfig2();
+        }
+
+        HeroConfig3 heroCfg3 = FileLoader.readClass(HeroConfig3.class, "configs/hero3.json");
+        if (heroCfg3 == null) {
+            logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
+            heroCfg3 = new HeroConfig3();
+        }
+
         // ✅ 在创建 hero 前预加载资源
         ResourceService rs = ServiceLocator.getResourceService();
-        HeroFactory.loadAssets(rs, heroCfg);
+        HeroFactory.loadAssets(rs, heroCfg,heroCfg2,heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
         }

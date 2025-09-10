@@ -6,6 +6,8 @@ import com.csse3200.game.components.hero.HeroAppearanceComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.HeroConfig;
+import com.csse3200.game.entities.configs.HeroConfig2;
+import com.csse3200.game.entities.configs.HeroConfig3;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -33,7 +35,7 @@ public final class HeroFactory {
     throw new IllegalStateException("Instantiating static util class");
   }
 
-  public static void loadAssets(ResourceService rs, HeroConfig cfg) {
+  public static void loadAssets(ResourceService rs, HeroConfig cfg,HeroConfig2 cfg2, HeroConfig3 cfg3) {
     LinkedHashSet<String> textures = new LinkedHashSet<>();
 
     if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
@@ -53,6 +55,43 @@ public final class HeroFactory {
     if (!textures.isEmpty()) {
       rs.loadTextures(textures.toArray(new String[0]));
     }
+
+      if (cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) {
+          textures.add(cfg2.heroTexture);
+      }
+      if (cfg2.levelTextures != null) {
+          for (String s : cfg2.levelTextures) {
+              if (s != null && !s.isBlank()) {
+                  textures.add(s);
+              }
+          }
+      }
+      if (cfg2.bulletTexture != null && !cfg2.bulletTexture.isBlank()) {
+          textures.add(cfg2.bulletTexture);
+      }
+
+      if (!textures.isEmpty()) {
+          rs.loadTextures(textures.toArray(new String[0]));
+      }
+
+      if (cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) {
+          textures.add(cfg3.heroTexture);
+      }
+      if (cfg3.levelTextures != null) {
+          for (String s : cfg3.levelTextures) {
+              if (s != null && !s.isBlank()) {
+                  textures.add(s);
+              }
+          }
+      }
+      if (cfg3.bulletTexture != null && !cfg3.bulletTexture.isBlank()) {
+          textures.add(cfg3.bulletTexture);
+      }
+
+      if (!textures.isEmpty()) {
+          rs.loadTextures(textures.toArray(new String[0]));
+      }
+
   }
 
   /**
@@ -98,6 +137,9 @@ public final class HeroFactory {
     hero.setScale(1f, 1f);
     return hero;
   }
+
+
+
 
   /**
    * Create a "ghost hero" entity used only for placement previews.

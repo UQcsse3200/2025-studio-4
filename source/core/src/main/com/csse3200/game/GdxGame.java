@@ -8,6 +8,7 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
+import com.csse3200.game.screens.OpeningCutsceneScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class GdxGame extends Game {
     // Sets background to light yellow
     Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
 
-    setScreen(ScreenType.MAIN_MENU);
+    setScreen(ScreenType.OPENING_CUTSCENE);
   }
 
   /**
@@ -107,13 +108,28 @@ public class GdxGame extends Game {
         return new SettingsScreen(this);
       case SAVE_SELECTION:
         return new SaveSelectionScreen(this);
+      case OPENING_CUTSCENE:
+        return new OpeningCutsceneScreen(this);
       default:
         return null;
     }
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE
+  }
+
+  /**
+   * 设置带有指定背景的开场动画
+   * @param backgroundIndex 背景索引 (0-4)
+   */
+  public void setOpeningCutsceneWithBackground(int backgroundIndex) {
+    logger.info("Setting opening cutscene with background index: {}", backgroundIndex);
+    Screen currentScreen = getScreen();
+    if (currentScreen != null) {
+      currentScreen.dispose();
+    }
+    setScreen(OpeningCutsceneScreen.withBackground(this, backgroundIndex));
   }
 
   /**

@@ -25,6 +25,9 @@ public class PlayerFactory {
   private static final PlayerConfig stats =
           FileLoader.readClass(PlayerConfig.class, "configs/player.json");
 
+  // 可调：Basement在世界中的渲染缩放（1=原始大小）。
+  private static final float BASEMENT_SCALE = 1.88f;
+
   /**
    * Create a basement entity that inherits original player attributes (health, inventory, currency).
    */
@@ -44,9 +47,10 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new CurrencyManagerComponent());
 
+    // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
+    basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);
     PhysicsUtils.setScaledCollider(basement, 0.6f, 0.3f);
     basement.getComponent(ColliderComponent.class).setDensity(1.5f);
-    basement.getComponent(TextureRenderComponent.class).scaleEntity();
     return basement;
   }
 

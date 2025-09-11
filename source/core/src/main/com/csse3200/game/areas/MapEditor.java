@@ -216,6 +216,7 @@ public class MapEditor extends InputAdapter {
         return newLayer;
     }
 
+/* 
     private TiledMapTileLayer getOrCreateLayer(String name, TiledMapTileLayer baseLayer) {
         for (int i = 0; i < terrain.getMap().getLayers().getCount(); i++) {
             if (terrain.getMap().getLayers().get(i).getName().equals(name)) {
@@ -229,6 +230,7 @@ public class MapEditor extends InputAdapter {
         terrain.getMap().getLayers().add(newLayer);
         return newLayer;
     }
+*/
 
     /** Automatically generate enemy paths自动生成敌人路径 */
     public void generateEnemyPath() {
@@ -285,7 +287,7 @@ public class MapEditor extends InputAdapter {
             markKeypoint(wp);
         }
 
-        generatePlaceableAreas();
+       // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());
     }
@@ -302,8 +304,8 @@ public class MapEditor extends InputAdapter {
         }
         cell.setTile(keypointTile);
     }
-
-    /** Generate placeable areas around the path生成路径周围的可放置区域 */
+ /*
+    // Generate placeable areas around the path生成路径周围的可放置区域 
     public void generatePlaceableAreas() {
         if (terrain == null || pathTiles.isEmpty()) return;
 
@@ -328,7 +330,7 @@ public class MapEditor extends InputAdapter {
             }
         }
     }
-
+*/
 
     private boolean isPlaceableArea(int tx, int ty) {
         return placeableAreaTiles.containsKey(tx + "," + ty);

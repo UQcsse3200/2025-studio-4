@@ -43,7 +43,7 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_DIVIDERS = 1;
   public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
   public static int NUM_ENEMIES_DEFEATED = 0;
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(30, 6);
+  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
   private static final float WALL_WIDTH = 0.1f;
   private static final String[] forestTextures = {
     "images/mmap.png",
@@ -163,7 +163,7 @@ public class ForestGameArea extends GameArea {
     generateBiomesAndRivers();
 
     // Display the area where defense towers can be placed显示可放置防御塔区域
-    mapEditor.generatePlaceableAreas();
+    //mapEditor.generatePlaceableAreas();
 
     // Set up map highlighting for tower placement feedback
     MapHighlighter mapHighlighter =

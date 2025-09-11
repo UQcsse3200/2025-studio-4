@@ -19,14 +19,14 @@ public class ObstacleFactory {
      * Creates a tree entity (占 1 个 tile).
      * @return entity
      */
-    public static Entity createTree() {
+    public static Entity createBarrier() {
         Entity tree = new Entity()
-                .addComponent(new TextureRenderComponent("images/tree.png"))
+                .addComponent(new TextureRenderComponent("images/crystal.png"))
                 .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
                 .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
         tree.getComponent(TextureRenderComponent.class).scaleEntity();
-        PhysicsUtils.setScaledCollider(tree, 0.5f, 0.5f);
+        PhysicsUtils.setScaledCollider(tree, 0.4f, 0.4f);
         return tree;
     }
 

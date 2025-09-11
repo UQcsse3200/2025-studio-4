@@ -151,7 +151,7 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-    @Override
+ /*   @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.Q) {
             placeTreeAbovePlayer();
@@ -160,7 +160,7 @@ public class MapEditor extends InputAdapter {
         return false;
     }
 
-    /** Place tree above player (only in placeable area)在玩家上方放树（只能在可放置区域） */
+     // Place tree above player (only in placeable area)在玩家上方放树（只能在可放置区域）
     private void placeTreeAbovePlayer() {
         if (terrain == null || player == null) return;
         Vector2 pos = player.getPosition();
@@ -180,7 +180,7 @@ public class MapEditor extends InputAdapter {
         //placedTrees.put(key, tree);
         System.out.println("🌲 tree placed at " + key);
     }
-
+*/
     /** Create path tiles创建路径瓦片 */
     private void createPathTile(int tx, int ty) {
         TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);

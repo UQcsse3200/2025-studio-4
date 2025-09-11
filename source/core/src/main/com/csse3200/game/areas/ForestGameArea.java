@@ -49,7 +49,7 @@ public class ForestGameArea extends GameArea {
     "images/mmap.png",
     "images/basement.png",
     "images/crystal.png",
-    //"images/tree.png",
+    "images/crystal.png",
     "images/path.png",
     "images/path_keypoint.png",
     "images/ghost_king.png",
@@ -133,7 +133,13 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     //spawnTrees();
 
-    
+    // Spawn trees using int[][] coordinates for readability
+    spawnBarrierAt(new int[][] {
+               {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
+      {26, 4}, {27, 4}, {28, 4}, {29, 4}
+    });
+
+
     // Only spawn new player if one doesn't already exist
     if (!hasExistingPlayer) {
       player = spawnPlayer();
@@ -354,6 +360,15 @@ public class ForestGameArea extends GameArea {
         music.setLooping(true);
         music.setVolume(0.3f);
         music.play();
+  }
+  
+  /** Spawn trees using int[][] where each element is {x, y}. */
+  private void spawnBarrierAt(int[][] coords) {
+    if (coords == null) return;
+    for (int[] p : coords) {
+      if (p == null || p.length != 2) continue;
+      spawnEntityAt(ObstacleFactory.createBarrier(), new GridPoint2(p[0], p[1]), true, false);
+    }
   }
 
   private void loadAssets() {

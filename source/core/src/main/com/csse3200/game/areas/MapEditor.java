@@ -151,36 +151,7 @@ public class MapEditor extends InputAdapter {
         }
     }
 
- /*   @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.Q) {
-            placeTreeAbovePlayer();
-            return true;
-        }
-        return false;
-    }
 
-     // Place tree above player (only in placeable area)在玩家上方放树（只能在可放置区域）
-    private void placeTreeAbovePlayer() {
-        if (terrain == null || player == null) return;
-        Vector2 pos = player.getPosition();
-        float tileSize = terrain.getTileSize();
-        int tx = (int)(pos.x / tileSize);
-        int ty = (int)(pos.y / tileSize) + 1;
-
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        if (tx < 0 || ty < 0 || tx >= layer.getWidth() || ty >= layer.getHeight()) return;
-
-        String key = tx + "," + ty;
-        if (!isPlaceableArea(tx, ty) || pathTiles.containsKey(key) ) return;
-
-        Entity tree = ObstacleFactory.createTree();
-        tree.setPosition(terrain.tileToWorldPosition(new GridPoint2(tx, ty)));
-        ServiceLocator.getEntityService().register(tree);
-        //placedTrees.put(key, tree);
-        System.out.println("🌲 tree placed at " + key);
-    }
-*/
     /** Create path tiles创建路径瓦片 */
     private void createPathTile(int tx, int ty) {
         TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);

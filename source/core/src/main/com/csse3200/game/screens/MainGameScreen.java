@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
-import com.csse3200.game.services.leaderboard.LeaderboardService; // 如果用到了接口
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -25,8 +24,6 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.MainGameOver;
-import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
@@ -95,6 +92,9 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+    // 显示碰撞体积
+    //renderer.getDebug().setActive(true);
+
 
     loadAssets();
     ui = createUI();

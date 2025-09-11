@@ -53,22 +53,6 @@ class MapEditorTest {
         assertNotNull(mapEditor);
     }
 
-    @Test
-    void shouldHandleKeyInput() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-        when(player.getPosition()).thenReturn(new Vector2(64f, 64f));
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-
-        // Test Q key returns true (handled)
-        boolean resultQ = mapEditor.keyDown(Input.Keys.Q);
-        assertTrue(resultQ);
-
-        // Test other key returns false (not handled)
-        boolean resultA = mapEditor.keyDown(Input.Keys.A);
-        assertFalse(resultA);
-    }
 
     @Test
     void shouldGenerateEnemyPath() {
@@ -125,16 +109,6 @@ class MapEditorTest {
         //assertDoesNotThrow(() -> mapEditor.generatePlaceableAreas());
     }
 
-    @Test
-    void shouldHandleNullPlayer() {
-        TerrainComponent terrain = createMockTerrain();
-
-        MapEditor mapEditor = new MapEditor(terrain, null);
-
-        assertNotNull(mapEditor);
-        boolean result = mapEditor.keyDown(Input.Keys.Q);
-        assertTrue(result); // Still handles the key but doesn't crash
-    }
 
     private TerrainComponent createMockTerrain() {
         TerrainComponent terrain = mock(TerrainComponent.class);

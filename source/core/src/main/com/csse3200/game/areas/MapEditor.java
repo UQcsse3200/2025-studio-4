@@ -406,4 +406,9 @@ public class MapEditor extends InputAdapter {
         keyWaypoints.clear();
         System.out.println("🧹 MapEditor cleaned up");
     }
+
+    public Map<String, GridPoint2> getInvalidTiles() {
+        return pathTiles;
+    }
+
 }

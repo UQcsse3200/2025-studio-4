@@ -44,17 +44,16 @@ public class MainGameActions extends Component {
   private void onPause() {
     ServiceLocator.getTimeSource().setTimeScale(0f);
     isPaused = true;
-    entity.getEvents().trigger("showPauseUI"); // tells UI to show overlay
+    entity.getEvents().trigger("showPauseUI"); 
   }
 
   private void onResume() {
     ServiceLocator.getTimeSource().setTimeScale(1f);
     isPaused = false;
-    entity.getEvents().trigger("hidePauseUI"); // tells UI to hide overlay
+    entity.getEvents().trigger("hidePauseUI"); 
   }
 
   private void onOpenSettings() {
-    // Opens the same Settings screen you use from main menu
     game.setScreen(GdxGame.ScreenType.SETTINGS);
   }
 
@@ -77,9 +76,7 @@ public class MainGameActions extends Component {
     logger.info("Exiting main game screen");
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
-  /**
-   * Saves the current game state.
-   */
+  
   private void onSave() {
     logger.info("Manual save requested");
     
@@ -93,6 +90,10 @@ public class MainGameActions extends Component {
         boolean success = saveService.saveGame();
         if (success) {
           logger.info("Manual save completed successfully");
+          if (!isPaused) {
+            onPause();
+          }
+          entity.getEvents().trigger("showSaveSuccess");
         } else {
           logger.warn("Manual save failed");
         }

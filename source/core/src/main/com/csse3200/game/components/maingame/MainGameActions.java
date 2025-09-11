@@ -28,6 +28,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
+    entity.getEvents().addListener("awardStars", this::awardStars);
   }
 
   private boolean isPaused = false;
@@ -91,5 +92,17 @@ public class MainGameActions extends Component {
     } catch (Exception e) {
       logger.error("Error during manual save", e);
     }
+  }
+
+  /**
+   * Awards stars when won
+   */
+  private void awardStars() {
+    if((ServiceLocator.getGameStateService()) == null){
+      logger.error("GameStateService is missing; register in Gdx.game");
+      return;
+    }
+    ServiceLocator.getGameStateService().updateStars(1);
+    logger.info("Awarded 1 star. Total = {}", ServiceLocator.getGameStateService().getStars());
   }
 }

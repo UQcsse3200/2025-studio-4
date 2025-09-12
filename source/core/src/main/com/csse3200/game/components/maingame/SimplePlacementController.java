@@ -43,6 +43,12 @@ public class SimplePlacementController extends Component {
         loadPathFromMapEditor();
     }
 
+    /** 外部在更新 MapEditor 的 invalidTiles 后调用，刷新本地禁放区缓存 */
+    // refresh the local cache of restricted/forbidden areas.
+    public void refreshInvalidTiles() {
+        loadPathFromMapEditor();
+    }
+
     // All tiles that belong to the enemy path (invalid for tower placement)
     private static int[][] FIXED_PATH = { };
 

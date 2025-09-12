@@ -216,6 +216,19 @@ public class MapHighlighter extends UIComponent {
     private boolean isTileFree(int tileX, int tileY, Array<Entity> entities) {
         if (entities == null) return true;
 
+        // 🔹 Check if tile is on the fixed path
+        if (placementController != null) {
+            int[][] path = placementController.getFixedPath();
+            if (path != null) {
+                for (int[] p : path) {
+                    if (p[0] == tileX && p[1] == tileY) {
+                        return false; // tile is part of fixed enemy path
+                    }
+                }
+            }
+        }
+
+        // 🔹 Check if tile is occupied by any existing tower
         for (Entity e : entities) {
             if (e == null) continue;
             TowerComponent tower = e.getComponent(TowerComponent.class);
@@ -226,7 +239,6 @@ public class MapHighlighter extends UIComponent {
 
             int towerWidth = tower.getWidth();
             int towerHeight = tower.getHeight();
-
             GridPoint2 towerTile = new GridPoint2(
                     (int) (pos.x / terrain.getTileSize()),
                     (int) (pos.y / terrain.getTileSize())
@@ -234,11 +246,13 @@ public class MapHighlighter extends UIComponent {
 
             if (tileX >= towerTile.x && tileX < towerTile.x + towerWidth &&
                     tileY >= towerTile.y && tileY < towerTile.y + towerHeight) {
-                return false; // occupied
+                return false; // occupied by a tower
             }
         }
-        return true;
+
+        return true; // free tile
     }
+
 
     @Override
     public void dispose() {

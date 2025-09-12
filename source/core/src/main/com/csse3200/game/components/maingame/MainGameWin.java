@@ -1,10 +1,17 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +34,10 @@ public class MainGameWin extends UIComponent {
     table.top().center();
     table.setFillParent(true);
 
-    TextButton mainMenuBtn = new TextButton("You Won!", skin);
+    // Create custom button style
+    TextButtonStyle customButtonStyle = createCustomButtonStyle();
+
+    TextButton mainMenuBtn = new TextButton("You Won!", customButtonStyle);
 
     // Triggers an event when the button is pressed.
     mainMenuBtn.addListener(
@@ -51,6 +61,44 @@ public class MainGameWin extends UIComponent {
   @Override
   public float getZIndex() {
     return Z_INDEX;
+  }
+
+  /**
+   * Creates custom button style using button background image
+   */
+  private TextButtonStyle createCustomButtonStyle() {
+    TextButtonStyle style = new TextButtonStyle();
+    
+    // Use Segoe UI font
+    style.font = skin.getFont("segoe_ui");
+    
+    // Load button background image
+    Texture buttonTexture = ServiceLocator.getResourceService()
+        .getAsset("images/Main_Game_Button.png", Texture.class);
+    TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+    
+    // Create NinePatch for scalable button background
+    NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+    
+    // Create pressed state NinePatch (slightly darker)
+    NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+    pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+    
+    // Create hover state NinePatch (slightly brighter)
+    NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+    hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+    
+    // Set button states
+    style.up = new NinePatchDrawable(buttonPatch);
+    style.down = new NinePatchDrawable(pressedPatch);
+    style.over = new NinePatchDrawable(hoverPatch);
+    
+    // Set font colors
+    style.fontColor = Color.BLUE; // Normal blue
+    style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f); // Dark blue
+    style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f); // Light blue
+    
+    return style;
   }
 
   @Override

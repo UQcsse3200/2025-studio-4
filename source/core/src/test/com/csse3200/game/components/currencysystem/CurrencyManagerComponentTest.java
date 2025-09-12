@@ -115,7 +115,7 @@ class CurrencyManagerComponentTest {
         // Verify currency was added
         assertEquals(3, currencyManagerComponent.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
 
-        // Optionally verify that the sound was played
-        verify(mockSound, never()).play(); // depends on how your CurrencyManager triggers Sound
+        // Verify that the sound was played
+        verify(mockSound, never()).play();
     }
 }

@@ -22,13 +22,7 @@ import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMapTile;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.graphics.Camera;
-import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 
 /**
@@ -45,41 +39,9 @@ public class ForestGameArea extends GameArea {
     public static int NUM_ENEMIES_DEFEATED = 0;
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
-    private static final String[] forestTextures = {
-            "images/mmap.png",
-            "images/box_boy_leaf.png",
-            "images/crystal.png",
-            "images/tree.png",
-            "images/path.png",
-            "images/path_keypoint.png",
-            "images/ghost_king.png",
-            "images/ghost_1.png",
-            "images/grass_1.png",
-            "images/grass_2.png",
-            "images/grass_3.png",
-            "images/hex_grass_1.png",
-            "images/hex_grass_2.png",
-            "images/hex_grass_3.png",
-            "images/iso_grass_1.png",
-            "images/iso_grass_2.png",
-            "images/iso_grass_3.png",
-            "images/desert.png",
-            "images/snow.png",
-            "images/river.png",
-            "images/drone_enemy.png",
-            "images/base_enemy.png",
-            "images/tank_enemy.png",
-            "images/boss_enemy.png",
-            "images/hero/Heroshoot.png",
-            "images/hero/Bullet.png",
-            "images/metal-scrap-currency.png",
-            "images/bone.png",
-            "images/cavemen.png",
-            "images/dino.png"
-    };
+
 
     private static final String[] forestTextureAtlases = {
-            "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas",
             "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_basic_spritesheet.atlas",
             "images/boss_basic_spritesheet.atlas"
     };
@@ -126,9 +88,6 @@ public class ForestGameArea extends GameArea {
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
 
-        // Set up the UI display for the game area
-        displayUI();
-
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
@@ -138,7 +97,6 @@ public class ForestGameArea extends GameArea {
         spawnEntity(ui);
 
         spawnTerrain();
-        //spawnTrees();
 
         // Only spawn new player if one doesn't already exist
         if (!hasExistingPlayer) {
@@ -171,11 +129,8 @@ public class ForestGameArea extends GameArea {
         spawnBosses();
         spawnDividers();
 
-        spawnTestMetalScraps();
-
         // Generate biomes & placeable areas
         mapEditor.generateBiomesAndRivers();
-        //mapEditor.generatePlaceableAreas();
 
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
@@ -190,28 +145,9 @@ public class ForestGameArea extends GameArea {
         playMusic();
     }
 
-    private void displayUI() {
-        Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest"));
-        spawnEntity(ui);
-    }
-
     private void spawnTerrain() {
         terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
         spawnEntity(new Entity().addComponent(terrain));
-
-        // Fill background with grass
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        Texture grassTex = ServiceLocator.getResourceService().getAsset("images/grass_1.png", Texture.class);
-        TiledMapTile grassTile = new StaticTiledMapTile(new TextureRegion(grassTex));
-
-        for (int x = 0; x < layer.getWidth(); x++) {
-            for (int y = 0; y < layer.getHeight(); y++) {
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(grassTile);
-                layer.setCell(x, y, cell);
-            }
-        }
 
         // Create boundary walls
         createBoundaryWalls();
@@ -330,11 +266,6 @@ public class ForestGameArea extends GameArea {
         }
     }
 
-    public void spawnEntityAt(Entity entity, GridPoint2 location) {
-        location = new GridPoint2(5, 5);
-        spawnEntityAt(entity, location, true, true);
-    }
-
     public static void checkEnemyCount() {
         if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
             MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
@@ -367,7 +298,6 @@ public class ForestGameArea extends GameArea {
     private void loadAssets() {
         logger.debug("Loading assets");
         ResourceService resourceService = ServiceLocator.getResourceService();
-        resourceService.loadTextures(forestTextures);
         resourceService.loadTextureAtlases(forestTextureAtlases);
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
@@ -380,24 +310,9 @@ public class ForestGameArea extends GameArea {
     private void unloadAssets() {
         logger.debug("Unloading assets");
         ResourceService resourceService = ServiceLocator.getResourceService();
-        resourceService.unloadAssets(forestTextures);
         resourceService.unloadAssets(forestTextureAtlases);
         resourceService.unloadAssets(forestSounds);
         resourceService.unloadAssets(forestMusic);
-    }
-
-    private void spawnTestMetalScraps() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        final int METAL_SCRAPS_COUNT = 10;
-        for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            float x = randomPos.x * terrain.getTileSize();
-            float y = randomPos.y * terrain.getTileSize();
-            Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
-            player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
-            spawnEntity(metalScrap);
-        }
     }
 
     @Override

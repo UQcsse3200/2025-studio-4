@@ -34,23 +34,28 @@ public class GruntEnemyFactoryTest {
     @Test
     void gruntEnemyHasCorrectStats() {
         Entity target = PlayerFactory.createPlayer();
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(75, stats.getHealth());
         assertEquals(12, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
-        assertEquals(new Vector2(0.5f, 0.5f), GruntEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.8f, 0.8f), GruntEnemyFactory.getSpeed());
     }
 
     @Test
     void gruntEnemyDiesCorrectly() {
         Entity target = PlayerFactory.createPlayer();
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
-        grunt.getEvents().trigger("entityDeath");
         assertEquals(0, stats.getHealth());
     }
 
@@ -145,7 +150,7 @@ public class GruntEnemyFactoryTest {
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, GruntEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, GruntEnemyFactory.getWeakness());
-        assertEquals(new Vector2(0.5f, 0.5f), GruntEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.8f, 0.8f), GruntEnemyFactory.getSpeed());
         assertEquals("images/grunt_enemy.png", GruntEnemyFactory.getTexturePath());
         assertEquals("Grunt Enemy", GruntEnemyFactory.getDisplayName());
     }

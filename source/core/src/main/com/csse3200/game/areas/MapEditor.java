@@ -7,13 +7,16 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -65,6 +68,8 @@ public class MapEditor extends InputAdapter {
 
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
+
+    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
@@ -283,6 +288,9 @@ public class MapEditor extends InputAdapter {
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
             markKeypoint(wp);
+            Entity waypoint = new Entity();
+            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypointList.add(waypoint);
         }
 
         generatePlaceableAreas();

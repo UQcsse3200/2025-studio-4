@@ -34,21 +34,28 @@ public class TankFactoryTest {
     @Test
     void tankEnemyHasCorrectStats() {
         Entity target = PlayerFactory.createPlayer();
-        Entity tank = TankEnemyFactory.createTankEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(150, stats.getHealth());
         assertEquals(15, stats.getBaseAttack());
-        assertEquals(new Vector2(0.2f, 0.2f), TankEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
 
     @Test
     void tankEnemyDiesCorrectly() {
         Entity target = PlayerFactory.createPlayer();
-        Entity tank = TankEnemyFactory.createTankEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         tank.getEvents().trigger("entityDeath");
+        assertEquals(0, stats.getHealth());
     }
 
     @Test
@@ -142,7 +149,7 @@ public class TankFactoryTest {
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, TankEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, TankEnemyFactory.getWeakness());
-        assertEquals(new Vector2(0.2f, 0.2f), TankEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
         assertEquals("images/tank_enemy.png", TankEnemyFactory.getTexturePath());
         assertEquals("Tank Enemy", TankEnemyFactory.getDisplayName());
     }

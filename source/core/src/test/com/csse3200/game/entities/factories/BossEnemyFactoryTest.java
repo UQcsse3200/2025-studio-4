@@ -35,7 +35,10 @@ public class BossEnemyFactoryTest {
     @Test
     void bossEnemyHasCorrectStats() {
         Entity target = PlayerFactory.createPlayer();
-        Entity boss = BossEnemyFactory.createBossEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(200, stats.getHealth());
@@ -48,7 +51,10 @@ public class BossEnemyFactoryTest {
     @Test
     void bossEnemyDiesCorrectly() {
         Entity target = PlayerFactory.createPlayer();
-        Entity boss = BossEnemyFactory.createBossEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         boss.getEvents().trigger("entityDeath");

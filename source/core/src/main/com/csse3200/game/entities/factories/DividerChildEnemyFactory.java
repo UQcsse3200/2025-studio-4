@@ -42,8 +42,10 @@ public class DividerChildEnemyFactory {
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
 
     private static Entity self;
+    private static Entity playerRef;
     private static Entity currentTarget;
     private static int priorityTaskCount = 1;
+    private static int currentWaypointIndex = 0;
 
     /**
      * Creates a DividerChild enemy with current configuration. The DividerChild is capable of spawning multiple other enemies upon death
@@ -51,8 +53,9 @@ public class DividerChildEnemyFactory {
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerChildChildEnemy(Entity target) {
-        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex) {
+        currentWaypointIndex = waypointIndex;
+        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed), waypoints,
         "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
 
         DividerChild

@@ -24,7 +24,8 @@ public class EnemyFactory {
    * @param speed max speed of the created enemy
    * @return entity
    */
-  public static Entity createBaseEnemy(Entity target, Vector2 speed) {
+  public static Entity createBaseEnemy(Entity target, Vector2 speed, java.util.List<Entity> waypoints) {
+    target = waypoints.get(0);
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new ChaseTask(target, 1, 100f, 100f, speed));
@@ -32,18 +33,18 @@ public class EnemyFactory {
         new Entity()
             .addComponent(new PhysicsComponent())
             .addComponent(new PhysicsMovementComponent())
-            .addComponent(new ColliderComponent())
+            .addComponent(new ColliderComponent().setSensor(true))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
             .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER, 1.5f))
             .addComponent(new com.csse3200.game.ui.DamagePopupComponent())
             .addComponent(aiComponent);
 
-    PhysicsUtils.setScaledCollider(npc, 0.9f, 0.4f);
+    PhysicsUtils.setScaledCollider(npc, 0.1f, 0.1f);
     npc.getEvents().addListener("entityDeath", () -> destroyEnemy(npc));
 
     return npc;
   }
-  
+
   private static void destroyEnemy(Entity entity) {
     //Gdx.app.postRunnable(entity::dispose);
     //Eventually add point/score logic here maybe?
@@ -56,11 +57,12 @@ public class EnemyFactory {
 public static Entity createBaseEnemyAnimated(
       Entity target,
       Vector2 speed,
+      java.util.List<Entity> waypoints,
       String atlasPath,
       float walkFrameDur,
       Float idleFrameDur
   ) {
-    Entity e = createBaseEnemy(target, speed);
+    Entity e = createBaseEnemy(target, speed, waypoints);
     //Loading the asset manager directly from the disk
     com.badlogic.gdx.files.FileHandle fh = com.badlogic.gdx.Gdx.files.internal(atlasPath);
     if (!fh.exists()) {

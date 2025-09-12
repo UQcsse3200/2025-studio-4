@@ -8,6 +8,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -42,36 +43,41 @@ public class BossEnemyFactory {
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
 
-    private static Entity self;
-    private static Entity currentTarget;
-    private static int priorityTaskCount = 1;
-
     /**
      * Creates a boss enemy with current configuration.
      *
-     * @param target entity to chase
+     * @param waypoints List of waypoint entities for the boss to follow
+     * @param player Reference to the player entity
      * @return entity
      */
-    public static Entity createBossEnemy(Entity target) {
-        Entity boss = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+    public static Entity createBossEnemy(java.util.List<Entity> waypoints, Entity player) {
+        Entity boss = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
         "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f);
+
+        // Add waypoint component for independent waypoint tracking
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        boss.addComponent(waypointComponent);
 
         boss
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
                 .addComponent(new clickable(clickRadius));
 
+        boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
+
+        // Handle waypoint progression for this specific boss
+        boss.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = boss.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(boss, nextTarget);
+                }
+            }
+        });
+
         // Set custom boss size
         var sz = boss.getScale(); 
         boss.setScale(sz.x * 1.8f, sz.y * 1.8f);
-
-        // Update physics engine to suit a large boss
-        PhysicsUtils.setScaledCollider(boss, 0.6f, 0.6f);    // unsure if these numbers are suitable
-        boss.getComponent(ColliderComponent.class).setDensity(1.5f);
-
-        boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
-
-        self = boss;
-        currentTarget = target;
 
         return boss;
     }
@@ -81,16 +87,35 @@ public class BossEnemyFactory {
         ForestGameArea.checkEnemyCount();
 
         // Drop currency upon defeat
-        currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-        currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+            wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        }
 
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 
-    private static void updateSpeed(Vector2 speed) {
-        priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    private static void updateSpeed(Entity boss, Vector2 newSpeed) {
+        WaypointComponent wc = boss.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setSpeed(newSpeed);
+            boss.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(wc.getCurrentTarget(), wc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
+    }
+
+    private static void updateChaseTarget(Entity boss, Entity newTarget) {
+        System.out.println("updating task for boss: " + boss.getId());
+        WaypointComponent wc = boss.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            boss.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed()));
+        }
     }
 
     // Getters

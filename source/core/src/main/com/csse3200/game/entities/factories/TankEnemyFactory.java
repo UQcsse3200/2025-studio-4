@@ -8,6 +8,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -20,7 +21,7 @@ public class TankEnemyFactory {
     private static final int DEFAULT_DAMAGE = 15;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(0.2f, 0.2f);
+    private static final Vector2 DEFAULT_SPEED = new Vector2(0.6f, 0.6f);
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
@@ -40,19 +41,20 @@ public class TankEnemyFactory {
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
 
-    private static Entity self;
-    private static Entity currentTarget;
-    private static int priorityTaskCount = 1;
-
     /**
      * Creates a tank enemy with current configuration.
      *
-     * @param target entity to chase
+     * @param waypoints List of waypoint entities for the tank to follow
+     * @param player Reference to the player entity
      * @return entity
      */
-    public static Entity createTankEnemy(Entity target) {
-        Entity tank = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
+    public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player) {
+        Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints, 
         "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f);
+
+        // Add waypoint component for independent waypoint tracking
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        tank.addComponent(waypointComponent);
 
         tank
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
@@ -60,8 +62,19 @@ public class TankEnemyFactory {
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
 
-        self = tank;
-        currentTarget = target;
+        // Handle waypoint progression for this specific tank
+        tank.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = tank.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(tank, nextTarget);
+                }
+            }
+        });
+
+        var sz = tank.getScale(); 
+        tank.setScale(sz.x * 1.3f, sz.y * 1.3f);
 
         return tank;
     }
@@ -70,20 +83,40 @@ public class TankEnemyFactory {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
-        // Drop currency upon defeat
-        currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-        currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        // Drop currency upon defeat - but only if player has the component
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            CurrencyManagerComponent currencyManager = wc.getPlayerRef().getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                currencyManager.addCurrencyAmount(currencyType, currencyAmount);
+                currencyManager.updateCurrency(currencyType);
+            }
+        }
 
         Gdx.app.postRunnable(entity::dispose);
-        //Eventually add point/score logic here maybe?
+}
+
+    private static void updateSpeed(Entity tank, Vector2 newSpeed) {
+        WaypointComponent wc = tank.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setSpeed(newSpeed);
+            tank.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(wc.getCurrentTarget(), wc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
     }
 
-    private static void updateSpeed(Vector2 speed) {
-        priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    private static void updateChaseTarget(Entity tank, Entity newTarget) {
+        System.out.println("updating task for tank: " + tank.getId());
+        WaypointComponent wc = tank.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            tank.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed()));
+        }
     }
-        
-        
+
     // Getters    
     public static DamageTypeConfig getResistance() {
         return resistance;

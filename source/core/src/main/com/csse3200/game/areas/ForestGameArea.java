@@ -166,7 +166,7 @@ public class ForestGameArea extends GameArea {
     spawnDrones();
 
     // Testing spawn metal scrap currency
-    spawnTestCurrencies();
+    // spawnTestCurrencies();
     /////////////////////////
     spawnGrunts();
     spawnTanks();
@@ -395,53 +395,12 @@ public class ForestGameArea extends GameArea {
     resourceService.unloadAssets(forestMusic);
   }
 
-    private void generateBiomesAndRivers() {
+  private void generateBiomesAndRivers() {
         if (mapEditor == null) {
             return;
         }
         mapEditor.generateBiomesAndRivers();
     }
-
-  // Testing purpose only
-  private void spawnTestCurrencies() {
-    GridPoint2 minPos = new GridPoint2(0, 0);
-    GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-
-    final int COUNT = 10;
-
-    for (int i = 0; i < COUNT; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      float x = randomPos.x * terrain.getTileSize();
-      float y = randomPos.y * terrain.getTileSize();
-
-      Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
-      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
-      spawnEntity(metalScrap);
-    }
-
-    for (int i = 0; i < COUNT; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      float x = randomPos.x * terrain.getTileSize();
-      float y = randomPos.y * terrain.getTileSize();
-
-      Entity titaniumCore = CurrencyFactory.createTitaniumCore(x, y);
-      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(titaniumCore);
-      spawnEntity(titaniumCore);
-    }
-
-    for (int i = 0; i < COUNT; i++) {
-      GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-      float x = randomPos.x * terrain.getTileSize();
-      float y = randomPos.y * terrain.getTileSize();
-
-      Entity neurochip = CurrencyFactory.createNeurochip(x, y);
-      player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(neurochip);
-      spawnEntity(neurochip);
-    }
-
-    // Test
-
-  }
 
     @Override
     public void dispose() {

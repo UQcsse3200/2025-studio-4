@@ -121,18 +121,14 @@ public class CurrencyManagerComponent extends Component {
      * Usage: playerEntity.getEvents().trigger("dropCurrency", dropsMap, x, y)
      *
      * @param drops a map of {@link CurrencyType} to the amount to drop for each type
-     * @param x     the x-coordinate where the currency should appear
-     * @param y     the y-coordinate where the currency should appear
      */
-    private void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
+    private void dropCurrency(Map<CurrencyType, Integer> drops) {
 
         for (Map.Entry<CurrencyComponent.CurrencyType, Integer> entry : drops.entrySet()) {
             CurrencyComponent.CurrencyType key = entry.getKey();
             int value = entry.getValue();
             System.out.println("Key: " + key + ", Value: " + value);
-            Entity curr = CurrencyFactory.createCurrency(key,value, x + 2, y + 2);
-            addCurrencyEntity(curr);
-            ServiceLocator.getEntityService().register(curr);
+            this.entity.getEvents().trigger("updateCurrencyUI", key, value);
         }
 
     }

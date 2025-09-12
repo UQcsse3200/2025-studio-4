@@ -32,6 +32,9 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.graphics.Camera;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 
+import java.util.Currency;
+import java.util.Map;
+
 /**
  * Forest area for the demo game with trees, a player, and some enemies.
  */
@@ -438,6 +441,17 @@ public class ForestGameArea extends GameArea {
 
     // Test
 
+  }
+
+  public void spawnCurrency(Map<CurrencyComponent.CurrencyType, Integer> drops, float x, float y) {
+
+    for (Map.Entry<CurrencyComponent.CurrencyType, Integer> entry : drops.entrySet()) {
+      CurrencyComponent.CurrencyType key = entry.getKey();
+      int value = entry.getValue();
+      System.out.println("Key: " + key + ", Value: " + value);
+      Entity curr = CurrencyFactory.createCurrency(key,value, x + 2, y + 2);
+      spawnEntity(curr);
+    }
   }
 
     @Override

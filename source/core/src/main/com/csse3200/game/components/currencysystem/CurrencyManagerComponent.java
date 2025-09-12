@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.csse3200.game.areas.ForestGameArea;
+
 /**
  * Manages the player's currencies within the game.
  *
@@ -25,6 +27,11 @@ import java.util.Map;
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
     private List<Entity> currencyEntityList = new ArrayList<>();
+
+    @Override
+    public void create() {
+        this.entity.getEvents().addListener("Drop currency", this::dropCurrency);
+    }
 
     /**
      * Adds a specified amount of the given currency type.
@@ -117,7 +124,7 @@ public class CurrencyManagerComponent extends Component {
      * @param y     the y-coordinate where the currency should appear
      */
     private void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
-
+        ForestGameArea.spawnEntity();
     }
 
     /**

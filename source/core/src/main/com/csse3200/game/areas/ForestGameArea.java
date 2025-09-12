@@ -36,7 +36,6 @@ import com.csse3200.game.components.maingame.SimplePlacementController;
  */
 public class ForestGameArea extends GameArea {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
-    private static final int NUM_TREES = 7;
     private static final int NUM_DRONES = 3;
     private static final int NUM_GRUNTS = 2;
     private static final int NUM_TANKS = 2;
@@ -245,17 +244,6 @@ public class ForestGameArea extends GameArea {
                 GridPoint2Utils.ZERO, false, false);
     }
 
-//    private void spawnTrees() {
-//        GridPoint2 minPos = new GridPoint2(0, 0);
-//        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-//
-//        for (int i = 0; i < NUM_TREES; i++) {
-//            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-//            //Entity tree = ObstacleFactory.createTree();
-//            //spawnEntityAt(tree, randomPos, true, false);
-//        }
-//    }
-
     //注册到 MapEditor 的 invalidTiles，并在地图上生成障碍物。
     //Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
@@ -276,9 +264,7 @@ public class ForestGameArea extends GameArea {
 
         // Initialize MapEditor
         mapEditor = new MapEditor(terrain, newPlayer);
-        mapEditor.enableEditor();
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
-        // 障碍物注册迁移到 create() 中统一处理
         // Uncomment if crystal spawning is needed:
         // mapEditor.spawnCrystal(); // Generate crystal
 

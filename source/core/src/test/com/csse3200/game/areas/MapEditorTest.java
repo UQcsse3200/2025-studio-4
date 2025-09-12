@@ -3,7 +3,6 @@ package com.csse3200.game.areas;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -66,17 +65,6 @@ class MapEditorTest {
     }
 
     @Test
-    void shouldGeneratePlaceableAreas() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-
-        // Should not throw exception when generating placeable areas
-        //assertDoesNotThrow(() -> mapEditor.generatePlaceableAreas());
-    }
-
-    @Test
     void shouldCleanupWithoutErrors() {
         TerrainComponent terrain = createMockTerrain();
         Entity player = mock(Entity.class);
@@ -85,17 +73,6 @@ class MapEditorTest {
 
         // Should not throw exception when cleaning up
         assertDoesNotThrow(() -> mapEditor.cleanup());
-    }
-
-    @Test
-    void shouldEnableEditor() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-
-        // Should not throw exception when enabling editor
-        assertDoesNotThrow(() -> mapEditor.enableEditor());
     }
 
     @Test

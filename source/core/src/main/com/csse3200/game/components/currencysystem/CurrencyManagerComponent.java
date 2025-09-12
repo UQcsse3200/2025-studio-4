@@ -101,6 +101,7 @@ public class CurrencyManagerComponent extends Component {
         this.addCurrencyAmount(type, value);
         playCollectCurrencySound(type); // Play collecting sound
         this.updateCurrencyUI(type);
+        this.currencyEntityList.remove(entity);
     }
 
     /**

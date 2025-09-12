@@ -25,6 +25,8 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("gamewin", this::onExit);
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
+    entity.getEvents().addListener("performSave", this::onPerformSave);
+    entity.getEvents().addListener("performSaveAs", this::onPerformSaveAs);
     entity.getEvents().addListener("togglePause", this::onTogglePause);
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
@@ -79,27 +81,35 @@ public class MainGameActions extends Component {
   
   private void onSave() {
     logger.info("Manual save requested");
-    
+    // Show save menu instead of directly saving
+    entity.getEvents().trigger("showSaveUI");
+  }
+
+  private void onPerformSave() {
+    logger.info("Performing save operation");
     
     try {
-     
       var entityService = ServiceLocator.getEntityService();
       if (entityService != null) {
-      
         var saveService = new com.csse3200.game.services.SaveGameService(entityService);
         boolean success = saveService.saveGame();
         if (success) {
           logger.info("Manual save completed successfully");
-          if (!isPaused) {
-            onPause();
-          }
           entity.getEvents().trigger("showSaveSuccess");
         } else {
           logger.warn("Manual save failed");
+          entity.getEvents().trigger("showSaveError");
         }
       }
     } catch (Exception e) {
       logger.error("Error during manual save", e);
+      entity.getEvents().trigger("showSaveError");
     }
+  }
+
+  private void onPerformSaveAs() {
+    logger.info("Save As requested");
+    // TODO: Implement save as functionality
+    entity.getEvents().trigger("showSaveError"); // For now, show error
   }
 }

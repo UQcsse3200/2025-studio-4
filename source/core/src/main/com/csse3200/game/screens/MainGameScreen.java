@@ -29,6 +29,7 @@ import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.maingame.PauseInputComponent;
+import com.csse3200.game.components.maingame.SaveMenuDisplay;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,6 +199,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new MainGameActions(this.game))
             .addComponent(new SettingsMenuDisplay(this.game, true))
             .addComponent(new PauseMenuDisplay(this.game))
+            .addComponent(new SaveMenuDisplay(this.game))
             .addComponent(new PauseInputComponent())
             .addComponent(new MainGameExitDisplay())
             .addComponent(new MainGameOver())

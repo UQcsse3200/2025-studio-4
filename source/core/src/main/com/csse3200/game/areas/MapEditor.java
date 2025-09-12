@@ -51,6 +51,7 @@ public class MapEditor extends InputAdapter {
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
     private Map<String, Entity> placedTrees = new HashMap<>();
     private Map<String, GridPoint2> pathTiles = new HashMap<>();
+    private Map<String, GridPoint2> invalidTiles = new HashMap<>();
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
     // Occupied tiles to avoid obstacle overlap已占用的格子，避免障碍物重叠
     private Set<String> occupiedTiles = new HashSet<>();
@@ -408,7 +409,11 @@ public class MapEditor extends InputAdapter {
     }
 
     public Map<String, GridPoint2> getInvalidTiles() {
-        return pathTiles;
+        // Example: add (15,15) as an invalid tile
+        invalidTiles.putAll(pathTiles);
+        invalidTiles.put("15,15", new GridPoint2(15, 15));
+        return invalidTiles;
     }
+
 
 }

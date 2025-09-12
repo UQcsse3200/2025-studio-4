@@ -20,10 +20,7 @@ import com.csse3200.game.areas.ForestGameArea;
  * This component keeps track of different types of currencies (e.g., metal scraps)
  * and provides methods to add, subtract, and retrieve amounts of each type.
  *
- * Usage example:
- *   CurrencyManagerComponent manager = new CurrencyManagerComponent();
- *   manager.addCurrencyAmount(CurrencyType.METAL_SCRAP, 10);
- *   int scraps = manager.getCurrencyAmount(CurrencyType.METAL_SCRAP);
+ * Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value
  */
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
@@ -114,23 +111,18 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
-     * Spawns currency entities at the given position based on the specified drops.
-     * Consider spreading them slightly so they don’t all spawn exactly at the same position.
-     * Should add event listener "dropCurrency".
+     * Add specified currencies when triggered on enemy's death
      *
-     * Usage: playerEntity.getEvents().trigger("dropCurrency", dropsMap, x, y)
+     * Usage: playerEntity.getEvents().trigger("dropCurrency", dropsMap)
      *
      * @param drops a map of {@link CurrencyType} to the amount to drop for each type
      */
     private void dropCurrency(Map<CurrencyType, Integer> drops) {
-
-        for (Map.Entry<CurrencyComponent.CurrencyType, Integer> entry : drops.entrySet()) {
-            CurrencyComponent.CurrencyType key = entry.getKey();
-            int value = entry.getValue();
-            System.out.println("Key: " + key + ", Value: " + value);
-            this.entity.getEvents().trigger("updateCurrencyUI", key, value);
-        }
-
+        drops.forEach((type, value) -> {
+            this.addCurrencyAmount(type, value);
+            int amount = getCurrencyAmount(type);
+            this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+        });
     }
 
     /**
@@ -152,7 +144,11 @@ public class CurrencyManagerComponent extends Component {
             }
         }
         // Deduct currencies by the cost
-        costMap.forEach(this::subtractCurrencyAmount);
+        costMap.forEach((type, value) -> {
+            this.subtractCurrencyAmount(type, value);
+            int amount = getCurrencyAmount(type);
+            this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+        });
         return true;
     }
 
@@ -166,9 +162,10 @@ public class CurrencyManagerComponent extends Component {
      *
      */
     public void refundCurrency(Map<CurrencyType, Integer> costMap, float refundRate) {
-        costMap.forEach((type, amount) ->
-            this.addCurrencyAmount(type, (int)(amount* refundRate))
-        );
+        costMap.forEach((type, value) -> {
+            this.addCurrencyAmount(type, (int) (value * refundRate));
+            int amount = getCurrencyAmount(type);
+            this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+        });
     }
-
 }

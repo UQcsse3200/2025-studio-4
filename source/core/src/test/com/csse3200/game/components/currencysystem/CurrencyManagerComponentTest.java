@@ -237,6 +237,10 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldRefundCorrectly() {
+        // Create a dummy entity with the manager attached
+        Entity testEntity = new Entity();
+        testEntity.addComponent(currencyManagerComponent);
+
         Map<CurrencyComponent.CurrencyType,Integer> costMap = new HashMap<>();
         costMap.put(CurrencyComponent.CurrencyType.METAL_SCRAP, 10);
         costMap.put(CurrencyComponent.CurrencyType.TITANIUM_CORE, 5);
@@ -307,5 +311,5 @@ class CurrencyManagerComponentTest {
         assertEquals(8, currencyManagerComponent
                 .getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
         assertEquals(9, currencyManagerComponent.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
-}
+    }
 }

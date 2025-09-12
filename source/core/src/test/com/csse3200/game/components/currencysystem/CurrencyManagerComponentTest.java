@@ -126,7 +126,7 @@ class CurrencyManagerComponentTest {
     @Test
     void shouldNotDeductCurrency() {
         // Create sample cost for testing
-        Map<CurrencyComponent.CurrencyType,Integer> costMap = new HashMap<>();
+        Map<CurrencyComponent.CurrencyType,Integer> costMap = new EnumMap<>(CurrencyComponent.CurrencyType.class);
         costMap.put(CurrencyComponent.CurrencyType.METAL_SCRAP, 5);
         costMap.put(CurrencyComponent.CurrencyType.NEUROCHIP, 5);
         costMap.put(CurrencyComponent.CurrencyType.TITANIUM_CORE, 5);
@@ -152,7 +152,7 @@ class CurrencyManagerComponentTest {
         testEntity.addComponent(currencyManagerComponent);
 
         // Create sample cost map for testing
-        Map<CurrencyComponent.CurrencyType,Integer> costMap = new HashMap<>();
+        Map<CurrencyComponent.CurrencyType,Integer> costMap = new EnumMap<>(CurrencyComponent.CurrencyType.class);
         costMap.put(CurrencyComponent.CurrencyType.METAL_SCRAP, 10);
         costMap.put(CurrencyComponent.CurrencyType.TITANIUM_CORE, 5);
         costMap.put(CurrencyComponent.CurrencyType.NEUROCHIP, 2);
@@ -201,7 +201,7 @@ class CurrencyManagerComponentTest {
         Entity testEntity = new Entity();
         testEntity.addComponent(currencyManagerComponent);
 
-        Map<CurrencyComponent.CurrencyType,Integer> costMap = new HashMap<>();
+        Map<CurrencyComponent.CurrencyType,Integer> costMap = new EnumMap<>(CurrencyComponent.CurrencyType.class);
         costMap.put(CurrencyComponent.CurrencyType.METAL_SCRAP, 10);
         costMap.put(CurrencyComponent.CurrencyType.TITANIUM_CORE, 5);
         costMap.put(CurrencyComponent.CurrencyType.NEUROCHIP, 2);

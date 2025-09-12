@@ -70,7 +70,7 @@ public class PlayerStatsDisplay extends UIComponent {
       );
       int currencyAmount = entity.getComponent(CurrencyManagerComponent.class).getCurrencyAmount(currencyType);
       Label currencyLabel = new Label(
-              String.format("%s\n%d", currencyType.getDisplayName(), currencyAmount),
+              String.format("%s%n%d", currencyType.getDisplayName(), currencyAmount),
               skin,
               "large"
       );
@@ -109,7 +109,7 @@ public class PlayerStatsDisplay extends UIComponent {
   public void updatePlayerCurrencyAmountUI(CurrencyType type, int amount) {
     Label label = currencyLabels.get(type);
     if (label != null) {
-      label.setText(String.format("%s\n%d", type.getDisplayName(), amount));
+      label.setText(String.format("%s%n%d", type.getDisplayName(), amount));
     }
   }
 

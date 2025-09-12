@@ -88,4 +88,13 @@ public class CurrencyManagerComponent extends Component {
         this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
     }
 
+
+    /**
+     * Trigger to update UI.
+     * @param type the type of currency to check
+     */
+    public void updateCurrency(CurrencyType type) {
+        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
+    }
+
 }

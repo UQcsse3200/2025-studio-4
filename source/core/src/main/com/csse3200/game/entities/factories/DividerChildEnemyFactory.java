@@ -6,6 +6,8 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
@@ -23,6 +25,8 @@ public class DividerChildEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 1;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -34,6 +38,8 @@ public class DividerChildEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
+    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
+    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
 
     private static Entity self;
     private static Entity currentTarget;
@@ -67,6 +73,11 @@ public class DividerChildEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        // Drop currency upon defeat
+        currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+        currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }

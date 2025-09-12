@@ -160,9 +160,6 @@ public class ForestGameArea extends GameArea {
     // Spawn Enemies
     spawnDrones();
 
-    // Testing spawn metal scrap currency
-    // spawnTestCurrencies();
-    /////////////////////////
     spawnGrunts();
     spawnTanks();
     spawnBosses();

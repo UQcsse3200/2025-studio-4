@@ -4,15 +4,12 @@ import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.CurrencyFactory;
 import com.csse3200.game.services.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.csse3200.game.areas.ForestGameArea;
 
 /**
  * Manages the player's currencies within the game.
@@ -25,6 +22,7 @@ import com.csse3200.game.areas.ForestGameArea;
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
     private List<Entity> currencyEntityList = new ArrayList<>();
+    private final String updateCurrencyUIEvent = "updateCurrencyUI";
 
     @Override
     public void create() {
@@ -96,7 +94,7 @@ public class CurrencyManagerComponent extends Component {
         playCollectCurrencySound(type); // Play collecting sound
 
         int amount = getCurrencyAmount(type);
-        this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+        this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
     }
 
     /**
@@ -121,7 +119,7 @@ public class CurrencyManagerComponent extends Component {
         drops.forEach((type, value) -> {
             this.addCurrencyAmount(type, value);
             int amount = getCurrencyAmount(type);
-            this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
         });
     }
 
@@ -147,7 +145,7 @@ public class CurrencyManagerComponent extends Component {
         costMap.forEach((type, value) -> {
             this.subtractCurrencyAmount(type, value);
             int amount = getCurrencyAmount(type);
-            this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
         });
         return true;
     }
@@ -165,7 +163,7 @@ public class CurrencyManagerComponent extends Component {
         costMap.forEach((type, value) -> {
             this.addCurrencyAmount(type, (int) (value * refundRate));
             int amount = getCurrencyAmount(type);
-            this.entity.getEvents().trigger("updateCurrencyUI", type, amount);
+            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
         });
     }
 }

@@ -31,7 +31,7 @@ public class CurrencyManagerComponent extends Component {
 
     @Override
     public void create() {
-        this.entity.getEvents().addListener("Drop currency", this::dropCurrency);
+        this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
     }
 
     /**
@@ -131,9 +131,9 @@ public class CurrencyManagerComponent extends Component {
             int value = entry.getValue();
             System.out.println("Key: " + key + ", Value: " + value);
             Entity curr = CurrencyFactory.createCurrency(key,value, x + 2, y + 2);
+            addCurrencyEntity(curr);
             ServiceLocator.getEntityService().register(curr);
         }
-
 
     }
 

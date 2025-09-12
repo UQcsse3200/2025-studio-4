@@ -92,7 +92,7 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-    // 显示碰撞体积
+    // Display collision volume 显示碰撞体积
     //renderer.getDebug().setActive(true);
 
 

@@ -4,6 +4,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.CurrencyFactory;
 import com.csse3200.game.services.ServiceLocator;
 
 import java.util.ArrayList;
@@ -124,7 +125,16 @@ public class CurrencyManagerComponent extends Component {
      * @param y     the y-coordinate where the currency should appear
      */
     private void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
-        ForestGameArea.spawnEntity();
+
+        for (Map.Entry<CurrencyComponent.CurrencyType, Integer> entry : drops.entrySet()) {
+            CurrencyComponent.CurrencyType key = entry.getKey();
+            int value = entry.getValue();
+            System.out.println("Key: " + key + ", Value: " + value);
+            Entity curr = CurrencyFactory.createCurrency(key,value, x + 2, y + 2);
+            ServiceLocator.getEntityService().register(curr);
+        }
+
+
     }
 
     /**

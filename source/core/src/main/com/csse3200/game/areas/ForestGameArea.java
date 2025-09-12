@@ -443,17 +443,6 @@ public class ForestGameArea extends GameArea {
 
   }
 
-  public void spawnCurrency(Map<CurrencyComponent.CurrencyType, Integer> drops, float x, float y) {
-
-    for (Map.Entry<CurrencyComponent.CurrencyType, Integer> entry : drops.entrySet()) {
-      CurrencyComponent.CurrencyType key = entry.getKey();
-      int value = entry.getValue();
-      System.out.println("Key: " + key + ", Value: " + value);
-      Entity curr = CurrencyFactory.createCurrency(key,value, x + 2, y + 2);
-      spawnEntity(curr);
-    }
-  }
-
     @Override
     public void dispose() {
         super.dispose();

@@ -22,7 +22,6 @@ import java.util.Map;
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
     private List<Entity> currencyEntityList = new ArrayList<>();
-    private final String updateCurrencyUIEvent = "updateCurrencyUI";
 
     @Override
     public void create() {
@@ -83,6 +82,16 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
+     * Update UI rendering for a specific currency type
+     * @param type the currency type
+     */
+    private void updateCurrencyUI(CurrencyType type) {
+        final String updateCurrencyUIEvent = "updateCurrencyUI";
+        int amount = getCurrencyAmount(type);
+        this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+    }
+
+    /**
      * Increment the counter and trigger to update UI.
      * @param entity collected Currency Entity
      */
@@ -90,11 +99,8 @@ public class CurrencyManagerComponent extends Component {
         CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
         int value = entity.getComponent(CurrencyComponent.class).getValue();
         this.addCurrencyAmount(type, value);
-
         playCollectCurrencySound(type); // Play collecting sound
-
-        int amount = getCurrencyAmount(type);
-        this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+        this.updateCurrencyUI(type);
     }
 
     /**
@@ -118,8 +124,7 @@ public class CurrencyManagerComponent extends Component {
     private void dropCurrency(Map<CurrencyType, Integer> drops) {
         drops.forEach((type, value) -> {
             this.addCurrencyAmount(type, value);
-            int amount = getCurrencyAmount(type);
-            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+            this.updateCurrencyUI(type);
         });
     }
 
@@ -144,8 +149,7 @@ public class CurrencyManagerComponent extends Component {
         // Deduct currencies by the cost
         costMap.forEach((type, value) -> {
             this.subtractCurrencyAmount(type, value);
-            int amount = getCurrencyAmount(type);
-            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+            this.updateCurrencyUI(type);
         });
         return true;
     }
@@ -162,8 +166,7 @@ public class CurrencyManagerComponent extends Component {
     public void refundCurrency(Map<CurrencyType, Integer> costMap, float refundRate) {
         costMap.forEach((type, value) -> {
             this.addCurrencyAmount(type, (int) (value * refundRate));
-            int amount = getCurrencyAmount(type);
-            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+            this.updateCurrencyUI(type);
         });
     }
 }

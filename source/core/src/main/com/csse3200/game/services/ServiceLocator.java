@@ -118,7 +118,6 @@ public class ServiceLocator {
     resourceService = null;
     gameService = null;
     leaderboardService = null;
-    gameStateService = null;
   }
 
   private ServiceLocator() {

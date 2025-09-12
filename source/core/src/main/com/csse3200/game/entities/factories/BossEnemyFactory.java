@@ -5,12 +5,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class BossEnemyFactory {
     // Default boss configuration

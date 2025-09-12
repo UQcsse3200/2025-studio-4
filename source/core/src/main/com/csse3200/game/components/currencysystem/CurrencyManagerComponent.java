@@ -4,12 +4,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.CurrencyFactory;
 import com.csse3200.game.services.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.csse3200.game.areas.ForestGameArea;
 
 /**
  * Manages the player's currencies within the game.
@@ -24,7 +27,12 @@ import java.util.Map;
  */
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
-    private List<Entity> currencyList = new ArrayList<>();
+    private List<Entity> currencyEntityList = new ArrayList<>();
+
+    @Override
+    public void create() {
+        this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
+    }
 
     /**
      * Adds a specified amount of the given currency type.
@@ -64,8 +72,8 @@ public class CurrencyManagerComponent extends Component {
      * @param entity
      */
     public void addCurrencyEntity(Entity entity) {
-        if (!currencyList.contains(entity)){
-            currencyList.add(entity);
+        if (!currencyEntityList.contains(entity)){
+            currencyEntityList.add(entity);
             entity.getEvents().addListener("collectCurrency", this::collectCurrency);
         }
     }
@@ -75,8 +83,8 @@ public class CurrencyManagerComponent extends Component {
      *
      * @return the current list of currency entities
      */
-    public List<Entity> getCurrencyList() {
-        return currencyList;
+    public List<Entity> getCurrencyEntityList() {
+        return currencyEntityList;
     }
 
     /**
@@ -113,10 +121,15 @@ public class CurrencyManagerComponent extends Component {
      * Usage: playerEntity.getEvents().trigger("dropCurrency", dropsMap, x, y)
      *
      * @param drops a map of {@link CurrencyType} to the amount to drop for each type
-     * @param x     the x-coordinate where the currency should appear
-     * @param y     the y-coordinate where the currency should appear
      */
-    private void dropCurrency(Map<CurrencyType, Integer> drops, float x, float y) {
+    private void dropCurrency(Map<CurrencyType, Integer> drops) {
+
+        for (Map.Entry<CurrencyComponent.CurrencyType, Integer> entry : drops.entrySet()) {
+            CurrencyComponent.CurrencyType key = entry.getKey();
+            int value = entry.getValue();
+            System.out.println("Key: " + key + ", Value: " + value);
+            this.entity.getEvents().trigger("updateCurrencyUI", key, value);
+        }
 
     }
 
@@ -127,11 +140,35 @@ public class CurrencyManagerComponent extends Component {
      *
      * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)
      *
-     * @param cost a map of {@link CurrencyType} to the required amount for each type
-     * @return true if the player can afford the cost and it was deducted,
+     * @param costMap a map of {@link CurrencyType} to the required amount for each type
+     * @return true if the player can afford the cost and the player's currencies are deducted,
      *         false if the player cannot afford the cost
      */
-    public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> cost) {
+    public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> costMap) {
+        for (Map.Entry<CurrencyType, Integer> entry:  costMap.entrySet()) {
+            // Check if the cost is larger than the player's currency
+            if (entry.getValue() > this.getCurrencyAmount(entry.getKey())) {
+                return false;
+            }
+        }
+        // Deduct currencies by the cost
+        costMap.forEach(this::subtractCurrencyAmount);
         return true;
     }
+
+    /**
+     * Refunds a portion of the tower’s cost according to the specified refund rate.
+     *
+     * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)
+     *
+     * @param costMap a map of {@link CurrencyType} to the required amount for each type
+     * @param refundRate the refund rate of the cost
+     *
+     */
+    public void refundCurrency(Map<CurrencyType, Integer> costMap, float refundRate) {
+        costMap.forEach((type, amount) ->
+            this.addCurrencyAmount(type, (int)(amount* refundRate))
+        );
+    }
+
 }

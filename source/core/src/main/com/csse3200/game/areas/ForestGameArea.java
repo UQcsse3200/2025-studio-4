@@ -94,6 +94,14 @@ public class ForestGameArea extends GameArea {
     private boolean hasExistingPlayer = false;
     private MapEditor mapEditor;
 
+    // 障碍物坐标单一事实源：由关卡（GameArea）定义
+    // create barriers areas
+    private static final int[][] BARRIER_COORDS = new int[][] {
+            {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
+            {26, 4}, {27, 4}, {28, 4}, {29, 4}, {15, 15},
+            {14, 7}, {22, 8}, {5, 24}, {12, 16}, {8, 20}
+    };
+
     /**
      * Initialise this ForestGameArea to use the provided TerrainFactory.
      *
@@ -133,12 +141,6 @@ public class ForestGameArea extends GameArea {
         spawnTerrain();
         //spawnTrees();
 
-        // Spawn barrier trees using coordinates for readability
-        spawnBarrierAt(new int[][] {
-                {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
-                {26, 4}, {27, 4}, {28, 4}, {29, 4}
-        });
-
         // Only spawn new player if one doesn't already exist
         if (!hasExistingPlayer) {
             player = spawnPlayer();
@@ -155,6 +157,13 @@ public class ForestGameArea extends GameArea {
         if (mapEditor != null) {
             placementController.setMapEditor(mapEditor);
         }
+
+        // 现在 mapEditor 已经存在，生成障碍并注册到 invalidTiles
+        // Now that mapEditor exists, generate barriers and register them to invalidTiles
+        registerBarrierAndSpawn(BARRIER_COORDS);
+        // 注册后刷新放置控制器的禁放区缓存
+        // After registering, refresh the placement controller's invalid-area cache
+        placementController.refreshInvalidTiles();
 
         // Enemies
         spawnDrones();
@@ -247,12 +256,17 @@ public class ForestGameArea extends GameArea {
 //        }
 //    }
 
-    /** Spawn barrier trees using int[][] where each element is {x, y}. */
-    private void spawnBarrierAt(int[][] coords) {
+    //注册到 MapEditor 的 invalidTiles，并在地图上生成障碍物。
+    //Register to MapEditor’s invalidTiles and generate obstacles on the map.
+    private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
+        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createBarrier(), new GridPoint2(p[0], p[1]), true, false);
+        }
+        if (mapEditor != null) {
+            mapEditor.registerBarrierCoords(coords);
         }
     }
 
@@ -264,6 +278,7 @@ public class ForestGameArea extends GameArea {
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.enableEditor();
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
+        // 障碍物注册迁移到 create() 中统一处理
         // Uncomment if crystal spawning is needed:
         // mapEditor.spawnCrystal(); // Generate crystal
 

@@ -51,7 +51,10 @@ public class MapEditor extends InputAdapter {
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
     //private Map<String, Entity> placedTrees = new HashMap<>();
     private Map<String, GridPoint2> pathTiles = new HashMap<>();
+    private Map<String, GridPoint2> invalidTiles = new HashMap<>();
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
+    private Map<String, GridPoint2> barrierTiles = new HashMap<>();
+
     // Occupied tiles to avoid obstacle overlap已占用的格子，避免障碍物重叠
     private Set<String> occupiedTiles = new HashSet<>();
 
@@ -351,24 +354,6 @@ public class MapEditor extends InputAdapter {
         return true;
     }
 
-  //  /** Spawn crystal in specified grid (to prevent overlap)在指定格子生成水晶（防止重叠） */
-  //  public void spawnCrystal(GridPoint2 pos) {
-  //      String key = pos.x + "," + pos.y;
-  //      if (occupiedTiles.contains(key)) {
-  //          return;
-  //      }
-  //      Entity crystal = ObstacleFactory.createCrystal();
-  //      crystal.setPosition(terrain.tileToWorldPosition(pos));
-  //      ServiceLocator.getEntityService().register(crystal);
-  //      occupiedTiles.add(key);
-  //      System.out.println("💎 Crystal placed at " + pos);
-  //  }
-//
-  //  /** Spawn crystal at the end of the path在路径终点生成水晶 */
-  //  public void spawnCrystal() {
-  //      spawnCrystal(new GridPoint2(29, 6));
-  //  }
-//
     /** Clean up all objects清理所有对象 */
     public void cleanup() {
         //for (Entity tree : placedTrees.values()) tree.dispose();
@@ -381,7 +366,24 @@ public class MapEditor extends InputAdapter {
     }
 
     public Map<String, GridPoint2> getInvalidTiles() {
-        return pathTiles;
+        invalidTiles.clear();
+        invalidTiles.putAll(pathTiles);
+        invalidTiles.putAll(barrierTiles);
+        return invalidTiles;
     }
+
+    /**
+     * 注册障碍物坐标，供 getInvalidTiles() 统一返回
+     * coords: int[][]，每个元素为 {x, y}
+     */
+    public void registerBarrierCoords(int[][] coords) {
+        if (coords == null) return;
+        for (int[] p : coords) {
+            if (p == null || p.length != 2) continue;
+            String key = p[0] + "," + p[1];
+            barrierTiles.put(key, new GridPoint2(p[0], p[1]));
+        }
+    }
+
 
 }

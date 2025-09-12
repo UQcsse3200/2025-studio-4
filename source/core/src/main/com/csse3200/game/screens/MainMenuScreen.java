@@ -29,6 +29,7 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/Main_Menu_Button_Background.png"
   };
 
+
   public MainMenuScreen(GdxGame game) {
     this.game = game;
 

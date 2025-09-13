@@ -32,8 +32,10 @@ public class UltimateButtonComponent extends Component{
         skin.add("default-font", SimpleUI.font(), com.badlogic.gdx.graphics.g2d.BitmapFont.class);
         skin.add("default", SimpleUI.buttonStyle(), TextButton.TextButtonStyle.class);
 
-        ultBtn = new TextButton("ULT (2)", skin); // 简单写死 50，后面可替换
-
+//        ultBtn = new TextButton("ULT (2)", skin); // 简单写死 50，后面可替换
+        // 默认按钮文案（倒计时结束时会恢复为它）
+        final String defaultText = "ULT (2)";
+        ultBtn = new TextButton(defaultText, skin);
         // 点击触发大招
         ultBtn.addListener(new ClickListener() {
             @Override
@@ -51,10 +53,25 @@ public class UltimateButtonComponent extends Component{
         stage.addActor(root);
 
         // 大招期间禁用按钮
+     //   entity.getEvents().addListener("ultimate.state", (Boolean on) -> {
+     //       ultBtn.setDisabled(Boolean.TRUE.equals(on));
+     //   });
+        // 大招期间禁用按钮 & 结束时恢复文案
         entity.getEvents().addListener("ultimate.state", (Boolean on) -> {
-            ultBtn.setDisabled(Boolean.TRUE.equals(on));
-        });
+            boolean active = Boolean.TRUE.equals(on);
+            ultBtn.setDisabled(active);
+            if (!active) {
+                ultBtn.setText(defaultText);
+                            }
+                    });
 
+        // 接收倒计时（HeroUltimateComponent 每 0.1s 触发一次 "ultimate.remaining"）
+        entity.getEvents().addListener("ultimate.remaining", (Float sec) -> {
+            if (sec == null) return;
+            float v = Math.max(0f, sec);
+            // 显示到 1 位小数，例如：ULT 4.9s
+            ultBtn.setText(String.format("ULT %.1fs", v));
+        });
         // 余额不足提示
         entity.getEvents().addListener("ultimate.failed", (String reason) -> {
             Gdx.app.log("ULT", "Failed: " + reason);

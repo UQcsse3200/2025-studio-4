@@ -20,6 +20,7 @@ public class HeroUltimateComponent extends Component{
 
     private boolean active = false;
     private long endAtMs = 0L;
+    private int lastTenths = -1; // 上次发送的“十分之一秒”计数
 
     // 指向已有的升级组件（里面缓存了 player + wallet）
     private HeroUpgradeComponent upgrade;
@@ -65,22 +66,34 @@ public class HeroUltimateComponent extends Component{
     private void activateNow() {
         active = true;
         endAtMs = TimeUtils.millis() + ULT_DURATION_MS;
-
+        lastTenths = -1; // 重置节流
         // 通知攻击组件提升伤害
         entity.getEvents().trigger("attack.multiplier", ULT_MULTIPLIER);
         entity.getEvents().trigger("ultimate.state", true);
     }
 
-    @Override
     public void update() {
-        if (!active) return;
-        if (TimeUtils.millis() >= endAtMs) {
-            active = false;
-            // 恢复伤害
-            entity.getEvents().trigger("attack.multiplier", 1.0f);
-            entity.getEvents().trigger("ultimate.state", false);
-        }
-    }
+            if (!active) return;
+
+            long now = TimeUtils.millis();
+            long remainMs = Math.max(0, endAtMs - now);
+
+                    // 每 0.1 秒广播一次剩余时间（单位：秒，保留 1 位小数）
+                            int tenths = (int) (remainMs / 100); // 5000ms -> 50, 490ms -> 4
+            if (tenths != lastTenths) {
+                  lastTenths = tenths;
+                  float remainSec = tenths / 10f;
+                  entity.getEvents().trigger("ultimate.remaining", remainSec);
+                }
+
+                    // 计时结束 → 复原
+        if (remainMs == 0) {
+                  active = false;
+                  entity.getEvents().trigger("attack.multiplier", 1.0f);
+                  entity.getEvents().trigger("ultimate.state", false);
+                  entity.getEvents().trigger("ultimate.remaining", 0f); // 结束时发 0
+                }
+          }
 
     @Override
     public void dispose() {

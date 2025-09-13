@@ -44,10 +44,10 @@ public class TankEnemyFactory {
      * @return entity
      */
     public static Entity createTankEnemy(Entity target) {
-        Entity tank = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
-        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f);
-
+        // 使用基础敌人（无动画）并添加静态纹理，避免测试对 atlas 的依赖
+        Entity tank = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
         tank
+            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 

@@ -27,6 +27,7 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
+
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
@@ -45,47 +46,8 @@ public class ForestGameArea extends GameArea {
     private static final int NUM_DIVIDERS = 1;
     public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
     public static int NUM_ENEMIES_DEFEATED = 0;
-    private static final String[] forestTextures = {
-            "images/mmap.png",
-            "images/box_boy_leaf.png",
-            "images/crystal.png",
-            "images/tree.png",
-            "images/path.png",
-            "images/path_keypoint.png",
-            "images/ghost_king.png",
-            "images/ghost_1.png",
-            "images/grass_1.png",
-            "images/grass_2.png",
-            "images/grass_3.png",
-            "images/hex_grass_1.png",
-            "images/hex_grass_2.png",
-            "images/hex_grass_3.png",
-            "images/iso_grass_1.png",
-            "images/iso_grass_2.png",
-            "images/iso_grass_3.png",
-            "images/desert.png",
-            "images/snow.png",
-            "images/river.png",
-            "images/drone_enemy.png",
-            "images/base_enemy.png",
-            "images/tank_enemy.png",
-            "images/boss_enemy.png",
-            "images/hero/Heroshoot.png",
-            "images/hero/Hero_level2.png",
-            "images/hero/Bullet.png",
-            "images/hero2/Heroshoot.png",
-            "images/hero2/Hero_level2.png",
-            "images/hero2/Bullet.png",
-            "images/hero3/Heroshoot.png",
-            "images/hero3/Hero_level2.png",
-            "images/hero3/Bullet.png",
-            "images/metal-scrap-currency.png",
-            "images/bone.png",
-            "images/cavemen.png",
-            "images/dino.png"
-    };
 
-  
+
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
 
@@ -142,12 +104,11 @@ public class ForestGameArea extends GameArea {
         loadAssets();
 
 
-  
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
         ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
-
+        ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
@@ -172,8 +133,6 @@ public class ForestGameArea extends GameArea {
             }
         }
 
-            }
-        }
 
         // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
         if (mapEditor != null) {
@@ -189,9 +148,13 @@ public class ForestGameArea extends GameArea {
 
         // Enemies
         spawnDrones();
+
         spawnGrunts();
+
         spawnTanks();
+
         spawnBosses();
+
         spawnDividers();
 
 
@@ -202,62 +165,38 @@ public class ForestGameArea extends GameArea {
         MapHighlighter mapHighlighter =
                 new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+
         spawnEntity(highlighterEntity);
 
         // Add hero placement system
 
         Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
+
         spawnEntity(placement);
 
         playMusic();
 
 
         // 1) 准备三套配置（你已有 HeroConfig / HeroConfig2 / HeroConfig3）
-        HeroConfig  cfg1 = new HeroConfig();
-        cfg1.heroTexture   = "images/hero/Heroshoot.png";
+        HeroConfig cfg1 = new HeroConfig();
+        cfg1.heroTexture = "images/hero/Heroshoot.png";
         cfg1.bulletTexture = "images/hero/Bullet.png";
 
         HeroConfig2 cfg2 = new HeroConfig2();
-        cfg2.heroTexture   = "images/hero2/Heroshoot.png";
+        cfg2.heroTexture = "images/hero2/Heroshoot.png";
         cfg2.bulletTexture = "images/hero2/Bullet.png";
 
         HeroConfig3 cfg3 = new HeroConfig3();
-        cfg3.heroTexture   = "images/hero3/Heroshoot.png";
+        cfg3.heroTexture = "images/hero3/Heroshoot.png";
         cfg3.bulletTexture = "images/hero3/Bullet.png";
 
-// 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
+        // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
         Entity skinSwitcher = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
         );
-        com.csse3200.game.services.ServiceLocator.getEntityService().register(skinSwitcher);
+        com.csse3200.game.services.ServiceLocator.getEntityService().
+                register(skinSwitcher);
 
-    }
-
-    private void displayUI() {
-        Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest"));
-        spawnEntity(ui);
-    }
-
-    private void spawnTerrain() {
-        // Background terrain
-        terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
-        spawnEntity(new Entity().addComponent(terrain));
-
-        // Get the tile layer (now back to index 0)获取瓦片层（现在回到索引0）
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        Texture grassTex = ServiceLocator.getResourceService().getAsset("images/grass_1.png", Texture.class);
-        TiledMapTile grassTile = new StaticTiledMapTile(new TextureRegion(grassTex));
-
-        // Fill all tiles with grass用草地填充所有瓦片
-        for (int x = 0; x < layer.getWidth(); x++) {
-            for (int y = 0; y < layer.getHeight(); y++) {
-                TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                cell.setTile(grassTile);
-                layer.setCell(x, y, cell);
-            }
-        }
-        
     }
 
     private void spawnTerrain() {
@@ -296,7 +235,7 @@ public class ForestGameArea extends GameArea {
     }
 
     //注册到 MapEditor 的 invalidTiles，并在地图上生成障碍物。
-    //Register to MapEditor’s invalidTiles and generate obstacles on the map.
+//Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
         // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
@@ -414,7 +353,7 @@ public class ForestGameArea extends GameArea {
 
         // ✅ 在创建 hero 前预加载资源
         ResourceService rs = ServiceLocator.getResourceService();
-        HeroFactory.loadAssets(rs, heroCfg,heroCfg2,heroCfg3);
+        HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
         }

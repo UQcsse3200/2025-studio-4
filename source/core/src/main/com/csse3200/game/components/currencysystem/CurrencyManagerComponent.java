@@ -130,6 +130,23 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
+     * Attempts to spend the given amount of currency.
+     *
+     * @param type   the type of currency to spend
+     * @param amount the amount to spend
+     * @return true if the spend was successful, false if not enough currency
+     */
+    public boolean trySpendCurrency(CurrencyType type, int amount) {
+        int current = getCurrencyAmount(type);
+        if (current < amount) {
+            return false; 
+        }
+        subtractCurrencyAmount(type, amount);
+        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
+        return true;
+    }
+  
+     /**
      * Checks if the player has enough currency to cover the specified cost,
      * and if so, deducts the amount and returns true. Otherwise, returns false
      * and does not deduct anything.

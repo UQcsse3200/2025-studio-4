@@ -2,8 +2,12 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.components.hero.HeroAppearanceComponent;
+import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.HeroConfig;
+import com.csse3200.game.entities.configs.HeroConfig2;
+import com.csse3200.game.entities.configs.HeroConfig3;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -13,6 +17,11 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.services.ResourceService;
+
+import java.util.LinkedHashSet;
+import com.csse3200.game.components.hero.HeroUltimateComponent;
+import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
  * Factory class for creating hero entities.
@@ -26,6 +35,65 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 public final class HeroFactory {
   private HeroFactory() {
     throw new IllegalStateException("Instantiating static util class");
+  }
+
+  public static void loadAssets(ResourceService rs, HeroConfig cfg,HeroConfig2 cfg2, HeroConfig3 cfg3) {
+    LinkedHashSet<String> textures = new LinkedHashSet<>();
+
+    if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
+      textures.add(cfg.heroTexture);
+    }
+    if (cfg.levelTextures != null) {
+      for (String s : cfg.levelTextures) {
+        if (s != null && !s.isBlank()) {
+          textures.add(s);
+        }
+      }
+    }
+    if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) {
+      textures.add(cfg.bulletTexture);
+    }
+
+    if (!textures.isEmpty()) {
+      rs.loadTextures(textures.toArray(new String[0]));
+    }
+
+      if (cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) {
+          textures.add(cfg2.heroTexture);
+      }
+      if (cfg2.levelTextures != null) {
+          for (String s : cfg2.levelTextures) {
+              if (s != null && !s.isBlank()) {
+                  textures.add(s);
+              }
+          }
+      }
+      if (cfg2.bulletTexture != null && !cfg2.bulletTexture.isBlank()) {
+          textures.add(cfg2.bulletTexture);
+      }
+
+      if (!textures.isEmpty()) {
+          rs.loadTextures(textures.toArray(new String[0]));
+      }
+
+      if (cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) {
+          textures.add(cfg3.heroTexture);
+      }
+      if (cfg3.levelTextures != null) {
+          for (String s : cfg3.levelTextures) {
+              if (s != null && !s.isBlank()) {
+                  textures.add(s);
+              }
+          }
+      }
+      if (cfg3.bulletTexture != null && !cfg3.bulletTexture.isBlank()) {
+          textures.add(cfg3.bulletTexture);
+      }
+
+      if (!textures.isEmpty()) {
+          rs.loadTextures(textures.toArray(new String[0]));
+      }
+
   }
 
   /**
@@ -63,12 +131,20 @@ public final class HeroFactory {
                     cfg.bulletLife,
                     cfg.bulletTexture,
                     camera // Inject camera for aiming & rotation
-            ));
+            ))
+            .addComponent(new HeroUpgradeComponent())
+            .addComponent(new HeroUltimateComponent())
+            .addComponent(new HeroUltimateComponent())
+            .addComponent(new UltimateButtonComponent())
+            .addComponent(new HeroAppearanceComponent(cfg));
 
     // Default scale to 1x1 so the hero is visible during testing
     hero.setScale(1f, 1f);
     return hero;
   }
+
+
+
 
   /**
    * Create a "ghost hero" entity used only for placement previews.

@@ -4,10 +4,8 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.components.CameraComponent;
@@ -32,7 +30,6 @@ public class CollectibleComponentTest {
     private CollectibleComponent collectibleComponent;
     private Entity entity;
     private CameraComponent cameraComponent;
-    private Renderer renderer;
     SpriteBatch mockBatch;
     Stage mockStage;
     RenderService mockRenderService;
@@ -61,7 +58,7 @@ Application mockApp;
         mockStage = mock(Stage.class);
         mockRenderService = mock(RenderService.class);
         mockDebugRenderer = mock(DebugRenderer.class);
-        renderer = new Renderer(
+        Renderer renderer = new Renderer(
                 cameraComponent,
                 20f,
                 mockBatch,

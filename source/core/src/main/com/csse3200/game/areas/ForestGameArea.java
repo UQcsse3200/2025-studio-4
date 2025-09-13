@@ -57,7 +57,7 @@ public class ForestGameArea extends GameArea {
 
     // 障碍物坐标单一事实源：由关卡（GameArea）定义
     // create barriers areas
-    private static final int[][] BARRIER_COORDS = new int[][] {
+    private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
             {26, 4}, {27, 4}, {28, 4}, {29, 4}, {15, 15},
             {14, 7}, {22, 8}, {5, 24}, {12, 16}, {8, 20}
@@ -76,13 +76,16 @@ public class ForestGameArea extends GameArea {
 
     /**
      * Set whether this game area already has an existing player entity.
+     *
      * @param hasExistingPlayer true if player already exists, false otherwise
      */
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
     }
 
-    /** Create the game area, including terrain, static entities (trees), dynamic entities (player) */
+    /**
+     * Create the game area, including terrain, static entities (trees), dynamic entities (player)
+     */
     @Override
     public void create() {
         // Load assets (textures, sounds, etc.) before creating anything that needs them

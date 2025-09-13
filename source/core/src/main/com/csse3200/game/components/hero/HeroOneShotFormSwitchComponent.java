@@ -16,26 +16,29 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 
 /**
- * 一次性“英雄换肤”组件（轮询发现英雄 + 5 秒自动默认第一形态 + 无 removeComponent 兜底）。
+ * One-shot "hero skin switch" component.
+ * - Polls for the hero entity until found.
+ * - Automatically applies the default (form-1) after 5 seconds if no manual input is given.
+ * - Designed as one-shot: no removeComponent fallback, disposes itself after applying a form.
  */
 public class HeroOneShotFormSwitchComponent extends InputComponent {
     private static final Logger logger = LoggerFactory.getLogger(HeroOneShotFormSwitchComponent.class);
 
-    private static final float POLL_INTERVAL_SEC = 0.25f; // 轮询查找英雄
-    private static final float AUTO_DEFAULT_DELAY_SEC = 5f; // 找到英雄后 5 秒默认第一形态
+    private static final float POLL_INTERVAL_SEC = 0.25f; // Interval for polling hero entity
+    private static final float AUTO_DEFAULT_DELAY_SEC = 5f; // Auto-default to form-1 after 5s
 
-    private final HeroConfig  cfg1; // 1（默认）
-    private final HeroConfig2 cfg2; // 2
-    private final HeroConfig3 cfg3; // 3
+    private final HeroConfig  cfg1; // Form 1 (default)
+    private final HeroConfig2 cfg2; // Form 2
+    private final HeroConfig3 cfg3; // Form 3
 
     private Entity hero;
     private boolean locked = false;
 
-    private Timer.Task pollTask;        // 轮询查找英雄
-    private Timer.Task autoDefaultTask; // 5 秒自动默认
+    private Timer.Task pollTask;        // Periodic polling task
+    private Timer.Task autoDefaultTask; // Auto-default task
 
     public HeroOneShotFormSwitchComponent(HeroConfig cfg1, HeroConfig2 cfg2, HeroConfig3 cfg3) {
-        super(1000); // 高优先级，保证拿到 1/2/3
+        super(1000); // High priority to capture key 1/2/3 first
         this.cfg1 = cfg1;
         this.cfg2 = cfg2;
         this.cfg3 = cfg3;
@@ -44,21 +47,21 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     @Override
     public void create() {
         super.create();
-        // 预加载三套贴图，避免切换时资源缺失
+        // Preload all three texture sets to prevent missing resources during switch
         ResourceService rs = ServiceLocator.getResourceService();
         rs.loadTextures(new String[]{
                 cfg1 != null ? cfg1.heroTexture : null,
                 cfg2 != null ? cfg2.heroTexture : null,
                 cfg3 != null ? cfg3.heroTexture : null
         });
-        while (!rs.loadForMillis(5)) { /* spin a bit */ }
+        while (!rs.loadForMillis(5)) { /* spin briefly */ }
 
-        // 立即跑一次，找到了就不用轮询
+        // Try once immediately; if found, start auto-default timer, else start polling
         if (!tryFindHero()) {
-            // 英雄还没生成：启动轮询
+            // Hero not spawned yet → start polling
             armHeroPolling();
         } else {
-            // 英雄已存在：直接启动 5 秒自动默认
+            // Hero already exists → start auto-default countdown
             armAutoDefaultTimer();
         }
     }
@@ -71,16 +74,16 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 if (locked) { cancel(); pollTask = null; return; }
                 if (tryFindHero()) {
                     logger.info("[HeroSkinSwitch] Found hero via polling. Arming auto-default timer ({}s).", (int)AUTO_DEFAULT_DELAY_SEC);
-                    cancel();            // 停止轮询
+                    cancel();            // Stop polling
                     pollTask = null;
                     armAutoDefaultTimer();
                 }
             }
-        }, 0f, POLL_INTERVAL_SEC); // 立刻开始，每 0.25s 查一次
+        }, 0f, POLL_INTERVAL_SEC); // Start immediately, check every 0.25s
         logger.info("[HeroSkinSwitch] Polling for hero every {}s...", POLL_INTERVAL_SEC);
     }
 
-    /** 尝试查找“正式英雄”（含 HeroTurretAttackComponent），找到返回 true */
+    /** Try to find the "real hero" (with HeroTurretAttackComponent). Return true if found. */
     private boolean tryFindHero() {
         for (Entity e : ServiceLocator.getEntityService().getEntities()) {
             if (e.getComponent(HeroTurretAttackComponent.class) != null) {
@@ -122,7 +125,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     @Override
     public boolean keyDown(int keycode) {
         if (locked) return false;
-        if (hero == null && !tryFindHero()) return false; // 若还没英雄，忽略输入
+        if (hero == null && !tryFindHero()) return false; // Ignore input if hero not found yet
 
         if (keycode == Input.Keys.NUM_1 || keycode == Input.Keys.NUMPAD_1) {
             return switchOnce(cfg1 != null ? cfg1.heroTexture : null, "1");
@@ -155,13 +158,16 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             locked = true;
             cancelTimers();
             logger.info("[HeroSkinSwitch] Applied texture via key {} -> {}. Locked.", keyTag, texturePath);
-            this.entity.dispose(); // 一次性：注销自身（会从 InputService 注销）
+            this.entity.dispose(); // One-shot: dispose itself (unregisters from InputService)
         }
         return ok;
     }
 
     /**
-     * 先尝试反射 setTexture(String)；若无，则隐藏旧渲染(透明 + 尽量 dispose)，再添加新渲染组件。
+     * Attempts to apply a new texture to the hero:
+     * A) First tries reflection on setTexture(String).
+     * B) If unavailable, falls back to hiding the old renderer (set alpha=0, dispose if possible),
+     *    then adds a new RotatingTextureRenderComponent with the new texture.
      */
     private boolean applyTextureToHero(String texturePath) {
         try {
@@ -171,13 +177,13 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 return false;
             }
 
-            // A) 反射调用 setTexture(String)
+            // A) Reflection call: setTexture(String)
             try {
                 Method m = rot.getClass().getMethod("setTexture", String.class);
                 m.invoke(rot, texturePath);
                 return true;
             } catch (NoSuchMethodException noSetter) {
-                // B) 兜底：隐藏旧渲染（透明）+ 尽量 dispose + 新增一个渲染组件
+                // B) Fallback: hide old render (transparent) + dispose + add new renderer
                 try {
                     Method setColor = rot.getClass().getMethod("setColor", float.class, float.class, float.class, float.class);
                     setColor.invoke(rot, 1f, 1f, 1f, 0f);
@@ -203,3 +209,4 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         cancelTimers();
     }
 }
+

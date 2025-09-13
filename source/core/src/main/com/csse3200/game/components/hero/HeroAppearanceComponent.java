@@ -8,8 +8,9 @@ import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
 /**
- * 升级换装（支持 RotatingTextureRenderComponent / TextureRenderComponent）。
- * 由于贴图字段为 final，采用“移除旧组件 + 新建新贴图组件”的方式，并尽量保留原有旋转角等状态。
+ * Handles hero appearance upgrades (supports both RotatingTextureRenderComponent / TextureRenderComponent).
+ * Since texture fields are final in the rendering components, this approach replaces the old
+ * component with a new one, while attempting to preserve properties such as rotation.
  */
 public class HeroAppearanceComponent extends Component {
     private final HeroConfig cfg;
@@ -20,10 +21,10 @@ public class HeroAppearanceComponent extends Component {
 
     @Override
     public void create() {
-        // 进场先套 1 级外观（可选）
+        // Apply level 1 appearance on creation (optional)
         applyTextureForLevel(1);
 
-        // 升级后切图
+        // Change appearance when upgraded
         entity.getEvents().addListener("upgraded", (Integer level, CurrencyType t, Integer cost) -> {
             applyTextureForLevel(level);
         });
@@ -33,17 +34,16 @@ public class HeroAppearanceComponent extends Component {
         final String path = getTextureForLevel(level);
         if (path == null || path.isBlank()) return;
 
-        // 如果是可旋转渲染组件（英雄主体）
+        // If the entity has a rotating render component (main hero sprite)
         RotatingTextureRenderComponent rot = entity.getComponent(RotatingTextureRenderComponent.class);
         if (rot != null) {
             float angle = rot.getRotation();
-            rot.setTexture(path);   // ✅ 直接切贴图
-            rot.setRotation(angle); // 恢复角度（可选）
+            rot.setTexture(path);   // ✅ Replace texture directly
+            rot.setRotation(angle); // Restore rotation angle (optional)
             return;
         }
 
-
-        // 如果是普通贴图组件（ghost 英雄）
+        // If the entity has a standard render component (ghost hero, preview)
         TextureRenderComponent tex = entity.getComponent(TextureRenderComponent.class);
         if (tex != null) {
             final float rotDeg = tex.getRotation();
@@ -55,8 +55,14 @@ public class HeroAppearanceComponent extends Component {
         }
     }
 
-
-    // level 从 1 开始；有配就用 levelTextures[level-1]，否则回退 heroTexture
+    /**
+     * Gets the texture path for the given hero level.
+     * If levelTextures is defined and contains a valid entry for the level, use it.
+     * Otherwise, fall back to the default heroTexture.
+     *
+     * @param level hero level (starting from 1)
+     * @return texture path as a String
+     */
     private String getTextureForLevel(int level) {
         if (cfg.levelTextures != null) {
             int idx = level - 1;

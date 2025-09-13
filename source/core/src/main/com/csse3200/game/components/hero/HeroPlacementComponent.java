@@ -75,7 +75,7 @@ public class HeroPlacementComponent extends Component {
         input = new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
-                // 临时注释掉 Enter 的取消逻辑
+
     /*
     if (keycode == Input.Keys.ENTER || keycode == Input.Keys.NUMPAD_ENTER) {
         Gdx.app.postRunnable(() -> {

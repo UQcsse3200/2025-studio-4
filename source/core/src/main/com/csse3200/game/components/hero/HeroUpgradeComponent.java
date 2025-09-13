@@ -10,36 +10,42 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * 英雄升级组件：按 Enter / Numpad Enter 触发升级；
- * 从玩家钱包扣费；给英雄（this.entity）加属性；通过事件通知 UI。
+ * Hero upgrade component:
+ * - Triggered by pressing Enter / Numpad Enter, or via an event.
+ * - Deducts cost from the player's wallet.
+ * - Increases the hero's stats when upgraded.
+ * - Notifies UI and other systems via events.
  */
 public class HeroUpgradeComponent extends Component {
-    /** 当前等级与上限 */
+    /** Current level and maximum level cap */
     private int level = 1;
     private final int maxLevel = 3;
 
-    /** 货币类型与单次费用公式 */
+    /** Currency type and cost formula */
     private final CurrencyType costType = CurrencyType.METAL_SCRAP;
 
-    /** 缓存：玩家实体与钱包，避免每帧全局扫描 */
+    /** Cached references to player entity and wallet to avoid repeated global searches */
     private Entity player;
     private CurrencyManagerComponent wallet;
 
-    /** 外部可选择注入玩家（推荐在 spawnHeroAt 时调用），减少查找与歧义 */
+    /**
+     * Optionally inject player entity (recommended during spawnHeroAt).
+     * Reduces lookup overhead and avoids ambiguity.
+     */
     public HeroUpgradeComponent attachPlayer(Entity player) {
         this.player = player;
         this.wallet = (player != null) ? player.getComponent(CurrencyManagerComponent.class) : null;
         return this;
     }
 
-    /** 升级费用：可按需改公式 */
+    /** Upgrade cost formula (can be customized) */
     private int getCostForLevel(int nextLevel) {
         return nextLevel * 2;
     }
 
     @Override
     public void create() {
-        // 允许通过事件触发（例如 UI 按钮或脚本）
+        // Allow upgrades via external event (e.g., UI button or script)
         entity.getEvents().addListener("requestUpgrade", (Entity p) -> {
             if (p != null && p != this.player) attachPlayer(p);
             tryUpgrade();
@@ -48,14 +54,20 @@ public class HeroUpgradeComponent extends Component {
 
     @Override
     public void update() {
-        // 按 Enter 或小键盘 Enter 升级
+        // Trigger upgrade when Enter or Numpad Enter is pressed
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ||
                 Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_ENTER)) {
             tryUpgrade();
         }
     }
 
-    /** 仅升级英雄本体；玩家只作为付款方 */
+    /**
+     * Attempts to upgrade hero:
+     * - Verifies level cap.
+     * - Validates player and wallet references.
+     * - Deducts upgrade cost from wallet.
+     * - Applies stat growth and triggers events.
+     */
     private void tryUpgrade() {
         if (level >= maxLevel) {
             Gdx.app.log("HeroUpgrade", "failed: max level");
@@ -64,7 +76,7 @@ public class HeroUpgradeComponent extends Component {
         }
 
         if (player == null || wallet == null) {
-            // 兜底：再尝试找一次
+            // Fallback: try to find player again
             if (player == null) player = findPlayerEntity();
             wallet = (player != null) ? player.getComponent(CurrencyManagerComponent.class) : null;
 
@@ -90,8 +102,7 @@ public class HeroUpgradeComponent extends Component {
         entity.getEvents().trigger("upgraded", level, costType, cost);
     }
 
-
-    /** 属性成长：按需自定义 */
+    /** Applies stat growth when hero levels up (customizable). */
     private void applyStatGrowth(int newLevel) {
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
@@ -100,7 +111,10 @@ public class HeroUpgradeComponent extends Component {
         }
     }
 
-    /** 兜底：按“玩家识别 + 钱包存在”寻找玩家 */
+    /**
+     * Fallback player lookup:
+     * Finds the first entity with both PlayerActions and a CurrencyManagerComponent.
+     */
     private Entity findPlayerEntity() {
         for (Entity e : ServiceLocator.getEntityService().getEntities()) {
             if (e.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null &&
@@ -114,15 +128,14 @@ public class HeroUpgradeComponent extends Component {
     public int getLevel() {
         return level;
     }
-    // 读余额组件（给大招等用）
-    public com.csse3200.game.components.currencysystem.CurrencyManagerComponent getWallet() {
+
+    /** Returns wallet component (used by other systems such as ultimate). */
+    public CurrencyManagerComponent getWallet() {
         return wallet;
     }
 
-    // （可选）需要的话保留这个
-    public com.csse3200.game.entities.Entity getPlayer() {
+    /** Returns player entity reference (optional, if needed). */
+    public Entity getPlayer() {
         return player;
     }
 }
-
-

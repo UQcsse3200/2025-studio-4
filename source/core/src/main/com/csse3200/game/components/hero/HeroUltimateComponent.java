@@ -1,103 +1,119 @@
 package com.csse3200.game.components.hero;
 
-
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.badlogic.gdx.utils.TimeUtils;
 
 /**
- * 英雄大招组件：
- * - 按按钮/事件触发
- * - 扣除玩家钱包里的货币
- * - 提升攻击伤害（倍率）
- * - 持续 5 秒后恢复
+ * Hero ultimate ability component:
+ * - Triggered via button press or event.
+ * - Consumes currency from the player's wallet.
+ * - Temporarily increases attack damage by a multiplier.
+ * - Lasts for 5 seconds, then resets to normal.
  */
-public class HeroUltimateComponent extends Component{
-    private static final int ULT_COST = 2;            // 一次大招消耗多少货币
-    private static final long ULT_DURATION_MS = 5000;  // 持续 5 秒
-    private static final float ULT_MULTIPLIER = 2.0f;  // 伤害倍率
+public class HeroUltimateComponent extends Component {
+    private static final int ULT_COST = 2;             // Currency cost per ultimate activation
+    private static final long ULT_DURATION_MS = 5000;  // Duration: 5 seconds
+    private static final float ULT_MULTIPLIER = 2.0f;  // Damage multiplier during ultimate
 
     private boolean active = false;
     private long endAtMs = 0L;
-    private int lastTenths = -1; // 上次发送的“十分之一秒”计数
+    private int lastTenths = -1; // Last broadcast "tenths of a second" count
 
-    // 指向已有的升级组件（里面缓存了 player + wallet）
+    // Reference to the upgrade component (caches player + wallet)
     private HeroUpgradeComponent upgrade;
 
     @Override
     public void create() {
         upgrade = entity.getComponent(HeroUpgradeComponent.class);
 
-        // UI 或键盘触发 "ultimate.request" 事件时调用
+        // Listen for "ultimate.request" (from UI or keyboard)
         entity.getEvents().addListener("ultimate.request", () -> onRequest());
     }
 
+    /**
+     * Handles ultimate activation request:
+     * - Validates state and wallet.
+     * - Attempts to spend required currency.
+     * - If successful, activates the ultimate.
+     */
     private void onRequest() {
         if (active) return;
 
         if (upgrade == null) {
-            // 没有升级组件，直接开大招（方便测试）
+            // No upgrade component → allow free ultimate (useful for testing)
             activateNow();
             return;
         }
 
-        com.csse3200.game.components.currencysystem.CurrencyManagerComponent wallet =
-                (upgrade != null) ? upgrade.getWallet() : null;
-
+        CurrencyManagerComponent wallet = (upgrade != null) ? upgrade.getWallet() : null;
 
         if (wallet == null) {
-            // 钱包还没准备好，提示失败
+            // Wallet not ready → broadcast failure
             entity.getEvents().trigger("ultimate.failed", "Wallet not ready");
             return;
         }
 
-        // 尝试扣费
+        // Attempt to spend currency
         boolean ok = wallet.trySpendCurrency(CurrencyType.METAL_SCRAP, ULT_COST);
         if (!ok) {
             entity.getEvents().trigger("ultimate.failed", "Not enough " + CurrencyType.METAL_SCRAP);
             return;
         }
 
-        // 扣费成功 → 激活大招
+        // Payment succeeded → activate ultimate
         activateNow();
     }
 
+    /**
+     * Activates ultimate:
+     * - Marks as active.
+     * - Starts duration timer.
+     * - Notifies attack components to apply multiplier.
+     */
     private void activateNow() {
         active = true;
         endAtMs = TimeUtils.millis() + ULT_DURATION_MS;
-        lastTenths = -1; // 重置节流
-        // 通知攻击组件提升伤害
+        lastTenths = -1; // Reset broadcast throttling
+
+        // Notify other components
         entity.getEvents().trigger("attack.multiplier", ULT_MULTIPLIER);
         entity.getEvents().trigger("ultimate.state", true);
     }
 
+    /**
+     * Update ultimate state:
+     * - Broadcasts remaining time every 0.1s (in seconds with one decimal place).
+     * - Resets attack multiplier and state when duration ends.
+     */
     public void update() {
-            if (!active) return;
+        if (!active) return;
 
-            long now = TimeUtils.millis();
-            long remainMs = Math.max(0, endAtMs - now);
+        long now = TimeUtils.millis();
+        long remainMs = Math.max(0, endAtMs - now);
 
-                    // 每 0.1 秒广播一次剩余时间（单位：秒，保留 1 位小数）
-                            int tenths = (int) (remainMs / 100); // 5000ms -> 50, 490ms -> 4
-            if (tenths != lastTenths) {
-                  lastTenths = tenths;
-                  float remainSec = tenths / 10f;
-                  entity.getEvents().trigger("ultimate.remaining", remainSec);
-                }
+        // Broadcast remaining time every 0.1s
+        int tenths = (int) (remainMs / 100); // e.g., 5000ms → 50, 490ms → 4
+        if (tenths != lastTenths) {
+            lastTenths = tenths;
+            float remainSec = tenths / 10f;
+            entity.getEvents().trigger("ultimate.remaining", remainSec);
+        }
 
-                    // 计时结束 → 复原
+        // Timer expired → reset
         if (remainMs == 0) {
-                  active = false;
-                  entity.getEvents().trigger("attack.multiplier", 1.0f);
-                  entity.getEvents().trigger("ultimate.state", false);
-                  entity.getEvents().trigger("ultimate.remaining", 0f); // 结束时发 0
-                }
-          }
+            active = false;
+            entity.getEvents().trigger("attack.multiplier", 1.0f);
+            entity.getEvents().trigger("ultimate.state", false);
+            entity.getEvents().trigger("ultimate.remaining", 0f); // Final broadcast
+        }
+    }
 
     @Override
     public void dispose() {
         if (active) {
+            // Ensure state is reset if disposed mid-ultimate
             entity.getEvents().trigger("attack.multiplier", 1.0f);
             entity.getEvents().trigger("ultimate.state", false);
             active = false;

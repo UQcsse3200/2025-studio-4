@@ -30,11 +30,11 @@ public class HeroTurretAttackComponent extends Component {
   private final Vector2 mouseWorld = new Vector2();
   private final Vector2 dir = new Vector2(); // Reused to avoid frequent allocation
 
-  /** 可选：伤害加成与倍率，方便做被动/BUFF（默认无加成） */
-  private int flatBonusDamage = 0;     // +X
-  private float attackScale = 1f;      // ×Y
+  /** Optional: flat bonus damage and scaling multiplier for buffs/passives (default = no bonus). */
+  private int flatBonusDamage = 0;     // +X damage
+  private float attackScale = 1f;      // ×Y multiplier
 
-  // 如果英雄贴图默认朝右，设 0；若默认朝上，通常设 -90
+  /** Adjust based on default sprite orientation: 0 if facing right, -90 if facing up. */
   private static final float SPRITE_FACING_OFFSET_DEG = -90f;
 
   public HeroTurretAttackComponent(float cooldown, float bulletSpeed, float bulletLife,
@@ -46,13 +46,13 @@ public class HeroTurretAttackComponent extends Component {
     this.camera = camera;
   }
 
-    @Override
+  @Override
   public void create() {
-            // 监听大招倍率变化（HeroUltimateComponent 触发 "attack.multiplier"）
-        entity.getEvents().addListener("attack.multiplier", (Float mul) -> {
-            if (mul == null || mul <= 0f) mul = 1f;
-            this.attackScale = mul; // 直接写倍率；computeDamageFromStats() 已使用它
-        });
+    // Listen for ultimate ability multipliers (HeroUltimateComponent triggers "attack.multiplier")
+    entity.getEvents().addListener("attack.multiplier", (Float mul) -> {
+      if (mul == null || mul <= 0f) mul = 1f;
+      this.attackScale = mul; // Multiplier directly applied in computeDamageFromStats()
+    });
   }
 
   @Override
@@ -64,23 +64,23 @@ public class HeroTurretAttackComponent extends Component {
       cdTimer -= dt;
     }
 
-    // 计算朝向
+    // Compute aiming direction
     Vector2 firePos = getEntityCenter(entity);
     if (!computeAimDirection(firePos, dir)) return;
 
-    // 旋转贴图
+    // Rotate sprite to face aim direction
     RotatingTextureRenderComponent rot = entity.getComponent(RotatingTextureRenderComponent.class);
     if (rot != null) {
       float angleDeg = dir.angleDeg() + SPRITE_FACING_OFFSET_DEG;
       rot.setRotation(angleDeg);
     }
 
-    // 冷却结束→开火
+    // Fire when cooldown expires
     if (cdTimer <= 0f) {
       float vx = dir.x * bulletSpeed;
       float vy = dir.y * bulletSpeed;
 
-      // ⭐ 关键：每次开火实时从 CombatStatsComponent 读取攻击力
+      // ⭐ Damage is always read from CombatStatsComponent at fire time
       int dmg = computeDamageFromStats();
 
       final Entity bullet = ProjectileFactory.createBullet(
@@ -99,9 +99,9 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * 由火力属性计算本次伤害：
-   * baseAttack（来自 CombatStatsComponent） * attackScale + flatBonusDamage
-   * 最终向最近整数取整，且不低于 1。
+   * Compute damage based on combat stats:
+   * baseAttack (from CombatStatsComponent) * attackScale + flatBonusDamage.
+   * Rounded to nearest integer, minimum value = 1.
    */
   private int computeDamageFromStats() {
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
@@ -111,7 +111,7 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * 计算从发射点到鼠标世界坐标的单位向量
+   * Compute normalized direction vector from fire position to mouse world coordinates.
    */
   private boolean computeAimDirection(Vector2 firePos, Vector2 outDir) {
     if (camera == null) return false;
@@ -126,7 +126,9 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * 获取实体中心点：优先调用 getCenterPosition()，否则用位置+半尺寸兜底
+   * Get entity center:
+   * - Prefer using getCenterPosition() if available.
+   * - Otherwise, fall back to position + half-scale.
    */
   private static Vector2 getEntityCenter(Entity e) {
     try {
@@ -140,17 +142,18 @@ public class HeroTurretAttackComponent extends Component {
     return new Vector2(cx, cy);
   }
 
-  // ===== 可选：暴露加成配置的链式 API（以后做被动/装备/药水很方便） =====
+  // ===== Optional: chainable API for setting damage modifiers (useful for passives, items, buffs) =====
 
-  /** 设定固定伤害加成（+X） */
+  /** Set flat bonus damage (+X). */
   public HeroTurretAttackComponent setFlatBonusDamage(int flatBonusDamage) {
     this.flatBonusDamage = flatBonusDamage;
     return this;
   }
 
-  /** 设定伤害倍率（×Y） */
+  /** Set damage multiplier (×Y). */
   public HeroTurretAttackComponent setAttackScale(float attackScale) {
     this.attackScale = attackScale;
     return this;
   }
 }
+

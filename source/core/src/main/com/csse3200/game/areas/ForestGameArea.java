@@ -239,8 +239,7 @@ public class ForestGameArea extends GameArea {
                 layer.setCell(x, y, cell);
             }
         }
-
-        // Create boundary walls创建边界墙
+        
         float tileSize = terrain.getTileSize();
         GridPoint2 tileBounds = terrain.getMapBounds(0);
         Vector2 worldBounds = new Vector2(tileBounds.x * tileSize, tileBounds.y * tileSize);

@@ -29,7 +29,6 @@ public class HeroConfig extends BaseEntityConfig {
   /** Path to bullet sprite texture (relative to assets) */
   public String bulletTexture = "images/hero/Bullet.png";
 
-  /** 每个等级的贴图（下标 = 等级，从 1 开始） */
   public String[] levelTextures = {
           "images/hero/Heroshoot.png",
           "images/hero/Hero_level2.png",

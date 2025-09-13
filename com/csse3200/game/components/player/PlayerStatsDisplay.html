@@ -157,14 +157,15 @@ loadScripts(document, 'script');</script>
 <div class="block">Draw the renderable.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updatePlayerHealthUI(int)" class="member-name-link">updatePlayerHealthUI</a><wbr>(int&nbsp;health)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updatePlayerCurrencyAmountUI(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">updatePlayerCurrencyAmountUI</a><wbr>(<a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
+ int&nbsp;amount)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates the player's health on the ui.</div>
+<div class="block">Updates the player's currency amount for certain type on the UI.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updatePlayerScrapUI(int)" class="member-name-link">updatePlayerScrapUI</a><wbr>(int&nbsp;scrap)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updatePlayerHealthUI(int)" class="member-name-link">updatePlayerHealthUI</a><wbr>(int&nbsp;health)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates the player's scrap on the ui.</div>
+<div class="block">Updates the player's health on the ui.</div>
 </div>
 </div>
 </div>
@@ -249,13 +250,15 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="updatePlayerScrapUI(int)">
-<h3>updatePlayerScrapUI</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updatePlayerScrapUI</span><wbr><span class="parameters">(int&nbsp;scrap)</span></div>
-<div class="block">Updates the player's scrap on the ui.</div>
+<section class="detail" id="updatePlayerCurrencyAmountUI(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)">
+<h3>updatePlayerCurrencyAmountUI</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updatePlayerCurrencyAmountUI</span><wbr><span class="parameters">(<a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
+ int&nbsp;amount)</span></div>
+<div class="block">Updates the player's currency amount for certain type on the UI.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>scrap</code> - player scrap</dd>
+<dd><code>type</code> - currency type to render</dd>
+<dd><code>amount</code> - player currency amount for certain type</dd>
 </dl>
 </section>
 </li>

@@ -122,11 +122,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float,java.lang.String)" class="member-name-link">createCurrency</a><wbr>(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float)" class="member-name-link">createCurrency</a><wbr>(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
  int&nbsp;value,
  float&nbsp;x,
- float&nbsp;y,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</code></div>
+ float&nbsp;y)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a new currency entity with the given parameters.</div>
 </div>
@@ -136,6 +135,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a currency entity representing a piece of metal scrap.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createNeurochip(float,float)" class="member-name-link">createNeurochip</a><wbr>(float&nbsp;x,
+ float&nbsp;y)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createTitaniumCore(float,float)" class="member-name-link">createTitaniumCore</a><wbr>(float&nbsp;x,
+ float&nbsp;y)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -168,13 +175,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float,java.lang.String)">
+<section class="detail" id="createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float)">
 <h3>createCurrency</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCurrency</span><wbr><span class="parameters">(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
  int&nbsp;value,
  float&nbsp;x,
- float&nbsp;y,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</span></div>
+ float&nbsp;y)</span></div>
 <div class="block">Creates a new currency entity with the given parameters.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -182,7 +188,6 @@ loadScripts(document, 'script');</script>
 <dd><code>value</code> - the value amount of this currency</dd>
 <dd><code>x</code> - the x-coordinate position of the entity</dd>
 <dd><code>y</code> - the y-coordinate position of the entity</dd>
-<dd><code>texturePath</code> - the file path to the texture image</dd>
 <dt>Returns:</dt>
 <dd>a fully initialized currency entity</dd>
 </dl>
@@ -204,6 +209,20 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>a metal scrap currency entity</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createTitaniumCore(float,float)">
+<h3>createTitaniumCore</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createTitaniumCore</span><wbr><span class="parameters">(float&nbsp;x,
+ float&nbsp;y)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="createNeurochip(float,float)">
+<h3>createNeurochip</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createNeurochip</span><wbr><span class="parameters">(float&nbsp;x,
+ float&nbsp;y)</span></div>
 </section>
 </li>
 </ul>

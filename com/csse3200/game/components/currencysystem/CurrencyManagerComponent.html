@@ -98,10 +98,7 @@ loadScripts(document, 'script');</script>
  This component keeps track of different types of currencies (e.g., metal scraps)
  and provides methods to add, subtract, and retrieve amounts of each type.
 
- Usage example:
-   CurrencyManagerComponent manager = new CurrencyManagerComponent();
-   manager.addCurrencyAmount(CurrencyType.METAL_SCRAP, 10);
-   int scraps = manager.getCurrencyAmount(CurrencyType.METAL_SCRAP);</div>
+ Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -139,38 +136,43 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">addCurrencyAmount</a><wbr>(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
- int&nbsp;amount)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCurrencyEntity(com.csse3200.game.entities.Entity)" class="member-name-link">addCurrencyEntity</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds a specified amount of the given currency type.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addCurrencyEntity(com.csse3200.game.entities.Entity)" class="member-name-link">addCurrencyEntity</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;entity)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Add the Currency entity to the list if it is not already present.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">getCurrencyAmount</a><wbr>(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the current amount of the given currency type.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrencyList()" class="member-name-link">getCurrencyList</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canAffordAndSpendCurrency(java.util.Map)" class="member-name-link">canAffordAndSpendCurrency</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the list of currency entities.</div>
+<div class="block">Checks if the player has enough currency to cover the specified cost,
+ and if so, deducts the amount and returns true.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#subtractCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">subtractCurrencyAmount</a><wbr>(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
- int&nbsp;amount)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Subtracts a specified amount of the given currency type.</div>
+<div class="block">Called when the entity is created and registered.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">getCurrencyAmount</a><wbr>(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the current amount of the given currency type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrencyEntityList()" class="member-name-link">getCurrencyEntityList</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the list of currency entities.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refundCurrency(java.util.Map,float)" class="member-name-link">refundCurrency</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap,
+ float&nbsp;refundRate)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.</div>
 </div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.Component">Methods inherited from class&nbsp;com.csse3200.game.components.<a href="../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
-<code><a href="../Component.html#create()">create</a>, <a href="../Component.html#dispose()">dispose</a>, <a href="../Component.html#earlyUpdate()">earlyUpdate</a>, <a href="../Component.html#getEntity()">getEntity</a>, <a href="../Component.html#setEnabled(boolean)">setEnabled</a>, <a href="../Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="../Component.html#toString()">toString</a>, <a href="../Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="../Component.html#triggerUpdate()">triggerUpdate</a>, <a href="../Component.html#update()">update</a></code></div>
+<code><a href="../Component.html#dispose()">dispose</a>, <a href="../Component.html#earlyUpdate()">earlyUpdate</a>, <a href="../Component.html#getEntity()">getEntity</a>, <a href="../Component.html#setEnabled(boolean)">setEnabled</a>, <a href="../Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="../Component.html#toString()">toString</a>, <a href="../Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="../Component.html#triggerUpdate()">triggerUpdate</a>, <a href="../Component.html#update()">update</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -200,29 +202,15 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="addCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)">
-<h3>addCurrencyAmount</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addCurrencyAmount</span><wbr><span class="parameters">(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
- int&nbsp;amount)</span></div>
-<div class="block">Adds a specified amount of the given currency type.</div>
+<section class="detail" id="create()">
+<h3>create</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
+<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
+ should be made here, not in the constructor which is called before an entity is finished.</div>
 <dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>type</code> - the type of currency to add</dd>
-<dd><code>amount</code> - the amount to add</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="subtractCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)">
-<h3>subtractCurrencyAmount</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">subtractCurrencyAmount</span><wbr><span class="parameters">(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
- int&nbsp;amount)</span></div>
-<div class="block">Subtracts a specified amount of the given currency type.
- If the result is negative, the value is zero.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>type</code> - the type of currency to subtract</dd>
-<dd><code>amount</code> - the amount to subtract</dd>
+<dt>Overrides:</dt>
+<dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
 </dl>
 </section>
 </li>
@@ -252,13 +240,46 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getCurrencyList()">
-<h3>getCurrencyList</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</span>&nbsp;<span class="element-name">getCurrencyList</span>()</div>
+<section class="detail" id="getCurrencyEntityList()">
+<h3>getCurrencyEntityList</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;</span>&nbsp;<span class="element-name">getCurrencyEntityList</span>()</div>
 <div class="block">Gets the list of currency entities.</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>the current list of currency entities</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="canAffordAndSpendCurrency(java.util.Map)">
+<h3>canAffordAndSpendCurrency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canAffordAndSpendCurrency</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap)</span></div>
+<div class="block">Checks if the player has enough currency to cover the specified cost,
+ and if so, deducts the amount and returns true. Otherwise, returns false
+ and does not deduct anything.
+
+ Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>costMap</code> - a map of <a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem"><code>CurrencyComponent.CurrencyType</code></a> to the required amount for each type</dd>
+<dt>Returns:</dt>
+<dd>true if the player can afford the cost and the player's currencies are deducted,
+         false if the player cannot afford the cost</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="refundCurrency(java.util.Map,float)">
+<h3>refundCurrency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refundCurrency</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap,
+ float&nbsp;refundRate)</span></div>
+<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.
+
+ Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>costMap</code> - a map of <a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem"><code>CurrencyComponent.CurrencyType</code></a> to the required amount for each type</dd>
+<dd><code>refundRate</code> - the refund rate of the cost</dd>
 </dl>
 </section>
 </li>

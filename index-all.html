@@ -86,10 +86,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Add a component to the entity.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#addCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">addCurrencyAmount(CurrencyComponent.CurrencyType, int)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
-<dd>
-<div class="block">Adds a specified amount of the given currency type.</div>
-</dd>
 <dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#addCurrencyEntity(com.csse3200.game.entities.Entity)" class="member-name-link">addCurrencyEntity(Entity)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
 <dd>
 <div class="block">Add the Currency entity to the list if it is not already present.</div>
@@ -246,6 +242,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/CameraComponent.html#%3Cinit%3E(com.badlogic.gdx.graphics.Camera)" class="member-name-link">CameraComponent(Camera)</a> - Constructor for class com.csse3200.game.components.<a href="com/csse3200/game/components/CameraComponent.html" title="class in com.csse3200.game.components">CameraComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#canAffordAndSpendCurrency(java.util.Map)" class="member-name-link">canAffordAndSpendCurrency(Map&lt;CurrencyComponent.CurrencyType, Integer&gt;)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
+<dd>
+<div class="block">Checks if the player has enough currency to cover the specified cost,
+ and if so, deducts the amount and returns true.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/TowerStatsComponent.html#canAttack()" class="member-name-link">canAttack()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/TowerStatsComponent.html" title="class in com.csse3200.game.components">TowerStatsComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#cancelPlacement()" class="member-name-link">cancelPlacement()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
@@ -432,6 +433,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called when the entity is created and registered.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
@@ -556,7 +559,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a crystal entity (占 1 个 tile).</div>
 </dd>
-<dt><a href="com/csse3200/game/entities/factories/CurrencyFactory.html#createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float,java.lang.String)" class="member-name-link">createCurrency(CurrencyComponent.CurrencyType, int, float, float, String)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/CurrencyFactory.html" title="class in com.csse3200.game.entities.factories">CurrencyFactory</a></dt>
+<dt><a href="com/csse3200/game/entities/factories/CurrencyFactory.html#createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float)" class="member-name-link">createCurrency(CurrencyComponent.CurrencyType, int, float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/CurrencyFactory.html" title="class in com.csse3200.game.entities.factories">CurrencyFactory</a></dt>
 <dd>
 <div class="block">Creates a new currency entity with the given parameters.</div>
 </dd>
@@ -628,6 +631,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a currency entity representing a piece of metal scrap.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/CurrencyFactory.html#createNeurochip(float,float)" class="member-name-link">createNeurochip(float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/CurrencyFactory.html" title="class in com.csse3200.game.entities.factories">CurrencyFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/PlayerFactory.html#createPlayer()" class="member-name-link">createPlayer()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/PlayerFactory.html" title="class in com.csse3200.game.entities.factories">PlayerFactory</a></dt>
 <dd>
 <div class="block">Create a player entity.</div>
@@ -642,6 +647,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a terrain of the given type, using the orientation of the factory.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/CurrencyFactory.html#createTitaniumCore(float,float)" class="member-name-link">createTitaniumCore(float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/CurrencyFactory.html" title="class in com.csse3200.game.entities.factories">CurrencyFactory</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createTree()" class="member-name-link">createTree()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>
 <div class="block">Creates a tree entity (占 1 个 tile).</div>
@@ -1149,6 +1156,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the entity's center position</div>
 </dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#getCollectSoundPath()" class="member-name-link">getCollectSoundPath()</a> - Method in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
+<dd>
+<div class="block">Gets the file path to the sound played when this currency type is collected.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#getComponent(java.lang.Class)" class="member-name-link">getComponent(Class&lt;T&gt;)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Get a component of type T on the entity.</div>
@@ -1159,7 +1170,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Gets the current amount of the given currency type.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#getCurrencyList()" class="member-name-link">getCurrencyList()</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#getCurrencyEntityList()" class="member-name-link">getCurrencyEntityList()</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
 <dd>
 <div class="block">Gets the list of currency entities.</div>
 </dd>
@@ -1183,6 +1194,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rewards/Reward.html#getDescription()" class="member-name-link">getDescription()</a> - Method in class com.csse3200.game.components.rewards.<a href="com/csse3200/game/components/rewards/Reward.html" title="class in com.csse3200.game.components.rewards">Reward</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#getDisplayName()" class="member-name-link">getDisplayName()</a> - Method in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
+<dd>
+<div class="block">Gets the display name of this currency type.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/BossEnemyFactory.html#getDisplayName()" class="member-name-link">getDisplayName()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/BossEnemyFactory.html" title="class in com.csse3200.game.entities.factories">BossEnemyFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html#getDisplayName()" class="member-name-link">getDisplayName()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DividerChildEnemyFactory</a></dt>
@@ -1387,6 +1402,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#getTarget()" class="member-name-link">getTarget()</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#getTexturePath()" class="member-name-link">getTexturePath()</a> - Method in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
+<dd>
+<div class="block">Gets the file path to the texture/image for this currency type.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/BossEnemyFactory.html#getTexturePath()" class="member-name-link">getTexturePath()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/BossEnemyFactory.html" title="class in com.csse3200.game.entities.factories">BossEnemyFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html#getTexturePath()" class="member-name-link">getTexturePath()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DividerChildEnemyFactory</a></dt>
@@ -2020,6 +2039,8 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="com/csse3200/game/ui/PlayerRank.html#name" class="member-name-link">name</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#NEUROCHIP" class="member-name-link">NEUROCHIP</a> - Enum constant in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/LeaderboardController.html#nextPage()" class="member-name-link">nextPage()</a> - Method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardController.html" title="class in com.csse3200.game.ui.leaderboard">LeaderboardController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#noDamageClear" class="member-name-link">noDamageClear</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
@@ -2331,6 +2352,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#refreshRate" class="member-name-link">refreshRate</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#refundCurrency(java.util.Map,float)" class="member-name-link">refundCurrency(Map&lt;CurrencyComponent.CurrencyType, Integer&gt;, float)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
+<dd>
+<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/EntityService.html#register(com.csse3200.game.entities.Entity)" class="member-name-link">register(Entity)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/EntityService.html" title="class in com.csse3200.game.entities">EntityService</a></dt>
 <dd>
 <div class="block">Register a new entity with the entity service.</div>
@@ -3020,10 +3045,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.html#submitScore(long)" class="member-name-link">submitScore(long)</a> - Method in interface com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#subtractCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">subtractCurrencyAmount(CurrencyComponent.CurrencyType, int)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
-<dd>
-<div class="block">Subtracts a specified amount of the given currency type.</div>
-</dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
@@ -3120,6 +3141,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#timeElapsed" class="member-name-link">timeElapsed</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#timestamp" class="member-name-link">timestamp</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#TITANIUM_CORE" class="member-name-link">TITANIUM_CORE</a> - Enum constant in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/SimpleUI.html#title()" class="member-name-link">title()</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/SimpleUI.html" title="class in com.csse3200.game.ui">SimpleUI</a></dt>
 <dd>&nbsp;</dd>
@@ -3401,13 +3424,13 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Increments the attack timer by delta seconds.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerCurrencyAmountUI(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">updatePlayerCurrencyAmountUI(CurrencyComponent.CurrencyType, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
+<dd>
+<div class="block">Updates the player's currency amount for certain type on the UI.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerHealthUI(int)" class="member-name-link">updatePlayerHealthUI(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
 <dd>
 <div class="block">Updates the player's health on the ui.</div>
-</dd>
-<dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerScrapUI(int)" class="member-name-link">updatePlayerScrapUI(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
-<dd>
-<div class="block">Updates the player's scrap on the ui.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.html" class="type-name-link" title="class in com.csse3200.game.files">UserSettings</a> - Class in <a href="com/csse3200/game/files/package-summary.html">com.csse3200.game.files</a></dt>
 <dd>

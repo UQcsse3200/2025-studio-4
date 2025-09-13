@@ -20,6 +20,8 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 
 import java.util.LinkedHashSet;
+import com.csse3200.game.components.hero.HeroUltimateComponent;
+import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
  * Factory class for creating hero entities.
@@ -131,7 +133,10 @@ public final class HeroFactory {
                     camera // Inject camera for aiming & rotation
             ))
             .addComponent(new HeroUpgradeComponent())
-    .addComponent(new HeroAppearanceComponent(cfg));
+            .addComponent(new HeroUltimateComponent())
+            .addComponent(new HeroUltimateComponent())
+            .addComponent(new UltimateButtonComponent())
+            .addComponent(new HeroAppearanceComponent(cfg));
 
     // Default scale to 1x1 so the hero is visible during testing
     hero.setScale(1f, 1f);

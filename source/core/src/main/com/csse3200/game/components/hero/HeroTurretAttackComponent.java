@@ -46,6 +46,15 @@ public class HeroTurretAttackComponent extends Component {
     this.camera = camera;
   }
 
+    @Override
+  public void create() {
+            // 监听大招倍率变化（HeroUltimateComponent 触发 "attack.multiplier"）
+        entity.getEvents().addListener("attack.multiplier", (Float mul) -> {
+            if (mul == null || mul <= 0f) mul = 1f;
+            this.attackScale = mul; // 直接写倍率；computeDamageFromStats() 已使用它
+        });
+  }
+
   @Override
   public void update() {
     if (entity == null) return;

@@ -114,6 +114,15 @@ public class HeroUpgradeComponent extends Component {
     public int getLevel() {
         return level;
     }
+    // 读余额组件（给大招等用）
+    public com.csse3200.game.components.currencysystem.CurrencyManagerComponent getWallet() {
+        return wallet;
+    }
+
+    // （可选）需要的话保留这个
+    public com.csse3200.game.entities.Entity getPlayer() {
+        return player;
+    }
 }
 
 

@@ -23,6 +23,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("gameover", this::onExit);
     entity.getEvents().addListener("gamewin", this::onExit);
+    entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
     entity.getEvents().addListener("togglePause", this::onTogglePause);
     entity.getEvents().addListener("resume", this::onResume);
@@ -59,6 +60,14 @@ public class MainGameActions extends Component {
 
   private void onQuitToMenu() {
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+  }
+
+  /**
+   * Restarts the game by creating a new MainGameScreen.
+   */
+  private void onRestart() {
+    logger.info("Restarting game");
+    game.setScreen(GdxGame.ScreenType.MAIN_GAME, false);
   }
 
   /**

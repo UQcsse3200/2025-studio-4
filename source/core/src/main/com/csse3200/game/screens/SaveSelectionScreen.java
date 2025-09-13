@@ -23,7 +23,10 @@ import org.slf4j.LoggerFactory;
  */
 public class SaveSelectionScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(SaveSelectionScreen.class);
-  private static final String[] saveSelectionTextures = {"images/main_menu_background.png"};
+  private static final String[] saveSelectionTextures = {
+    "images/main_menu_background.png",
+    "images/Main_Menu_Button_Background.png"
+  };
 
   private final GdxGame game;
   private final Renderer renderer;

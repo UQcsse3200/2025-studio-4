@@ -91,6 +91,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DividerEnemyFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">可分裂敌人（死亡后生成 3 个子体）的工厂。
+ 关键点：所有“销毁父体 + 生成子体 + 更新计数”的操作统一放入 postRunnable，
+ 避开 Box2D Step 锁，防止 IsLocked() 断言崩溃。</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -109,7 +112,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDividerEnemy(com.csse3200.game.entities.Entity,com.csse3200.game.areas.GameArea)" class="member-name-link">createDividerEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  <a href="../../areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a divider enemy with current configuration.</div>
+<div class="block">创建可分裂敌人。</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getDisplayName()" class="member-name-link">getDisplayName</a>()</code></div>
@@ -128,27 +131,25 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#resetToDefaults()" class="member-name-link">resetToDefaults</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Resets all drone configuration to default values.</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setDisplayName(java.lang.String)" class="member-name-link">setDisplayName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setDisplayName(java.lang.String)" class="member-name-link">setDisplayName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;n)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setResistance(com.csse3200.game.entities.configs.DamageTypeConfig)" class="member-name-link">setResistance</a><wbr>(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;resistance)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setResistance(com.csse3200.game.entities.configs.DamageTypeConfig)" class="member-name-link">setResistance</a><wbr>(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;r)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setSpeed(float,float)" class="member-name-link">setSpeed</a><wbr>(float&nbsp;x,
  float&nbsp;y)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setSpeed(com.badlogic.gdx.math.Vector2)" class="member-name-link">setSpeed</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;speed)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setSpeed(com.badlogic.gdx.math.Vector2)" class="member-name-link">setSpeed</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;s)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setTexturePath(java.lang.String)" class="member-name-link">setTexturePath</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setTexturePath(java.lang.String)" class="member-name-link">setTexturePath</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;p)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setWeakness(com.csse3200.game.entities.configs.DamageTypeConfig)" class="member-name-link">setWeakness</a><wbr>(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;weakness)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setWeakness(com.csse3200.game.entities.configs.DamageTypeConfig)" class="member-name-link">setWeakness</a><wbr>(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -172,12 +173,11 @@ loadScripts(document, 'script');</script>
 <h3>createDividerEnemy</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDividerEnemy</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  <a href="../../areas/GameArea.html" title="class in com.csse3200.game.areas">GameArea</a>&nbsp;area)</span></div>
-<div class="block">Creates a divider enemy with current configuration. The divider is capable of spawning multiple other enemies upon death</div>
+<div class="block">创建可分裂敌人。</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>target</code> - entity to chase</dd>
-<dt>Returns:</dt>
-<dd>entity</dd>
+<dd><code>target</code> - 追击目标（可为 null）</dd>
+<dd><code>area</code> - 游戏区域（用于 spawn 子体）</dd>
 </dl>
 </section>
 </li>
@@ -214,19 +214,19 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setResistance(com.csse3200.game.entities.configs.DamageTypeConfig)">
 <h3>setResistance</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setResistance</span><wbr><span class="parameters">(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;resistance)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setResistance</span><wbr><span class="parameters">(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;r)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="setWeakness(com.csse3200.game.entities.configs.DamageTypeConfig)">
 <h3>setWeakness</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setWeakness</span><wbr><span class="parameters">(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;weakness)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setWeakness</span><wbr><span class="parameters">(<a href="../configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;w)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="setSpeed(com.badlogic.gdx.math.Vector2)">
 <h3>setSpeed</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSpeed</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;speed)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSpeed</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;s)</span></div>
 </section>
 </li>
 <li>
@@ -239,20 +239,19 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setTexturePath(java.lang.String)">
 <h3>setTexturePath</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTexturePath</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTexturePath</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;p)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="setDisplayName(java.lang.String)">
 <h3>setDisplayName</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDisplayName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDisplayName</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;n)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="resetToDefaults()">
 <h3>resetToDefaults</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resetToDefaults</span>()</div>
-<div class="block">Resets all drone configuration to default values.</div>
 </section>
 </li>
 </ul>

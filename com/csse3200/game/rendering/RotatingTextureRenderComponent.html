@@ -99,13 +99,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RotatingTextureRenderComponent</span>
 <span class="extends-implements">extends <a href="RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
-<div class="block">A render component that supports rotating a texture around its center.
- <p>
- Extends <a href="RenderComponent.html" title="class in com.csse3200.game.rendering"><code>RenderComponent</code></a> and draws a texture with rotation applied.
- Rotation is specified in degrees and can be set dynamically by other
- components (e.g., <code>HeroTurretAttackComponent</code>) to make the sprite
- face a target direction.
- </p></div>
+<div class="block">A render component that supports rotation around the center of the sprite
+ and allows switching textures at runtime.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -128,11 +123,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.badlogic.gdx.graphics.Texture)" class="member-name-link">RotatingTextureRenderComponent</a><wbr>(com.badlogic.gdx.graphics.Texture&nbsp;texture)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Create a rotating texture render component from an existing <code>Texture</code>.</div>
+<div class="block">Construct with an existing Texture.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">RotatingTextureRenderComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Create a rotating texture render component from a texture path.</div>
+<div class="block">Construct with a texture path (retrieved from ResourceService).</div>
 </div>
 </div>
 </section>
@@ -151,17 +146,37 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Draw the texture with rotation around its center.</div>
+<div class="block">Draws the texture rotated around its center.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRotation()" class="member-name-link">getRotation</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Get the current rotation angle.</div>
+<div class="block">Get rotation angle in degrees.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.badlogic.gdx.graphics.Texture</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTexture()" class="member-name-link">getTexture</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the current texture (may be null if the asset failed to load).</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTexturePath()" class="member-name-link">getTexturePath</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the current texture path (may be null).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRotation(float)" class="member-name-link">setRotation</a><wbr>(float&nbsp;deg)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Set the rotation angle.</div>
+<div class="block">Set rotation angle in degrees.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTexture(com.badlogic.gdx.graphics.Texture)" class="member-name-link">setTexture</a><wbr>(com.badlogic.gdx.graphics.Texture&nbsp;newTexture)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Switch texture at runtime by directly providing a Texture.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTexture(java.lang.String)" class="member-name-link">setTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;newPath)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Switch texture at runtime using a path.</div>
 </div>
 </div>
 </div>
@@ -190,23 +205,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(com.badlogic.gdx.graphics.Texture)">
 <h3>RotatingTextureRenderComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RotatingTextureRenderComponent</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.Texture&nbsp;texture)</span></div>
-<div class="block">Create a rotating texture render component from an existing <code>Texture</code>.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>texture</code> - the texture to render</dd>
-</dl>
+<div class="block">Construct with an existing Texture.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="&lt;init&gt;(java.lang.String)">
 <h3>RotatingTextureRenderComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RotatingTextureRenderComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</span></div>
-<div class="block">Create a rotating texture render component from a texture path.
- The texture is loaded via the <a href="../services/ServiceLocator.html" title="class in com.csse3200.game.services"><code>ServiceLocator</code></a>'s ResourceService.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>texturePath</code> - path to the texture asset</dd>
-</dl>
+<div class="block">Construct with a texture path (retrieved from ResourceService).</div>
 </section>
 </li>
 </ul>
@@ -221,37 +227,58 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setRotation(float)">
 <h3>setRotation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setRotation</span><wbr><span class="parameters">(float&nbsp;deg)</span></div>
-<div class="block">Set the rotation angle.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>deg</code> - rotation in degrees</dd>
-</dl>
+<div class="block">Set rotation angle in degrees.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getRotation()">
 <h3>getRotation</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getRotation</span>()</div>
-<div class="block">Get the current rotation angle.</div>
-<dl class="notes">
-<dt>Returns:</dt>
-<dd>rotation in degrees</dd>
-</dl>
+<div class="block">Get rotation angle in degrees.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTexture()">
+<h3>getTexture</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.Texture</span>&nbsp;<span class="element-name">getTexture</span>()</div>
+<div class="block">Get the current texture (may be null if the asset failed to load).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getTexturePath()">
+<h3>getTexturePath</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getTexturePath</span>()</div>
+<div class="block">Get the current texture path (may be null).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setTexture(java.lang.String)">
+<h3>setTexture</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTexture</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;newPath)</span></div>
+<div class="block">Switch texture at runtime using a path.
+ If the resource has not been preloaded, it will be synchronously loaded,
+ which may cause a brief stall. Preloading textures is recommended.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setTexture(com.badlogic.gdx.graphics.Texture)">
+<h3>setTexture</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTexture</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.Texture&nbsp;newTexture)</span></div>
+<div class="block">Switch texture at runtime by directly providing a Texture.
+ Note: The caller must ensure the texture's lifecycle is managed
+ (e.g., by ResourceService) or properly disposed at the end of the scene.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
 <h3>draw</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
-<div class="block">Draw the texture with rotation around its center.
- <p>
- Uses <code>SpriteBatch.draw(Texture, float, float, float, float, float, float, float, float, float, int, int, int, int, boolean, boolean)</code> which supports origin and rotation.
- </p></div>
+<div class="block">Draws the texture rotated around its center.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a></code>&nbsp;in class&nbsp;<code><a href="RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>batch</code> - the sprite batch to draw with</dd>
+<dd><code>batch</code> - Batch to render to.</dd>
 </dl>
 </section>
 </li>

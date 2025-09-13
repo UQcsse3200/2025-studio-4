@@ -98,7 +98,11 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="DividerChildEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DividerChildEnemyFactory</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DividerEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DividerEnemyFactory</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">可分裂敌人（死亡后生成 3 个子体）的工厂。
+ 关键点：所有“销毁父体 + 生成子体 + 更新计数”的操作统一放入 postRunnable，
+ 避开 Box2D Step 锁，防止 IsLocked() 断言崩溃。</div>
+</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="DroneEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DroneEnemyFactory</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="EnemyFactory.html" title="class in com.csse3200.game.entities.factories">EnemyFactory</a></div>

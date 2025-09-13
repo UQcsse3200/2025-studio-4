@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
@@ -18,8 +19,11 @@ public class HomebaseDamageEffectComponent extends Component {
     private static final String NORMAL_TEXTURE_PATH = "images/basement.png";
     private static final String DAMAGED_TEXTURE_PATH = "images/basement_damaged.png";
     
+    // 音效路径
+    private static final String HIT_SOUND_PATH = "sounds/homebase_hit_sound.mp3";
+    
     // 受击效果持续时间（秒）
-    private static final float DAMAGE_EFFECT_DURATION = 0.5f;
+    private static final float DAMAGE_EFFECT_DURATION = 0.3f;
     
     // 受击时的颜色（红色闪烁效果）
     private static final Color DAMAGE_COLOR = new Color(1f, 0.3f, 0.3f, 1f); // 红色
@@ -28,6 +32,7 @@ public class HomebaseDamageEffectComponent extends Component {
     private SwitchableTextureRenderComponent textureComponent;
     private Texture normalTexture;
     private Texture damagedTexture;
+    private Sound hitSound;
     private boolean isShowingDamageEffect = false;
     private float damageEffectTimer = 0f;
     private int previousHealth = -1;
@@ -44,8 +49,9 @@ public class HomebaseDamageEffectComponent extends Component {
             return;
         }
         
-        // 加载贴图
+        // 加载贴图和音效
         loadTextures();
+        loadHitSound();
         
         // 获取初始生命值
         PlayerCombatStatsComponent combatStats = entity.getComponent(PlayerCombatStatsComponent.class);
@@ -109,6 +115,19 @@ public class HomebaseDamageEffectComponent extends Component {
     }
     
     /**
+     * 加载受击音效
+     */
+    private void loadHitSound() {
+        try {
+            hitSound = ServiceLocator.getResourceService().getAsset(HIT_SOUND_PATH, Sound.class);
+            logger.debug("Loaded homebase hit sound: {}", HIT_SOUND_PATH);
+        } catch (Exception e) {
+            logger.warn("Could not load hit sound, damage effect will be visual only: {}", e.getMessage());
+            hitSound = null;
+        }
+    }
+    
+    /**
      * 当生命值更新时触发
      */
     private void onHealthUpdate(int newHealth) {
@@ -145,6 +164,12 @@ public class HomebaseDamageEffectComponent extends Component {
                 logger.debug("Using color-only damage effect");
             }
             textureComponent.setColor(DAMAGE_COLOR);
+        }
+        
+        // 播放受击音效
+        if (hitSound != null) {
+            hitSound.play();
+            logger.debug("Playing homebase hit sound");
         }
         
         logger.debug("Showing homebase damage effect");

@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.csse3200.game.entities.Entity;
@@ -36,6 +37,9 @@ class HomebaseDamageEffectComponentSimpleTest {
     private Texture mockDamagedTexture;
     
     @Mock
+    private Sound mockHitSound;
+    
+    @Mock
     private SwitchableTextureRenderComponent mockTextureComponent;
     
     @Mock
@@ -53,6 +57,7 @@ class HomebaseDamageEffectComponentSimpleTest {
         // Setup resource service mocks with lenient stubbing
         lenient().when(mockResourceService.getAsset("images/basement.png", Texture.class)).thenReturn(mockNormalTexture);
         lenient().when(mockResourceService.getAsset("images/basement_damaged.png", Texture.class)).thenReturn(mockDamagedTexture);
+        lenient().when(mockResourceService.getAsset("sounds/homebase_hit_sound.mp3", Sound.class)).thenReturn(mockHitSound);
         
         // Setup time service
         lenient().when(mockTimeService.getDeltaTime()).thenReturn(0.016f); // 60 FPS
@@ -83,7 +88,7 @@ class HomebaseDamageEffectComponentSimpleTest {
     @Test
     void shouldHaveCorrectDuration() {
         // Check duration
-        assertEquals(0.5f, damageEffectComponent.getDamageEffectDuration());
+        assertEquals(0.3f, damageEffectComponent.getDamageEffectDuration());
     }
     
     @Test
@@ -108,6 +113,15 @@ class HomebaseDamageEffectComponentSimpleTest {
         assertTrue(damageEffectComponent.isShowingDamageEffect());
         verify(mockTextureComponent).setColor(any(Color.class));
         verify(mockTextureComponent).setTexture(mockDamagedTexture);
+    }
+    
+    @Test
+    void shouldPlayHitSoundOnDamage() {
+        // Simulate health decrease
+        entity.getEvents().trigger("updateHealth", 80);
+        
+        // Verify hit sound was played
+        verify(mockHitSound).play();
     }
     
     @Test

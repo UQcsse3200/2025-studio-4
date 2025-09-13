@@ -46,7 +46,10 @@ public class ForestGameArea extends GameArea {
             "images/boss_basic_spritesheet.atlas"
     };
 
-    private static final String[] forestSounds = {"sounds/Impact4.ogg"};
+    private static final String[] forestSounds = {
+            "sounds/Impact4.ogg",
+            "sounds/homebase_hit_sound.mp3"
+    };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 

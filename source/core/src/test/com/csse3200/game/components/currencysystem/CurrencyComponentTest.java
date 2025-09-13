@@ -22,6 +22,7 @@ class CurrencyComponentTest {
 
     @AfterEach
     void tearDown() {
+        currencyComponent = null;
     }
 
     @Test

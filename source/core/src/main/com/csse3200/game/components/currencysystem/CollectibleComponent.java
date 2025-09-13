@@ -23,7 +23,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class CollectibleComponent extends Component {
     private boolean isCollected;
-    private float clickRadius = 1.0f;
+    private float clickRadius = 0.6f;
 
     /**
      * Creates a new collectible component, initially not collected.

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
@@ -28,7 +29,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.graphics.Camera;
-import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 
 /**
  * Forest area for the demo game with trees, a player, and some enemies.
@@ -66,6 +66,8 @@ public class ForestGameArea extends GameArea {
     "images/desert.png",
     "images/snow.png",
     "images/river.png",
+    "images/iso_grass_3.png",
+    "images/placeholder-enemy.png",
     "images/drone_enemy.png",
     "images/base_enemy.png",
     "images/tank_enemy.png",
@@ -75,16 +77,24 @@ public class ForestGameArea extends GameArea {
     "images/metal-scrap-currency.png",
     "images/bone.png",
     "images/cavemen.png",
-    "images/dino.png"
+    "images/dino.png",
+    CurrencyComponent.CurrencyType.METAL_SCRAP.getTexturePath(),
+    CurrencyComponent.CurrencyType.TITANIUM_CORE.getTexturePath(),
+    CurrencyComponent.CurrencyType.NEUROCHIP.getTexturePath()
   };
 
   private static final String[] forestTextureAtlases = {
-    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas", 
+    "images/terrain_iso_grass.atlas", "images/ghost.atlas", "images/ghostKing.atlas",
     "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_basic_spritesheet.atlas",
     "images/boss_basic_spritesheet.atlas"
   };
 
-  private static final String[] forestSounds = {"sounds/Impact4.ogg"};
+  private static final String[] forestSounds = {
+          "sounds/Impact4.ogg",
+          CurrencyComponent.CurrencyType.METAL_SCRAP.getCollectSoundPath(),
+          CurrencyComponent.CurrencyType.TITANIUM_CORE.getCollectSoundPath(),
+          CurrencyComponent.CurrencyType.NEUROCHIP.getCollectSoundPath()
+  };
   private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
   private static final String[] forestMusic = {backgroundMusic};
 
@@ -133,7 +143,7 @@ public class ForestGameArea extends GameArea {
     spawnTerrain();
     spawnTrees();
 
-    
+
     // Only spawn new player if one doesn't already exist
     if (!hasExistingPlayer) {
       player = spawnPlayer();
@@ -145,16 +155,15 @@ public class ForestGameArea extends GameArea {
         player = spawnPlayer();
       }
     }
-    
+
 
     // Spawn Enemies
     spawnDrones();
+
     spawnGrunts();
     spawnTanks();
     spawnBosses();
     spawnDividers();
-    
-    spawnTestMetalScraps();
 
     // Generate fixed enemy path生成固定敌人路径
     mapEditor.generateEnemyPath();
@@ -378,25 +387,11 @@ public class ForestGameArea extends GameArea {
     resourceService.unloadAssets(forestMusic);
   }
 
-    private void generateBiomesAndRivers() {
+  private void generateBiomesAndRivers() {
         if (mapEditor == null) {
             return;
         }
         mapEditor.generateBiomesAndRivers();
-    }
-
-    private void spawnTestMetalScraps() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        final int METAL_SCRAPS_COUNT = 10;
-        for (int i = 0; i < METAL_SCRAPS_COUNT; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            float x = randomPos.x * terrain.getTileSize();
-            float y = randomPos.y * terrain.getTileSize();
-            Entity metalScrap = CurrencyFactory.createMetalScrap(x, y);
-            player.getComponent(CurrencyManagerComponent.class).addCurrencyEntity(metalScrap);
-            spawnEntity(metalScrap);
-        }
     }
 
     @Override

@@ -195,7 +195,7 @@ public class MapEditor extends InputAdapter {
         cell.setTile(keypointTile);
     }
 
-    /** Generate biomes and rivers生成生态群落和河流 */
+ /*    // Generate biomes and rivers生成生态群落和河流 
     public void generateBiomesAndRivers() {
         if (terrain == null) return;
         TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
@@ -213,7 +213,7 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-    /** Paint biome blocks绘制生态群落区块 */
+    // Paint biome blocks绘制生态群落区块 
     private void paintBiomeBlock(TiledMapTileLayer layer, GridPoint2 center, int size, String texPath) {
         Texture tex = ServiceLocator.getResourceService().getAsset(texPath, Texture.class);
         TiledMapTile tile = new StaticTiledMapTile(new TextureRegion(tex));
@@ -228,7 +228,7 @@ public class MapEditor extends InputAdapter {
                 }
             }
         }
-    }
+    }*/
 
     /** Not allowed to cover path or defense area不允许覆盖路径或塔防区 */
     private boolean canPaintTile(GridPoint2 pos) {

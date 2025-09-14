@@ -24,6 +24,7 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 import com.csse3200.game.components.maingame.SimplePlacementController;
+import com.csse3200.game.components.CameraZoomDragComponent;
 
 /**
  * Forest area for the demo game with trees, a player, and some enemies.
@@ -47,7 +48,6 @@ public class ForestGameArea extends GameArea {
     };
 
     private static final String[] forestSounds = {
-            "sounds/Impact4.ogg",
             "sounds/homebase_hit_sound.mp3"
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
@@ -102,6 +102,11 @@ public class ForestGameArea extends GameArea {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+        // Create camera control entity for zoom and drag functionality
+        Entity cameraControl = new Entity();
+        cameraControl.addComponent(new CameraZoomDragComponent());
+        spawnEntity(cameraControl);
+
         spawnTerrain();
 
         // Only spawn new player if one doesn't already exist
@@ -136,7 +141,7 @@ public class ForestGameArea extends GameArea {
         spawnDividers();
 
         // Generate biomes & placeable areas
-        mapEditor.generateBiomesAndRivers();
+        //mapEditor.generateBiomesAndRivers();
 
         // Tower placement highlighter
         MapHighlighter mapHighlighter =

@@ -44,7 +44,7 @@ public class ForestGameArea extends GameArea {
 
     private static final String[] forestTextureAtlases = {
             "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_basic_spritesheet.atlas",
-            "images/boss_basic_spritesheet.atlas", "images/snow.png"
+            "images/boss_basic_spritesheet.atlas"
     };
 
     private static final String[] forestSounds = {
@@ -64,6 +64,11 @@ public class ForestGameArea extends GameArea {
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
             {26, 4}, {27, 4}, {28, 4}, {29, 4}, {15, 15},
             {14, 7}, {22, 8}, {5, 24}, {12, 16}, {8, 20}
+    };
+
+    // create snowtree areas
+    private static final int[][] SNOWTREE_COORDS = new int[][]{
+            {3, 5}, {4, 5}, {5, 5}, {6, 5}
     };
 
     /**
@@ -129,6 +134,9 @@ public class ForestGameArea extends GameArea {
         // 现在 mapEditor 已经存在，生成障碍并注册到 invalidTiles
         // Now that mapEditor exists, generate barriers and register them to invalidTiles
         registerBarrierAndSpawn(BARRIER_COORDS);
+        // 生成雪树障碍物并注册到 invalidTiles
+        // Generate snowtree obstacles and register them to invalidTiles
+        registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         // 注册后刷新放置控制器的禁放区缓存
         // After registering, refresh the placement controller's invalid-area cache
         placementController.refreshInvalidTiles();
@@ -192,7 +200,7 @@ public class ForestGameArea extends GameArea {
     }
 
     //注册到 MapEditor 的 invalidTiles，并在地图上生成障碍物。
-    //Register to MapEditor’s invalidTiles and generate obstacles on the map.
+    //Register to MapEditor's invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
         // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
@@ -202,6 +210,20 @@ public class ForestGameArea extends GameArea {
         }
         if (mapEditor != null) {
             mapEditor.registerBarrierCoords(coords);
+        }
+    }
+
+    //注册雪树到 MapEditor 的 invalidTiles，并在地图上生成雪树障碍物。
+    //Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
+    private void registerSnowTreeAndSpawn(int[][] coords) {
+        if (coords == null) return;
+        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
+        for (int[] p : coords) {
+            if (p == null || p.length != 2) continue;
+            spawnEntityAt(ObstacleFactory.createSnowTree(), new GridPoint2(p[0], p[1]), true, false);
+        }
+        if (mapEditor != null) {
+            mapEditor.registerSnowTreeCoords(coords);
         }
     }
 
@@ -312,9 +334,6 @@ public class ForestGameArea extends GameArea {
         resourceService.loadTextureAtlases(forestTextureAtlases);
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
-        
-        // 加载雪地纹理
-        resourceService.loadTextures(new String[]{"images/snow.png"});
 
         while (!resourceService.loadForMillis(10)) {
             logger.info("Loading... {}%", resourceService.getProgress());
@@ -327,7 +346,6 @@ public class ForestGameArea extends GameArea {
         resourceService.unloadAssets(forestTextureAtlases);
         resourceService.unloadAssets(forestSounds);
         resourceService.unloadAssets(forestMusic);
-        resourceService.unloadAssets(new String[]{"images/snow.png"});
     }
 
     @Override

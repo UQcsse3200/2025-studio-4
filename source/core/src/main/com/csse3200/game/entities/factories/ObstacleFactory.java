@@ -31,6 +31,21 @@ public class ObstacleFactory {
     }
 
     /**
+     * Creates a snow tree entity (占 1 个 tile).
+     * @return entity
+     */
+    public static Entity createSnowTree() {
+        Entity snowTree = new Entity()
+                .addComponent(new TextureRenderComponent("images/snowtree.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+        snowTree.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(snowTree, 0.4f, 0.4f);
+        return snowTree;
+    }
+
+    /**
      * Creates an invisible physics wall.
      * @param width Wall width in world units
      * @param height Wall height in world units

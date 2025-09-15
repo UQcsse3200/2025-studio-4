@@ -24,6 +24,7 @@ public class MapEditor extends InputAdapter {
     private Map<String, GridPoint2> invalidTiles = new HashMap<>();
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
     private Map<String, GridPoint2> barrierTiles = new HashMap<>();
+    private Map<String, GridPoint2> snowTreeTiles = new HashMap<>();
 
     // Occupied tiles to avoid obstacle overlap已占用的格子，避免障碍物重叠
     private Set<String> occupiedTiles = new HashSet<>();
@@ -31,19 +32,14 @@ public class MapEditor extends InputAdapter {
     // Tile types瓦片类型
     private TiledMapTile pathTile;
     private TiledMapTile keypointTile;
-    private TiledMapTile snowTile;
 
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
-    
-    // Snow coordinates list雪地坐标列表
-    private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
         initializePathTile();
         initializeKeypointTile();
-        initializeSnowTile();
     }
 
     /** Initialize path tiles初始化路径瓦片 */
@@ -88,28 +84,6 @@ public class MapEditor extends InputAdapter {
         } catch (Exception e) {
             System.out.println("⚠️ path_keypoint.png tile initialization failed: " + e.getMessage());
             keypointTile = null;
-        }
-    }
-
-    /** Initialize snow tiles初始化雪地瓦片 */
-    private void initializeSnowTile() {
-        try {
-            Texture snowTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
-            // Avoid blurring when zooming避免放大时模糊
-            snowTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-            // Make the snow tile size consistent with the base tile layer to prevent size anomalies使雪地瓦片尺寸与基础图层瓦片一致，防止尺寸异常
-            TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-            int tileW = baseLayer.getTileWidth();
-            int tileH = baseLayer.getTileHeight();
-            int regionW = Math.min(tileW, snowTexture.getWidth());
-            int regionH = Math.min(tileH, snowTexture.getHeight());
-            TextureRegion region = new TextureRegion(snowTexture, 0, 0, regionW, regionH);
-            snowTile = new StaticTiledMapTile(region);
-            System.out.println("✅ snow.png tile initialized successfully");
-        } catch (Exception e) {
-            System.out.println("⚠️ snow.png tile initialization failed: " + e.getMessage());
-            snowTile = null;
         }
     }
 
@@ -203,31 +177,9 @@ public class MapEditor extends InputAdapter {
             markKeypoint(wp);
         }
 
-        // Add snow only in the red circled area只在红色圆圈区域添加雪地
-        // 根据图片描述，红色圆圈在底部中心区域
-        int[][] redCircledArea = {
-            {12, 17, 5, 12} 
-              // 红色圆圈区域 (底部中心)
-        };
-        
-        for (int[] range : redCircledArea) {
-            int startX = range[0];
-            int endX = range[1];
-            int startY = range[2];
-            int endY = range[3];
-            
-            System.out.println("🔴 处理红色圆圈区域: x=" + startX + "-" + endX + ", y=" + startY + "-" + endY);
-            
-            for (int x = startX; x <= endX; x++) {
-                for (int y = startY; y <= endY; y++) {
-                    addSnow(x, y);
-                }
-            }
-        }
-        
+       // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());
-        System.out.println("✅ Snow coordinates number=" + snowCoords.size());
     }
 
     /** Mark key path points标记关键路径点 */
@@ -243,41 +195,6 @@ public class MapEditor extends InputAdapter {
         cell.setTile(keypointTile);
     }
 
-    /** Add snow at specified coordinates在指定坐标添加雪地 */
-    public void addSnow(int x, int y) {
-        if (snowTile == null) {
-            System.out.println("⚠️ Snow tile not initialized");
-            return;
-        }
-        
-        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
-        
-        if (x < 0 || y < 0 || x >= pathLayer.getWidth() || y >= pathLayer.getHeight()) {
-            System.out.println("⚠️ Snow coordinates out of bounds: (" + x + ", " + y + ")");
-            return;
-        }
-        
-        // Check if position is already occupied by path, barriers, or keypoints检查位置是否已被路径、障碍物或关键点占用
-        String key = x + "," + y;
-        if (pathTiles.containsKey(key) || 
-            invalidTiles.containsKey(key) || 
-            barrierTiles.containsKey(key)) {
-            System.out.println("🚫 Position (" + x + ", " + y + ") is occupied by path/barrier, skipping");
-            return;
-        }
-        
-        // Add to snow coordinates list添加到雪地坐标列表
-        snowCoords.add(new GridPoint2(x, y));
-        
-        // Create snow tile创建雪地瓦片
-        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-        cell.setTile(snowTile);
-        pathLayer.setCell(x, y, cell);
-        
-        System.out.println("❄️ Snow added at coordinates (" + x + ", " + y + ")");
-    }
-
     /** Clean up all objects清理所有对象 */
     public void cleanup() {
         //for (Entity tree : placedTrees.values()) tree.dispose();
@@ -286,7 +203,6 @@ public class MapEditor extends InputAdapter {
         placeableAreaTiles.clear();
         occupiedTiles.clear();
         keyWaypoints.clear();
-        snowCoords.clear();
         System.out.println("🧹 MapEditor cleaned up");
     }
 
@@ -294,7 +210,7 @@ public class MapEditor extends InputAdapter {
         invalidTiles.clear();
         invalidTiles.putAll(pathTiles);
         invalidTiles.putAll(barrierTiles);
-        snowCoords.forEach(coord -> invalidTiles.put(coord.x + "," + coord.y, coord));
+        invalidTiles.putAll(snowTreeTiles);
         return invalidTiles;
     }
 
@@ -308,6 +224,19 @@ public class MapEditor extends InputAdapter {
             if (p == null || p.length != 2) continue;
             String key = p[0] + "," + p[1];
             barrierTiles.put(key, new GridPoint2(p[0], p[1]));
+        }
+    }
+
+    /**
+     * 注册雪树坐标，供 getInvalidTiles() 统一返回
+     * coords: int[][]，每个元素为 {x, y}
+     */
+    public void registerSnowTreeCoords(int[][] coords) {
+        if (coords == null) return;
+        for (int[] p : coords) {
+            if (p == null || p.length != 2) continue;
+            String key = p[0] + "," + p[1];
+            snowTreeTiles.put(key, new GridPoint2(p[0], p[1]));
         }
     }
 

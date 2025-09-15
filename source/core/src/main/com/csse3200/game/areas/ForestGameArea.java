@@ -66,9 +66,9 @@ public class ForestGameArea extends GameArea {
             {14, 7}, {22, 8}, {5, 24}, {12, 16}, {8, 20}
     };
 
-    // create snowtree areas
+    // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {3, 5}, {4, 5}, {5, 5}, {6, 5}
+            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,4},{14,4}
     };
 
     /**

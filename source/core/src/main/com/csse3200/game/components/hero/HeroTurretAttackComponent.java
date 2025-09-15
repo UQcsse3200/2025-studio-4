@@ -19,11 +19,11 @@ import com.csse3200.game.services.ServiceLocator;
  * - Bullet damage is computed from CombatStatsComponent (baseAttack) at fire time.
  */
 public class HeroTurretAttackComponent extends Component {
-  private final float cooldown;
-  private final float bulletSpeed;
-  private final float bulletLife;
-  private final String bulletTexture;
-  private final Camera camera;
+  private float cooldown;
+  private float bulletSpeed;
+  private float bulletLife;
+  private String bulletTexture;
+  private Camera camera;
 
   private float cdTimer = 0f;
   private final Vector3 tmp3 = new Vector3();
@@ -44,6 +44,9 @@ public class HeroTurretAttackComponent extends Component {
     this.bulletLife = bulletLife;
     this.bulletTexture = bulletTexture;
     this.camera = camera;
+  }
+  public void setBulletTexture(String bulletTexture) {
+      this.bulletTexture = bulletTexture;
   }
 
   @Override

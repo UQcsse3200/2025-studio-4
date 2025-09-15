@@ -33,144 +33,141 @@ import com.csse3200.game.ui.UltimateButtonComponent;
  * </ul>
  */
 public final class HeroFactory {
-  private HeroFactory() {
-    throw new IllegalStateException("Instantiating static util class");
-  }
-
-  public static void loadAssets(ResourceService rs, HeroConfig cfg,HeroConfig2 cfg2, HeroConfig3 cfg3) {
-    LinkedHashSet<String> textures = new LinkedHashSet<>();
-
-    if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
-      textures.add(cfg.heroTexture);
+    private HeroFactory() {
+        throw new IllegalStateException("Instantiating static util class");
     }
-    if (cfg.levelTextures != null) {
-      for (String s : cfg.levelTextures) {
-        if (s != null && !s.isBlank()) {
-          textures.add(s);
+
+    public static void loadAssets(ResourceService rs, HeroConfig cfg, HeroConfig2 cfg2, HeroConfig3 cfg3) {
+        LinkedHashSet<String> textures = new LinkedHashSet<>();
+
+        if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
+            textures.add(cfg.heroTexture);
         }
-      }
+        if (cfg.levelTextures != null) {
+            for (String s : cfg.levelTextures) {
+                if (s != null && !s.isBlank()) {
+                    textures.add(s);
+                }
+            }
+        }
+        if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) {
+            textures.add(cfg.bulletTexture);
+        }
+
+        if (!textures.isEmpty()) {
+            rs.loadTextures(textures.toArray(new String[0]));
+        }
+
+        // Repeat similar for cfg2 and cfg3
+        if (cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) {
+            textures.add(cfg2.heroTexture);
+        }
+        if (cfg2.levelTextures != null) {
+            for (String s : cfg2.levelTextures) {
+                if (s != null && !s.isBlank()) {
+                    textures.add(s);
+                }
+            }
+        }
+        if (cfg2.bulletTexture != null && !cfg2.bulletTexture.isBlank()) {
+            textures.add(cfg2.bulletTexture);
+        }
+
+        if (!textures.isEmpty()) {
+            rs.loadTextures(textures.toArray(new String[0]));
+        }
+
+        if (cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) {
+            textures.add(cfg3.heroTexture);
+        }
+        if (cfg3.levelTextures != null) {
+            for (String s : cfg3.levelTextures) {
+                if (s != null && !s.isBlank()) {
+                    textures.add(s);
+                }
+            }
+        }
+        if (cfg3.bulletTexture != null && !cfg3.bulletTexture.isBlank()) {
+            textures.add(cfg3.bulletTexture);
+        }
+
+        if (!textures.isEmpty()) {
+            rs.loadTextures(textures.toArray(new String[0]));
+        }
     }
-    if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) {
-      textures.add(cfg.bulletTexture);
+
+    /**
+     * Create a hero entity based on a {@link HeroConfig}.
+     * <p>
+     * The hero is built as a stationary, turret-style shooter:
+     * <ul>
+     *   <li>Includes a rotating render component.</li>
+     *   <li>Has combat stats and hitbox on the PLAYER layer.</li>
+     *   <li>Can aim toward the mouse cursor and fire bullets using
+     *       {@link HeroTurretAttackComponent}.</li>
+     * </ul>
+     *
+     * @param cfg     hero configuration (stats, cooldown, bullet properties, textures)
+     * @param camera  the active game camera (used for aiming and rotation)
+     * @return a new hero entity configured as a turret-style shooter
+     */
+    public static Entity createHero(HeroConfig cfg, Camera camera) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        // Initialize the Hero entity
+        Entity hero = new Entity()
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent())
+                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                // Renderable texture with rotation support
+                .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
+                // Combat stats (health, attack, resistances/weaknesses)
+                .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
+                // Turret attack logic (fires bullets toward mouse cursor)
+                .addComponent(new HeroTurretAttackComponent(
+                        cfg.attackCooldown,
+                        cfg.bulletSpeed,
+                        cfg.bulletLife,
+                        cfg.bulletTexture, // Bullet texture is passed directly from HeroConfig
+                        camera // Inject camera for aiming & rotation
+                ))
+                .addComponent(new HeroUpgradeComponent())
+                .addComponent(new HeroUltimateComponent())
+                .addComponent(new UltimateButtonComponent())
+                .addComponent(new HeroAppearanceComponent(cfg));
+
+        // Default scale to 1x1 so the hero is visible during testing
+        hero.setScale(1f, 1f);
+        return hero;
     }
 
-    if (!textures.isEmpty()) {
-      rs.loadTextures(textures.toArray(new String[0]));
+    /**
+     * Create a "ghost hero" entity used only for placement previews.
+     * <p>
+     * Characteristics:
+     * <ul>
+     *   <li>Contains only a {@link TextureRenderComponent}.</li>
+     *   <li>Renders semi-transparently using the provided alpha value.</li>
+     *   <li>No physics, collisions, AI, or attack logic.</li>
+     *   <li>Not registered to any physics layer.</li>
+     * </ul>
+     *
+     * @param alpha Transparency (0–1). Recommended values: 0.4–0.6
+     * @return a new ghost hero entity (render-only)
+     */
+    public static Entity createHeroGhost(float alpha) {
+        Entity e = new Entity();
+
+        TextureRenderComponent texture =
+                new TextureRenderComponent("images/hero/Heroshoot.png");
+        texture.setColor(new Color(1f, 1f, 1f, Math.max(0f, Math.min(alpha, 1f))));
+
+        e.addComponent(texture);
+        return e;
     }
-
-      if (cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) {
-          textures.add(cfg2.heroTexture);
-      }
-      if (cfg2.levelTextures != null) {
-          for (String s : cfg2.levelTextures) {
-              if (s != null && !s.isBlank()) {
-                  textures.add(s);
-              }
-          }
-      }
-      if (cfg2.bulletTexture != null && !cfg2.bulletTexture.isBlank()) {
-          textures.add(cfg2.bulletTexture);
-      }
-
-      if (!textures.isEmpty()) {
-          rs.loadTextures(textures.toArray(new String[0]));
-      }
-
-      if (cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) {
-          textures.add(cfg3.heroTexture);
-      }
-      if (cfg3.levelTextures != null) {
-          for (String s : cfg3.levelTextures) {
-              if (s != null && !s.isBlank()) {
-                  textures.add(s);
-              }
-          }
-      }
-      if (cfg3.bulletTexture != null && !cfg3.bulletTexture.isBlank()) {
-          textures.add(cfg3.bulletTexture);
-      }
-
-      if (!textures.isEmpty()) {
-          rs.loadTextures(textures.toArray(new String[0]));
-      }
-
-  }
-
-  /**
-   * Create a hero entity based on a {@link HeroConfig}.
-   * <p>
-   * The hero is built as a stationary, turret-style shooter:
-   * <ul>
-   *   <li>Includes a rotating render component.</li>
-   *   <li>Has combat stats and hitbox on the PLAYER layer.</li>
-   *   <li>Can aim toward the mouse cursor and fire bullets using
-   *       {@link HeroTurretAttackComponent}.</li>
-   * </ul>
-   *
-
-   * @param cfg     hero configuration (stats, cooldown, bullet properties, textures)
-   * @param camera  the active game camera (used for aiming and rotation)
-   * @return a new hero entity configured as a turret-style shooter
-   */
-  public static Entity createHero(HeroConfig cfg, Camera camera) {
-    var resistance = DamageTypeConfig.None;
-    var weakness   = DamageTypeConfig.None;
-
-    Entity hero = new Entity()
-            .addComponent(new PhysicsComponent())
-            .addComponent(new ColliderComponent())
-            .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-            // Renderable texture with rotation support
-            .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
-            // Combat stats (health, attack, resistances/weaknesses)
-            .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
-            // Turret attack logic (fires bullets toward mouse cursor)
-            .addComponent(new HeroTurretAttackComponent(
-                    cfg.attackCooldown,
-                    cfg.bulletSpeed,
-                    cfg.bulletLife,
-                    cfg.bulletTexture,
-                    camera // Inject camera for aiming & rotation
-            ))
-            .addComponent(new HeroUpgradeComponent())
-            .addComponent(new HeroUltimateComponent())
-            .addComponent(new HeroUltimateComponent())
-            .addComponent(new UltimateButtonComponent())
-            .addComponent(new HeroAppearanceComponent(cfg));
-
-    // Default scale to 1x1 so the hero is visible during testing
-    hero.setScale(1f, 1f);
-    return hero;
-  }
-
-
-
-
-  /**
-   * Create a "ghost hero" entity used only for placement previews.
-   * <p>
-   * Characteristics:
-   * <ul>
-   *   <li>Contains only a {@link TextureRenderComponent}.</li>
-   *   <li>Renders semi-transparently using the provided alpha value.</li>
-   *   <li>No physics, collisions, AI, or attack logic.</li>
-   *   <li>Not registered to any physics layer.</li>
-   * </ul>
-   *
-   * @param alpha Transparency (0–1). Recommended values: 0.4–0.6
-   * @return a new ghost hero entity (render-only)
-   */
-  public static Entity createHeroGhost(float alpha) {
-    Entity e = new Entity();
-
-    TextureRenderComponent texture =
-            new TextureRenderComponent("images/hero/Heroshoot.png");
-    texture.setColor(new Color(1f, 1f, 1f, Math.max(0f, Math.min(alpha, 1f))));
-
-    e.addComponent(texture);
-    return e;
-  }
 }
+
 
 
 

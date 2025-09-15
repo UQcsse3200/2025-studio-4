@@ -125,18 +125,22 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     @Override
     public boolean keyDown(int keycode) {
         if (locked) return false;
-        if (hero == null && !tryFindHero()) return false; // Ignore input if hero not found yet
+        if (hero == null && !tryFindHero()) return false; // 如果找不到英雄，则忽略输入
 
+        boolean textureSwitched = false;
         if (keycode == Input.Keys.NUM_1 || keycode == Input.Keys.NUMPAD_1) {
-            return switchOnce(cfg1 != null ? cfg1.heroTexture : null, "1");
+            textureSwitched = switchOnce(cfg1 != null ? cfg1.heroTexture : null, "1");
+            updateBulletTexture(cfg1 != null ? cfg1.bulletTexture : null);  // 切换子弹贴图
         } else if (keycode == Input.Keys.NUM_2 || keycode == Input.Keys.NUMPAD_2) {
-            return switchOnce(cfg2 != null ? cfg2.heroTexture : null, "2");
+            textureSwitched = switchOnce(cfg2 != null ? cfg2.heroTexture : null, "2");
+            updateBulletTexture(cfg2 != null ? cfg2.bulletTexture : null);  // 切换子弹贴图
         } else if (keycode == Input.Keys.NUM_3 || keycode == Input.Keys.NUMPAD_3) {
-            return switchOnce(cfg3 != null ? cfg3.heroTexture : null, "3");
+            textureSwitched = switchOnce(cfg3 != null ? cfg3.heroTexture : null, "3");
+            updateBulletTexture(cfg3 != null ? cfg3.bulletTexture : null);  // 切换子弹贴图
         }
-        return false;
+        return textureSwitched;
     }
-
+    
     @Override
     public boolean keyTyped(char character) {
         if (locked) return false;
@@ -159,8 +163,28 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             cancelTimers();
             logger.info("[HeroSkinSwitch] Applied texture via key {} -> {}. Locked.", keyTag, texturePath);
             this.entity.dispose(); // One-shot: dispose itself (unregisters from InputService)
+            String bulletTexture = getBulletTextureForHero(keyTag);  // Define a method to return the correct bullet texture for the hero
+            updateBulletTexture(bulletTexture);  // Call method to update the bullet texture
         }
         return ok;
+    }
+    private void updateBulletTexture(String bulletTexture) {
+        HeroTurretAttackComponent attackComponent = hero.getComponent(HeroTurretAttackComponent.class);
+        if (attackComponent != null) {
+            attackComponent.setBulletTexture(bulletTexture);  // Use the setter we added earlier
+        }
+    }
+
+    // Method to determine the correct bullet texture for the hero
+    private String getBulletTextureForHero(String keyTag) {
+        switch (keyTag) {
+            case "hero2":
+                return "images/hero2/bullet.png";  // Replace with actual path for hero2 bullet
+            case "hero3":
+                return "images/hero3/bullet.png";  // Replace with actual path for hero3 bullet
+            default:
+                return "images/hero/bullet.png";  // Default bullet texture path
+        }
     }
 
     /**

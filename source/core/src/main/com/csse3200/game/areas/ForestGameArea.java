@@ -44,7 +44,7 @@ public class ForestGameArea extends GameArea {
 
     private static final String[] forestTextureAtlases = {
             "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_basic_spritesheet.atlas",
-            "images/boss_basic_spritesheet.atlas"
+            "images/boss_basic_spritesheet.atlas", "images/snow.png"
     };
 
     private static final String[] forestSounds = {
@@ -312,6 +312,9 @@ public class ForestGameArea extends GameArea {
         resourceService.loadTextureAtlases(forestTextureAtlases);
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
+        
+        // 加载雪地纹理
+        resourceService.loadTextures(new String[]{"images/snow.png"});
 
         while (!resourceService.loadForMillis(10)) {
             logger.info("Loading... {}%", resourceService.getProgress());
@@ -324,6 +327,7 @@ public class ForestGameArea extends GameArea {
         resourceService.unloadAssets(forestTextureAtlases);
         resourceService.unloadAssets(forestSounds);
         resourceService.unloadAssets(forestMusic);
+        resourceService.unloadAssets(new String[]{"images/snow.png"});
     }
 
     @Override

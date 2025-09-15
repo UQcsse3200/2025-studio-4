@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.utils.math.RandomUtils;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -204,8 +203,27 @@ public class MapEditor extends InputAdapter {
             markKeypoint(wp);
         }
 
-        // Add snow at coordinates (10, 10)在坐标(10, 10)添加雪地
-        addSnow(10, 10);
+        // Add snow only in the red circled area只在红色圆圈区域添加雪地
+        // 根据图片描述，红色圆圈在底部中心区域
+        int[][] redCircledArea = {
+            {12, 17, 5, 12} 
+              // 红色圆圈区域 (底部中心)
+        };
+        
+        for (int[] range : redCircledArea) {
+            int startX = range[0];
+            int endX = range[1];
+            int startY = range[2];
+            int endY = range[3];
+            
+            System.out.println("🔴 处理红色圆圈区域: x=" + startX + "-" + endX + ", y=" + startY + "-" + endY);
+            
+            for (int x = startX; x <= endX; x++) {
+                for (int y = startY; y <= endY; y++) {
+                    addSnow(x, y);
+                }
+            }
+        }
         
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());
@@ -240,6 +258,15 @@ public class MapEditor extends InputAdapter {
             return;
         }
         
+        // Check if position is already occupied by path, barriers, or keypoints检查位置是否已被路径、障碍物或关键点占用
+        String key = x + "," + y;
+        if (pathTiles.containsKey(key) || 
+            invalidTiles.containsKey(key) || 
+            barrierTiles.containsKey(key)) {
+            System.out.println("🚫 Position (" + x + ", " + y + ") is occupied by path/barrier, skipping");
+            return;
+        }
+        
         // Add to snow coordinates list添加到雪地坐标列表
         snowCoords.add(new GridPoint2(x, y));
         
@@ -248,7 +275,7 @@ public class MapEditor extends InputAdapter {
         cell.setTile(snowTile);
         pathLayer.setCell(x, y, cell);
         
-        System.out.println("✅ Snow added at coordinates (" + x + ", " + y + ")");
+        System.out.println("❄️ Snow added at coordinates (" + x + ", " + y + ")");
     }
 
     /** Clean up all objects清理所有对象 */

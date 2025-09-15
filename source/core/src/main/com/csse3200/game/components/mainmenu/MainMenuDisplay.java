@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.areas.ForestGameArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -68,6 +69,7 @@ public class MainMenuDisplay extends UIComponent {
           @Override
           public void changed(ChangeEvent changeEvent, Actor actor) {
             logger.debug("Start button clicked");
+            ServiceLocator.registerGameStateService(new GameStateService());
             entity.getEvents().trigger("start");
           }
         });

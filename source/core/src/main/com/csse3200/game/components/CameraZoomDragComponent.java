@@ -22,6 +22,7 @@ public class CameraZoomDragComponent extends InputComponent {
     private static final float MIN_ZOOM = 0.5f;
     private static final float MAX_ZOOM = 1.8f;
     private static final float ZOOM_SPEED = 0.1f;
+    private static final float DEFAULT_ZOOM = 1.4f; // 默认缩放倍数（0.7倍，显示更多内容）
     
     // 键盘移动相关常量
     private static final float MOVE_SPEED = 5.0f; // 相机移动速度
@@ -46,6 +47,11 @@ public class CameraZoomDragComponent extends InputComponent {
         Renderer renderer = Renderer.getCurrentRenderer();
         if (renderer != null && renderer.camera != null) {
             this.camera = renderer.camera.getCamera();
+            // 设置默认缩放
+            setZoom(DEFAULT_ZOOM);
+            // 游戏开始时相机向上移动一格
+            moveUpOneStep();
+            logger.debug("相机初始化完成，设置默认缩放为: {}，并向上移动一格", DEFAULT_ZOOM);
         }
     }
     
@@ -56,6 +62,9 @@ public class CameraZoomDragComponent extends InputComponent {
             Renderer renderer = Renderer.getCurrentRenderer();
             if (renderer != null && renderer.camera != null) {
                 this.camera = renderer.camera.getCamera();
+                // 在重新获取相机后设置默认缩放
+                setZoom(DEFAULT_ZOOM);
+                logger.debug("重新获取相机并设置默认缩放为: {}", DEFAULT_ZOOM);
             }
         }
         
@@ -103,7 +112,7 @@ public class CameraZoomDragComponent extends InputComponent {
         
         // 计算新的缩放级别
         float currentZoom = ((OrthographicCamera) camera).zoom;
-        float zoomDelta = -amountY * ZOOM_SPEED;
+        float zoomDelta = amountY * ZOOM_SPEED;
         float newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + zoomDelta));
         
         // 应用缩放
@@ -134,11 +143,11 @@ public class CameraZoomDragComponent extends InputComponent {
     public void resetCamera() {
         if (camera == null) return;
         
-        ((OrthographicCamera) camera).zoom = 1.0f;
+        ((OrthographicCamera) camera).zoom = DEFAULT_ZOOM;
         camera.position.set(0, 0, 0);
         camera.update();
         
-        logger.debug("重置相机到默认位置和缩放");
+        logger.debug("重置相机到默认位置和缩放: {}", DEFAULT_ZOOM);
     }
     
     /**
@@ -158,7 +167,7 @@ public class CameraZoomDragComponent extends InputComponent {
      * 获取当前缩放级别
      */
     public float getZoom() {
-        if (camera == null) return 1.0f;
+        if (camera == null) return DEFAULT_ZOOM;
         return ((OrthographicCamera) camera).zoom;
     }
     
@@ -180,6 +189,33 @@ public class CameraZoomDragComponent extends InputComponent {
         camera.update();
         
         logger.debug("设置相机位置到: ({}, {})", position.x, position.y);
+    }
+    
+    /**
+     * 模拟按W键向上移动相机一格
+     * 用于游戏开始时的初始相机位置调整
+     */
+    public void moveUpOneStep() {
+        if (camera == null) return;
+        
+        // 使用一个合适的移动距离，模拟按一次W键的效果
+        // 基于MOVE_SPEED和典型的deltaTime值来计算
+        float moveDistance = MOVE_SPEED * 0.1f; // 相当于按W键0.1秒的移动距离
+        
+        // 获取相机实体并移动它，而不是直接移动相机
+        Renderer renderer = Renderer.getCurrentRenderer();
+        if (renderer != null && renderer.camera != null && renderer.camera.getEntity() != null) {
+            Vector2 currentPos = renderer.camera.getEntity().getPosition();
+            Vector2 newPos = new Vector2(currentPos.x, currentPos.y + moveDistance);
+            renderer.camera.getEntity().setPosition(newPos);
+            
+            logger.debug("相机实体向上移动一格，移动距离: {}，新位置: ({}, {})", moveDistance, newPos.x, newPos.y);
+        } else {
+            // 如果无法获取相机实体，直接移动相机作为备选方案
+            camera.position.add(0, moveDistance, 0);
+            camera.update();
+            logger.debug("相机直接向上移动一格，移动距离: {}，新位置: ({}, {})", moveDistance, camera.position.x, camera.position.y);
+        }
     }
     
     /**

@@ -12,7 +12,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import com.csse3200.game.components.CombatStatsComponent;
 import java.lang.reflect.Method;
 
 /**
@@ -130,17 +130,59 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         boolean textureSwitched = false;
         if (keycode == Input.Keys.NUM_1 || keycode == Input.Keys.NUMPAD_1) {
             textureSwitched = switchOnce(cfg1 != null ? cfg1.heroTexture : null, "1");
-            updateBulletTexture(cfg1 != null ? cfg1.bulletTexture : null);  // 切换子弹贴图
+            updateBulletTexture(cfg1 != null ? cfg1.bulletTexture : null);
+            applyConfigToHero(cfg1);
         } else if (keycode == Input.Keys.NUM_2 || keycode == Input.Keys.NUMPAD_2) {
             textureSwitched = switchOnce(cfg2 != null ? cfg2.heroTexture : null, "2");
-            updateBulletTexture(cfg2 != null ? cfg2.bulletTexture : null);  // 切换子弹贴图
+            updateBulletTexture(cfg2 != null ? cfg2.bulletTexture : null);
+            applyConfigToHero2(cfg2);
         } else if (keycode == Input.Keys.NUM_3 || keycode == Input.Keys.NUMPAD_3) {
             textureSwitched = switchOnce(cfg3 != null ? cfg3.heroTexture : null, "3");
-            updateBulletTexture(cfg3 != null ? cfg3.bulletTexture : null);  // 切换子弹贴图
+            updateBulletTexture(cfg3 != null ? cfg3.bulletTexture : null);
+            applyConfigToHero3(cfg3);
         }
         return textureSwitched;
     }
-    
+    private void applyConfigToHero(HeroConfig cfg) {
+        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
+        CombatStatsComponent stats   = hero.getComponent(CombatStatsComponent.class);
+        if (atc != null) {
+            atc.setCooldown(cfg.attackCooldown)
+                    .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
+                    .setBulletTexture(cfg.bulletTexture);
+        }
+        if (stats != null) {
+            stats.setBaseAttack(cfg.baseAttack); // 伤害生效的关键
+        }
+    }
+
+    private void applyConfigToHero2(HeroConfig2 cfg2) {
+        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
+        CombatStatsComponent stats   = hero.getComponent(CombatStatsComponent.class);
+        if (atc != null) {
+            atc.setCooldown(cfg2.attackCooldown)
+                    .setBulletParams(cfg2.bulletSpeed, cfg2.bulletLife)
+                    .setBulletTexture(cfg2.bulletTexture);
+        }
+        if (stats != null) {
+            stats.setBaseAttack(cfg2.baseAttack); // 伤害生效的关键
+        }
+    }
+
+    private void applyConfigToHero3(HeroConfig3 cfg3) {
+        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
+        CombatStatsComponent stats   = hero.getComponent(CombatStatsComponent.class);
+        if (atc != null) {
+            atc.setCooldown(cfg3.attackCooldown)
+                    .setBulletParams(cfg3.bulletSpeed, cfg3.bulletLife)
+                    .setBulletTexture(cfg3.bulletTexture);
+        }
+        if (stats != null) {
+            stats.setBaseAttack(cfg3.baseAttack); // 伤害生效的关键
+        }
+    }
+
+
     @Override
     public boolean keyTyped(char character) {
         if (locked) return false;

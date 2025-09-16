@@ -12,11 +12,6 @@ import com.csse3200.game.rendering.TextureRenderComponent;
  * This factory provides methods to create currency entities
  */
 public class CurrencyFactory {
-    // Prevent instantiation
-    private CurrencyFactory() {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     /**
      * Creates a new currency entity with the given parameters.
      *

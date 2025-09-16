@@ -15,13 +15,13 @@ public class HeroConfig2 extends BaseEntityConfig {
   public float moveSpeed = 220f;
 
   /** Attack cooldown (seconds per shot) — lower values mean faster attack speed */
-  public float attackCooldown = 0.15f;
+  public float attackCooldown = 0.04f;
 
   /** Bullet lifetime (seconds) */
   public float bulletLife = 1.6f;
 
   /** Bullet speed (pixels per second) */
-  public float bulletSpeed = 900f;
+  public float bulletSpeed = 2000f;
 
   /** Path to hero sprite texture (relative to assets) */
   public String heroTexture = "images/hero2/Heroshoot.png";
@@ -45,7 +45,7 @@ public class HeroConfig2 extends BaseEntityConfig {
    */
   public HeroConfig2() {
     this.health = 100;
-    this.baseAttack = 20;
+    this.baseAttack = 7;
   }
 }
 

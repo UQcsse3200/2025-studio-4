@@ -48,8 +48,18 @@ public class HeroTurretAttackComponent extends Component {
   public void setBulletTexture(String bulletTexture) {
       this.bulletTexture = bulletTexture;
   }
+  public HeroTurretAttackComponent setCooldown(float s) {
+      this.cooldown = s;
+      return this;
+  }
+  public HeroTurretAttackComponent setBulletParams(float speed, float life) {
+      this.bulletSpeed = speed;
+      this.bulletLife = life;
+      return this;
+  }
 
-  @Override
+
+    @Override
   public void create() {
     // Listen for ultimate ability multipliers (HeroUltimateComponent triggers "attack.multiplier")
     entity.getEvents().addListener("attack.multiplier", (Float mul) -> {

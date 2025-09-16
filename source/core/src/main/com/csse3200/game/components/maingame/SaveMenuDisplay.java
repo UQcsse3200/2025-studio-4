@@ -18,18 +18,22 @@ import com.badlogic.gdx.graphics.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PauseMenuDisplay extends UIComponent {
-    private static final Logger logger = LoggerFactory.getLogger(PauseMenuDisplay.class);
-    private static final float Z_INDEX = 100f; 
-    private Texture dimTexHandle; 
+/**
+ * Save menu display component that shows save options and status.
+ * This is separate from the pause menu to keep save and pause functionality distinct.
+ */
+public class SaveMenuDisplay extends UIComponent {
+    private static final Logger logger = LoggerFactory.getLogger(SaveMenuDisplay.class);
+    private static final float Z_INDEX = 120f; // Above pause menu but below settings
 
     private final GdxGame game;
     private Table overlayTable;
     private Image dimImage;
-    private Image pauseIcon;
-    private boolean shown = false; 
+    private boolean shown = false;
+    private Label statusLabel;
+    private Texture dimTexHandle;
 
-    public PauseMenuDisplay(GdxGame game) {
+    public SaveMenuDisplay(GdxGame game) {
         this.game = game;
     }
 
@@ -38,14 +42,16 @@ public class PauseMenuDisplay extends UIComponent {
         super.create();
         addActors();
         
-        entity.getEvents().addListener("showPauseUI", this::showOverlay);
-        entity.getEvents().addListener("hidePauseUI", this::hideOverlay);
+        entity.getEvents().addListener("showSaveUI", this::showOverlay);
+        entity.getEvents().addListener("hideSaveUI", this::hideOverlay);
+        entity.getEvents().addListener("showSaveSuccess", this::showSaveSuccess);
+        entity.getEvents().addListener("showSaveError", this::showSaveError);
     }
 
     private void addActors() {
-        
+        // Create dim background
         Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
-        px.setColor(new Color(0f, 0f, 0f, 0.55f)); 
+        px.setColor(new Color(0f, 0f, 0f, 0.6f)); // Semi-transparent black
         px.fill();
         dimTexHandle = new Texture(px);
         px.dispose();
@@ -54,7 +60,7 @@ public class PauseMenuDisplay extends UIComponent {
         dimImage.setVisible(false);
         stage.addActor(dimImage);
 
-        
+        // Create save menu overlay
         overlayTable = new Table();
         overlayTable.setFillParent(true);
         overlayTable.setVisible(false);
@@ -62,80 +68,85 @@ public class PauseMenuDisplay extends UIComponent {
         Table window = new Table(skin);
         window.defaults().pad(10f);
 
-        Label title = new Label("Paused", skin, "title");
+        Label title = new Label("Save Game", skin, "title");
 
         // Create custom button style
         TextButtonStyle customButtonStyle = createCustomButtonStyle();
+        
+        // Status label for save feedback
+        statusLabel = new Label("", skin);
+        statusLabel.setColor(Color.GREEN);
+        statusLabel.setVisible(false);
 
-        TextButton resumeBtn = new TextButton("Resume", customButtonStyle);
-        TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
-        TextButton quitBtn = new TextButton("Quit to Main Menu", customButtonStyle);
+        // Save buttons
+        TextButton saveBtn = new TextButton("Save Game", customButtonStyle);
+        TextButton saveAsBtn = new TextButton("Save As...", customButtonStyle);
+        TextButton cancelBtn = new TextButton("Cancel", customButtonStyle);
 
-        resumeBtn.addListener(new ChangeListener() {
+        // Button listeners
+        saveBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("resume");
+                entity.getEvents().trigger("performSave");
             }
         });
 
-        settingsBtn.addListener(new ChangeListener() {
+        saveAsBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("hidePauseUI");
-                entity.getEvents().trigger("showSettingsOverlay");
+                entity.getEvents().trigger("performSaveAs");
             }
         });
 
-        quitBtn.addListener(new ChangeListener() {
+        cancelBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("quitToMenu");
+                entity.getEvents().trigger("hideSaveUI");
             }
         });
 
+        // Layout
         window.add(title).row();
-        window.add(resumeBtn).size(280f, 50f).row();
-        window.add(settingsBtn).size(280f, 50f).row();
-        window.add(quitBtn).size(280f, 50f).row();
+        window.add(statusLabel).padBottom(10f).row();
+        window.add(saveBtn).size(280f, 50f).row();
+        window.add(saveAsBtn).size(280f, 50f).row();
+        window.add(cancelBtn).size(280f, 50f).row();
 
         overlayTable.add(window).center();
         stage.addActor(overlayTable);
-
-        
-        Texture pauseTex = ServiceLocator.getResourceService()
-                .getAsset("images/pause_button.png", Texture.class);
-        pauseIcon = new Image(pauseTex);
-        Table topLeft = new Table();
-        topLeft.setFillParent(true);
-        topLeft.top().left().pad(12f);
-        topLeft.add(pauseIcon).size(48f, 48f);
-        stage.addActor(topLeft);
-
-        
-        pauseIcon.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("togglePause");
-            }
-        });
     }
 
     private void showOverlay() {
         shown = true;
         dimImage.setVisible(true);
         overlayTable.setVisible(true);
+        // Clear any previous status
+        if (statusLabel != null) {
+            statusLabel.setVisible(false);
+        }
     }
 
     private void hideOverlay() {
         shown = false;
         dimImage.setVisible(false);
         overlayTable.setVisible(false);
+        
+        if (statusLabel != null) {
+            statusLabel.setVisible(false);
+        }
     }
 
-    @Override
-    protected void draw(SpriteBatch batch) {
-        // stage draws for us
+    private void showSaveSuccess() {
+        if (statusLabel != null) {
+            statusLabel.setText("Game saved successfully!");
+            statusLabel.setColor(Color.GREEN);
+            statusLabel.setVisible(true);
+        }
     }
 
-    @Override
-    public float getZIndex() {
-        return Z_INDEX;
+    private void showSaveError() {
+        if (statusLabel != null) {
+            statusLabel.setText("Save failed! Please try again.");
+            statusLabel.setColor(Color.RED);
+            statusLabel.setVisible(true);
+        }
     }
 
     /**
@@ -176,11 +187,19 @@ public class PauseMenuDisplay extends UIComponent {
     }
 
     @Override
+    protected void draw(SpriteBatch batch) {
+        // stage draws for us
+    }
+
+    @Override
+    public float getZIndex() {
+        return Z_INDEX;
+    }
+
+    @Override
     public void dispose() {
         if (overlayTable != null) overlayTable.clear();
         if (dimTexHandle != null) dimTexHandle.dispose();
         super.dispose();
     }
-
 }
-

@@ -118,7 +118,7 @@ public final class HeroFactory {
         // Initialize the Hero entity
         Entity hero = new Entity()
                 .addComponent(new PhysicsComponent())
-                .addComponent(new ColliderComponent())
+                .addComponent(new ColliderComponent().setSensor(true))
                 .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
                 // Renderable texture with rotation support
                 .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))

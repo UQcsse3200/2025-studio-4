@@ -277,7 +277,7 @@ public class ForestGameArea extends GameArea {
 
         // Add hero placement system
 
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
+        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
 
         spawnEntity(placement);
 

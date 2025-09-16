@@ -95,6 +95,7 @@ public class ForestGameArea extends GameArea {
         this.hasExistingPlayer = hasExistingPlayer;
     }
 
+
     /**
      * Create the game area, including terrain, static entities (trees), dynamic entities (player)
      */
@@ -311,14 +312,15 @@ public class ForestGameArea extends GameArea {
       }
   }
 
-    public static void checkEnemyCount() {
-        if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-            MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
+  public static void checkEnemyCount() {
+      if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+        MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
 
-        }
-    }
+      }
+  }
 
     private void spawnHeroAt(GridPoint2 cell) {
+
         HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
         if (heroCfg == null) {
             logger.warn("Failed to load configs/hero.json, using default HeroConfig.");

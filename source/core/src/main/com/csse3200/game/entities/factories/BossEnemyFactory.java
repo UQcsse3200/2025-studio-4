@@ -12,8 +12,6 @@ import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-import com.csse3200.game.physics.PhysicsUtils;
-import com.csse3200.game.physics.components.ColliderComponent;
 
 import java.util.Map;
 
@@ -25,7 +23,7 @@ public class BossEnemyFactory {
     private static final int DEFAULT_DAMAGE = 20;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(0.7f, 0.7f);
+    private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
     private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
     private static final String DEFAULT_NAME = "Boss Enemy";
     private static final float DEFAULT_CLICKRADIUS = 1.2f;

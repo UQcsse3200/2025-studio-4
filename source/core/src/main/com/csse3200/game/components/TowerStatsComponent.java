@@ -10,6 +10,10 @@ public class TowerStatsComponent extends Component {
     private float attackCooldown; // time between attacks
     private float attackTimer = 0f; // internal timer
 
+    private float projectileSpeed = 50f;
+    private float projectileLife = 1f;
+    private String projectileTexture = "projectiles/bullet.png";
+
     /**
      * Constructs a TowerStatsComponent with the given stats.
      * @param health Initial health of the tower
@@ -17,11 +21,32 @@ public class TowerStatsComponent extends Component {
      * @param range Attack range in game units
      * @param attackCooldown Time between attacks (seconds)
      */
-    public TowerStatsComponent(int health, float damage, float range, float attackCooldown) {
+    public TowerStatsComponent(int health, float damage, float range, float attackCooldown, float projectileSpeed
+    , float projectileLife, String projectileTexture) {
         this.health = health;
         this.damage = damage;
         this.range = range;
         this.attackCooldown = attackCooldown;
+        this.projectileSpeed = projectileSpeed;
+        this.projectileLife = projectileLife;
+        this.projectileTexture = projectileTexture;
+    }
+    public float getProjectileSpeed() {
+        return projectileSpeed;
+    }
+    public void setProjectileSpeed(float projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
+    }
+    public float getProjectileLife() {
+        return projectileLife;
+    }
+    public void setProjectileLife(float projectileLife) {}
+
+    public String getProjectileTexture() {
+        return projectileTexture;
+    }
+    public void setProjectileTexture(String projectileTexture) {
+        this.projectileTexture = projectileTexture;
     }
 
     /** @return Current health of the tower */

@@ -24,5 +24,11 @@ public class TowerConfig {
         public float cooldown;
         /** Cost to place the tower. */
         public int cost;
+        /** projectile speed of tower projectile */
+        public float projectileSpeed;
+        /** projectile life of tower projectile */
+        public float projectileLife;
+        /** projectile texture of tower projectile */
+        public String projectileTexture;
     }
 }

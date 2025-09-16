@@ -5,6 +5,9 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.components.projectile.ProjectileComponent;
+import com.csse3200.game.physics.PhysicsLayer;
 
 /**
  * Component representing a tower entity, including its type and size.
@@ -46,35 +49,78 @@ public class TowerComponent extends Component {
     /** @return Height of the tower in tiles */
     public int getHeight() { return height; }
 
+
+
     /**
      * Updates the tower logic, including attack timer and attacking entities in range.
      */
     @Override
     public void update() {
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
-        if (stats == null) return;
+        if (stats == null) {
+            return;
+        }
+        // Use real frame delta if available
+        float dt = com.badlogic.gdx.Gdx.graphics != null
+                ? com.badlogic.gdx.Gdx.graphics.getDeltaTime()
+                : (1f / 60f);
 
-        float delta = 1/60f; // or pass in the real delta time
-        stats.updateAttackTimer(delta);
-
+        stats.updateAttackTimer(dt);
         if (!stats.canAttack()) return;
 
-        // Iterate over all entities
-        for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) { // <-- use getEntitiesCopy()
+        // Find a target in range (first found; change to nearest if you like)
+        Entity target = null;
+        Vector2 myCenter = entity.getCenterPosition();
+        float range = stats.getRange();
+
+        for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
+            //ensure tower doesnt target projectiles
+            if (other.getComponent(ProjectileComponent.class) != null) {
+                continue;
+            }
             if (other == entity) continue;
 
-            // Only attack entities that have CombatStatsComponent
+            // Only consider things that can be damaged
             CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
             if (targetStats == null) continue;
 
-            Vector2 direction = other.getCenterPosition().cpy().sub(entity.getCenterPosition());
-            if (direction.len() <= stats.getRange()) {
-                targetStats.hit(
-                    new CombatStatsComponent(0, (int) stats.getDamage(), DamageTypeConfig.None, DamageTypeConfig.None)
-                );
-                stats.resetAttackTimer();
-                break; // attack one target per update
+            // In range?
+            Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
+            if (toOther.len() <= range) {
+                target = other;
+                break; // lock first valid target; swap to "nearest" if needed
             }
         }
+
+        if (target == null) return;
+
+        // Compute normalized direction toward target
+        Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
+        if (dir.isZero(0.0001f)) return;
+        dir.nor();
+
+// Pull these from your TowerStatsComponent if you have getters:
+        float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+        float life  = stats.getProjectileLife()  != 0f ? stats.getProjectileLife()  : 2f;
+        String tex  = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
+        int damage  = (int) stats.getDamage();
+
+        float vx = dir.x * speed;
+        float vy = dir.y * speed;
+
+// Use your ProjectileFactory (it already adds TouchAttack + DestroyOnHit on NPC)
+        Entity bullet = com.csse3200.game.entities.factories.ProjectileFactory.createBullet(
+                tex, myCenter, vx, vy, life, damage
+        );
+
+// Register safely after the loop
+        var es = ServiceLocator.getEntityService();
+        if (es != null) {
+            com.badlogic.gdx.Gdx.app.postRunnable(() -> es.register(bullet));
+        }
+
+        stats.resetAttackTimer();
+
     }
+
 }

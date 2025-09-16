@@ -27,7 +27,8 @@ public class TowerFactory {
         return new Entity()
                 .addComponent(new TowerComponent("bone", 2, 2)) // revert to 2x2
                 .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
-                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TextureRenderComponent("images/bone.png"));
     }
 
@@ -39,7 +40,8 @@ public class TowerFactory {
         TowerConfig.TowerStats stats = towers.dinoTower;
         return new Entity()
                 .addComponent(new TowerComponent("dino", 2, 2))
-                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown
+                , stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
                 .addComponent(new TextureRenderComponent("images/dino.png"));
     }
@@ -52,7 +54,8 @@ public class TowerFactory {
         TowerConfig.TowerStats stats = towers.cavemenTower;
         return new Entity()
                 .addComponent(new TowerComponent("cavemen", 2, 2))
-                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown
+                , stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
                 .addComponent(new TextureRenderComponent("images/cavemen.png"));
     }

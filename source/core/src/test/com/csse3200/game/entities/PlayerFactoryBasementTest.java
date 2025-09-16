@@ -9,7 +9,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.input.InputService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -35,7 +35,7 @@ class PlayerFactoryBasementTest {
     Entity basement = PlayerFactory.createPlayer();
 
     // 新功能1：有贴图与尺寸缩放
-    assertNotNull(basement.getComponent(TextureRenderComponent.class));
+    assertNotNull(basement.getComponent(SwitchableTextureRenderComponent.class));
     assertTrue(basement.getScale().x > 1f && basement.getScale().y > 1f);
 
     // 新功能2：物理与碰撞体（传感器Collider + 玩家Hitbox）

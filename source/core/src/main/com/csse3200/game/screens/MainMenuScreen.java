@@ -30,6 +30,7 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/star.png"
   };
 
+
   public MainMenuScreen(GdxGame game) {
     this.game = game;
 

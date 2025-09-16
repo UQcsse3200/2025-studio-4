@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
-import com.csse3200.game.services.leaderboard.LeaderboardService; // 如果用到了接口
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -49,7 +48,9 @@ public class MainGameScreen extends ScreenAdapter {
           "images/pause_button.png",
           "images/dim_bg.jpeg",
           "images/Main_Menu_Button_Background.png",
-          "images/scrap.png"
+          "images/Main_Game_Button.png",
+          "images/scrap.png",
+          "images/Game_Over.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);

@@ -57,6 +57,7 @@ public class DroneEnemyFactory {
         drone.addComponent(waypointComponent);
 
         drone
+            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 

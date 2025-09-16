@@ -37,7 +37,7 @@ class CurrencyFactoryTest {
 
     @Test
     void createCurrency() {
-        Entity currency = CurrencyFactory.createCurrency(CurrencyComponent.CurrencyType.METAL_SCRAP, 5, 2f, 3f, "images/metal-scrap-currency.png");
+        Entity currency = CurrencyFactory.createCurrency(CurrencyComponent.CurrencyType.METAL_SCRAP, 5, 2f, 3f);
 
         assertNotNull(currency);
         assertNotNull(currency.getComponent(TextureRenderComponent.class));

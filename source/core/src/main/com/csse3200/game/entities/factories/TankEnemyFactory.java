@@ -57,6 +57,7 @@ public class TankEnemyFactory {
         tank.addComponent(waypointComponent);
 
         tank
+            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
@@ -88,8 +89,8 @@ public class TankEnemyFactory {
         if (wc != null && wc.getPlayerRef() != null) {
             CurrencyManagerComponent currencyManager = wc.getPlayerRef().getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                currencyManager.addCurrencyAmount(currencyType, currencyAmount);
-                currencyManager.updateCurrency(currencyType);
+                //currencyManager.addCurrencyAmount(currencyType, currencyAmount);
+                //currencyManager.updateCurrency(currencyType);
             }
         }
 

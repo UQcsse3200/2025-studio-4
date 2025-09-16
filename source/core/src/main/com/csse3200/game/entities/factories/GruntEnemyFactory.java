@@ -48,6 +48,7 @@ public class GruntEnemyFactory {
      * @param player Reference to the player entity
      * @return entity
      */
+
     public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player) {
         Entity grunt = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
         "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f);
@@ -57,6 +58,7 @@ public class GruntEnemyFactory {
         grunt.addComponent(waypointComponent);
 
         grunt
+            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
@@ -83,8 +85,8 @@ public class GruntEnemyFactory {
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
-            wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-            wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
         }
 
         Gdx.app.postRunnable(entity::dispose);

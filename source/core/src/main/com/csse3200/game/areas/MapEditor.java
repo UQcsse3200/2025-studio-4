@@ -1,10 +1,6 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -14,11 +10,9 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.ObstacleFactory;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.RandomUtils;
 import java.util.Set;
@@ -26,45 +20,22 @@ import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * 地图编辑器：运行时编辑地图
- * 功能：
- * ✅ 按 Q 放树（只能在路径附近）
- * ✅ 自动生成敌人路径（path.png）
- * ✅ 自动生成路径附近的可放置区域（白块）
- * ✅ 自动生成 Biomes（沙漠/雪地）和河流
- * ✅ 支持生成水晶（crystal）
- * ✅ 路径关键点标记（keypoint）
- * Map Editor: Edit maps at runtime
- * Function:
- * ✅ press Q to place the tree (only near the path)
- * ✅ automatically generate enemy paths (path.png)
- * ✅ automatically generate placement areas (white blocks) near the path
- * ✅ automatically generates Biomes
- * ✅ automatically generates rivers
- * ✅ support generating crystal
- * ✅ keypoint marking
- */
+
 public class MapEditor extends InputAdapter {
     private TerrainComponent terrain;
-    private boolean editorEnabled = false;
-    private InputProcessor originalProcessor;
-    private Entity player;
 
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
-    private Map<String, Entity> placedTrees = new HashMap<>();
     private Map<String, GridPoint2> pathTiles = new HashMap<>();
+    private Map<String, GridPoint2> invalidTiles = new HashMap<>();
     private Map<String, GridPoint2> placeableAreaTiles = new HashMap<>();
+    private Map<String, GridPoint2> barrierTiles = new HashMap<>();
+
     // Occupied tiles to avoid obstacle overlap已占用的格子，避免障碍物重叠
     private Set<String> occupiedTiles = new HashSet<>();
 
     // Tile types瓦片类型
     private TiledMapTile pathTile;
-    private TiledMapTile placeableAreaTile;
     private TiledMapTile keypointTile;
-
-    // Placement range: trees can be placed within n squares near the path放置范围：路径周围 n 格内可以放树
-    private int placeableRange = 2;
 
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
@@ -73,9 +44,7 @@ public class MapEditor extends InputAdapter {
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
-        this.player = player;
         initializePathTile();
-        initializePlaceableAreaTile();
         initializeKeypointTile();
     }
 
@@ -101,25 +70,6 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-    /** Initialize white placeable tiles初始化白色可放置瓦片 */
-    private void initializePlaceableAreaTile() {
-        try {
-            com.badlogic.gdx.graphics.Pixmap pixmap =
-                    new com.badlogic.gdx.graphics.Pixmap(32, 32, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
-            pixmap.setColor(0.9f, 0.9f, 0.9f, 0.8f);
-            pixmap.fill();
-            pixmap.setColor(1f, 1f, 1f, 1f);
-            pixmap.drawRectangle(0, 0, 32, 32);
-            Texture areaTexture = new Texture(pixmap);
-            areaTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-            placeableAreaTile = new StaticTiledMapTile(new TextureRegion(areaTexture));
-            pixmap.dispose();
-            System.out.println("✅ white placeable tiles initialized successfully");
-        } catch (Exception e) {
-            System.out.println("⚠️ white placeable tiles initialization failed: " + e.getMessage());
-            placeableAreaTile = null;
-        }
-    }
 
     /** Initialize keypoint tiles初始化关键点瓦片 */
     private void initializeKeypointTile() {
@@ -143,49 +93,6 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-    /** Enable editor启用编辑器 */
-    public void enableEditor() {
-        if (!editorEnabled) {
-            originalProcessor = Gdx.input.getInputProcessor();
-            InputMultiplexer multiplexer = new InputMultiplexer();
-            multiplexer.addProcessor(this);
-            if (originalProcessor != null) multiplexer.addProcessor(originalProcessor);
-            Gdx.input.setInputProcessor(multiplexer);
-            editorEnabled = true;
-            System.out.println("🟢 editor enabled (Q to place tree)");
-        }
-    }
-
-    @Override
-    public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.Q) {
-            placeTreeAbovePlayer();
-            return true;
-        }
-        return false;
-    }
-
-    /** Place tree above player (only in placeable area)在玩家上方放树（只能在可放置区域） */
-    private void placeTreeAbovePlayer() {
-        if (terrain == null || player == null) return;
-        Vector2 pos = player.getPosition();
-        float tileSize = terrain.getTileSize();
-        int tx = (int)(pos.x / tileSize);
-        int ty = (int)(pos.y / tileSize) + 1;
-
-        TiledMapTileLayer layer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        if (tx < 0 || ty < 0 || tx >= layer.getWidth() || ty >= layer.getHeight()) return;
-
-        String key = tx + "," + ty;
-        if (!isPlaceableArea(tx, ty) || pathTiles.containsKey(key) || placedTrees.containsKey(key)) return;
-
-        Entity tree = ObstacleFactory.createTree();
-        tree.setPosition(terrain.tileToWorldPosition(new GridPoint2(tx, ty)));
-        ServiceLocator.getEntityService().register(tree);
-        placedTrees.put(key, tree);
-        System.out.println("🌲 tree placed at " + key);
-    }
-
     /** Create path tiles创建路径瓦片 */
     private void createPathTile(int tx, int ty) {
         TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
@@ -194,7 +101,7 @@ public class MapEditor extends InputAdapter {
         String key = tx + "," + ty;
         if (pathTiles.containsKey(key)) return;
 
-        if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
+        //if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
 
         if (pathTile != null) {
             TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
@@ -217,20 +124,6 @@ public class MapEditor extends InputAdapter {
                 baseLayer.getWidth(), baseLayer.getHeight(),
                 baseLayer.getTileWidth(), baseLayer.getTileHeight());
         newLayer.setName("path-layer");
-        terrain.getMap().getLayers().add(newLayer);
-        return newLayer;
-    }
-
-    private TiledMapTileLayer getOrCreateLayer(String name, TiledMapTileLayer baseLayer) {
-        for (int i = 0; i < terrain.getMap().getLayers().getCount(); i++) {
-            if (terrain.getMap().getLayers().get(i).getName().equals(name)) {
-                return (TiledMapTileLayer) terrain.getMap().getLayers().get(i);
-            }
-        }
-        TiledMapTileLayer newLayer = new TiledMapTileLayer(
-                baseLayer.getWidth(), baseLayer.getHeight(),
-                baseLayer.getTileWidth(), baseLayer.getTileHeight());
-        newLayer.setName(name);
         terrain.getMap().getLayers().add(newLayer);
         return newLayer;
     }
@@ -293,7 +186,7 @@ public class MapEditor extends InputAdapter {
             waypointList.add(waypoint);
         }
 
-        generatePlaceableAreas();
+       // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());
     }
@@ -309,37 +202,6 @@ public class MapEditor extends InputAdapter {
             pathLayer.setCell(pos.x, pos.y, cell);
         }
         cell.setTile(keypointTile);
-    }
-
-    /** Generate placeable areas around the path生成路径周围的可放置区域 */
-    public void generatePlaceableAreas() {
-        if (terrain == null || pathTiles.isEmpty()) return;
-
-        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        TiledMapTileLayer placeableLayer = getOrCreateLayer("placeable-layer", baseLayer);
-
-        for (GridPoint2 p : pathTiles.values()) {
-            for (int dx = -placeableRange; dx <= placeableRange; dx++) {
-                for (int dy = -placeableRange; dy <= placeableRange; dy++) {
-                    int ax = p.x + dx, ay = p.y + dy;
-                    if (ax < 0 || ay < 0 || ax >= placeableLayer.getWidth() || ay >= placeableLayer.getHeight()) continue;
-                    String k = ax + "," + ay;
-                    if (pathTiles.containsKey(k) || placeableAreaTiles.containsKey(k)) continue;
-
-                    if (placeableAreaTile != null) {
-                        TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-                        cell.setTile(placeableAreaTile);
-                        placeableLayer.setCell(ax, ay, cell);
-                    }
-                    placeableAreaTiles.put(k, new GridPoint2(ax, ay));
-                }
-            }
-        }
-    }
-
-
-    private boolean isPlaceableArea(int tx, int ty) {
-        return placeableAreaTiles.containsKey(tx + "," + ty);
     }
 
     /** Generate biomes and rivers生成生态群落和河流 */
@@ -386,32 +248,34 @@ public class MapEditor extends InputAdapter {
         return true;
     }
 
-    /** Spawn crystal in specified grid (to prevent overlap)在指定格子生成水晶（防止重叠） */
-    public void spawnCrystal(GridPoint2 pos) {
-        String key = pos.x + "," + pos.y;
-        if (occupiedTiles.contains(key)) {
-            return;
-        }
-        Entity crystal = ObstacleFactory.createCrystal();
-        crystal.setPosition(terrain.tileToWorldPosition(pos));
-        ServiceLocator.getEntityService().register(crystal);
-        occupiedTiles.add(key);
-        System.out.println("💎 Crystal placed at " + pos);
-    }
-
-    /** Spawn crystal at the end of the path在路径终点生成水晶 */
-    public void spawnCrystal() {
-        spawnCrystal(new GridPoint2(29, 6));
-    }
-
     /** Clean up all objects清理所有对象 */
     public void cleanup() {
-        for (Entity tree : placedTrees.values()) tree.dispose();
-        placedTrees.clear();
+        //for (Entity tree : placedTrees.values()) tree.dispose();
+        //placedTrees.clear();
         pathTiles.clear();
         placeableAreaTiles.clear();
         occupiedTiles.clear();
         keyWaypoints.clear();
         System.out.println("🧹 MapEditor cleaned up");
+    }
+
+    public Map<String, GridPoint2> getInvalidTiles() {
+        invalidTiles.clear();
+        invalidTiles.putAll(pathTiles);
+        invalidTiles.putAll(barrierTiles);
+        return invalidTiles;
+    }
+
+    /**
+     * 注册障碍物坐标，供 getInvalidTiles() 统一返回
+     * coords: int[][]，每个元素为 {x, y}
+     */
+    public void registerBarrierCoords(int[][] coords) {
+        if (coords == null) return;
+        for (int[] p : coords) {
+            if (p == null || p.length != 2) continue;
+            String key = p[0] + "," + p[1];
+            barrierTiles.put(key, new GridPoint2(p[0], p[1]));
+        }
     }
 }

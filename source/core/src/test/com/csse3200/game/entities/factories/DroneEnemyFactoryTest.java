@@ -28,7 +28,7 @@ public class DroneEnemyFactoryTest {
         ServiceLocator.registerResourceService(resourceService);
         
         // Load assets needed for PlayerFactory
-        resourceService.loadTextures(new String[]{"images/box_boy_leaf.png", "images/grunt_enemy.png", "images/drone_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
+        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
         resourceService.loadAll();
     }
     @Test

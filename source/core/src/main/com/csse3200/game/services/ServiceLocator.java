@@ -8,6 +8,8 @@ import com.csse3200.game.rendering.RenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.csse3200.game.services.ScoreService;     // add the newly created score service
+
 /**
  * A simplified implementation of the Service Locator pattern:
  * https://martinfowler.com/articles/injection.html#UsingAServiceLocator
@@ -26,6 +28,8 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static GdxGame gameService;
   private static GameStateService gameStateService;
+
+  private static ScoreService scoreService;       // hold the only ScoreService for the current game
 
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
@@ -64,6 +68,16 @@ public class ServiceLocator {
     entityService = service;
   }
 
+  // Call once during game start to install score service
+  public static void registerScoreService(ScoreService service) {
+    scoreService = service;
+  }
+
+  // Getter for user interface (UI) and enemies to access
+  public static ScoreService getScoreService() {
+    return scoreService;
+  }
+
 
     public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
         leaderboardService = service;
@@ -71,8 +85,6 @@ public class ServiceLocator {
     public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
         return leaderboardService;
     }
-
-
 
   public static void registerRenderService(RenderService service) {
     logger.debug("Registering render service {}", service);
@@ -111,6 +123,7 @@ public class ServiceLocator {
 
   public static void clear() {
     entityService = null;
+    scoreService = null;        // remove scoreService instance
     renderService = null;
     physicsService = null;
     timeSource = null;

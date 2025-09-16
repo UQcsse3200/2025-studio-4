@@ -10,7 +10,7 @@ package com.csse3200.game.entities.configs;
  * Values can be loaded from JSON via {@code FileLoader}.
  * </p>
  */
-public class HeroConfig extends BaseEntityConfig {
+public class HeroConfig3 extends BaseEntityConfig {
   /** Movement speed in pixels per second */
   public float moveSpeed = 220f;
 
@@ -24,14 +24,14 @@ public class HeroConfig extends BaseEntityConfig {
   public float bulletSpeed = 900f;
 
   /** Path to hero sprite texture (relative to assets) */
-  public String heroTexture = "images/hero/Heroshoot.png";
+  public String heroTexture = "images/hero3/Heroshoot.png";
 
   /** Path to bullet sprite texture (relative to assets) */
-  public String bulletTexture = "images/hero/Bullet.png";
+  public String bulletTexture = "images/hero3/Bullet.png";
 
   public String[] levelTextures = {
-          "images/hero/Heroshoot.png",
-          "images/hero/Hero_level2.png",
+          "images/hero3/Heroshoot.png",
+          "images/hero3/Hero_level2.png",
   };
 
 
@@ -43,7 +43,7 @@ public class HeroConfig extends BaseEntityConfig {
    * Here we override with more appropriate hero starting values.
    * </p>
    */
-  public HeroConfig() {
+  public HeroConfig3() {
     this.health = 100;
     this.baseAttack = 20;
   }

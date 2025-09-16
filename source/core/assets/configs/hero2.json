@@ -1,0 +1,10 @@
+{
+  "health": 100,
+  "baseAttack": 20,
+  "moveSpeed": 220.0,
+  "attackCooldown": 0.15,
+  "bulletLife": 1.6,
+  "bulletSpeed": 900.0,
+  "heroTexture": "images/hero2/Heroshoot.png",
+  "bulletTexture": "images/hero2/Bullet.png"
+}

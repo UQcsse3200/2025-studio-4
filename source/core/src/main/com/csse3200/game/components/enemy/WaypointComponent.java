@@ -186,4 +186,12 @@ public class WaypointComponent extends Component {
         playerRef = null;
         super.dispose();
     }
+
+    public void setCurrentWaypointIndex(int index) {
+        if (index >= 0 && index < waypoints.size()) {
+            this.currentWaypointIndex = index;
+        } else {
+            throw new IllegalArgumentException("Invalid waypoint index: " + index);
+        }
+    }
 }

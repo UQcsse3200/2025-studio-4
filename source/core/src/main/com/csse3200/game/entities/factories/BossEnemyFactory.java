@@ -15,6 +15,8 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 
+import java.util.Map;
+
 public class BossEnemyFactory {
     // Default boss configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
@@ -27,8 +29,8 @@ public class BossEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
     private static final String DEFAULT_NAME = "Boss Enemy";
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 10;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -89,8 +91,12 @@ public class BossEnemyFactory {
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
-            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
         }
 
         Gdx.app.postRunnable(entity::dispose);

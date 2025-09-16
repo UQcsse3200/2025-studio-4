@@ -13,6 +13,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
+import java.util.Map;
+
 public class TankEnemyFactory {
     // Default tank configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
@@ -25,8 +27,8 @@ public class TankEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 15;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -87,10 +89,11 @@ public class TankEnemyFactory {
         // Drop currency upon defeat - but only if player has the component
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
-            CurrencyManagerComponent currencyManager = wc.getPlayerRef().getComponent(CurrencyManagerComponent.class);
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                //currencyManager.addCurrencyAmount(currencyType, currencyAmount);
-                //currencyManager.updateCurrency(currencyType);
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
             }
         }
 

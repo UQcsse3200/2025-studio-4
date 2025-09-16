@@ -2,16 +2,12 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.GridPoint2;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.math.RandomUtils;

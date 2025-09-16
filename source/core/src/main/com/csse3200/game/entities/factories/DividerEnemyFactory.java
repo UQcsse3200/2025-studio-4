@@ -8,10 +8,13 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+
+import java.util.Map;
 
 /**
  * 可分裂敌人（死亡后生成 3 个子体）的工厂。
@@ -28,8 +31,8 @@ public class DividerEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 10;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 5;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -61,6 +64,8 @@ public class DividerEnemyFactory {
         Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints, 
         "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
 
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        divider.addComponent(waypointComponent);
 
         divider
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
@@ -68,6 +73,16 @@ public class DividerEnemyFactory {
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));
+
+        divider.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = divider.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(divider, nextTarget);
+                }
+            }
+        });
 
         var sz = divider.getScale();
         divider.setScale(sz.x * 1.5f, sz.y * 1.5f);
@@ -112,12 +127,13 @@ public class DividerEnemyFactory {
             }
         });
 
-        // Drop currency upon defeat (ensure currentTarget is not null)
-        if (currentTarget != null) {
-            CurrencyManagerComponent currencyManager = currentTarget.getComponent(CurrencyManagerComponent.class);
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                //currencyManager.addCurrencyAmount(currencyType, currencyAmount);
-                //currencyManager.updateCurrency(currencyType);
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
             }
         }
     }
@@ -128,6 +144,17 @@ public class DividerEnemyFactory {
         priorityTaskCount += 1;
         self.getComponent(AITaskComponent.class)
                 .addTask(new ChaseTask(target, priorityTaskCount, 100f, 100f, newSpeed));
+    }
+
+    private static void updateChaseTarget(Entity entity, Entity newTarget) {
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            entity.getComponent(AITaskComponent.class).addTask(
+                    new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed())
+            );
+        }
     }
 
     // Getters / Setters / Reset（与原版一致，略微收敛空值）

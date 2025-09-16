@@ -13,6 +13,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
+import java.util.Map;
+
 public class GruntEnemyFactory {
     // Default grunt configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
@@ -25,7 +27,7 @@ public class GruntEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 5;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -85,8 +87,12 @@ public class GruntEnemyFactory {
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
-            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
         }
 
         Gdx.app.postRunnable(entity::dispose);

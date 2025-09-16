@@ -37,16 +37,19 @@ import com.csse3200.game.components.maingame.SimplePlacementController;
  * Forest area for the demo game with trees, a player, and some enemies.
  */
 public class ForestGameArea extends GameArea {
-  private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
-  private static final int NUM_DRONES = 1;
-  private static final int NUM_GRUNTS = 1;
-  private static final int NUM_TANKS = 1;
-  private static final int NUM_BOSSES = 1;
-  private static final int NUM_DIVIDERS = 1;
-  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
-  public static int NUM_ENEMIES_DEFEATED = 0;
-  private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
-  private static final float WALL_WIDTH = 0.1f;
+    private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
+
+    private static final int NUM_DRONES = 3;
+    private static final int NUM_GRUNTS = 2;
+    private static final int NUM_TANKS = 2;
+    private static final int NUM_BOSSES = 1;
+    private static final int NUM_DIVIDERS = 1;
+    public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
+    public static int NUM_ENEMIES_DEFEATED = 0;
+
+
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
+    private static final float WALL_WIDTH = 0.1f;
 
 
     private static final String[] forestTextureAtlases = {
@@ -82,7 +85,6 @@ public class ForestGameArea extends GameArea {
         super();
         this.terrainFactory = terrainFactory;
     }
-
 
     /**
      * Set whether this game area already has an existing player entity.
@@ -194,6 +196,7 @@ public class ForestGameArea extends GameArea {
         );
         com.csse3200.game.services.ServiceLocator.getEntityService().
                 register(skinSwitcher);
+
     }
 
     private void spawnTerrain() {

@@ -13,6 +13,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
+import java.util.Map;
+
 public class DroneEnemyFactory {
     // Default drone configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
@@ -25,7 +27,7 @@ public class DroneEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 2;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -90,10 +92,14 @@ public class DroneEnemyFactory {
         ForestGameArea.checkEnemyCount();
 
         // Drop currency upon defeat
-        WaypointComponent dwc = entity.getComponent(WaypointComponent.class);
-        if (dwc != null && dwc.getPlayerRef() != null) {
-            //dwc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-            //dwc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
         }
 
         Gdx.app.postRunnable(entity::dispose);

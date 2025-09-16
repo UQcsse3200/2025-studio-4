@@ -29,7 +29,6 @@ public class clickable extends Component{
                 // Convert screen coordinates to world coordinates
                 Vector3 worldClickPos = new Vector3(screenX, screenY, 0);
                 camera.unproject(worldClickPos);
-                System.out.println("Screen click position: " + worldClickPos);
                 
                 // Check if click is close to enemy
                 if (Math.abs(worldClickPos.x - (entityPos.x + clickRadius/2)) < clickRadius && 
@@ -43,7 +42,7 @@ public class clickable extends Component{
     /**
      * Get the camera from the current Renderer.
      */
-    public static Camera getCamera() {
+    private Camera getCamera() {
         Renderer renderer = Renderer.getCurrentRenderer();
         if (renderer != null && renderer.camera != null) {
             return renderer.camera.getCamera(); // CameraComponent.getCamera() returns the LibGDX Camera

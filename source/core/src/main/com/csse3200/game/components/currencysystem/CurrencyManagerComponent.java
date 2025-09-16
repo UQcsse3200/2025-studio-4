@@ -105,14 +105,6 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
-     * Trigger to update UI.
-     * @param type the type of currency to check
-     */
-    public void updateCurrency(CurrencyType type) {
-        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
-    }
-
-    /**
      * Plays the collection sound associated with the given currency type.
      *
      * @param type the {@link CurrencyType} whose collect sound should be played

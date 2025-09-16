@@ -9,9 +9,12 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+
+import java.util.Map;
 
 public class DividerChildEnemyFactory {
     // Default drone configuration
@@ -25,7 +28,7 @@ public class DividerChildEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 1;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
@@ -54,15 +57,28 @@ public class DividerChildEnemyFactory {
      * @return entity
      */
     public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex) {
-        currentWaypointIndex = waypointIndex;
-        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed), waypoints,
+        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( waypoints.get(waypointIndex), new Vector2(speed), waypoints,
         "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
+
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, target, speed);
+        waypointComponent.setCurrentWaypointIndex(waypointIndex);
+        DividerChild.addComponent(waypointComponent);
 
         DividerChild
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
+
+        DividerChild.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = DividerChild.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(DividerChild, nextTarget);
+                }
+            }
+        });
 
         var sz = DividerChild.getScale(); 
         DividerChild.setScale(sz.x * 0.85f, sz.y * 0.85f);
@@ -78,8 +94,15 @@ public class DividerChildEnemyFactory {
         ForestGameArea.checkEnemyCount();
 
         // Drop currency upon defeat
-        //currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-        //currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
+        }
 
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
@@ -89,7 +112,18 @@ public class DividerChildEnemyFactory {
         priorityTaskCount += 1;
         self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
     }
-        
+
+    private static void updateChaseTarget(Entity entity, Entity newTarget) {
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            entity.getComponent(AITaskComponent.class).addTask(
+                    new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed())
+            );
+        }
+    }
+
     // Getters    
     public static DamageTypeConfig getResistance() {
         return resistance;

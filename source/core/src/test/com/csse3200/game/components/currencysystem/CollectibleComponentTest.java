@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.lang.reflect.Method;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
@@ -122,5 +124,30 @@ Application mockApp;
         verify(collectibleComponent).update();
         // Should be false as (6-5) > clickRadius == 1
         assertEquals(false, collectibleComponent.isCollected());
+    }
+
+    @Test
+    public void ShouldNotCollectWhenNotTouched() {
+        when(Gdx.input.justTouched()).thenReturn(false);
+        entity.update();
+        assertFalse(collectibleComponent.isCollected(),
+                "Should not collect when screen not touched");
+    }
+
+    @Test
+    public void ShouldNotCollectWhenYDifferenceTooLarge() {
+        when(Gdx.input.justTouched()).thenReturn(true);
+        when(Gdx.input.getX()).thenReturn(5);
+        when(Gdx.input.getY()).thenReturn(5);
+
+        doNothing().when(mockApp).postRunnable(any(Runnable.class));
+
+        // Place entity far away in Y
+        entity.setPosition(5, 20);
+
+        entity.update();
+
+        assertFalse(collectibleComponent.isCollected(),
+                "Should not collect when Y difference > clickRadius");
     }
 }

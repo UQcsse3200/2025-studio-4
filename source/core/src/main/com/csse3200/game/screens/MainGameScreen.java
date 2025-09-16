@@ -24,7 +24,6 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.components.maingame.MainGameOver;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
@@ -200,7 +199,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new SaveMenuDisplay(this.game))
             .addComponent(new PauseInputComponent())
             .addComponent(new MainGameExitDisplay())
-            .addComponent(new MainGameOver())
+            .addComponent(new GameOverScreen())
             .addComponent(new MainGameWin())
             .addComponent(new Terminal())
             .addComponent(inputComponent)

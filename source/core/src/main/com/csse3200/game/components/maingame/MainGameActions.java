@@ -107,7 +107,7 @@ public class MainGameActions extends Component {
    * Awards stars when won
    */
   private void awardStars(int amount) {
-    if ((ServiceLocator.getGameStateService()) == null){
+    if ((ServiceLocator.getGameStateService()) == null) {
       logger.error("GameStateService is missing; register in Gdx.game");
       return;
     }

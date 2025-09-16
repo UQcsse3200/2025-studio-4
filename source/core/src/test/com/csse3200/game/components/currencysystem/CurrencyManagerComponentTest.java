@@ -334,28 +334,24 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldInitializeCurrenciesOnCreate() {
-        // Arrange
         Entity player = new Entity();
         CurrencyManagerComponent manager = new CurrencyManagerComponent();
         player.addComponent(manager);
 
-        // Spy on events triggered
         List<String> triggeredEvents = new ArrayList<>();
         player.getEvents().addListener("updateCurrencyUI", (type, amount) -> {
             triggeredEvents.add(type + ":" + amount);
         });
 
-        // Act
         manager.create();
 
-        // Assert: all currencies seeded with 2000
-        assertEquals(2000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
-        assertEquals(2000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
-        assertEquals(2000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
+        assertEquals(500, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
+        assertEquals(0, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
+        assertEquals(0, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
 
         // Assert: updateCurrencyUI was triggered for each type with correct amounts
-        assertTrue(triggeredEvents.contains("METAL_SCRAP:2000"));
-        assertTrue(triggeredEvents.contains("TITANIUM_CORE:2000"));
-        assertTrue(triggeredEvents.contains("NEUROCHIP:2000"));
+        assertTrue(triggeredEvents.contains("METAL_SCRAP:500"));
+        assertTrue(triggeredEvents.contains("TITANIUM_CORE:0"));
+        assertTrue(triggeredEvents.contains("NEUROCHIP:0"));
     }
 }

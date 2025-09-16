@@ -26,9 +26,9 @@ public class CurrencyManagerComponent extends Component {
     @Override
     public void create() {
         this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
-        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 2000);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 2000);
-        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 2000);
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 0);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
         this.updateAllCurrencyUI();
     }
 
@@ -142,23 +142,6 @@ public class CurrencyManagerComponent extends Component {
         });
     }
 
-    /**
-     * Attempts to spend the given amount of currency.
-     *
-     * @param type   the type of currency to spend
-     * @param amount the amount to spend
-     * @return true if the spend was successful, false if not enough currency
-     */
-    public boolean trySpendCurrency(CurrencyType type, int amount) {
-        int current = getCurrencyAmount(type);
-        if (current < amount) {
-            return false; 
-        }
-        subtractCurrencyAmount(type, amount);
-        this.entity.getEvents().trigger("updateScrap", this.getCurrencyAmount(type));
-        return true;
-    }
-  
      /**
      * Checks if the player has enough currency to cover the specified cost,
      * and if so, deducts the amount and returns true. Otherwise, returns false

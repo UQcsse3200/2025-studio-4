@@ -10,6 +10,8 @@ import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
 import com.csse3200.game.screens.OpeningCutsceneScreen;
 import com.csse3200.game.screens.VictoryScreen;
+import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +32,9 @@ public class GdxGame extends Game {
 
     // Sets background to light yellow
     Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
+
+    // instantiate game state
+    ServiceLocator.registerGameStateService(new GameStateService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }

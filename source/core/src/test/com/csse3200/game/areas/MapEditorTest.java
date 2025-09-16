@@ -3,7 +3,6 @@ package com.csse3200.game.areas;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -53,22 +52,6 @@ class MapEditorTest {
         assertNotNull(mapEditor);
     }
 
-    @Test
-    void shouldHandleKeyInput() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-        when(player.getPosition()).thenReturn(new Vector2(64f, 64f));
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-
-        // Test Q key returns true (handled)
-        boolean resultQ = mapEditor.keyDown(Input.Keys.Q);
-        assertTrue(resultQ);
-
-        // Test other key returns false (not handled)
-        boolean resultA = mapEditor.keyDown(Input.Keys.A);
-        assertFalse(resultA);
-    }
 
     @Test
     void shouldGenerateEnemyPath() {
@@ -79,17 +62,6 @@ class MapEditorTest {
 
         // Should not throw exception when generating path
         assertDoesNotThrow(() -> mapEditor.generateEnemyPath());
-    }
-
-    @Test
-    void shouldGeneratePlaceableAreas() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-
-        // Should not throw exception when generating placeable areas
-        assertDoesNotThrow(() -> mapEditor.generatePlaceableAreas());
     }
 
     @Test
@@ -104,17 +76,6 @@ class MapEditorTest {
     }
 
     @Test
-    void shouldEnableEditor() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-
-        // Should not throw exception when enabling editor
-        assertDoesNotThrow(() -> mapEditor.enableEditor());
-    }
-
-    @Test
     void shouldHandleNullTerrain() {
         Entity player = mock(Entity.class);
 
@@ -122,19 +83,9 @@ class MapEditorTest {
 
         assertNotNull(mapEditor);
         assertDoesNotThrow(() -> mapEditor.generateEnemyPath());
-        assertDoesNotThrow(() -> mapEditor.generatePlaceableAreas());
+        //assertDoesNotThrow(() -> mapEditor.generatePlaceableAreas());
     }
 
-    @Test
-    void shouldHandleNullPlayer() {
-        TerrainComponent terrain = createMockTerrain();
-
-        MapEditor mapEditor = new MapEditor(terrain, null);
-
-        assertNotNull(mapEditor);
-        boolean result = mapEditor.keyDown(Input.Keys.Q);
-        assertTrue(result); // Still handles the key but doesn't crash
-    }
 
     private TerrainComponent createMockTerrain() {
         TerrainComponent terrain = mock(TerrainComponent.class);

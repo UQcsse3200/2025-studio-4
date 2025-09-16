@@ -14,12 +14,13 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.MapEditor;
 
 /**
  * Controller for managing tower placement within the game world.
  * <p>
  * Handles the "ghost" tower preview that follows the mouse, snaps towers to tiles,
- * ensures placement is within bounds, and prevents overlap with other towers.
+ * ensures placement is within bounds, and prevents overlap with other towers and paths.
  * </p>
  */
 public class SimplePlacementController extends Component {
@@ -35,10 +36,51 @@ public class SimplePlacementController extends Component {
     private final float minSpacing = 1.0f;
     /** Ghost tower entity that previews placement before confirming */
     private Entity ghostTower = null;
+    private MapEditor mapEditor;
 
-    /**
-     * Registers event listeners for starting tower placement.
-     */
+    public void setMapEditor(MapEditor mapEditor) {
+        this.mapEditor = mapEditor;
+        loadPathFromMapEditor();
+    }
+
+    /** 外部在更新 MapEditor 的 invalidTiles 后调用，刷新本地禁放区缓存 */
+    // refresh the local cache of restricted/forbidden areas.
+    public void refreshInvalidTiles() {
+        loadPathFromMapEditor();
+    }
+
+    // All tiles that belong to the enemy path (invalid for tower placement)
+    private static int[][] FIXED_PATH = { };
+
+    public int[][] getFixedPath() {
+        return FIXED_PATH;
+    }
+
+
+    private void loadPathFromMapEditor() {
+        if (mapEditor == null) {
+            System.out.println(">>> No MapEditor set, cannot load path tiles.");
+            return;
+        }
+
+        java.util.List<GridPoint2> tiles = new java.util.ArrayList<>(mapEditor.getInvalidTiles().values());
+        if (tiles == null || tiles.isEmpty()) {
+            System.out.println(">>> MapEditor returned no path tiles!");
+            return;
+        }
+
+        // Rebuild FIXED_PATH
+        int[][] newPath = new int[tiles.size()][2];
+        for (int i = 0; i < tiles.size(); i++) {
+            GridPoint2 tile = tiles.get(i);
+            newPath[i][0] = tile.x;
+            newPath[i][1] = tile.y;
+        }
+
+        FIXED_PATH = newPath; // overwrite
+        System.out.println(">>> Loaded " + FIXED_PATH.length + " path tiles from MapEditor");
+    }
+
     @Override
     public void create() {
         entity.getEvents().addListener("startPlacementBone", this::armBone);
@@ -54,11 +96,6 @@ public class SimplePlacementController extends Component {
     /** Arms placement for a Cavemen Tower. */
     private void armCavemen() { startPlacement("cavemen"); }
 
-    /**
-     * Starts placement of a tower of the given type.
-     *
-     * @param type tower type ("bone", "dino", "cavemen")
-     */
     private void startPlacement(String type) {
         pendingType = type;
         placementActive = true;
@@ -76,15 +113,6 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> placement ON (" + type + ")");
     }
 
-    /**
-     * Updates the placement logic each frame.
-     * <p>
-     * - Moves the ghost tower to follow the mouse.<br>
-     * - Snaps the ghost to valid tiles.<br>
-     * - Ensures placement is in bounds and not overlapping.<br>
-     * - Places the tower when the mouse is clicked.
-     * </p>
-     */
     @Override
     public void update() {
         if (camera == null) findWorldCamera();
@@ -108,10 +136,11 @@ public class SimplePlacementController extends Component {
 
         Vector2 snapPos = mouseWorld;
         boolean inBounds = true;
+        GridPoint2 tile = null;
 
         if (terrain != null) {
             float tileSize = terrain.getTileSize();
-            GridPoint2 tile = new GridPoint2(
+            tile = new GridPoint2(
                     (int) (mouseWorld.x / tileSize),
                     (int) (mouseWorld.y / tileSize)
             );
@@ -138,6 +167,13 @@ public class SimplePlacementController extends Component {
                 System.out.println(">>> blocked: cannot place " + pendingType + " outside map bounds");
                 return;
             }
+
+            // 🔹 Block placement if any part of the tower overlaps the path
+            if (tile != null && isTowerOnPath(tile, towerWidth, towerHeight)) {
+                System.out.println(">>> blocked: cannot place " + pendingType + " on/over path at tile " + tile);
+                return;
+            }
+
             if (!isPositionFree(snapPos, towerWidth, towerHeight, terrain)) {
                 System.out.println(">>> blocked: cannot place " + pendingType + " at " + snapPos);
                 return;
@@ -161,15 +197,17 @@ public class SimplePlacementController extends Component {
         }
     }
 
-    /**
-     * Checks if the candidate position is free for tower placement.
-     *
-     * @param candidate   position to test
-     * @param towerWidth  tower width in tiles
-     * @param towerHeight tower height in tiles
-     * @param terrain     terrain reference for tile size
-     * @return true if no overlap with existing towers
-     */
+    /** Returns true if any tile of a tower of size (width x height) at 'tile' overlaps the path */
+    private boolean isTowerOnPath(GridPoint2 tile, int towerWidth, int towerHeight) {
+        for (int tx = 0; tx < towerWidth; tx++) {
+            for (int ty = 0; ty < towerHeight; ty++) {
+                GridPoint2 t = new GridPoint2(tile.x + tx, tile.y + ty);
+                if (isOnPath(t)) return true;
+            }
+        }
+        return false;
+    }
+
     private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
         if (all == null || candidate == null) return true;
@@ -191,7 +229,6 @@ public class SimplePlacementController extends Component {
                     int existingHeight = tower.getHeight();
                     float existingTileSize = tileSize;
 
-                    // Check if this tile overlaps any existing tower
                     if (tilePos.x < pos.x + existingWidth * existingTileSize &&
                             tilePos.x + tileSize > pos.x &&
                             tilePos.y < pos.y + existingHeight * existingTileSize &&
@@ -204,11 +241,6 @@ public class SimplePlacementController extends Component {
         return true;
     }
 
-    /**
-     * Finds the terrain entity in the world.
-     *
-     * @return TerrainComponent if found, null otherwise
-     */
     private TerrainComponent findTerrain() {
         Array<Entity> all = safeEntities();
         if (all == null) return null;
@@ -220,11 +252,6 @@ public class SimplePlacementController extends Component {
         return null;
     }
 
-    /**
-     * Safely retrieves a copy of all active entities.
-     *
-     * @return list of entities or null on failure
-     */
     private Array<Entity> safeEntities() {
         try {
             return ServiceLocator.getEntityService().getEntitiesCopy();
@@ -234,9 +261,6 @@ public class SimplePlacementController extends Component {
         }
     }
 
-    /**
-     * Finds the active world camera (OrthographicCamera).
-     */
     private void findWorldCamera() {
         Array<Entity> all = safeEntities();
         if (all == null) return;
@@ -250,15 +274,9 @@ public class SimplePlacementController extends Component {
         }
     }
 
-    /**
-     * Cancels the current placement.
-     * <p>
-     * Disposes of the ghost tower and resets placement state.
-     * </p>
-     */
     public void cancelPlacement() {
         if (ghostTower != null) {
-            ghostTower.dispose(); // or remove from EntityService if needed
+            ghostTower.dispose();
             ghostTower = null;
         }
         placementActive = false;
@@ -266,13 +284,16 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> placement OFF");
     }
 
-    /**
-     * @return true if placement is currently active
-     */
     public boolean isPlacementActive() { return placementActive; }
-
-    /**
-     * @return the type of tower pending placement
-     */
     public String getPendingType() { return pendingType; }
+
+    // 🔹 Helper: check if a single tile is part of the fixed path
+    private boolean isOnPath(GridPoint2 tile) {
+        for (int[] p : FIXED_PATH) {
+            if (p[0] == tile.x && p[1] == tile.y) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

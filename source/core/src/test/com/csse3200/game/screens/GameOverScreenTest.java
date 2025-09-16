@@ -9,7 +9,7 @@ class GameOverScreenTest {
     @Test
     void testCreate() {
         assertNotNull(GameOverScreen.class);
-        assertEquals("com.csse3200.game.components.maingame.GameOverScreen", 
+        assertEquals("com.csse3200.game.screens.GameOverScreen", 
                     GameOverScreen.class.getName());
     }
 
@@ -29,7 +29,7 @@ class GameOverScreenTest {
     void testDispose() {
         assertNotNull(GameOverScreen.class);
         assertTrue(GameOverScreen.class.getPackage().getName()
-                  .contains("maingame"));
+                  .contains("screens"));
     }
 
     @Test

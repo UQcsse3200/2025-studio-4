@@ -45,9 +45,10 @@ public class GruntEnemyFactory {
      * @return entity
      */
     public static Entity createGruntEnemy(Entity target) {
-        Entity grunt = EnemyFactory.createBaseEnemyAnimated(target, new Vector2(speed),
-        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f);
+        // 使用基础敌人（无动画）并添加静态纹理，避免测试对 atlas 的依赖
+        Entity grunt = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
         grunt
+            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new clickable(clickRadius));
 

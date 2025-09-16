@@ -45,7 +45,7 @@ public class BossEnemyFactoryTest {
         assertEquals(20, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
-        assertEquals(new Vector2(0.7f, 0.7f), BossEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class BossEnemyFactoryTest {
         // Verify that default values have been changed
         assertNotEquals(DamageTypeConfig.None, BossEnemyFactory.getResistance());
         assertNotEquals(DamageTypeConfig.None, BossEnemyFactory.getWeakness());
-        assertNotEquals(new Vector2(0.7f, 0.7f), BossEnemyFactory.getSpeed());
+        assertNotEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
         assertNotEquals("images/boss_enemy.png", BossEnemyFactory.getTexturePath());
         assertNotEquals("Boss Enemy", BossEnemyFactory.getDisplayName());
 

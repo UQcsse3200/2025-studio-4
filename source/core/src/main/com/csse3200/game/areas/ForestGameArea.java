@@ -150,8 +150,8 @@ public class ForestGameArea extends GameArea {
     spawnDrones();
     spawnGrunts();
     spawnTanks();
-    //spawnBosses();
-    //spawnDividers();
+    spawnBosses();
+    spawnDividers();
     
     spawnTestMetalScraps();
 
@@ -252,6 +252,7 @@ public class ForestGameArea extends GameArea {
 
   private void spawnDrones() {
     for (int i = 0; i < NUM_DRONES; i++) {
+      NUM_ENEMIES_TOTAL++;
       Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player);
       spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
     }
@@ -272,6 +273,7 @@ public class ForestGameArea extends GameArea {
 
   private void spawnGrunts() {
     for (int i = 0; i < NUM_GRUNTS; i++) {
+      NUM_ENEMIES_TOTAL++;
       Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player);
       spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
     }
@@ -279,6 +281,7 @@ public class ForestGameArea extends GameArea {
 
   private void spawnTanks() {
     for (int i = 0; i < NUM_TANKS; i++) {
+      NUM_ENEMIES_TOTAL++;
       Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player);
       spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
     }
@@ -286,6 +289,7 @@ public class ForestGameArea extends GameArea {
 
   private void spawnBosses() {
     for (int i = 0; i < NUM_BOSSES; i++) {
+      NUM_ENEMIES_TOTAL++;
       Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player);
       spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
     }
@@ -293,6 +297,7 @@ public class ForestGameArea extends GameArea {
 
   private void spawnDividers() {
     for (int i = 0; i < 1; i++) {
+      NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL + 4;
       Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player);
       spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
     }

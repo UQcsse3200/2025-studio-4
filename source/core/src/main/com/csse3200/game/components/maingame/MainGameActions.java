@@ -22,7 +22,7 @@ public class MainGameActions extends Component {
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("gameover", this::onExit);
-    entity.getEvents().addListener("gamewin", this::onExit);
+    entity.getEvents().addListener("gamewin", this::onVictory);
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
     entity.getEvents().addListener("togglePause", this::onTogglePause);
@@ -75,6 +75,14 @@ public class MainGameActions extends Component {
   private void onExit() {
     logger.info("Exiting main game screen");
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+  }
+  
+  /**
+   * Swaps to the Victory screen.
+   */
+  private void onVictory() {
+    logger.info("Game won, showing victory screen");
+    game.setScreen(GdxGame.ScreenType.VICTORY);
   }
   
   private void onSave() {

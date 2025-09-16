@@ -9,6 +9,7 @@ import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
 import com.csse3200.game.screens.OpeningCutsceneScreen;
+import com.csse3200.game.screens.VictoryScreen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,9 +95,6 @@ public class GdxGame extends Game {
     return newScreen(screenType, false, null);
   }
    
-  private Screen newScreen(ScreenType screenType, boolean isContinue) {
-    return newScreen(screenType, isContinue, null);
-  }
 
   private Screen newScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
     switch (screenType) {
@@ -110,13 +108,15 @@ public class GdxGame extends Game {
         return new SaveSelectionScreen(this);
       case OPENING_CUTSCENE:
         return new OpeningCutsceneScreen(this);
+      case VICTORY:
+        return new VictoryScreen(this);
       default:
         return null;
     }
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY
   }
 
   /**

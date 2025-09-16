@@ -25,6 +25,7 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.MainGameOver;
+import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
@@ -49,7 +50,8 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Main_Menu_Button_Background.png",
           "images/Main_Game_Button.png",
           "images/scrap.png",
-          "images/Game_Over.png"
+          "images/Game_Over.png",
+          "images/Game_Victory.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -201,6 +203,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new PauseInputComponent())
             .addComponent(new MainGameExitDisplay())
             .addComponent(new MainGameOver())
+            .addComponent(new MainGameWin())
             .addComponent(new Terminal())
             .addComponent(inputComponent)
             .addComponent(new TerminalDisplay());

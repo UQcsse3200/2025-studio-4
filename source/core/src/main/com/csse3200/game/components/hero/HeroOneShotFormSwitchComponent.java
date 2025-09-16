@@ -91,6 +91,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             return false;
         }
         for (Entity e : entityService.getEntities()) {
+
             if (e.getComponent(HeroTurretAttackComponent.class) != null) {
                 hero = e;
                 return true;

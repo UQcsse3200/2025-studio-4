@@ -93,7 +93,7 @@ public class MapEditor extends InputAdapter {
     private void initializeSnowTile() {
         try {
             Texture snowTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
-            // Avoid blurring when zooming
+            // Avoid blurring when zooming避免放大时模糊
             snowTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
             // Make the snow tile size consistent with the base tile layer to prevent size anomalies使雪地瓦片尺寸与基础图层瓦片一致，防止尺寸异常

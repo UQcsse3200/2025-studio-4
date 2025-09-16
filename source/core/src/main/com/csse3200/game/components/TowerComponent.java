@@ -49,7 +49,25 @@ public class TowerComponent extends Component {
     /** @return Height of the tower in tiles */
     public int getHeight() { return height; }
 
+    /**checks if the enity is a valid enemy target for the tower
+     * @param e the entity to check
+     * @return true if the entity is a valid enemy target, false otherwise
+     */
+    private static boolean isEnemyTarget(Entity e) {
+        // Ignore projectiles outright
+        if (e.getComponent(ProjectileComponent.class) != null) return false;
 
+        // Must be damageable
+        if (e.getComponent(CombatStatsComponent.class) == null) return false;
+
+        // Prefer physics-layer check: require NPC (or your enemy layer)
+        HitboxComponent hb = e.getComponent(HitboxComponent.class);
+        if (hb == null || hb.getFixture() == null || hb.getFixture().getFilterData() == null) return false;
+
+        short cat = hb.getFixture().getFilterData().categoryBits;
+        // If your enemies are on PhysicsLayer.NPC, keep NPC here; otherwise change to your ENEMY layer.
+        return PhysicsLayer.contains(PhysicsLayer.NPC, cat);
+    }
 
     /**
      * Updates the tower logic, including attack timer and attacking entities in range.
@@ -74,11 +92,9 @@ public class TowerComponent extends Component {
         float range = stats.getRange();
 
         for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
-            //ensure tower doesnt target projectiles
-            if (other.getComponent(ProjectileComponent.class) != null) {
-                continue;
-            }
+            //ensure targeting enemy
             if (other == entity) continue;
+            if (!isEnemyTarget(other)) continue;
 
             // Only consider things that can be damaged
             CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);

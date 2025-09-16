@@ -106,12 +106,12 @@ public class MainGameActions extends Component {
   /**
    * Awards stars when won
    */
-  private void awardStars() {
-    if((ServiceLocator.getGameStateService()) == null){
+  private void awardStars(int amount) {
+    if ((ServiceLocator.getGameStateService()) == null){
       logger.error("GameStateService is missing; register in Gdx.game");
       return;
     }
-    ServiceLocator.getGameStateService().updateStars(1);
-    logger.info("Awarded 1 star. Total = {}", ServiceLocator.getGameStateService().getStars());
+    ServiceLocator.getGameStateService().updateStars(amount);
+    logger.info("Awarded {} star. Total = {}", amount, ServiceLocator.getGameStateService().getStars());
   }
 }

@@ -46,7 +46,7 @@ public class MainGameWin extends UIComponent {
         public void changed(ChangeEvent changeEvent, Actor actor) {
           logger.debug("Win button clicked");
           entity.getEvents().trigger("awardStars");
-          entity.getEvents().trigger("gamewin");
+          entity.getEvents().trigger("gamewin",1);
         }
       });
     table.add(mainMenuBtn);

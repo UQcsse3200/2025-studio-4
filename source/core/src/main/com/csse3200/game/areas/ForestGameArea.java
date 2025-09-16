@@ -41,7 +41,7 @@ public class ForestGameArea extends GameArea {
   private static final int NUM_TANKS = 1;
   private static final int NUM_BOSSES = 1;
   private static final int NUM_DIVIDERS = 1;
-  public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
+  public static int NUM_ENEMIES_TOTAL = 0;
   public static int NUM_ENEMIES_DEFEATED = 0;
   private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(10, 10);
   private static final float WALL_WIDTH = 0.1f;
@@ -304,9 +304,15 @@ public class ForestGameArea extends GameArea {
   }
 
   public static void checkEnemyCount() {
-    if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-      MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
-    }
+      if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+          // Only try to access UI if we're in a real game environment
+          if (MainGameScreen.ui != null) {
+              MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+              if (winComponent != null) {
+                  winComponent.addActors();
+              }
+          }
+      }
   }
 
   private void spawnHeroAt(GridPoint2 cell) {

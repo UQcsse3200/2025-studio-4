@@ -56,6 +56,7 @@ public class GruntEnemyFactoryTest {
         Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
+        grunt.getEvents().trigger("entityDeath");
         assertEquals(0, stats.getHealth());
     }
 

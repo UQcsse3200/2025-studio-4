@@ -22,10 +22,17 @@ import java.util.Map;
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new HashMap<>();
     private List<Entity> currencyEntityList = new ArrayList<>();
-
+    
+    /**
+     * Define initial values for each currency type at game start.
+     */
     @Override
     public void create() {
         this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 2000);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 2000);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 2000);
+        this.updateAllCurrencyUI();
     }
 
     /**
@@ -89,6 +96,15 @@ public class CurrencyManagerComponent extends Component {
         final String updateCurrencyUIEvent = "updateCurrencyUI";
         int amount = getCurrencyAmount(type);
         this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+    }
+
+    /**
+     * Update UI rendering for all currency types
+     */
+    private void updateAllCurrencyUI() {
+        for (CurrencyType type : CurrencyType.values()) {
+            updateCurrencyUI(type);
+        }
     }
 
     /**

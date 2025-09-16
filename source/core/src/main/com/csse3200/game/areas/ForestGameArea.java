@@ -44,7 +44,7 @@ public class ForestGameArea extends GameArea {
     private static final int NUM_TANKS = 2;
     private static final int NUM_BOSSES = 1;
     private static final int NUM_DIVIDERS = 1;
-    public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
+    public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
 
 
@@ -269,8 +269,9 @@ public class ForestGameArea extends GameArea {
 
   private void spawnDrones() {
       for (int i = 0; i < NUM_DRONES; i++) {
-          Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player);
-          spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
+        NUM_ENEMIES_TOTAL++;
+        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player);
+        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
       }
   }
 
@@ -286,36 +287,45 @@ public class ForestGameArea extends GameArea {
 
   private void spawnGrunts() {
       for (int i = 0; i < NUM_GRUNTS; i++) {
-          Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player);
-          spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
+        NUM_ENEMIES_TOTAL++;
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player);
+        spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
       }
   }
 
   private void spawnTanks() {
       for (int i = 0; i < NUM_TANKS; i++) {
-          Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player);
-          spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
+        NUM_ENEMIES_TOTAL++;
+        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player);
+        spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
       }
   }
 
   private void spawnBosses() {
       for (int i = 0; i < NUM_BOSSES; i++) {
-          Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player);
-          spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
+        NUM_ENEMIES_TOTAL++;
+        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player);
+        spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
       }
   }
 
   private void spawnDividers() {
-      for (int i = 0; i < 1; i++) {
-          Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player);
-          spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
+      for (int i = 0; i < NUM_DIVIDERS; i++) {
+        NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL + 4;
+        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player);
+        spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
       }
   }
 
   public static void checkEnemyCount() {
       if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-        MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
-
+          // Only try to access UI if we're in a real game environment
+          if (MainGameScreen.ui != null) {
+              MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+              if (winComponent != null) {
+                  winComponent.addActors();
+              }
+          }
       }
   }
 

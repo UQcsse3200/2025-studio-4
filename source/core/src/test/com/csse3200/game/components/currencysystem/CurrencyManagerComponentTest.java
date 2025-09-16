@@ -90,6 +90,23 @@ class CurrencyManagerComponentTest {
     }
 
     @Test
+    void shouldDropCurrency() {
+        Entity player = new Entity();
+        CurrencyManagerComponent manager = new CurrencyManagerComponent();
+        player.addComponent(manager);
+        player.create(); // Registers dropCurrency listener and preloads 2000
+
+        int before = manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP);
+
+        Map<CurrencyComponent.CurrencyType, Integer> drops = Map.of(CurrencyComponent.CurrencyType.METAL_SCRAP, 5);
+
+        player.getEvents().trigger("dropCurrency", drops);
+
+        int after = manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP);
+        assertEquals(before + 5, after);
+    }
+
+    @Test
     void shouldCollectCurrency() {
         // Mock ResourceService to avoid loading actual sound files
         ResourceService resourceService = mock(ResourceService.class);

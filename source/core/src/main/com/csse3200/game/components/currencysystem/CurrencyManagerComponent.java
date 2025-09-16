@@ -6,10 +6,7 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Manages the player's currencies within the game.
@@ -20,7 +17,7 @@ import java.util.Map;
  * Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value
  */
 public class CurrencyManagerComponent extends Component {
-    private Map<CurrencyType, Integer> currencies = new HashMap<>();
+    private Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
     private List<Entity> currencyEntityList = new ArrayList<>();
     
     /**

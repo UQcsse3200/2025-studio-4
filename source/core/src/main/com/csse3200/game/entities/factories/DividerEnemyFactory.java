@@ -13,6 +13,7 @@ import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.utils.Difficulty;
 
 import java.util.Map;
 
@@ -50,21 +51,24 @@ public class DividerEnemyFactory {
     private static int priorityTaskCount = 1;
     private static java.util.List<Entity> savedWaypoints;
     private static int currentWaypointIndex = 0;
+    private static Difficulty difficulty = Difficulty.MEDIUM;
 
     private DividerEnemyFactory() {
         throw new IllegalStateException("Instantiating static util class");
     }
 
 
-    public static Entity createDividerEnemy(java.util.List<Entity> waypoints, GameArea area, Entity player) {
+    public static Entity createDividerEnemy(java.util.List<Entity> waypoints, GameArea area, Entity player, Difficulty difficulty) {
         Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints, 
         "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
         divider.addComponent(waypointComponent);
 
+        setDifficulty(difficulty);
+
         divider
-                .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+                .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new clickable(clickRadius));
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
@@ -113,7 +117,7 @@ public class DividerEnemyFactory {
                 for (Vector2 offset : offsets) {
                     int targetWaypointIndex = Math.max(0, wc.getCurrentWaypointIndex() - 1);
                     Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(
-                            target, savedWaypoints, targetWaypointIndex
+                            target, savedWaypoints, targetWaypointIndex, difficulty
                     );
                     if (child != null) {
                         area.customSpawnEntityAt(child, pos.cpy().add(offset));
@@ -158,6 +162,7 @@ public class DividerEnemyFactory {
     public static Vector2 getSpeed() { return new Vector2(speed); }
     public static String getTexturePath() { return texturePath; }
     public static String getDisplayName() { return displayName; }
+    public static Difficulty getDifficulty() { return difficulty; }
 
     public static void setResistance(DamageTypeConfig r) { resistance = (r != null) ? r : DEFAULT_RESISTANCE; }
     public static void setWeakness(DamageTypeConfig w) { weakness = (w != null) ? w : DEFAULT_WEAKNESS; }
@@ -165,6 +170,7 @@ public class DividerEnemyFactory {
     public static void setSpeed(float x, float y) { speed.set(x, y); }
     public static void setTexturePath(String p) { texturePath = (p != null && !p.trim().isEmpty()) ? p : DEFAULT_TEXTURE; }
     public static void setDisplayName(String n) { displayName = (n != null && !n.trim().isEmpty()) ? n : DEFAULT_NAME; }
+    public static void setDifficulty(Difficulty d) { if (d != null) difficulty = d; }
 
     public static void resetToDefaults() {
         health = DEFAULT_HEALTH;

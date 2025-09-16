@@ -11,6 +11,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,7 +39,7 @@ public class WeaknessAndResistanceTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target);
+        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         stats.setResistances(DamageTypeConfig.Fire);
@@ -51,7 +52,7 @@ public class WeaknessAndResistanceTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target);
+        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         stats.setWeaknesses(DamageTypeConfig.Electricity);
@@ -64,7 +65,7 @@ public class WeaknessAndResistanceTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target);
+        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
         stats.setWeaknesses(DamageTypeConfig.Fire);
         stats.addHealth(-10, DamageTypeConfig.Fire);
@@ -77,7 +78,7 @@ public class WeaknessAndResistanceTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target);
+        Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
         stats.setResistances(DamageTypeConfig.Electricity);
         stats.addHealth(-10, DamageTypeConfig.Electricity);

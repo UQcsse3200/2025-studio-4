@@ -1,6 +1,7 @@
 package com.csse3200.game.areas;
 
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -267,14 +268,6 @@ public class ForestGameArea extends GameArea {
         return newPlayer;
     }
 
-  private void spawnDrones() {
-      for (int i = 0; i < NUM_DRONES; i++) {
-        NUM_ENEMIES_TOTAL++;
-        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player);
-        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
-      }
-  }
-
     private Entity findExistingPlayer() {
         for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
             if (entity.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null) {
@@ -284,11 +277,18 @@ public class ForestGameArea extends GameArea {
         return null;
     }
 
+    private void spawnDrones() {
+        for (int i = 0; i < NUM_DRONES; i++) {
+            NUM_ENEMIES_TOTAL++;
+            Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, Difficulty.HARD);
+            spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
+        }
+    }
 
   private void spawnGrunts() {
       for (int i = 0; i < NUM_GRUNTS; i++) {
         NUM_ENEMIES_TOTAL++;
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, Difficulty.HARD);
         spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
       }
   }
@@ -296,7 +296,7 @@ public class ForestGameArea extends GameArea {
   private void spawnTanks() {
       for (int i = 0; i < NUM_TANKS; i++) {
         NUM_ENEMIES_TOTAL++;
-        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player);
+        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, Difficulty.HARD);
         spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
       }
   }
@@ -304,7 +304,7 @@ public class ForestGameArea extends GameArea {
   private void spawnBosses() {
       for (int i = 0; i < NUM_BOSSES; i++) {
         NUM_ENEMIES_TOTAL++;
-        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player);
+        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, Difficulty.HARD);
         spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
       }
   }
@@ -312,7 +312,7 @@ public class ForestGameArea extends GameArea {
   private void spawnDividers() {
       for (int i = 0; i < NUM_DIVIDERS; i++) {
         NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL + 4;
-        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player);
+        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, Difficulty.HARD);
         spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
       }
   }

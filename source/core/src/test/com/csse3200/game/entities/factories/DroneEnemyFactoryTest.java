@@ -10,6 +10,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ public class DroneEnemyFactoryTest {
         // Load assets needed for PlayerFactory
         resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
         resourceService.loadAll();
+
+        DroneEnemyFactory.resetToDefaults();
     }
     @Test
     void droneEnemyHasCorrectStats() {
@@ -37,7 +40,7 @@ public class DroneEnemyFactoryTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target);
+        Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(50, stats.getHealth());
@@ -53,7 +56,7 @@ public class DroneEnemyFactoryTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target);
+        Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         drone.getEvents().trigger("entityDeath");
@@ -155,5 +158,19 @@ public class DroneEnemyFactoryTest {
         assertEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
     }
 
-
+    @Test
+    void droneEnemyHasCorrectDifficulty() {
+        Entity target = PlayerFactory.createPlayer();
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.HARD);
+        CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
+        assertNotNull(stats);
+        assertEquals(200, stats.getHealth());
+        assertEquals(40, stats.getBaseAttack());
+        assertEquals(DamageTypeConfig.None, stats.getResistances());
+        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(new Vector2(1.2f, 1.2f), DroneEnemyFactory.getSpeed());
+    }
 }

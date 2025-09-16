@@ -13,6 +13,7 @@ import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.utils.Difficulty;
 
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class DividerChildEnemyFactory {
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex) {
+    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
         Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
         "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
 
@@ -63,7 +64,7 @@ public class DividerChildEnemyFactory {
         DividerChild.addComponent(waypointComponent);
 
         DividerChild
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));

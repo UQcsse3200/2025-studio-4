@@ -10,6 +10,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ public class BossEnemyFactoryTest {
         // Load assets needed for PlayerFactory
         resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
         resourceService.loadAll();
+
+        BossEnemyFactory.resetToDefaults();
     }
 
     @Test
@@ -38,7 +41,7 @@ public class BossEnemyFactoryTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(200, stats.getHealth());
@@ -54,7 +57,7 @@ public class BossEnemyFactoryTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         boss.getEvents().trigger("entityDeath");
@@ -157,4 +160,19 @@ public class BossEnemyFactoryTest {
         assertEquals("Boss Enemy", BossEnemyFactory.getDisplayName());
     }
 
+    @Test
+    void bossEnemyHasCorrectDifficulty() {
+        Entity target = PlayerFactory.createPlayer();
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.HARD);
+        CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
+        assertNotNull(stats);
+        assertEquals(800, stats.getHealth());
+        assertEquals(80, stats.getBaseAttack());
+        assertEquals(DamageTypeConfig.None, stats.getResistances());
+        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
+    }
 }

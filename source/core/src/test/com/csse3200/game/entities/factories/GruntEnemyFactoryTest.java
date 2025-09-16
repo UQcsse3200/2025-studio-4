@@ -10,6 +10,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +31,8 @@ public class GruntEnemyFactoryTest {
         // Load assets needed for PlayerFactory
         resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
         resourceService.loadAll();
+
+        GruntEnemyFactory.resetToDefaults();
     }
     @Test
     void gruntEnemyHasCorrectStats() {
@@ -37,7 +40,7 @@ public class GruntEnemyFactoryTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(75, stats.getHealth());
@@ -53,7 +56,7 @@ public class GruntEnemyFactoryTest {
         java.util.List<Entity> waypointList = new java.util.ArrayList<>();
         Entity waypoint = new Entity();
         waypointList.add(waypoint);
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         grunt.getEvents().trigger("entityDeath");
@@ -154,5 +157,21 @@ public class GruntEnemyFactoryTest {
         assertEquals(new Vector2(0.8f, 0.8f), GruntEnemyFactory.getSpeed());
         assertEquals("images/grunt_enemy.png", GruntEnemyFactory.getTexturePath());
         assertEquals("Grunt Enemy", GruntEnemyFactory.getDisplayName());
+    }
+
+    @Test
+    void gruntEnemyHasCorrectDifficulty() {
+        Entity target = PlayerFactory.createPlayer();
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target, Difficulty.HARD);
+        CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
+        assertNotNull(stats);
+        assertEquals(300, stats.getHealth());
+        assertEquals(48, stats.getBaseAttack());
+        assertEquals(DamageTypeConfig.None, stats.getResistances());
+        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(new Vector2(0.8f, 0.8f), GruntEnemyFactory.getSpeed());
     }
 }

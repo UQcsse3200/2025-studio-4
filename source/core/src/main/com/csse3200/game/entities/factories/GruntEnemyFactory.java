@@ -12,6 +12,7 @@ import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.utils.Difficulty;
 
 import java.util.Map;
 
@@ -51,7 +52,7 @@ public class GruntEnemyFactory {
      * @return entity
      */
 
-    public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player) {
+    public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
         Entity grunt = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
         "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
 
@@ -61,7 +62,7 @@ public class GruntEnemyFactory {
 
         grunt
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));

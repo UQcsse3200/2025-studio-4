@@ -14,7 +14,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class DroneEnemyFactory {
     // Default drone configuration
@@ -94,19 +94,20 @@ public class DroneEnemyFactory {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
-        // Add points if score service is registered and enemy dies
-        if (ServiceLocator.getScoreService() != null) {
-            ServiceLocator.getScoreService().addPoints(points);
-        }
-
-        // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
             Entity player = wc.getPlayerRef();
+
+            // Drop currency upon defeat
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
                 Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
                 player.getEvents().trigger("dropCurrency", drops);
+            }
+            // Add points to score
+            PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+            if (psc != null) {
+                psc.addPoints(points);
             }
         }
 

@@ -14,7 +14,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class TankEnemyFactory {
     // Default tank configuration
@@ -89,15 +89,17 @@ public class TankEnemyFactory {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
-        // Add points if score service is registered and enemy dies
-        if (ServiceLocator.getScoreService() != null) {
-            ServiceLocator.getScoreService().addPoints(points);
-        }
-
-        // Drop currency upon defeat - but only if player has the component
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
             Entity player = wc.getPlayerRef();
+
+            // Award points to player upon defeating enemy
+            PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+            if (psc != null) {
+                psc.addPoints(points);
+            }
+
+            // Drop currency upon defeating enemy
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
                 Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);

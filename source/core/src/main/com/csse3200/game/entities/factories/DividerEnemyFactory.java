@@ -14,8 +14,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
-import com.csse3200.game.services.ServiceLocator;
 import java.util.Map;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 /**
  * 可分裂敌人（死亡后生成 3 个子体）的工厂。
@@ -108,9 +108,16 @@ public class DividerEnemyFactory {
                 new Vector2(0f, +0.3f)
         };
 
-        // Add points if score service is registered and enemy dies
-        if (ServiceLocator.getScoreService() != null) {
-            ServiceLocator.getScoreService().addPoints(points);
+        // Award points to player upon defeating enemy
+        WaypointComponent wcForScore = entity.getComponent(WaypointComponent.class);
+        if (wcForScore != null) {
+            Entity player = wcForScore.getPlayerRef();
+            if (player != null) {
+                PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+                if (psc != null) {
+                    psc.addPoints(points);
+                }
+            }
         }
 
         Gdx.app.postRunnable(() -> {

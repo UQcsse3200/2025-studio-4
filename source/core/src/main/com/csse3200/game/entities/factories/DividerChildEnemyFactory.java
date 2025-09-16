@@ -15,7 +15,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class DividerChildEnemyFactory {
     // Default divider child configuration
@@ -96,9 +96,12 @@ public class DividerChildEnemyFactory {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
-        // Add points if score service is registered and enemy dies
-        if (ServiceLocator.getScoreService() != null) {
-            ServiceLocator.getScoreService().addPoints(points);
+        // Award points to player upon defeating enemy
+        if (currentTarget != null) {
+            PlayerScoreComponent totalScore = currentTarget.getComponent(PlayerScoreComponent.class);
+            if (totalScore != null) {
+                totalScore.addPoints(points);
+            }
         }
 
         // Drop currency upon defeat

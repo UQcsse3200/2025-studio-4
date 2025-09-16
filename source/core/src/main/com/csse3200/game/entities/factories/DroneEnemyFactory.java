@@ -92,8 +92,8 @@ public class DroneEnemyFactory {
         // Drop currency upon defeat
         WaypointComponent dwc = entity.getComponent(WaypointComponent.class);
         if (dwc != null && dwc.getPlayerRef() != null) {
-            dwc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-            dwc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+            //dwc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+            //dwc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
         }
 
         Gdx.app.postRunnable(entity::dispose);

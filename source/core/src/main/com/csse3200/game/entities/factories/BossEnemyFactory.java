@@ -89,8 +89,8 @@ public class BossEnemyFactory {
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
-            wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-            wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+            //wc.getPlayerRef().getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
         }
 
         Gdx.app.postRunnable(entity::dispose);

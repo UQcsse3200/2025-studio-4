@@ -78,8 +78,8 @@ public class DividerChildEnemyFactory {
         ForestGameArea.checkEnemyCount();
 
         // Drop currency upon defeat
-        currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-        currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        //currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+        //currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
 
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?

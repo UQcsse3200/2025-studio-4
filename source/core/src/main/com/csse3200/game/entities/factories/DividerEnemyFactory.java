@@ -67,7 +67,7 @@ public class DividerEnemyFactory {
                 .addComponent(new clickable(clickRadius));
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
-        divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider));
+        divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));
 
         var sz = divider.getScale();
         divider.setScale(sz.x * 1.5f, sz.y * 1.5f);
@@ -82,21 +82,44 @@ public class DividerEnemyFactory {
     }
 
     /** 敌人死亡：统一延迟执行“销毁 + 分裂 + 计数” */
-    private static void destroyEnemy(Entity entity) {
+    private static void destroyEnemy(Entity entity, Entity target, GameArea area) {
+        if (entity == null) return;
+
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
-        // Drop currency upon defeat
-        // currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-        // currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        final Vector2 pos = entity.getPosition().cpy();
+        final Vector2[] offsets = new Vector2[]{
+                new Vector2(+0.3f, 0f),
+                new Vector2(-0.3f, 0f),
+                new Vector2(0f, +0.3f)
+        };
 
-        // Spawn Children upon defeat
-        for (int i = 0; i < 3; i++) {
-            Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(currentTarget, savedWaypoints, currentWaypointIndex);
-            Vector2 entityPos = entity.getPosition();
-            gameArea.customSpawnEntityAt(child, entityPos);
+        Gdx.app.postRunnable(() -> {
+            // Dispose of the parent entity
+            entity.dispose();
+
+            // Spawn child entities with waypoints
+            if (area != null && savedWaypoints != null) {
+                for (Vector2 offset : offsets) {
+                    Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(
+                            target, savedWaypoints, currentWaypointIndex
+                    );
+                    if (child != null) {
+                        area.customSpawnEntityAt(child, pos.cpy().add(offset));
+                    }
+                }
+            }
+        });
+
+        // Drop currency upon defeat (ensure currentTarget is not null)
+        if (currentTarget != null) {
+            CurrencyManagerComponent currencyManager = currentTarget.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                //currencyManager.addCurrencyAmount(currencyType, currencyAmount);
+                //currencyManager.updateCurrency(currencyType);
+            }
         }
-        Gdx.app.postRunnable(entity::dispose);
     }
 
     /** 可选：在运行时调整速度（示例保留） */

@@ -126,14 +126,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cleanup()" class="member-name-link">cleanup</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addSnow(int,int)" class="member-name-link">addSnow</a><wbr>(int&nbsp;x,
+ int&nbsp;y)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Clean up all objects清理所有对象</div>
+<div class="block">Add snow at specified coordinates在指定坐标添加雪地</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generateBiomesAndRivers()" class="member-name-link">generateBiomesAndRivers</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cleanup()" class="member-name-link">cleanup</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Generate biomes and rivers生成生态群落和河流</div>
+<div class="block">Clean up all objects清理所有对象</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#generateEnemyPath()" class="member-name-link">generateEnemyPath</a>()</code></div>
@@ -146,8 +147,14 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerBarrierCoords(int%5B%5D%5B%5D)" class="member-name-link">registerBarrierCoords</a><wbr>(int[][]&nbsp;coords)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">注册障碍物坐标，供 getInvalidTiles() 统一返回
- coords: int[][]，每个元素为 {x, y}</div>
+<div class="block">Register the coordinates of the obstacles for getInvalidTiles() to return uniformly
+ coords: int[][]，Each element is {x, y}</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerSnowTreeCoords(int%5B%5D%5B%5D)" class="member-name-link">registerSnowTreeCoords</a><wbr>(int[][]&nbsp;coords)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Register the snow tree coordinates for getInvalidTiles() to return uniformly
+ coords: int[][]，Each element is {x, y}</div>
 </div>
 </div>
 </div>
@@ -192,13 +199,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="generateBiomesAndRivers()">
-<h3>generateBiomesAndRivers</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">generateBiomesAndRivers</span>()</div>
-<div class="block">Generate biomes and rivers生成生态群落和河流</div>
-</section>
-</li>
-<li>
 <section class="detail" id="cleanup()">
 <h3>cleanup</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">cleanup</span>()</div>
@@ -212,11 +212,27 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="addSnow(int,int)">
+<h3>addSnow</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addSnow</span><wbr><span class="parameters">(int&nbsp;x,
+ int&nbsp;y)</span></div>
+<div class="block">Add snow at specified coordinates在指定坐标添加雪地</div>
+</section>
+</li>
+<li>
 <section class="detail" id="registerBarrierCoords(int[][])">
 <h3>registerBarrierCoords</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerBarrierCoords</span><wbr><span class="parameters">(int[][]&nbsp;coords)</span></div>
-<div class="block">注册障碍物坐标，供 getInvalidTiles() 统一返回
- coords: int[][]，每个元素为 {x, y}</div>
+<div class="block">Register the coordinates of the obstacles for getInvalidTiles() to return uniformly
+ coords: int[][]，Each element is {x, y}</div>
+</section>
+</li>
+<li>
+<section class="detail" id="registerSnowTreeCoords(int[][])">
+<h3>registerSnowTreeCoords</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">registerSnowTreeCoords</span><wbr><span class="parameters">(int[][]&nbsp;coords)</span></div>
+<div class="block">Register the snow tree coordinates for getInvalidTiles() to return uniformly
+ coords: int[][]，Each element is {x, y}</div>
 </section>
 </li>
 </ul>

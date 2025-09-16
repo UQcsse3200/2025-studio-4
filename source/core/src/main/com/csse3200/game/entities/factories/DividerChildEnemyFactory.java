@@ -17,7 +17,7 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import java.util.Map;
 
 public class DividerChildEnemyFactory {
-    // Default drone configuration
+    // Default divider child configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 50;
@@ -45,20 +45,18 @@ public class DividerChildEnemyFactory {
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
 
     private static Entity self;
-    private static Entity playerRef;
     private static Entity currentTarget;
     private static int priorityTaskCount = 1;
-    private static int currentWaypointIndex = 0;
 
     /**
-     * Creates a DividerChild enemy with current configuration. The DividerChild is capable of spawning multiple other enemies upon death
+     * Creates a DividerChild enemy with current configuration.
      *
      * @param target entity to chase
      * @return entity
      */
     public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex) {
-        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( waypoints.get(waypointIndex), new Vector2(speed), waypoints,
-        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
+        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
+        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, target, speed);
         waypointComponent.setCurrentWaypointIndex(waypointIndex);
@@ -82,6 +80,8 @@ public class DividerChildEnemyFactory {
 
         var sz = DividerChild.getScale(); 
         DividerChild.setScale(sz.x * 0.85f, sz.y * 0.85f);
+
+        updateChaseTarget(DividerChild, waypoints.get(waypointIndex));
 
         self = DividerChild;
         currentTarget = target;

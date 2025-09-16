@@ -52,7 +52,7 @@ public class TankEnemyFactory {
      */
     public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player) {
         Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints, 
-        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f);
+        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -111,7 +111,6 @@ public class TankEnemyFactory {
     }
 
     private static void updateChaseTarget(Entity tank, Entity newTarget) {
-        System.out.println("updating task for tank: " + tank.getId());
         WaypointComponent wc = tank.getComponent(WaypointComponent.class);
         if (wc != null) {
             wc.incrementPriorityTaskCount();

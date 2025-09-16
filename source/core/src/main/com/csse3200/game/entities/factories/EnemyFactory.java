@@ -24,8 +24,8 @@ public class EnemyFactory {
    * @param speed max speed of the created enemy
    * @return entity
    */
-  public static Entity createBaseEnemy(Entity target, Vector2 speed, java.util.List<Entity> waypoints) {
-    target = waypoints.get(0);
+  public static Entity createBaseEnemy(Entity target, Vector2 speed, java.util.List<Entity> waypoints, int waypointIndex) {
+    target = waypoints.get(waypointIndex);
     AITaskComponent aiComponent =
         new AITaskComponent()
             .addTask(new ChaseTask(target, 1, 100f, 100f, speed));
@@ -60,9 +60,10 @@ public static Entity createBaseEnemyAnimated(
       java.util.List<Entity> waypoints,
       String atlasPath,
       float walkFrameDur,
-      Float idleFrameDur
+      Float idleFrameDur,
+      int waypointIndex
   ) {
-    Entity e = createBaseEnemy(target, speed, waypoints);
+    Entity e = createBaseEnemy(target, speed, waypoints, waypointIndex);
     //Loading the asset manager directly from the disk
     com.badlogic.gdx.files.FileHandle fh = com.badlogic.gdx.Gdx.files.internal(atlasPath);
     if (!fh.exists()) {

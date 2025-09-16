@@ -53,7 +53,7 @@ public class GruntEnemyFactory {
 
     public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player) {
         Entity grunt = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f);
+        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -110,7 +110,6 @@ public class GruntEnemyFactory {
     }
 
     private static void updateChaseTarget(Entity grunt, Entity newTarget) {
-        System.out.println("updating task for grunt: " + grunt.getId());
         WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
         if (wc != null) {
             wc.incrementPriorityTaskCount();

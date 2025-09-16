@@ -39,10 +39,10 @@ import com.csse3200.game.components.maingame.SimplePlacementController;
 public class ForestGameArea extends GameArea {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
 
-    private static final int NUM_DRONES = 3;
-    private static final int NUM_GRUNTS = 2;
+    private static final int NUM_DRONES = 5;
+    private static final int NUM_GRUNTS = 3;
     private static final int NUM_TANKS = 2;
-    private static final int NUM_BOSSES = 1;
+    private static final int NUM_BOSSES = 0;
     private static final int NUM_DIVIDERS = 1;
     public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;

@@ -52,7 +52,7 @@ public class DroneEnemyFactory {
      */
     public static Entity createDroneEnemy(java.util.List<Entity> waypoints, Entity player) {
         Entity drone = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f);
+        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         // Add drone-specific waypoint component
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -129,7 +129,6 @@ public class DroneEnemyFactory {
      * @param newTarget The new target entity
      */
     private static void updateChaseTarget(Entity drone, Entity newTarget) {
-        System.out.println("updating task for drone: " + drone.getId());
         WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
         if (dwc != null) {
             dwc.incrementPriorityTaskCount();

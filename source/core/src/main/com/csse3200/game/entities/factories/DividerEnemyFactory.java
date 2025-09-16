@@ -47,11 +47,7 @@ public class DividerEnemyFactory {
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
 
-    private static Entity self;
-    private static Entity playerRef;
-    private static Entity currentTarget;
     private static int priorityTaskCount = 1;
-    private static GameArea gameArea;
     private static java.util.List<Entity> savedWaypoints;
     private static int currentWaypointIndex = 0;
 
@@ -62,7 +58,7 @@ public class DividerEnemyFactory {
 
     public static Entity createDividerEnemy(java.util.List<Entity> waypoints, GameArea area, Entity player) {
         Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints, 
-        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
+        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
         divider.addComponent(waypointComponent);
@@ -87,11 +83,7 @@ public class DividerEnemyFactory {
         var sz = divider.getScale();
         divider.setScale(sz.x * 1.5f, sz.y * 1.5f);
 
-        self = divider;
-        playerRef = player;
         savedWaypoints = waypoints;
-        currentTarget = waypoints.get(currentWaypointIndex);
-        gameArea = area;
 
         return divider;
     }
@@ -111,14 +103,17 @@ public class DividerEnemyFactory {
         };
 
         Gdx.app.postRunnable(() -> {
+
+            WaypointComponent wc = entity.getComponent(WaypointComponent.class);
             // Dispose of the parent entity
             entity.dispose();
 
             // Spawn child entities with waypoints
             if (area != null && savedWaypoints != null) {
                 for (Vector2 offset : offsets) {
+                    int targetWaypointIndex = Math.max(0, wc.getCurrentWaypointIndex() - 1);
                     Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(
-                            target, savedWaypoints, currentWaypointIndex
+                            target, savedWaypoints, targetWaypointIndex
                     );
                     if (child != null) {
                         area.customSpawnEntityAt(child, pos.cpy().add(offset));

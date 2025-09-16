@@ -52,7 +52,7 @@ public class BossEnemyFactory {
      */
     public static Entity createBossEnemy(java.util.List<Entity> waypoints, Entity player) {
         Entity boss = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f);
+        "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -112,7 +112,6 @@ public class BossEnemyFactory {
     }
 
     private static void updateChaseTarget(Entity boss, Entity newTarget) {
-        System.out.println("updating task for boss: " + boss.getId());
         WaypointComponent wc = boss.getComponent(WaypointComponent.class);
         if (wc != null) {
             wc.incrementPriorityTaskCount();

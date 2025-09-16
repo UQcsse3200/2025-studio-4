@@ -12,7 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,8 +79,8 @@ class CurrencyManagerComponentTest {
         when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
         ServiceLocator.registerResourceService(resourceService);
 
-        Entity metalScrap1 = CurrencyFactory.createMetalScrap(3, 3);
-        Entity metalScrap2 = CurrencyFactory.createMetalScrap(5, 6);
+        Entity metalScrap1 = CurrencyFactory.createCurrency(CurrencyComponent.CurrencyType.METAL_SCRAP, 3, 1, 1);
+        Entity metalScrap2 = CurrencyFactory.createCurrency(CurrencyComponent.CurrencyType.METAL_SCRAP, 4, 0, 2);
 
         currencyManagerComponent.addCurrencyEntity(metalScrap1);
         currencyManagerComponent.addCurrencyEntity(metalScrap2);
@@ -87,6 +89,23 @@ class CurrencyManagerComponentTest {
 
         // Clean up so it doesn’t leak into other tests
         ServiceLocator.clear();
+    }
+
+    @Test
+    void shouldDropCurrency() {
+        Entity player = new Entity();
+        CurrencyManagerComponent manager = new CurrencyManagerComponent();
+        player.addComponent(manager);
+        player.create(); // Registers dropCurrency listener and preloads 2000
+
+        int before = manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP);
+
+        Map<CurrencyComponent.CurrencyType, Integer> drops = Map.of(CurrencyComponent.CurrencyType.METAL_SCRAP, 5);
+
+        player.getEvents().trigger("dropCurrency", drops);
+
+        int after = manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP);
+        assertEquals(before + 5, after);
     }
 
     @Test
@@ -311,5 +330,28 @@ class CurrencyManagerComponentTest {
         assertEquals(8, currencyManagerComponent
                 .getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
         assertEquals(9, currencyManagerComponent.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
+    }
+
+    @Test
+    void shouldInitializeCurrenciesOnCreate() {
+        Entity player = new Entity();
+        CurrencyManagerComponent manager = new CurrencyManagerComponent();
+        player.addComponent(manager);
+
+        List<String> triggeredEvents = new ArrayList<>();
+        player.getEvents().addListener("updateCurrencyUI", (type, amount) -> {
+            triggeredEvents.add(type + ":" + amount);
+        });
+
+        manager.create();
+
+        assertEquals(500, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
+        assertEquals(0, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
+        assertEquals(0, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
+
+        // Assert: updateCurrencyUI was triggered for each type with correct amounts
+        assertTrue(triggeredEvents.contains("METAL_SCRAP:500"));
+        assertTrue(triggeredEvents.contains("TITANIUM_CORE:0"));
+        assertTrue(triggeredEvents.contains("NEUROCHIP:0"));
     }
 }

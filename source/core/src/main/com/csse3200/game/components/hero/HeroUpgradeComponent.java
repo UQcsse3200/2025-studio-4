@@ -9,6 +9,8 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
+import java.util.Map;
+
 /**
  * Hero upgrade component:
  * - Triggered by pressing Enter / Numpad Enter, or via an event.
@@ -90,7 +92,7 @@ public class HeroUpgradeComponent extends Component {
         int nextLevel = level + 1;
         int cost = getCostForLevel(nextLevel);
 
-        if (!wallet.trySpendCurrency(costType, cost)) {
+        if (!wallet.canAffordAndSpendCurrency(Map.of(costType, cost))) {
             Gdx.app.log("HeroUpgrade", "failed: not enough " + costType + ", need=" + cost);
             entity.getEvents().trigger("upgradeFailed", "Not enough " + costType);
             return;

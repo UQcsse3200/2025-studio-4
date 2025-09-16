@@ -62,14 +62,38 @@ public class VictoryScreen implements Screen {
         if (ServiceLocator.getResourceService() == null) {
             ServiceLocator.registerResourceService(new ResourceService());
         }
+        if (ServiceLocator.getEntityService() == null) {
+            ServiceLocator.registerEntityService(new com.csse3200.game.entities.EntityService());
+        }
     }
     
     private void setupVictoryScreen() {
         stage = new Stage(new ScreenViewport());
         batch = new SpriteBatch();
         
-        // Initialize skin
-        skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
+        // Initialize skin with error handling
+        try {
+            skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
+            logger.info("Successfully loaded flat-earth skin for victory screen");
+        } catch (Exception e) {
+            logger.warn("Could not load flat-earth skin, using default skin: " + e.getMessage());
+            // Create a basic skin as fallback
+            skin = new Skin();
+            com.badlogic.gdx.graphics.g2d.BitmapFont defaultFont = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+            skin.add("default", defaultFont);
+            skin.add("font", defaultFont);
+            skin.add("title", defaultFont);
+            
+            // Add default styles
+            com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle defaultLabelStyle = new com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle();
+            defaultLabelStyle.font = defaultFont;
+            skin.add("default", defaultLabelStyle);
+            skin.add("title", defaultLabelStyle);
+            
+            com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle defaultButtonStyle = new com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle();
+            defaultButtonStyle.font = defaultFont;
+            skin.add("default", defaultButtonStyle);
+        }
         
         loadAssets();
         createUI();
@@ -194,8 +218,16 @@ public class VictoryScreen implements Screen {
     private TextButton.TextButtonStyle createButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         
-        // Use skin font
-        style.font = skin.getFont("font");
+        // Use skin font with fallback
+        try {
+            style.font = skin.getFont("font");
+        } catch (Exception e) {
+            // Fallback to default font if font is not available
+            style.font = skin.getFont("default");
+            if (style.font == null) {
+                style.font = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+            }
+        }
         
         // Load button background
         ResourceService resourceService = ServiceLocator.getResourceService();

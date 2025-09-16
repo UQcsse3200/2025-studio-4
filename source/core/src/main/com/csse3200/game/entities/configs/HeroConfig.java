@@ -29,6 +29,12 @@ public class HeroConfig extends BaseEntityConfig {
   /** Path to bullet sprite texture (relative to assets) */
   public String bulletTexture = "images/hero/Bullet.png";
 
+  public String[] levelTextures = {
+          "images/hero/Heroshoot.png",
+          "images/hero/Hero_level2.png",
+  };
+
+
   /**
    * Default constructor.
    * <p>

@@ -1,7 +1,5 @@
 package com.csse3200.game.components.currencysystem;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
 
 
@@ -9,11 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.rendering.TextureRenderComponent;
-import com.csse3200.game.services.ServiceLocator;
 
 
 /**
@@ -23,7 +17,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class CollectibleComponent extends Component {
     private boolean isCollected;
-    private float clickRadius = 1.0f;
+    private float clickRadius = 0.6f;
 
     /**
      * Creates a new collectible component, initially not collected.
@@ -39,6 +33,7 @@ public class CollectibleComponent extends Component {
      * this method marks the entity as collected, triggers a "collectCurrency" event,
      * and schedules the entity for disposal.
      */
+    @Override
     public void update () {
         if (Gdx.input.justTouched()) {
             Vector2 entityPos = entity.getPosition();

@@ -19,30 +19,30 @@ public class ObstacleFactory {
      * Creates a tree entity (占 1 个 tile).
      * @return entity
      */
-    public static Entity createTree() {
+    public static Entity createBarrier() {
         Entity tree = new Entity()
-                .addComponent(new TextureRenderComponent("images/tree.png"))
-                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
-                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
-
-        tree.getComponent(TextureRenderComponent.class).scaleEntity();
-        PhysicsUtils.setScaledCollider(tree, 0.5f, 0.5f);
-        return tree;
-    }
-
-    /**
-     * Creates a crystal entity (占 1 个 tile).
-     * @return entity
-     */
-    public static Entity createCrystal() {
-        Entity crystal = new Entity()
                 .addComponent(new TextureRenderComponent("images/crystal.png"))
                 .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
                 .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
-        crystal.getComponent(TextureRenderComponent.class).scaleEntity();
-        PhysicsUtils.setScaledCollider(crystal, 1f, 1f);
-        return crystal;
+        tree.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(tree, 0.4f, 0.4f);
+        return tree;
+    }
+
+    /**
+     * Creates a snow tree entity (占 1 个 tile).
+     * @return entity
+     */
+    public static Entity createSnowTree() {
+        Entity snowTree = new Entity()
+                .addComponent(new TextureRenderComponent("images/snowtree.png"))
+                .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
+                .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
+
+        snowTree.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(snowTree, 0.4f, 0.4f);
+        return snowTree;
     }
 
     /**

@@ -40,7 +40,19 @@ public class ResourceService implements Disposable {
    * @see AssetManager#get(String, Class)
    */
   public <T> T getAsset(String filename, Class<T> type) {
-    return assetManager.get(filename, type);
+    // 如果请求的资源尚未加载，尝试即时加载该单个资源
+    try {
+      if (!assetManager.isLoaded(filename, type)) {
+        logger.debug("Lazily loading asset: {}", filename);
+        assetManager.load(filename, type);
+        assetManager.finishLoadingAsset(filename);
+      }
+      return assetManager.get(filename, type);
+    } catch (Exception e) {
+      // 保持原行为，但提供更可读的日志
+      logger.error("Asset not loaded or failed to load: {}", filename);
+      throw e;
+    }
   }
 
   /**

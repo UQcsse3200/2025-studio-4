@@ -22,6 +22,7 @@ class CurrencyComponentTest {
 
     @AfterEach
     void tearDown() {
+        currencyComponent = null;
     }
 
     @Test
@@ -32,5 +33,10 @@ class CurrencyComponentTest {
     @Test
     void shouldGetValue5() {
         assertEquals(5, currencyComponent.getValue());
+    }
+
+    @Test
+    void shouldGetDisplayName() {
+        assertEquals("Metal Scrap", METAL_SCRAP.getDisplayName());
     }
 }

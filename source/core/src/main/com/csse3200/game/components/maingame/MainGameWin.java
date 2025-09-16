@@ -59,6 +59,7 @@ public class MainGameWin extends UIComponent {
         @Override
         public void changed(ChangeEvent changeEvent, Actor actor) {
           logger.debug("Win button clicked");
+          entity.getEvents().trigger("awardStars", 1);
           entity.getEvents().trigger("gamewin");
         }
       });
@@ -83,8 +84,16 @@ public class MainGameWin extends UIComponent {
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // Use skin font instead of MinimalSkinFactory
-    style.font = skin.getFont("font");
+    // Use skin font with fallback
+    try {
+      style.font = skin.getFont("font");
+    } catch (Exception e) {
+      // Fallback to default font if font is not available
+      style.font = skin.getFont("default");
+      if (style.font == null) {
+        style.font = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+      }
+    }
     
     // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()

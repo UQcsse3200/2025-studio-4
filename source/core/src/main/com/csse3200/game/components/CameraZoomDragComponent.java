@@ -22,7 +22,7 @@ public class CameraZoomDragComponent extends InputComponent {
     private static final float MIN_ZOOM = 0.5f;
     private static final float MAX_ZOOM = 1.8f;
     private static final float ZOOM_SPEED = 0.1f;
-    private static final float DEFAULT_ZOOM = 1.4f; // 默认缩放倍数（0.7倍，显示更多内容）
+    private static final float DEFAULT_ZOOM = 1.4f; // 默认缩放倍数（1.4倍，显示更多内容）
     
     // 键盘移动相关常量
     private static final float MOVE_SPEED = 5.0f; // 相机移动速度

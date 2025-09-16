@@ -213,7 +213,8 @@ public class MapEditor extends InputAdapter {
                 {0,4,4,9},
                 {22,24,0,2},
                 {25,31,0,1},
-                {30,31,2,5}
+                {30,31,2,5},
+                {30,31,6,7},
         };
         
         for (int[] range : redCircledArea) {

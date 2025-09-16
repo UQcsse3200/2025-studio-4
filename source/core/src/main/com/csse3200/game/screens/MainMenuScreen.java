@@ -26,7 +26,8 @@ public class MainMenuScreen extends ScreenAdapter {
   private final Renderer renderer;
   private static final String[] mainMenuTextures = {
     "images/main_menu_background.png",
-    "images/Main_Menu_Button_Background.png"
+    "images/Main_Menu_Button_Background.png",
+    "images/star.png"
   };
 
   public MainMenuScreen(GdxGame game) {

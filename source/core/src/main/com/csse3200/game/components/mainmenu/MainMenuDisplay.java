@@ -6,9 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.areas.ForestGameArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
@@ -53,7 +51,20 @@ public class MainMenuDisplay extends UIComponent {
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
-    
+
+    // stars display
+    Image starImage = new Image(
+            ServiceLocator.getResourceService().getAsset(
+                    "images/star.png",
+                    Texture.class
+            )
+    );
+    Label starsLabel = new Label(
+            Integer.toString(ServiceLocator.getGameStateService().getStars()),
+            skin,
+            "large"
+    );
+
     // 设置按钮大小
     float buttonWidth = 200f;
     float buttonHeight = 50f;
@@ -103,7 +114,13 @@ public class MainMenuDisplay extends UIComponent {
         });
 
     
-    table.add().expandY().row(); 
+    table.add().expandY().row();
+    HorizontalGroup group = new HorizontalGroup();
+    group.space(5);
+    group.addActor(starImage);
+    group.addActor(starsLabel);
+    table.add(group);
+    table.row();
     table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
     table.row();
     table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);

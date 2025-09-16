@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +30,20 @@ public class MainGameWin extends UIComponent {
   }
 
   public void addActors() {
+    // Ensure stage is initialized
+    if (stage == null) {
+      stage = ServiceLocator.getRenderService().getStage();
+      if (stage == null) {
+        logger.warn("Stage not available, cannot add actors");
+        return;
+      }
+    }
+    
+    // Remove existing UI if present
+    if (table != null && table.getStage() != null) {
+      table.remove();
+    }
+    
     table = new Table();
     table.top().center();
     table.setFillParent(true);
@@ -70,8 +83,8 @@ public class MainGameWin extends UIComponent {
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // Use default font
-    style.font = MinimalSkinFactory.create().getFont("default");
+    // Use skin font instead of MinimalSkinFactory
+    style.font = skin.getFont("font");
     
     // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()

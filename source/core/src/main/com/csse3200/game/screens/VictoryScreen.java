@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -19,7 +20,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.ResourceService;
-import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +30,7 @@ public class VictoryScreen implements Screen {
     private Stage stage;
     private SpriteBatch batch;
     private float timeElapsed = 0f;
+    private Skin skin;
     
     // UI Elements
     private Image backgroundImage;
@@ -38,6 +39,7 @@ public class VictoryScreen implements Screen {
     private Label messageLabel;
     private TextButton mainMenuButton;
     private TextButton playAgainButton;
+    private TextButton exitGameButton;
     private Table mainTable;
     private Table buttonTable;
     
@@ -65,6 +67,9 @@ public class VictoryScreen implements Screen {
     private void setupVictoryScreen() {
         stage = new Stage(new ScreenViewport());
         batch = new SpriteBatch();
+        
+        // Initialize skin
+        skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
         
         loadAssets();
         createUI();
@@ -107,7 +112,7 @@ public class VictoryScreen implements Screen {
         stage.addActor(mainTable);
         
         // Victory title
-        titleLabel = new Label("VICTORY!", MinimalSkinFactory.create(), "title");
+        titleLabel = new Label("VICTORY!", skin, "title");
         titleLabel.setAlignment(Align.center);
         titleLabel.setColor(Color.GOLD);
         titleLabel.setFontScale(4.0f);
@@ -116,7 +121,7 @@ public class VictoryScreen implements Screen {
         mainTable.row();
         
         // Subtitle
-        subtitleLabel = new Label("Congratulations!", MinimalSkinFactory.create(), "default");
+        subtitleLabel = new Label("Congratulations!", skin, "default");
         subtitleLabel.setAlignment(Align.center);
         subtitleLabel.setColor(Color.WHITE);
         subtitleLabel.setFontScale(2.0f);
@@ -129,7 +134,7 @@ public class VictoryScreen implements Screen {
                                "Your strategic prowess and courage have saved the realm.\n\n" +
                                "The ancient enemies have been vanquished,\n" +
                                "and peace has been restored to the mystical lands.",
-                               MinimalSkinFactory.create(), "default");
+                               skin, "default");
         messageLabel.setAlignment(Align.center);
         messageLabel.setColor(Color.LIGHT_GRAY);
         messageLabel.setFontScale(1.4f);
@@ -169,16 +174,28 @@ public class VictoryScreen implements Screen {
         });
         playAgainButton.addAction(Actions.alpha(0f));
         
+        // Exit Game button
+        exitGameButton = new TextButton("Exit Game", createButtonStyle());
+        exitGameButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                logger.info("Exit Game button clicked");
+                Gdx.app.exit();
+            }
+        });
+        exitGameButton.addAction(Actions.alpha(0f));
+        
         // Add buttons to table
         buttonTable.add(mainMenuButton).size(200f, 60f).pad(15f);
         buttonTable.add(playAgainButton).size(200f, 60f).pad(15f);
+        buttonTable.add(exitGameButton).size(200f, 60f).pad(15f);
     }
     
     private TextButton.TextButtonStyle createButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         
-        // Use default font
-        style.font = MinimalSkinFactory.create().getFont("default");
+        // Use skin font
+        style.font = skin.getFont("font");
         
         // Load button background
         ResourceService resourceService = ServiceLocator.getResourceService();
@@ -233,6 +250,7 @@ public class VictoryScreen implements Screen {
         if (timeElapsed >= buttonDelay && !buttonsShown) {
             mainMenuButton.addAction(Actions.fadeIn(1f));
             playAgainButton.addAction(Actions.fadeIn(1f));
+            exitGameButton.addAction(Actions.fadeIn(1f));
             buttonsShown = true;
         }
     }

@@ -35,11 +35,7 @@ import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The game screen containing the main game.
- *
- * <p>Details on libGDX screens: https://happycoding.io/tutorials/libgdx/game-screens
- */
+
 
 public class MainGameScreen extends ScreenAdapter {
   private static final Logger logger = LoggerFactory.getLogger(MainGameScreen.class);

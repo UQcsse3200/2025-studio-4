@@ -53,10 +53,10 @@ public class OpeningCutsceneScreen implements Screen {
     private Table textTable;
     
     // Animation timing
-    private float totalDuration = 15f; // 15 seconds total
+    private float totalDuration = 12f; // 12 seconds total
     private float logoDuration = 3f;
     private float titleDuration = 2f;
-    private float storyDuration = 5f;
+    private float storyDuration = 4f;
     private float fadeDuration = 2f;
     
     // Animation states
@@ -253,8 +253,8 @@ public class OpeningCutsceneScreen implements Screen {
             instructionShown = true;
         }
         
-        // Start fade out
-        if (timeElapsed >= totalDuration - fadeDuration && !fadeStarted) {
+        // Start fade out after all content is shown
+        if (timeElapsed >= totalDuration && !fadeStarted) {
             fadeStarted = true;
             stage.addAction(Actions.sequence(
                 Actions.fadeOut(fadeDuration),

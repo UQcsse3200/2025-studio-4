@@ -5,7 +5,7 @@
     "cooldown": 1.0,
     "cost": 1,
     "projectileSpeed": 100.0,
-    "projectileLife": 100,
+    "projectileLife": 1,
     "projectileTexture": "images/hero/Bullet.png"
   },
   "dinoTower": {
@@ -14,7 +14,7 @@
     "cooldown": 0.8,
     "cost": 1,
     "projectileSpeed": 10.0,
-    "projectileLife": 100,
+    "projectileLife": 1,
     "projectileTexture": "images/hero/Bullet.png"
   },
   "cavemenTower": {
@@ -23,7 +23,7 @@
     "cooldown": 0.8,
     "cost": 1,
     "projectileSpeed": 1.0,
-    "projectileLife": 100,
+    "projectileLife": 4,
     "projectileTexture": "images/hero/Bullet.png"
 
   }

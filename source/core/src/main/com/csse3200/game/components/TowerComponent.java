@@ -17,8 +17,9 @@ public class TowerComponent extends Component {
     private final String type;
     private final int width;  // in tiles
     private final int height; // in tiles
-    private long lastFireNs = 0L; // last time a projectile was fired
 
+    //flag for whether tower is active, changes between ghost tower and placed tower
+    private boolean active = true;
 
     /**
      * Constructs a single-tile tower component.
@@ -70,12 +71,18 @@ public class TowerComponent extends Component {
         // If your enemies are on PhysicsLayer.NPC, keep NPC here; otherwise change to your ENEMY layer.
         return PhysicsLayer.contains(PhysicsLayer.NPC, cat);
     }
+    /** sets whether the tower is active or not*/
+    public TowerComponent setActive(boolean v) { this.active = v; return this; }
+
+    /** @return whether the tower is active or not*/
+    public boolean isActive() { return active; }
 
     /**
      * Updates the tower logic, including attack timer and attacking entities in range.
      */
     @Override
     public void update() {
+        if (!active) return;
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
         if (stats == null) {
             return;
@@ -126,13 +133,7 @@ public class TowerComponent extends Component {
         float vx = dir.x * speed;
         float vy = dir.y * speed;
 
-        //prevents double firing projectile
-        long now = com.badlogic.gdx.utils.TimeUtils.nanoTime();
-        long minGap = (long)(stats.getAttackCooldown() * 1_000_000_000L);
-        if (now - lastFireNs < minGap) return;
-        lastFireNs = now;
-
-// Use your ProjectileFactory (it already adds TouchAttack + DestroyOnHit on NPC)
+// Use ProjectileFactory to create the bullet
         Entity bullet = com.csse3200.game.entities.factories.ProjectileFactory.createBullet(
                 tex, myCenter, vx, vy, life, damage
         );
@@ -143,8 +144,8 @@ public class TowerComponent extends Component {
             com.badlogic.gdx.Gdx.app.postRunnable(() -> es.register(bullet));
         }
 
+
         stats.resetAttackTimer();
 
     }
-
 }

@@ -108,6 +108,8 @@ public class SimplePlacementController extends Component {
         } else {
             ghostTower = TowerFactory.createBoneTower();
         }
+        TowerComponent tc = ghostTower.getComponent(TowerComponent.class);
+        if (tc != null) tc.setActive(false);
 
         ServiceLocator.getEntityService().register(ghostTower);
         System.out.println(">>> placement ON (" + type + ")");
@@ -179,6 +181,12 @@ public class SimplePlacementController extends Component {
                 return;
             }
 
+            //dispose ghost tower before placing real tower
+            if (ghostTower != null) {
+                ghostTower.dispose();
+                ghostTower = null;
+            }
+
             Entity newTower;
             if ("dino".equalsIgnoreCase(pendingType)) {
                 newTower = TowerFactory.createDinoTower();
@@ -192,7 +200,6 @@ public class SimplePlacementController extends Component {
             ServiceLocator.getEntityService().register(newTower);
             System.out.println(">>> placed " + pendingType + " at " + snapPos);
 
-            ghostTower = null;
             placementActive = false;
         }
     }

@@ -12,7 +12,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -77,8 +79,8 @@ class CurrencyManagerComponentTest {
         when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mock(Texture.class));
         ServiceLocator.registerResourceService(resourceService);
 
-        Entity metalScrap1 = CurrencyFactory.createMetalScrap(3, 3);
-        Entity metalScrap2 = CurrencyFactory.createMetalScrap(5, 6);
+        Entity metalScrap1 = CurrencyFactory.createCurrency(CurrencyComponent.CurrencyType.METAL_SCRAP, 3, 1, 1);
+        Entity metalScrap2 = CurrencyFactory.createCurrency(CurrencyComponent.CurrencyType.METAL_SCRAP, 4, 0, 2);
 
         currencyManagerComponent.addCurrencyEntity(metalScrap1);
         currencyManagerComponent.addCurrencyEntity(metalScrap2);
@@ -328,5 +330,32 @@ class CurrencyManagerComponentTest {
         assertEquals(8, currencyManagerComponent
                 .getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
         assertEquals(9, currencyManagerComponent.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
+    }
+
+    @Test
+    void shouldInitializeCurrenciesOnCreate() {
+        // Arrange
+        Entity player = new Entity();
+        CurrencyManagerComponent manager = new CurrencyManagerComponent();
+        player.addComponent(manager);
+
+        // Spy on events triggered
+        List<String> triggeredEvents = new ArrayList<>();
+        player.getEvents().addListener("updateCurrencyUI", (type, amount) -> {
+            triggeredEvents.add(type + ":" + amount);
+        });
+
+        // Act
+        manager.create();
+
+        // Assert: all currencies seeded with 2000
+        assertEquals(2000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
+        assertEquals(2000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
+        assertEquals(2000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
+
+        // Assert: updateCurrencyUI was triggered for each type with correct amounts
+        assertTrue(triggeredEvents.contains("METAL_SCRAP:2000"));
+        assertTrue(triggeredEvents.contains("TITANIUM_CORE:2000"));
+        assertTrue(triggeredEvents.contains("NEUROCHIP:2000"));
     }
 }

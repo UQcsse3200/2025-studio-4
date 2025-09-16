@@ -152,7 +152,7 @@ public class BossEnemyFactoryTest {
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, BossEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, BossEnemyFactory.getWeakness());
-        assertEquals(new Vector2(0.7f, 0.7f), BossEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
         assertEquals("images/boss_enemy.png", BossEnemyFactory.getTexturePath());
         assertEquals("Boss Enemy", BossEnemyFactory.getDisplayName());
     }

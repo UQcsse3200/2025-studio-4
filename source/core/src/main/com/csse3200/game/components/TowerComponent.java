@@ -1,7 +1,10 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -17,6 +20,13 @@ public class TowerComponent extends Component {
     private final String type;
     private final int width;  // in tiles
     private final int height; // in tiles
+
+    private Entity headEntity;
+    private RotatingTextureRenderComponent headRenderer;   // top sprite that rotates
+
+    // positional tuning
+    private final Vector2 headOffset = new Vector2(0f, 0f); // tweak if art needs
+    private float zNudge = 0.01f; // push head slightly "closer" (smaller Y)
 
     //flag for whether tower is active, changes between ghost tower and placed tower
     private boolean active = true;
@@ -39,6 +49,13 @@ public class TowerComponent extends Component {
         this.type = type;
         this.width = width;
         this.height = height;
+    }
+    public TowerComponent withHead(Entity head, RotatingTextureRenderComponent headRender, Vector2 offset, float zNudge) {
+        this.headEntity = head;
+        this.headRenderer = headRender;
+        if (offset != null) this.headOffset.set(offset);
+        if (zNudge > 0f) this.zNudge = zNudge;
+        return this;
     }
 
     /** @return The type of the tower */
@@ -77,6 +94,8 @@ public class TowerComponent extends Component {
     /** @return whether the tower is active or not*/
     public boolean isActive() { return active; }
 
+
+
     /**
      * Updates the tower logic, including attack timer and attacking entities in range.
      */
@@ -86,10 +105,14 @@ public class TowerComponent extends Component {
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
         if (stats == null) {
             return;
+            }
+        if (headEntity != null) {
+            Vector2 p = entity.getPosition();
+            headEntity.setPosition(p.x + headOffset.x, p.y + headOffset.y - zNudge);
         }
         // Use real frame delta if available
-        float dt = com.badlogic.gdx.Gdx.graphics != null
-                ? com.badlogic.gdx.Gdx.graphics.getDeltaTime()
+        float dt = Gdx.graphics != null
+                ? Gdx.graphics.getDeltaTime()
                 : (1f / 60f);
 
         stats.updateAttackTimer(dt);
@@ -119,10 +142,18 @@ public class TowerComponent extends Component {
 
         if (target == null) return;
 
+
+
         // Compute normalized direction toward target
         Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
         if (dir.isZero(0.0001f)) return;
         dir.nor();
+        if (headRenderer != null) {
+            float angle = dir.angleDeg();
+            headRenderer.setRotation(angle);
+        } else {
+        return;
+    }
 
 // Pull these from your TowerStatsComponent if you have getters:
         float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
@@ -134,14 +165,14 @@ public class TowerComponent extends Component {
         float vy = dir.y * speed;
 
 // Use ProjectileFactory to create the bullet
-        Entity bullet = com.csse3200.game.entities.factories.ProjectileFactory.createBullet(
+        Entity bullet = ProjectileFactory.createBullet(
                 tex, myCenter, vx, vy, life, damage
         );
 
 // Register safely after the loop
         var es = ServiceLocator.getEntityService();
         if (es != null) {
-            com.badlogic.gdx.Gdx.app.postRunnable(() -> es.register(bullet));
+            Gdx.app.postRunnable(() -> es.register(bullet));
         }
 
 

@@ -31,18 +31,18 @@ public class ObstacleFactory {
     }
 
     /**
-     * Creates a crystal entity (占 1 个 tile).
+     * Creates a snow tree entity (占 1 个 tile).
      * @return entity
      */
-    public static Entity createCrystal() {
-        Entity crystal = new Entity()
-                .addComponent(new TextureRenderComponent("images/crystal.png"))
+    public static Entity createSnowTree() {
+        Entity snowTree = new Entity()
+                .addComponent(new TextureRenderComponent("images/snowtree.png"))
                 .addComponent(new PhysicsComponent().setBodyType(BodyType.StaticBody))
                 .addComponent(new ColliderComponent().setLayer(PhysicsLayer.OBSTACLE));
 
-        crystal.getComponent(TextureRenderComponent.class).scaleEntity();
-        PhysicsUtils.setScaledCollider(crystal, 1f, 1f);
-        return crystal;
+        snowTree.getComponent(TextureRenderComponent.class).scaleEntity();
+        PhysicsUtils.setScaledCollider(snowTree, 0.4f, 0.4f);
+        return snowTree;
     }
 
     /**

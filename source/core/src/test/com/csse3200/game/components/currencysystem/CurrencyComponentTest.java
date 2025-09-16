@@ -34,4 +34,9 @@ class CurrencyComponentTest {
     void shouldGetValue5() {
         assertEquals(5, currencyComponent.getValue());
     }
+
+    @Test
+    void shouldGetDisplayName() {
+        assertEquals("Metal Scrap", METAL_SCRAP.getDisplayName());
+    }
 }

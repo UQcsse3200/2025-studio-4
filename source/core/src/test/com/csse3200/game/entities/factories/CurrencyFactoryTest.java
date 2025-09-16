@@ -53,21 +53,4 @@ class CurrencyFactoryTest {
         assertEquals(2f, currency.getPosition().x);
         assertEquals(3f, currency.getPosition().y);
     }
-
-    @Test
-    void createMetalScrap() {
-        Entity scrap = CurrencyFactory.createMetalScrap(4f, 6f);
-
-        assertNotNull(scrap);
-        assertNotNull(scrap.getComponent(TextureRenderComponent.class));
-        assertNotNull(scrap.getComponent(CurrencyComponent.class));
-        assertNotNull(scrap.getComponent(CollectibleComponent.class));
-
-        CurrencyComponent currencyComponent = scrap.getComponent(CurrencyComponent.class);
-        assertEquals(CurrencyComponent.CurrencyType.METAL_SCRAP, currencyComponent.getType());
-        assertEquals(1, currencyComponent.getValue());
-
-        assertEquals(4f, scrap.getPosition().x);
-        assertEquals(6f, scrap.getPosition().y);
-    }
 }

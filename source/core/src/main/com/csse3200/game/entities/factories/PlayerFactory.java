@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.csse3200.game.components.HomebaseDamageEffectComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.player.InventoryComponent;
@@ -14,7 +15,7 @@ import com.csse3200.game.physics.PhysicsUtils;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -36,7 +37,7 @@ public class PlayerFactory {
             ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
     Entity basement = new Entity()
-            .addComponent(new TextureRenderComponent("images/basement.png"))
+            .addComponent(new SwitchableTextureRenderComponent("images/basement.png"))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setSensor(true))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -45,7 +46,8 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new CurrencyManagerComponent());
+            .addComponent(new CurrencyManagerComponent())
+            .addComponent(new HomebaseDamageEffectComponent());
 
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);

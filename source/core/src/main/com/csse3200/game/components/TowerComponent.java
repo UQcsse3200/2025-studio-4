@@ -17,6 +17,8 @@ public class TowerComponent extends Component {
     private final String type;
     private final int width;  // in tiles
     private final int height; // in tiles
+    private long lastFireNs = 0L; // last time a projectile was fired
+
 
     /**
      * Constructs a single-tile tower component.
@@ -123,6 +125,12 @@ public class TowerComponent extends Component {
 
         float vx = dir.x * speed;
         float vy = dir.y * speed;
+
+        //prevents double firing projectile
+        long now = com.badlogic.gdx.utils.TimeUtils.nanoTime();
+        long minGap = (long)(stats.getAttackCooldown() * 1_000_000_000L);
+        if (now - lastFireNs < minGap) return;
+        lastFireNs = now;
 
 // Use your ProjectileFactory (it already adds TouchAttack + DestroyOnHit on NPC)
         Entity bullet = com.csse3200.game.entities.factories.ProjectileFactory.createBullet(

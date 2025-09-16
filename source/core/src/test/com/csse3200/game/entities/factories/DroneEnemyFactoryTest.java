@@ -57,7 +57,6 @@ public class DroneEnemyFactoryTest {
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         drone.getEvents().trigger("entityDeath");
-        // No isFlaggedForDelete, so just check health is 0 and entityDeath event triggers
         assertEquals(0, stats.getHealth());
     }
     @Test

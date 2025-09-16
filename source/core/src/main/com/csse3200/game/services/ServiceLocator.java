@@ -8,7 +8,7 @@ import com.csse3200.game.rendering.RenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.csse3200.game.services.ScoreService;     // add the newly created score service
+import com.csse3200.game.services.ScoreService;     // import ScoreService to store globally
 
 /**
  * A simplified implementation of the Service Locator pattern:

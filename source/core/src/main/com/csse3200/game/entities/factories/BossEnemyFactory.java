@@ -13,14 +13,14 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
-
 import java.util.Map;
+import com.csse3200.game.services.ServiceLocator;
 
 public class BossEnemyFactory {
     // Default boss configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 200;
+    private static final int DEFAULT_HEALTH = 300;
     private static final int DEFAULT_DAMAGE = 20;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
@@ -30,6 +30,7 @@ public class BossEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 10;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
+    private static final int DEFAULT_POINTS = 1000;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -43,6 +44,7 @@ public class BossEnemyFactory {
     private static float clickRadius = DEFAULT_CLICKRADIUS;
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
 
     /**
      * Creates a boss enemy with current configuration.
@@ -86,6 +88,11 @@ public class BossEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        // Add points if score service is registered and enemy dies
+        if (ServiceLocator.getScoreService() != null) {
+            ServiceLocator.getScoreService().addPoints(points);
+        }
 
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
@@ -183,6 +190,7 @@ public class BossEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 
     private BossEnemyFactory() {

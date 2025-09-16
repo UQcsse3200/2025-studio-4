@@ -13,8 +13,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
-
 import java.util.Map;
+import com.csse3200.game.services.ServiceLocator;
 
 public class TankEnemyFactory {
     // Default tank configuration
@@ -30,6 +30,7 @@ public class TankEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
+    private static final int DEFAULT_POINTS = 200;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -43,6 +44,7 @@ public class TankEnemyFactory {
     private static float clickRadius = DEFAULT_CLICKRADIUS;
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
 
     /**
      * Creates a tank enemy with current configuration.
@@ -86,6 +88,11 @@ public class TankEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        // Add points if score service is registered and enemy dies
+        if (ServiceLocator.getScoreService() != null) {
+            ServiceLocator.getScoreService().addPoints(points);
+        }
 
         // Drop currency upon defeat - but only if player has the component
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
@@ -141,6 +148,8 @@ public class TankEnemyFactory {
     public static String getDisplayName() {
         return displayName;
     }
+
+    public static int getPoints() { return points; }
     
     // Setters   
     public static void setResistance(DamageTypeConfig resistance) {
@@ -182,6 +191,7 @@ public class TankEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 
     private TankEnemyFactory() {

@@ -14,7 +14,7 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
-
+import com.csse3200.game.services.ServiceLocator;
 import java.util.Map;
 
 /**
@@ -34,6 +34,7 @@ public class DividerEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 5;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
+    private static final int DEFAULT_POINTS = 200;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -47,6 +48,7 @@ public class DividerEnemyFactory {
     private static float clickRadius = DEFAULT_CLICKRADIUS;
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
 
     private static int priorityTaskCount = 1;
     private static java.util.List<Entity> savedWaypoints;
@@ -105,6 +107,11 @@ public class DividerEnemyFactory {
                 new Vector2(-0.3f, 0f),
                 new Vector2(0f, +0.3f)
         };
+
+        // Add points if score service is registered and enemy dies
+        if (ServiceLocator.getScoreService() != null) {
+            ServiceLocator.getScoreService().addPoints(points);
+        }
 
         Gdx.app.postRunnable(() -> {
 
@@ -180,5 +187,6 @@ public class DividerEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 }

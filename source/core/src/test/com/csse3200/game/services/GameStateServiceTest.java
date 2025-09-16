@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import static org.junit.Assert.assertEquals;
+
 @ExtendWith(GameExtension.class)
 class GameStateServiceTest {
     GameStateService gameState;
@@ -16,26 +18,26 @@ class GameStateServiceTest {
 
     @Test
     void shouldGet() {
-        assert(gameState.getStars() == 0);
+        assertEquals(0, gameState.getStars());
     }
 
     @Test
     void shouldSet() {
         gameState.setStars(345);
-        assert(gameState.getStars() == 345);
+        assertEquals(345, gameState.getStars());
     }
 
     @Test
     void shouldIncrement() {
         gameState.updateStars(5);
-        assert(gameState.getStars() == 5);
+        assertEquals(5, gameState.getStars());
     }
 
     @Test
     void multipleIncrement() {
         for (int i = 0; i < 10; i++) {
             gameState.updateStars(1);
-            assert(gameState.getStars() == i+1);
+            assertEquals(i + 1, gameState.getStars());
         }
     }
 }

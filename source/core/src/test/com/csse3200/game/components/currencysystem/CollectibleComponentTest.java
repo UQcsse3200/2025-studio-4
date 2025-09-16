@@ -4,10 +4,8 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.components.CameraComponent;
@@ -21,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.lang.reflect.Method;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import static org.mockito.Mockito.*;
@@ -32,7 +32,6 @@ public class CollectibleComponentTest {
     private CollectibleComponent collectibleComponent;
     private Entity entity;
     private CameraComponent cameraComponent;
-    private Renderer renderer;
     SpriteBatch mockBatch;
     Stage mockStage;
     RenderService mockRenderService;
@@ -61,7 +60,7 @@ Application mockApp;
         mockStage = mock(Stage.class);
         mockRenderService = mock(RenderService.class);
         mockDebugRenderer = mock(DebugRenderer.class);
-        renderer = new Renderer(
+        Renderer renderer = new Renderer(
                 cameraComponent,
                 20f,
                 mockBatch,
@@ -125,5 +124,30 @@ Application mockApp;
         verify(collectibleComponent).update();
         // Should be false as (6-5) > clickRadius == 1
         assertEquals(false, collectibleComponent.isCollected());
+    }
+
+    @Test
+    public void ShouldNotCollectWhenNotTouched() {
+        when(Gdx.input.justTouched()).thenReturn(false);
+        entity.update();
+        assertFalse(collectibleComponent.isCollected(),
+                "Should not collect when screen not touched");
+    }
+
+    @Test
+    public void ShouldNotCollectWhenYDifferenceTooLarge() {
+        when(Gdx.input.justTouched()).thenReturn(true);
+        when(Gdx.input.getX()).thenReturn(5);
+        when(Gdx.input.getY()).thenReturn(5);
+
+        doNothing().when(mockApp).postRunnable(any(Runnable.class));
+
+        // Place entity far away in Y
+        entity.setPosition(5, 20);
+
+        entity.update();
+
+        assertFalse(collectibleComponent.isCollected(),
+                "Should not collect when Y difference > clickRadius");
     }
 }

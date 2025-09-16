@@ -25,6 +25,7 @@ import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.components.maingame.MainGameOver;
+import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
@@ -95,6 +96,9 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
+    // Display collision volume 显示碰撞体积
+    //renderer.getDebug().setActive(true);
+
 
     loadAssets();
     ui = createUI();
@@ -201,6 +205,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new PauseInputComponent())
             .addComponent(new MainGameExitDisplay())
             .addComponent(new MainGameOver())
+            .addComponent(new MainGameWin())
             .addComponent(new Terminal())
             .addComponent(inputComponent)
             .addComponent(new TerminalDisplay());

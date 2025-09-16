@@ -82,8 +82,8 @@ public class DividerEnemyFactory {
         ForestGameArea.checkEnemyCount();
 
         // Drop currency upon defeat
-        currentTarget.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
-        currentTarget.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
+        playerRef.getComponent(CurrencyManagerComponent.class).addCurrencyAmount(currencyType, currencyAmount);
+        playerRef.getComponent(CurrencyManagerComponent.class).updateCurrency(currencyType);
 
         // Spawn Children upon defeat
         for (int i = 0; i < 3; i++) {

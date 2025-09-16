@@ -203,7 +203,17 @@ public class MapEditor extends InputAdapter {
         int[][] redCircledArea = {
             {12, 17, 5, 12}, 
             {9,17,3,5}, 
-            {21,23,10,19}// 红色圆圈区域 (底部中心)
+            {21,23,10,19},
+                {24,26,16,19},
+                {25,31,18,20},
+                {27,31,21,22},
+                {18,24,9,12},
+                {18,22,6,9},
+                {0,21,0,3},
+                {0,4,4,9},
+                {22,24,0,2},
+                {25,31,0,1},
+                {30,31,2,5}
         };
         
         for (int[] range : redCircledArea) {
@@ -212,7 +222,7 @@ public class MapEditor extends InputAdapter {
             int startY = range[2];
             int endY = range[3];
             
-            System.out.println("🔴 处理红色圆圈区域: x=" + startX + "-" + endX + ", y=" + startY + "-" + endY);
+            System.out.println("🔴InvalidTiles: x=" + startX + "-" + endX + ", y=" + startY + "-" + endY);
             
             for (int x = startX; x <= endX; x++) {
                 for (int y = startY; y <= endY; y++) {
@@ -293,8 +303,8 @@ public class MapEditor extends InputAdapter {
      }
 
     /**
-     * 注册障碍物坐标，供 getInvalidTiles() 统一返回
-     * coords: int[][]，每个元素为 {x, y}
+     * Register the coordinates of the obstacles for getInvalidTiles() to return uniformly
+     * coords: int[][]，Each element is {x, y}
      */
     public void registerBarrierCoords(int[][] coords) {
         if (coords == null) return;
@@ -306,8 +316,8 @@ public class MapEditor extends InputAdapter {
     }
 
     /**
-     * 注册雪树坐标，供 getInvalidTiles() 统一返回
-     * coords: int[][]，每个元素为 {x, y}
+     * Register the snow tree coordinates for getInvalidTiles() to return uniformly
+     * coords: int[][]，Each element is {x, y}
      */
     public void registerSnowTreeCoords(int[][] coords) {
         if (coords == null) return;

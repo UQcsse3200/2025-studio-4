@@ -68,7 +68,7 @@ public class ForestGameArea extends GameArea {
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,4},{14,4}
+            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,4},{14,4},{5,4},{7,4}
     };
 
     /**
@@ -131,14 +131,8 @@ public class ForestGameArea extends GameArea {
             placementController.setMapEditor(mapEditor);
         }
 
-        // 现在 mapEditor 已经存在，生成障碍并注册到 invalidTiles
-        // Now that mapEditor exists, generate barriers and register them to invalidTiles
         registerBarrierAndSpawn(BARRIER_COORDS);
-        // 生成雪树障碍物并注册到 invalidTiles
-        // Generate snowtree obstacles and register them to invalidTiles
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
-        // 注册后刷新放置控制器的禁放区缓存
-        // After registering, refresh the placement controller's invalid-area cache
         placementController.refreshInvalidTiles();
 
         // Enemies

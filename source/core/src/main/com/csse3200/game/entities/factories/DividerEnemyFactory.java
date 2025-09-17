@@ -12,12 +12,12 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
 /**
- * 可分裂敌人（死亡后生成 3 个子体）的工厂。
- * 关键点：所有“销毁父体 + 生成子体 + 更新计数”的操作统一放入 postRunnable，
- * 避开 Box2D Step 锁，防止 IsLocked() 断言崩溃。
+ * Divider Enemy Factory (splits into 3 children on death).
+ * Key point: All "destroy parent + spawn children + update counters" actions
+ * are deferred with postRunnable to avoid Box2D Step lock (IsLocked() assertion).
  */
 public class DividerEnemyFactory {
-    // 默认配置（按需调整）
+    // Default config (can be adjusted)
     private static final int DEFAULT_HEALTH = 150;
     private static final int DEFAULT_DAMAGE = 5;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
@@ -27,7 +27,7 @@ public class DividerEnemyFactory {
     private static final String DEFAULT_NAME = "Divider Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
 
-    // 可配置项
+    // Configurable fields
     private static int health = DEFAULT_HEALTH;
     private static int damage = DEFAULT_DAMAGE;
     private static DamageTypeConfig resistance = DEFAULT_RESISTANCE;
@@ -44,9 +44,9 @@ public class DividerEnemyFactory {
     }
 
     /**
-     * 创建可分裂敌人。
-     * @param target 追击目标（可为 null）
-     * @param area   游戏区域（用于 spawn 子体）
+     * Create a divider enemy.
+     * @param target chase target (may be null)
+     * @param area   game area (used to spawn children)
      */
     public static Entity createDividerEnemy(Entity target, GameArea area) {
         Entity divider = EnemyFactory.createBaseEnemyAnimated(
@@ -57,7 +57,7 @@ public class DividerEnemyFactory {
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
                 .addComponent(new clickable(clickRadius));
 
-        // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
+        // Death listener: capture divider/target/area in closure, avoid static shared state
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, target, area));
 
         var sz = divider.getScale();
@@ -65,11 +65,11 @@ public class DividerEnemyFactory {
         return divider;
     }
 
-    /** 敌人死亡：统一延迟执行“销毁 + 分裂 + 计数” */
+    /** Enemy death: defer "destroy + split + counter update" to next frame */
     private static void destroyEnemy(Entity parent, Entity target, GameArea area) {
         if (parent == null) return;
 
-        // 先缓存位置（下一帧 parent 可能已销毁）
+        // Cache position before parent is disposed
         final Vector2 pos = parent.getPosition().cpy();
         final Vector2[] offsets = new Vector2[]{
                 new Vector2(+0.3f, 0f),
@@ -78,27 +78,26 @@ public class DividerEnemyFactory {
         };
 
         Gdx.app.postRunnable(() -> {
-            // 1) 直接销毁父体（没有 isDisposed() 就不判断，通常是幂等的）
+            // 1) Dispose parent immediately (dispose is usually idempotent)
             parent.dispose();
 
-            // 2) 生成 3 个子体
+            // 2) Spawn 3 children
             if (area != null) {
-                // 目标可能为 null，子体/AI 内部要能处理 target == null 的情况
-                final Entity safeTarget = target;  // 允许为 null
+                final Entity safeTarget = target; // may be null, children/AI must handle null target
                 for (Vector2 off : offsets) {
                     Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(safeTarget);
                     area.customSpawnEntityAt(child, pos.cpy().add(off));
                 }
             }
 
-            // 3) 计数
+            // 3) Update counters
             ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
             ForestGameArea.checkEnemyCount();
         });
 
     }
 
-    /** 可选：在运行时调整速度（示例保留） */
+    /** Optional: dynamically update speed at runtime */
     @SuppressWarnings("unused")
     private static void updateSpeed(Entity self, Entity target, Vector2 newSpeed) {
         priorityTaskCount += 1;
@@ -106,7 +105,7 @@ public class DividerEnemyFactory {
                 .addTask(new ChaseTask(target, priorityTaskCount, 100f, 100f, newSpeed));
     }
 
-    // Getters / Setters / Reset（与原版一致，略微收敛空值）
+    // Getters / Setters / Reset
     public static DamageTypeConfig getResistance() { return resistance; }
     public static DamageTypeConfig getWeakness() { return weakness; }
     public static Vector2 getSpeed() { return new Vector2(speed); }

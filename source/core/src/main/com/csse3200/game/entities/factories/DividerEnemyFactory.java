@@ -177,6 +177,9 @@ public class DividerEnemyFactory {
     public static String getTexturePath() { return texturePath; }
     public static String getDisplayName() { return displayName; }
     public static Difficulty getDifficulty() { return difficulty; }
+    public static int getPoints() {
+        return points;
+    }
 
     public static void setResistance(DamageTypeConfig r) { resistance = (r != null) ? r : DEFAULT_RESISTANCE; }
     public static void setWeakness(DamageTypeConfig w) { weakness = (w != null) ? w : DEFAULT_WEAKNESS; }

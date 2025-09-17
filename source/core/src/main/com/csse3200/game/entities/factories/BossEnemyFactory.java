@@ -152,6 +152,10 @@ public class BossEnemyFactory {
         return displayName;
     }
 
+    public static int getPoints() {
+        return points;
+    }
+
     // Setters
     public static void setResistance(DamageTypeConfig resistance) {
         BossEnemyFactory.resistance = (resistance != null) ? resistance : DEFAULT_RESISTANCE;

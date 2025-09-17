@@ -21,9 +21,9 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
-
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
+  private Label scoreLabel;
 
   /**
    * Creates reusable ui styles and adds actors to the stage.
@@ -35,6 +35,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
     entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
+    entity.getEvents().addListener("updateScore", this::updatePlayerScoreUI);
   }
 
   /**
@@ -55,6 +56,9 @@ public class PlayerStatsDisplay extends UIComponent {
     int health = entity.getComponent(PlayerCombatStatsComponent.class).getHealth();
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, "large");
+
+    // Score text
+    scoreLabel = new Label("Score: 0", skin, "large");
 
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);
@@ -84,6 +88,10 @@ public class PlayerStatsDisplay extends UIComponent {
       table.row();
     }
 
+    // Score text position
+    table.row();
+    table.add(scoreLabel).left().padTop(5f);
+
     stage.addActor(table);
   }
 
@@ -112,6 +120,15 @@ public class PlayerStatsDisplay extends UIComponent {
       label.setText(String.format("%s%n%d", type.getDisplayName(), amount));
     }
   }
+
+  /**
+   * Updates the player's total score on the ui.
+   * @param totalScore player total score
+   */
+  private void updatePlayerScoreUI(int totalScore) {
+    scoreLabel.setText("Score: " + totalScore);
+  }
+
 
   @Override
   public void dispose() {

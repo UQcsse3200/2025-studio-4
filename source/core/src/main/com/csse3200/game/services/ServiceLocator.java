@@ -68,17 +68,6 @@ public class ServiceLocator {
     entityService = service;
   }
 
-  // Call once during game start to install score service
-  public static void registerScoreService(ScoreService service) {
-    scoreService = service;
-  }
-
-  // Getter for user interface (UI) and enemies to access
-  public static ScoreService getScoreService() {
-    return scoreService;
-  }
-
-
     public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
         leaderboardService = service;
     }

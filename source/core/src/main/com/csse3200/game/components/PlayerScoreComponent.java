@@ -9,9 +9,12 @@ public class PlayerScoreComponent extends Component {
     public int getTotalScore() { return this.totalScore; }
 
     /**
-     * Adds points to the total score and notifies the HUD on change.
+     * Adds a non-negative amount of points to the total score and notifies the HUD on change.
      */
     public void addPoints(int points) {
+        if (points <= 0) {          // only positive points allowed
+            return;
+        }
         totalScore += points;
         if (entity != null) {
             entity.getEvents().trigger("updateScore", totalScore);

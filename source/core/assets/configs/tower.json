@@ -6,13 +6,13 @@
     "metalScrapCost": 500,
     "projectileSpeed": 2.0,
     "projectileLife": 1,
-    "projectileTexture": "images/towers/boneproj.png"
+    "projectileTexture": "images/towers/bone_projectile.png"
   },
   "dinoTower": {
     "damage": 8,
     "range": 2.0,
     "cooldown": 0.8,
-    "metalScrapCost": 500,
+    "metalScrapCost": 1000,
     "projectileSpeed": 2,
     "projectileLife": 1,
     "projectileTexture": "images/towers/projectile animations/fireballdino.png"
@@ -21,7 +21,7 @@
     "damage": 3,
     "range": 5.0,
     "cooldown": 0.8,
-    "metalScrapCost": 500,
+    "metalScrapCost": 750,
     "projectileSpeed": 2.0,
     "projectileLife": 4,
     "projectileTexture": "images/towers/projectile animations/zap.png"

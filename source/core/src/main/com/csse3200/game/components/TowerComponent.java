@@ -363,32 +363,38 @@ public class TowerComponent extends Component {
                 }
             }
 
-            if (target != null)
-            {
+            if (target != null) {
                 Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
-                if (!dir.isZero(0.0001f))
-                {
-                    dir.nor();
-                    if (headRenderer != null)
-                    {
+                if (!dir.isZero(0.0001f)) {
+                    dir.nor(); // Normalize direction
+
+                    if (headRenderer != null) {
                         headRenderer.setRotation(dir.angleDeg());
                     }
 
-                    // Fire projectile
-                    float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
-                    float life  = stats.getProjectileLife()  != 0f ? stats.getProjectileLife()  : 2f;
-                    String tex  = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
-                    int damage  = (int) stats.getDamage();
+                    // --- Adjust projectile speed and life to match tower range ---
+                    float towerRange = stats.getRange();
+                    float baseProjectileSpeed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+
+                    // Set speed proportional to default base (optional) or just use base speed
+                    float speed = baseProjectileSpeed;
+
+                    // Set projectile life so it dies at max range: life = range / speed
+                    float life = towerRange / speed;
+
+                    String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
+                    int damage = (int) stats.getDamage();
 
                     Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
                     var es = ServiceLocator.getEntityService();
-                    if (es != null)
-                    {
+                    if (es != null) {
                         Gdx.app.postRunnable(() -> es.register(bullet));
                     }
                 }
+
                 stats.resetAttackTimer();
             }
+
         }
 
         // --- SELL / SELECTION LOGIC ---

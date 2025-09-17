@@ -1,6 +1,7 @@
 package com.csse3200.game.areas;
 
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,6 +180,14 @@ public class ForestGameArea extends GameArea {
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
 
         spawnEntity(highlighterEntity);
+
+        //Tower Upgrade Menu
+        TowerUpgradeMenu towerUpgradeMenu = new TowerUpgradeMenu();
+        Entity upgradeUI = new Entity().addComponent(towerUpgradeMenu);
+        spawnEntity(upgradeUI);
+
+        //Link the upgrade menu to the map highlighter
+        mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         // Add hero placement system
 

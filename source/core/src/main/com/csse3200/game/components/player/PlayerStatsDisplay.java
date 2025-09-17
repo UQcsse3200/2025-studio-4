@@ -23,6 +23,7 @@ public class PlayerStatsDisplay extends UIComponent {
   private Label healthLabel;
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
+  private Image scoreImage;
   private Label scoreLabel;
 
   /**
@@ -57,8 +58,14 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, "large");
 
+    // Score image (trophy)
+    float scoreSideLength = 64f;
+    scoreImage = new Image(ServiceLocator.getResourceService().getAsset("images/score_trophy.png", Texture.class));
+
     // Score text
-    scoreLabel = new Label("Score: 0", skin, "large");
+    int score = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
+    CharSequence scoreText = String.format("Score: %d", score);
+    scoreLabel = new Label(scoreText, skin, "large");
 
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);
@@ -90,6 +97,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
     // Score text position
     table.row();
+    table.add(scoreImage).size(scoreSideLength).pad(5);
     table.add(scoreLabel).left().padTop(5f);
 
     stage.addActor(table);
@@ -126,7 +134,8 @@ public class PlayerStatsDisplay extends UIComponent {
    * @param totalScore player total score
    */
   private void updatePlayerScoreUI(int totalScore) {
-    scoreLabel.setText("Score: " + totalScore);
+    CharSequence text = String.format("Score: %d", totalScore);
+    scoreLabel.setText(text);
   }
 
 
@@ -144,5 +153,7 @@ public class PlayerStatsDisplay extends UIComponent {
     }
     currencyImages.clear();
     currencyLabels.clear();
+    scoreImage.remove();
+    scoreLabel.remove();
   }
 }

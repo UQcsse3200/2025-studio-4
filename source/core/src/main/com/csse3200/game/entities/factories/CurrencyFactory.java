@@ -32,28 +32,6 @@ public class CurrencyFactory {
 
         return currency;
     }
-
-    /**
-     * Creates a currency entity representing a piece of metal scrap.
-     *
-     * The created entity has a default value of 1 and uses the
-     * predefined metal scrap texture.
-     *
-     * @param x the x-coordinate position of the entity
-     * @param y the y-coordinate position of the entity
-     * @return a metal scrap currency entity
-     */
-    public static Entity createMetalScrap(float x, float y) {
-        return createCurrency(CurrencyType.METAL_SCRAP, 1, x, y);
-    }
-
-    public static Entity createTitaniumCore(float x, float y) {
-        return createCurrency(CurrencyType.TITANIUM_CORE, 1, x, y);
-    }
-
-    public static Entity createNeurochip(float x, float y) {
-        return createCurrency(CurrencyType.NEUROCHIP, 1, x, y);
-    }
 }
 
 

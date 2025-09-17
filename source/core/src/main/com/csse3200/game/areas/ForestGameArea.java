@@ -32,6 +32,7 @@ import com.badlogic.gdx.graphics.Camera;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
+import com.csse3200.game.components.CameraZoomDragComponent;
 
 
 /**
@@ -48,6 +49,8 @@ public class ForestGameArea extends GameArea {
     public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
 
+    public static Difficulty gameDifficulty = Difficulty.EASY;
+
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -58,7 +61,9 @@ public class ForestGameArea extends GameArea {
             "images/boss_basic_spritesheet.atlas"
     };
 
-    private static final String[] forestSounds = {"sounds/Impact4.ogg"};
+    private static final String[] forestSounds = {
+            "sounds/homebase_hit_sound.mp3"
+    };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
@@ -72,9 +77,16 @@ public class ForestGameArea extends GameArea {
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
-            {26, 4}, {27, 4}, {28, 4}, {29, 4}, {15, 15},
-            {14, 7}, {22, 8}, {5, 24}, {12, 16}, {8, 20}
+            {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
+             {5, 24}, {8, 20},
+             // 在x<31且y>13且x<13范围内随机添加的坐标点
+             {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
+             {7, 25}, {2, 15},  {6, 29}, 
     };
+
+    // create snowtree areas - 避开路径坐标
+    private static final int[][] SNOWTREE_COORDS = new int[][]{
+            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
 
     /**
      * Initialise this ForestGameArea to use the provided TerrainFactory.
@@ -115,6 +127,11 @@ public class ForestGameArea extends GameArea {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+        // Create camera control entity for zoom and drag functionality
+        Entity cameraControl = new Entity();
+        cameraControl.addComponent(new CameraZoomDragComponent());
+        spawnEntity(cameraControl);
+
         spawnTerrain();
 
         // Only spawn new player if one doesn't already exist
@@ -141,11 +158,8 @@ public class ForestGameArea extends GameArea {
             placementController.setMapEditor(mapEditor);
         }
 
-        // 现在 mapEditor 已经存在，生成障碍并注册到 invalidTiles
-        // Now that mapEditor exists, generate barriers and register them to invalidTiles
         registerBarrierAndSpawn(BARRIER_COORDS);
-        // 注册后刷新放置控制器的禁放区缓存
-        // After registering, refresh the placement controller's invalid-area cache
+        registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
 
         // Enemies
@@ -161,7 +175,7 @@ public class ForestGameArea extends GameArea {
 
 
         // Generate biomes & placeable areas
-        mapEditor.generateBiomesAndRivers();
+        //mapEditor.generateBiomesAndRivers();
 
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
@@ -236,7 +250,7 @@ public class ForestGameArea extends GameArea {
                 GridPoint2Utils.ZERO, false, false);
     }
 
-    //注册到 MapEditor 的 invalidTiles，并在地图上生成障碍物。
+
 //Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
@@ -247,6 +261,20 @@ public class ForestGameArea extends GameArea {
         }
         if (mapEditor != null) {
             mapEditor.registerBarrierCoords(coords);
+        }
+    }
+
+    //注册雪树到 MapEditor 的 invalidTiles，并在地图上生成雪树障碍物。
+    //Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
+    private void registerSnowTreeAndSpawn(int[][] coords) {
+        if (coords == null) return;
+        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
+        for (int[] p : coords) {
+            if (p == null || p.length != 2) continue;
+            spawnEntityAt(ObstacleFactory.createSnowTree(), new GridPoint2(p[0], p[1]), true, false);
+        }
+        if (mapEditor != null) {
+            mapEditor.registerSnowTreeCoords(coords);
         }
     }
 
@@ -280,7 +308,7 @@ public class ForestGameArea extends GameArea {
     private void spawnDrones() {
         for (int i = 0; i < NUM_DRONES; i++) {
             NUM_ENEMIES_TOTAL++;
-            Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, Difficulty.HARD);
+            Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
             spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
         }
     }
@@ -288,7 +316,7 @@ public class ForestGameArea extends GameArea {
   private void spawnGrunts() {
       for (int i = 0; i < NUM_GRUNTS; i++) {
         NUM_ENEMIES_TOTAL++;
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, Difficulty.HARD);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
         spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
       }
   }
@@ -296,7 +324,7 @@ public class ForestGameArea extends GameArea {
   private void spawnTanks() {
       for (int i = 0; i < NUM_TANKS; i++) {
         NUM_ENEMIES_TOTAL++;
-        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, Difficulty.HARD);
+        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
         spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
       }
   }
@@ -304,7 +332,7 @@ public class ForestGameArea extends GameArea {
   private void spawnBosses() {
       for (int i = 0; i < NUM_BOSSES; i++) {
         NUM_ENEMIES_TOTAL++;
-        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, Difficulty.HARD);
+        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
         spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
       }
   }
@@ -312,7 +340,7 @@ public class ForestGameArea extends GameArea {
   private void spawnDividers() {
       for (int i = 0; i < NUM_DIVIDERS; i++) {
         NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL + 4;
-        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, Difficulty.HARD);
+        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
         spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
       }
   }

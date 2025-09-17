@@ -5,6 +5,8 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.badlogic.gdx.utils.TimeUtils;
 
+import java.util.Map;
+
 /**
  * Hero ultimate ability component:
  * - Triggered via button press or event.
@@ -56,7 +58,7 @@ public class HeroUltimateComponent extends Component {
         }
 
         // Attempt to spend currency
-        boolean ok = wallet.trySpendCurrency(CurrencyType.METAL_SCRAP, ULT_COST);
+        boolean ok = wallet.canAffordAndSpendCurrency(Map.of(CurrencyType.METAL_SCRAP, ULT_COST));
         if (!ok) {
             entity.getEvents().trigger("ultimate.failed", "Not enough " + CurrencyType.METAL_SCRAP);
             return;

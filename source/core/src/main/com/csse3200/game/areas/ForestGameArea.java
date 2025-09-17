@@ -147,12 +147,14 @@ public class ForestGameArea extends GameArea {
     }
     
 
-    // Spawn Enemies
-    spawnDrones();
-    spawnGrunts();
-    spawnTanks();
-    spawnBosses();
-    spawnDividers();
+    // Spawn Enemies only for new game; when continuing, enemies will be restored from save
+    if (!hasExistingPlayer) {
+      spawnDrones();
+      spawnGrunts();
+      spawnTanks();
+      spawnBosses();
+      spawnDividers();
+    }
     
     spawnTestMetalScraps();
 

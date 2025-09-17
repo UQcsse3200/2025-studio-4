@@ -9,6 +9,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,7 +274,10 @@ public class SaveGameService {
             entityService.unregister(entity);
         }
     }
-    
+
+    public void save(String leaderboard, List<LeaderboardService.LeaderboardEntry> entries) {
+    }
+
     /**
      * Data class for storing game save information
      */

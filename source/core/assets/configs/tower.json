@@ -3,28 +3,18 @@
     "damage": 5,
     "range": 3.0,
     "cooldown": 1.0,
-    "metalScrapCost": 500,
-    "projectileSpeed": 2.0,
-    "projectileLife": 1,
-    "projectileTexture": "images/towers/boneproj.png"
+    "cost": 1
   },
   "dinoTower": {
     "damage": 8,
     "range": 2.0,
     "cooldown": 0.8,
-    "metalScrapCost": 500,
-    "projectileSpeed": 2,
-    "projectileLife": 1,
-    "projectileTexture": "images/towers/projectile animations/fireballdino.png"
+    "cost": 1
   },
   "cavemenTower": {
     "damage": 3,
     "range": 5.0,
     "cooldown": 0.8,
-    "metalScrapCost": 500,
-    "projectileSpeed": 2.0,
-    "projectileLife": 4,
-    "projectileTexture": "images/towers/projectile animations/zap.png"
-
+    "cost": 1
   }
 }

@@ -1,113 +1,59 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.TowerComponent;
-import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.entities.configs.TowerConfig;
 import com.csse3200.game.components.TowerCostComponent;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Factory class for creating different types of tower entities.
+ * Loads tower stats from configuration and attaches relevant components.
  */
 public class TowerFactory {
+    /** Tower configuration loaded from JSON file. */
     private static final TowerConfig towers =
             FileLoader.readClass(TowerConfig.class, "configs/tower.json");
 
     /**
-     * Creates a Bone Tower entity with the specified currency type for cost.
-     *
-     * @param currencyType The currency type used for purchasing the tower.
-     * @return The created Bone Tower entity.
+     * Creates a Bone Tower entity with its stats and components.
+     * @return Entity representing a Bone Tower
      */
-    public static Entity createBoneTower(CurrencyType currencyType) {
+    public static Entity createBoneTower() {
         TowerConfig.TowerStats stats = towers.boneTower;
-
-        Map<CurrencyType, Integer> costMap = new HashMap<>();
-        costMap.put(currencyType, stats.metalScrapCost);
-
-        Entity base = new Entity()
-                .addComponent(new TowerComponent("bone", 2, 2))
-                .addComponent(new TowerCostComponent(costMap))
-                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
-                        stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
-                .addComponent(new TextureRenderComponent("images/towers/rock1.png"));
-
-        base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);
-
-        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent("images/bone.png");
-        Entity head = new Entity().addComponent(headRender);
-
-        base.getComponent(TowerComponent.class)
-                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
-
-        return base;
+        return new Entity()
+                .addComponent(new TowerComponent("bone", 2, 2)) // revert to 2x2
+                .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TextureRenderComponent("images/bone.png"));
     }
 
     /**
-     * Creates a Dino Tower entity with the specified currency type for cost.
-     *
-     * @param currencyType The currency type used for purchasing the tower.
-     * @return The created Dino Tower entity.
+     * Creates a Dino Tower entity with its stats and components.
+     * @return Entity representing a Dino Tower
      */
-    public static Entity createDinoTower(CurrencyType currencyType) {
+    public static Entity createDinoTower() {
         TowerConfig.TowerStats stats = towers.dinoTower;
-
-        Map<CurrencyType, Integer> costMap = new HashMap<>();
-        costMap.put(currencyType, stats.metalScrapCost);
-
-        Entity base = new Entity()
+        return new Entity()
                 .addComponent(new TowerComponent("dino", 2, 2))
-                .addComponent(new TowerCostComponent(costMap))
-                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
-                        stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
-                .addComponent(new TextureRenderComponent("images/towers/rock2.png"));
-
-        base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);
-
-        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent("images/dino.png");
-        Entity head = new Entity().addComponent(headRender);
-
-        base.getComponent(TowerComponent.class)
-                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
-
-        return base;
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
+                .addComponent(new TextureRenderComponent("images/dino.png"));
     }
 
     /**
-     * Creates a Cavemen Tower entity with the specified currency type for cost.
-     *
-     * @param currencyType The currency type used for purchasing the tower.
-     * @return The created Cavemen Tower entity.
+     * Creates a Cavemen Tower entity with its stats and components.
+     * @return Entity representing a Cavemen Tower
      */
-    public static Entity createCavemenTower(CurrencyType currencyType) {
+    public static Entity createCavemenTower() {
         TowerConfig.TowerStats stats = towers.cavemenTower;
-
-        Map<CurrencyType, Integer> costMap = new HashMap<>();
-        costMap.put(currencyType, stats.metalScrapCost);
-
-        Entity base = new Entity()
+        return new Entity()
                 .addComponent(new TowerComponent("cavemen", 2, 2))
-                .addComponent(new TowerCostComponent(costMap))
-                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
-                        stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
-                .addComponent(new TextureRenderComponent("images/towers/rock4.png"));
-
-        base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);
-
-        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent("images/cavemen.png");
-        Entity head = new Entity().addComponent(headRender);
-
-        base.getComponent(TowerComponent.class)
-                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
-
-        return base;
+                .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown))
+                .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
+                .addComponent(new TextureRenderComponent("images/cavemen.png"));
     }
 }

@@ -96,6 +96,8 @@ public class MainGameActions extends Component {
         if (success) {
           logger.info("Manual save completed successfully");
           entity.getEvents().trigger("showSaveSuccess");
+          // auto-close save UI after success
+          entity.getEvents().trigger("hideSaveUI");
         } else {
           logger.warn("Manual save failed");
           entity.getEvents().trigger("showSaveError");

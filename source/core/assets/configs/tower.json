@@ -4,27 +4,27 @@
     "range": 3.0,
     "cooldown": 1.0,
     "cost": 1,
-    "projectileSpeed": 100.0,
+    "projectileSpeed": 2.0,
     "projectileLife": 1,
-    "projectileTexture": "images/hero/Bullet.png"
+    "projectileTexture": "images/towers/boneproj.png"
   },
   "dinoTower": {
     "damage": 8,
     "range": 2.0,
     "cooldown": 0.8,
     "cost": 1,
-    "projectileSpeed": 10.0,
+    "projectileSpeed": 2,
     "projectileLife": 1,
-    "projectileTexture": "images/hero/Bullet.png"
+    "projectileTexture": "images/towers/projectile animations/fireballdino.png"
   },
   "cavemenTower": {
     "damage": 3,
     "range": 5.0,
     "cooldown": 0.8,
     "cost": 1,
-    "projectileSpeed": 1.0,
+    "projectileSpeed": 2.0,
     "projectileLife": 4,
-    "projectileTexture": "images/hero/Bullet.png"
+    "projectileTexture": "images/towers/projectile animations/zap.png"
 
   }
 }

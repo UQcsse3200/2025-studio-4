@@ -23,6 +23,7 @@ import static com.badlogic.gdx.Gdx.app;
  */
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+  public static int musicON = 0;
 
   @Override
   public void create() {

@@ -105,8 +105,12 @@ public class MainMenuScreen extends ScreenAdapter {
   }
   
   private void playMenuMusic() {
-    if (ServiceLocator.getAudioService() != null) {
-      ServiceLocator.getAudioService().playMusic("menu_bgm", true);
+    if (GdxGame.musicON == 0) {
+      if (ServiceLocator.getAudioService() != null) {
+        ServiceLocator.getAudioService().playMusic("menu_bgm", true);
+        // Set the flag to indicate music is now on
+        GdxGame.musicON = 1;
+      }
     }
   }
 

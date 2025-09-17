@@ -3,6 +3,7 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -71,6 +72,13 @@ public class SettingsMenuDisplay extends UIComponent {
     // Added: single container to keep dim behind panel but above other UI
     private Stack overlayStack;
 
+    // Added: global background music (do NOT dispose here; ResourceService or game should handle lifecycle)
+    private Music backgroundMusic;
+    private static final String MUSIC_ASSET = "sounds/new_menutheme.mp3"; // change path if needed
+
+    // Guard to avoid registering overlay listeners multiple times
+    private boolean overlayListenersAdded = false;
+
     public SettingsMenuDisplay(GdxGame game) {
         super();
         this.game = game;
@@ -89,7 +97,49 @@ public class SettingsMenuDisplay extends UIComponent {
         addActors();
     }
 
+    private void initBackgroundMusic() {
+        // Only initialize once
+        if (backgroundMusic != null) return;
+
+        // Try to get the Music from the ResourceService first (recommended)
+        try {
+            backgroundMusic =
+                    ServiceLocator.getResourceService()
+                            .getAsset(MUSIC_ASSET, Music.class);
+        } catch (Exception e) {
+            logger.debug("ResourceService did not return music asset: {}", e.toString());
+            backgroundMusic = null;
+        }
+
+        // Fallback to loading directly if ResourceService doesn't have it
+        if (backgroundMusic == null) {
+            try {
+                backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(MUSIC_ASSET));
+            } catch (Exception e) {
+                logger.warn("Failed to load background music from '{}': {}", MUSIC_ASSET, e.toString());
+                backgroundMusic = null;
+            }
+        }
+
+        // Configure and start music if available
+        if (backgroundMusic != null) {
+            backgroundMusic.setLooping(true);
+            float initial = UserSettings.get().musicVolume;
+            backgroundMusic.setVolume(initial);
+            if (!backgroundMusic.isPlaying()) {
+                try {
+                    backgroundMusic.play();
+                } catch (Exception e) {
+                    logger.warn("Failed to play background music: {}", e.toString());
+                }
+            }
+        }
+    }
+
     private void addActors() {
+        // Initialize music before creating sliders so listeners can adjust it immediately.
+        initBackgroundMusic();
+
         // Background image (only create when not overlaying in-game)
         if (!overlayMode) {
             backgroundImage =
@@ -153,12 +203,15 @@ public class SettingsMenuDisplay extends UIComponent {
             overlayStack.setVisible(false);
 
             // Events used by Pause overlay to toggle Settings overlay
-            entity.getEvents().addListener("showSettingsOverlay", () -> {
-                if (overlayStack != null) overlayStack.setVisible(true);
-            });
-            entity.getEvents().addListener("hideSettingsOverlay", () -> {
-                if (overlayStack != null) overlayStack.setVisible(false);
-            });
+            if (!overlayListenersAdded) {
+                entity.getEvents().addListener("showSettingsOverlay", () -> {
+                    if (overlayStack != null) overlayStack.setVisible(true);
+                });
+                entity.getEvents().addListener("hideSettingsOverlay", () -> {
+                    if (overlayStack != null) overlayStack.setVisible(false);
+                });
+                overlayListenersAdded = true;
+            }
 
             // Handle ESC/P while settings overlay is visible: behave like "Back"
             stage.addListener(new InputListener() {
@@ -293,15 +346,27 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
+                    // LIVE update to playing music (if available)
+                    if (backgroundMusic != null) {
+                        try {
+                            backgroundMusic.setVolume(value);
+                        } catch (Exception e) {
+                            logger.debug("Failed to set music volume: {}", e.toString());
+                        }
+                    }
                     return true;
                 });
 
-        soundVolumeSlider.addListener(
-                (Event event) -> {
-                    float value = soundVolumeSlider.getValue();
-                    soundVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    return true;
-                });
+        soundVolumeSlider.addListener(event -> {
+            float value = soundVolumeSlider.getValue();
+            soundVolumeValue.setText(String.format("%.0f%%", value * 100));
+
+            // Store globally in UserSettings
+            UserSettings.get().soundVolume = value;
+
+            return true;
+        });
+
 
         return table;
     }
@@ -338,14 +403,14 @@ public class SettingsMenuDisplay extends UIComponent {
     private Table makeMenuBtns() {
         // Create custom button style
         TextButtonStyle customButtonStyle = createCustomButtonStyle();
-        
+
         TextButton backBtn = new TextButton("Back", customButtonStyle);
         TextButton applyBtn = new TextButton("Apply", customButtonStyle);
-        
+
         // Set button size
         float buttonWidth = 150f;
         float buttonHeight = 50f;
-        
+
         backBtn.getLabel().setColor(Color.WHITE);
         applyBtn.getLabel().setColor(Color.WHITE);
 
@@ -391,14 +456,23 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.uiScale = uiScaleSlider.getValue();
         settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
         settings.vsync = vsyncCheck.isChecked();
-        
+
         // Audio settings
         settings.musicVolume = musicVolumeSlider.getValue();
         settings.soundVolume = soundVolumeSlider.getValue();
-        
+
         // Gameplay settings
         settings.difficulty = difficultySelect.getSelected();
         settings.language = languageSelect.getSelected();
+
+        // Apply music volume live and persist
+        if (backgroundMusic != null) {
+            try {
+                backgroundMusic.setVolume(settings.musicVolume);
+            } catch (Exception e) {
+                logger.debug("Failed to set background music volume on apply: {}", e.toString());
+            }
+        }
 
         UserSettings.set(settings, true);
     }
@@ -449,36 +523,36 @@ public class SettingsMenuDisplay extends UIComponent {
      */
     private TextButtonStyle createCustomButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
-        
+
         // Use Segoe UI font
         style.font = skin.getFont("segoe_ui");
-        
+
         // Load button background image
         Texture buttonTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
-        
+
         // Create NinePatch for scalable button background
         NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        
+
         // Create pressed state NinePatch (slightly darker)
         NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
         pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-        
+
         // Create hover state NinePatch (slightly brighter)
         NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
         hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
-        
+
         // Set button states
         style.up = new NinePatchDrawable(buttonPatch);
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
-        
+
         // Set font colors
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
-        
+
         return style;
     }
 
@@ -499,6 +573,8 @@ public class SettingsMenuDisplay extends UIComponent {
             panelTexHandle.dispose();
             panelTexHandle = null;
         }
+        // NOTE: We do NOT stop/dispose backgroundMusic here so music keeps playing across menus/overlays.
+        // Background music lifecycle should be handled by your ResourceService or GdxGame disposal.
         super.dispose();
     }
 }

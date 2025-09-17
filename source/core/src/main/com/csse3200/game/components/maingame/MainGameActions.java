@@ -3,13 +3,11 @@ package com.csse3200.game.components.maingame;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
-import com.csse3200.game.ui.leaderboard.LeaderboardController;
-import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
-import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
+import com.csse3200.game.ui.MockRanks;
+import com.csse3200.game.ui.PlayerRank;
+import com.csse3200.game.ui.RankingDialog;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,40 +77,13 @@ public class MainGameActions extends Component {
     
     try {
       Stage stage = ServiceLocator.getRenderService().getStage();
-      Skin skin = MinimalSkinFactory.create();
       
-      // Ensure leaderboard service is available
-      if (ServiceLocator.getLeaderboardService() == null) {
-        ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
-      }
+      // Generate mock ranking data
+      List<PlayerRank> players = MockRanks.make(30);
       
-      // Record current game pause state
-      boolean wasGamePaused = isPaused;
-      
-      LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
-      LeaderboardController controller = new LeaderboardController(leaderboardService);
-      LeaderboardPopup popup = new LeaderboardPopup(skin, controller);
-      
-      // Set close callback to restore game state
-      popup.setOnCloseCallback(() -> {
-        try {
-          // Only resume if game wasn't already paused
-          if (!wasGamePaused) {
-            onResume();
-            logger.info("Game resumed after closing leaderboard");
-          }
-        } catch (Exception e) {
-          logger.error("Error resuming game after leaderboard close", e);
-        }
-      });
-      
-      // Pause game if it wasn't already paused
-      if (!wasGamePaused) {
-        onPause();
-        logger.info("Game paused for leaderboard");
-      }
-      
-      popup.showOn(stage);
+      // Create and show RankingDialog
+      RankingDialog rankingDialog = new RankingDialog("Leaderboard", players, 12);
+      rankingDialog.show(stage);
       
     } catch (Exception e) {
       logger.error("Error showing ranking", e);

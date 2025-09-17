@@ -30,7 +30,7 @@ public class DroneEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 100;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
-    private static final int DEFAULT_POINTS = 10;
+    private static final int DEFAULT_POINTS = 100;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties (these can remain static as they're defaults)

@@ -34,7 +34,7 @@ public class DividerEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 5;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
-    private static final int DEFAULT_POINTS = 200;
+    private static final int DEFAULT_POINTS = 300;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties

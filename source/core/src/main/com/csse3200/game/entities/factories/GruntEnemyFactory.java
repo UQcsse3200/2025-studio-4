@@ -30,7 +30,7 @@ public class GruntEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
-    private static final int DEFAULT_POINTS = 50;
+    private static final int DEFAULT_POINTS = 150;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties

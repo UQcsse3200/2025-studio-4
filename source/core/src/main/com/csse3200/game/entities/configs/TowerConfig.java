@@ -23,7 +23,9 @@ public class TowerConfig {
         /** Cooldown between attacks (in seconds). */
         public float cooldown;
         /** Cost to place the tower. */
-        public int cost;
+        public int metalScrapCost;
+        public int titaniumCoreCost = 0;
+        public int neurochipCost = 0;
         /** projectile speed of tower projectile */
         public float projectileSpeed;
         /** projectile life of tower projectile */

@@ -2,20 +2,22 @@ package com.csse3200.game.components;
 
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TowerCostComponent extends Component {
-    private final CurrencyType currencyType;
-    private final int cost;
+    private final Map<CurrencyType, Integer> costMap;
 
-    public TowerCostComponent(CurrencyType currencyType, int cost) {
-        this.currencyType = currencyType;
-        this.cost = cost;
+    public TowerCostComponent(Map<CurrencyType, Integer> costMap) {
+        this.costMap = new HashMap<>(costMap);
     }
 
-    public CurrencyType getCurrencyType() {
-        return currencyType;
+    public Map<CurrencyType, Integer> getCostMap() {
+        return Collections.unmodifiableMap(costMap);
     }
 
-    public int getCost() {
-        return cost;
+    public int getCostForCurrency(CurrencyType type) {
+        return costMap.getOrDefault(type, 0);
     }
 }

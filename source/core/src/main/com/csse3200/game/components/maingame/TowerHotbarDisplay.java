@@ -45,9 +45,9 @@ public class TowerHotbarDisplay extends UIComponent {
         table.setFillParent(true);
 
         // Load button textures
-        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/dino.png")));
-        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/bone.png")));
-        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/cavemen.png")));
+        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/dinoicon.png")));
+        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/boneicon.png")));
+        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/campfireicon.png")));
 
         // Bone Tower button
         ImageButton boneBtn = new ImageButton(boneImage);

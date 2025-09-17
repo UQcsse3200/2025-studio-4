@@ -28,6 +28,10 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
+import com.badlogic.gdx.utils.Timer;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
@@ -44,10 +48,15 @@ public class ForestGameArea extends GameArea {
     private static final int NUM_DRONES = 5;
     private static final int NUM_GRUNTS = 3;
     private static final int NUM_TANKS = 2;
-    private static final int NUM_BOSSES = 0;
+    private static final int NUM_BOSSES = 1;
     private static final int NUM_DIVIDERS = 1;
     public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
+
+    private Timer.Task waveSpawnTask;
+    private List<Runnable> enemySpawnQueue;
+    private boolean waveInProgress = false;
+    private float spawnDelay = 1f; // Delay between spawns
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
@@ -108,6 +117,84 @@ public class ForestGameArea extends GameArea {
         this.hasExistingPlayer = hasExistingPlayer;
     }
 
+            /**
+         * Initialize and start the enemy wave spawning
+         */
+        private void startEnemyWave() {
+            if (waveInProgress) return;
+            
+            waveInProgress = true;
+            enemySpawnQueue = new ArrayList<>();
+            
+            buildSpawnQueue();
+            
+            scheduleNextEnemySpawn();
+        }
+
+
+        /**
+         * Build the queue of enemies to spawn in wave order
+         */
+        private void buildSpawnQueue() {
+            NUM_ENEMIES_TOTAL = (NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_BOSSES + (NUM_DIVIDERS * 4));
+            NUM_ENEMIES_DEFEATED = 0;
+            // Add drones to spawn queue
+            for (int i = 0; i < NUM_DRONES; i++) {
+                enemySpawnQueue.add(this::spawnSingleDrone);
+            }
+            
+            // Add grunts to spawn queue
+            for (int i = 0; i < NUM_GRUNTS; i++) {
+                enemySpawnQueue.add(this::spawnSingleGrunt);
+            }
+            
+            // Add tanks to spawn queue
+            for (int i = 0; i < NUM_TANKS; i++) {
+                enemySpawnQueue.add(this::spawnSingleTank);
+            }
+                        
+            // Add dividers to spawn queue
+            for (int i = 0; i < NUM_DIVIDERS; i++) {
+                enemySpawnQueue.add(this::spawnSingleDivider);
+            }
+
+            // Add bosses to spawn queue
+            for (int i = 0; i < NUM_BOSSES; i++) {
+                enemySpawnQueue.add(this::spawnSingleBoss);
+            }
+        }
+
+        /**
+         * Schedule the next enemy spawn with delay
+         */
+        private void scheduleNextEnemySpawn() {
+            if (enemySpawnQueue.isEmpty()) {
+                // Wave complete
+                waveInProgress = false;
+                return;
+            }
+            
+            // Cancel any existing spawn task
+            if (waveSpawnTask != null) {
+                waveSpawnTask.cancel();
+            }
+            
+            // Schedule next spawn
+            waveSpawnTask = Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if (!enemySpawnQueue.isEmpty()) {
+                        // Spawn the next enemy
+                        Runnable spawnAction = enemySpawnQueue.remove(0);
+                        spawnAction.run();
+                        
+                        // Schedule the next one
+                        scheduleNextEnemySpawn();
+                    }
+                }
+            }, spawnDelay);
+        }
+
 
     /**
      * Create the game area, including terrain, static entities (trees), dynamic entities (player)
@@ -162,17 +249,12 @@ public class ForestGameArea extends GameArea {
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
 
-        // Enemies
-        spawnDrones();
-
-        spawnGrunts();
-
-        spawnTanks();
-
-        spawnBosses();
-
-        spawnDividers();
-
+        Timer.schedule(new Timer.Task() {
+        @Override
+        public void run() {
+            startEnemyWave();
+            }
+        }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
@@ -305,45 +387,40 @@ public class ForestGameArea extends GameArea {
         return null;
     }
 
-    private void spawnDrones() {
-        for (int i = 0; i < NUM_DRONES; i++) {
-            NUM_ENEMIES_TOTAL++;
-            Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
-            spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
-        }
+    private void spawnSingleDrone() {
+        //NUM_ENEMIES_TOTAL++;
+        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-  private void spawnGrunts() {
-      for (int i = 0; i < NUM_GRUNTS; i++) {
-        NUM_ENEMIES_TOTAL++;
+    private void spawnSingleGrunt() {
+        //NUM_ENEMIES_TOTAL++;
         Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
         spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
-      }
-  }
+        logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    }
 
-  private void spawnTanks() {
-      for (int i = 0; i < NUM_TANKS; i++) {
-        NUM_ENEMIES_TOTAL++;
+    private void spawnSingleTank() {
+        //NUM_ENEMIES_TOTAL++;
         Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
         spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
-      }
-  }
+        logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    }
 
-  private void spawnBosses() {
-      for (int i = 0; i < NUM_BOSSES; i++) {
-        NUM_ENEMIES_TOTAL++;
+    private void spawnSingleBoss() {
+        //NUM_ENEMIES_TOTAL++;
         Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
         spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
-      }
-  }
+        logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    }
 
-  private void spawnDividers() {
-      for (int i = 0; i < NUM_DIVIDERS; i++) {
-        NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL + 4;
-        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
-        spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
-      }
-  }
+    private void spawnSingleDivider() {
+        //NUM_ENEMIES_TOTAL += 4; // Dividers count as 4 enemies
+        Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
+        spawnEntityAt(divider, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned divider. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    }
 
   public static void checkEnemyCount() {
       if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {

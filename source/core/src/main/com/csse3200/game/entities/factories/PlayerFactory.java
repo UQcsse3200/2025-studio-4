@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.HomebaseDamageEffectComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -17,6 +18,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.DamagePopupComponent;
 
 /**
  * Basement factory (renamed from PlayerFactory).
@@ -47,7 +49,9 @@ public class PlayerFactory {
             .addComponent(inputComponent)
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new CurrencyManagerComponent())
-            .addComponent(new HomebaseDamageEffectComponent());
+            .addComponent(new HomebaseDamageEffectComponent())
+            .addComponent(new DamagePopupComponent())
+            .addComponent(new HealthBarComponent());
 
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);

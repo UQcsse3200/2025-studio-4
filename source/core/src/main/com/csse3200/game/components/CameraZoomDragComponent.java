@@ -69,7 +69,7 @@ public class CameraZoomDragComponent extends InputComponent {
         }
         
         // 处理WASD键盘移动
-        handleKeyboardMovement();
+        //handleKeyboardMovement();
     }
     
     /**

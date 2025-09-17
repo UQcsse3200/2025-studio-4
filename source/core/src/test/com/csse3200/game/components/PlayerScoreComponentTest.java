@@ -41,7 +41,6 @@ public class PlayerScoreComponentTest {
         playerScoreComponent.addPoints(100);
         playerScoreComponent.addPoints(0);
         assertEquals(100, playerScoreComponent.getTotalScore());    // adding 0 to positive points
-
     }
 
     // Negative points cannot be added

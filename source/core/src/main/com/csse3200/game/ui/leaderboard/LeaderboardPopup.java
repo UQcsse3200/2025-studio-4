@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardEntry;
+import com.csse3200.game.services.ServiceLocator;
 import java.time.*;
 
 public class LeaderboardPopup extends Window {
@@ -136,6 +137,9 @@ public class LeaderboardPopup extends Window {
     }
 
     public void showOn(Stage stage) {
+        // 暂停游戏
+        ServiceLocator.getTimeSource().setTimeScale(0f);
+        
         stage.addActor(this);
         pack();
         setPosition(Math.round((stage.getWidth() - getWidth()) / 2f),
@@ -143,6 +147,9 @@ public class LeaderboardPopup extends Window {
     }
 
     public void dismiss() {
+        // 恢复游戏
+        ServiceLocator.getTimeSource().setTimeScale(1f);
+        
         addAction(Actions.sequence(
                 Actions.parallel(Actions.alpha(0f, 0.12f), Actions.scaleTo(0.98f, 0.98f, 0.12f)),
                 Actions.removeActor()

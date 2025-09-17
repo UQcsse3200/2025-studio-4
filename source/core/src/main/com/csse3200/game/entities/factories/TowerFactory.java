@@ -27,10 +27,8 @@ public class TowerFactory {
      */
     public static Entity createBoneTower() {
         TowerConfig.TowerStats stats = towers.boneTower;
-        // ... existing code ...
-        TowerComponent tower = new TowerComponent("bone", 2, 2);
         Entity base = new Entity()
-                .addComponent(tower)
+                .addComponent(new TowerComponent("bone", 2, 2))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
@@ -41,17 +39,11 @@ public class TowerFactory {
         Entity head = new Entity()
                 .addComponent(headRender);
 
-        //wire head to base
-        TowerComponent towerbase = base.getComponent(TowerComponent.class);
-        towerbase.withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+        // Wire head to base (with a tiny Y nudge so it draws above)
+        TowerComponent tower = base.getComponent(TowerComponent.class);
+        tower.withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
 
-        // Register both
-        var es = ServiceLocator.getEntityService();
-        es.register(base);
-        es.register(head);
-
-        return towerbase.getEntity();
-        // ... existing code ...
+        return base;
     }
 
     /**
@@ -60,10 +52,9 @@ public class TowerFactory {
      */
     public static Entity createDinoTower() {
         TowerConfig.TowerStats stats = towers.dinoTower;
-        // ... existing code ...
-        TowerComponent tower = new TowerComponent("dino", 2, 2);
+
         Entity base = new Entity()
-                .addComponent(tower)
+                .addComponent(new TowerComponent("dino", 2, 2))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown
                         , stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
@@ -71,20 +62,12 @@ public class TowerFactory {
 
         RotatingTextureRenderComponent headRender =
                 new RotatingTextureRenderComponent("images/dino.png");
-        Entity head = new Entity()
-                .addComponent(headRender);
+        Entity head = new Entity().addComponent(headRender);
 
-        //wire head to base
-        TowerComponent towerbase = base.getComponent(TowerComponent.class);
-        towerbase.withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+        TowerComponent tower = base.getComponent(TowerComponent.class);
+        tower.withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
 
-        // Register both
-        var es = ServiceLocator.getEntityService();
-        es.register(base);
-        es.register(head);
-
-        return towerbase.getEntity();
-        // ... existing code ...
+        return base;
     }
 
     /**
@@ -94,9 +77,8 @@ public class TowerFactory {
     public static Entity createCavemenTower() {
         TowerConfig.TowerStats stats = towers.cavemenTower;
 
-        TowerComponent tower = new TowerComponent("cavemen", 2, 2);
         Entity base = new Entity()
-                .addComponent(tower)
+                .addComponent(new TowerComponent("cavemen", 2, 2))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown
                         , stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TowerCostComponent(CurrencyComponent.CurrencyType.METAL_SCRAP, stats.cost))
@@ -107,15 +89,9 @@ public class TowerFactory {
         Entity head = new Entity()
                 .addComponent(headRender);
 
-        //wire head to base
-        TowerComponent towerbase = base.getComponent(TowerComponent.class);
-        towerbase.withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+        TowerComponent tower = base.getComponent(TowerComponent.class);
+        tower.withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
 
-// Register both
-        var es = ServiceLocator.getEntityService();
-        es.register(base);
-        es.register(head);
-
-        return towerbase.getEntity();
+        return base;
     }
 }

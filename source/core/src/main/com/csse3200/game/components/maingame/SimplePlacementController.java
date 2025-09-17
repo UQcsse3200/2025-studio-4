@@ -111,6 +111,7 @@ public class SimplePlacementController extends Component {
         TowerComponent tc = ghostTower.getComponent(TowerComponent.class);
         if (tc != null) tc.setActive(false);
 
+
         ServiceLocator.getEntityService().register(ghostTower);
         System.out.println(">>> placement ON (" + type + ")");
     }
@@ -196,8 +197,11 @@ public class SimplePlacementController extends Component {
                 newTower = TowerFactory.createBoneTower();
             }
 
+            TowerComponent tc = newTower.getComponent(TowerComponent.class);
             newTower.setPosition(snapPos);
+            tc.getHeadEntity().setPosition(snapPos.x, snapPos.y - 0.01f);
             ServiceLocator.getEntityService().register(newTower);
+            ServiceLocator.getEntityService().register(tc.getHeadEntity());
             System.out.println(">>> placed " + pendingType + " at " + snapPos);
 
             placementActive = false;

@@ -94,6 +94,9 @@ public class TowerComponent extends Component {
     /** @return whether the tower is active or not*/
     public boolean isActive() { return active; }
 
+    public Entity getHeadEntity() { return headEntity; }
+    public boolean hasHead() { return headEntity != null; }
+
 
 
     /**

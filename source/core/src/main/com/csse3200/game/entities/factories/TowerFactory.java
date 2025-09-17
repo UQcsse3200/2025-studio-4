@@ -14,19 +14,28 @@ import com.csse3200.game.components.TowerCostComponent;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Factory class for creating different types of tower entities.
+ */
 public class TowerFactory {
     private static final TowerConfig towers =
             FileLoader.readClass(TowerConfig.class, "configs/tower.json");
 
+    /**
+     * Creates a Bone Tower entity with the specified currency type for cost.
+     *
+     * @param currencyType The currency type used for purchasing the tower.
+     * @return The created Bone Tower entity.
+     */
     public static Entity createBoneTower(CurrencyType currencyType) {
         TowerConfig.TowerStats stats = towers.boneTower;
 
         Map<CurrencyType, Integer> costMap = new HashMap<>();
-        costMap.put(currencyType, stats.metalScrapCost); // wrap cost in a map
+        costMap.put(currencyType, stats.metalScrapCost);
 
         Entity base = new Entity()
                 .addComponent(new TowerComponent("bone", 2, 2))
-                .addComponent(new TowerCostComponent(costMap)) // pass map
+                .addComponent(new TowerCostComponent(costMap))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
                 .addComponent(new TextureRenderComponent("images/towers/rock1.png"));
@@ -42,6 +51,12 @@ public class TowerFactory {
         return base;
     }
 
+    /**
+     * Creates a Dino Tower entity with the specified currency type for cost.
+     *
+     * @param currencyType The currency type used for purchasing the tower.
+     * @return The created Dino Tower entity.
+     */
     public static Entity createDinoTower(CurrencyType currencyType) {
         TowerConfig.TowerStats stats = towers.dinoTower;
 
@@ -66,6 +81,12 @@ public class TowerFactory {
         return base;
     }
 
+    /**
+     * Creates a Cavemen Tower entity with the specified currency type for cost.
+     *
+     * @param currencyType The currency type used for purchasing the tower.
+     * @return The created Cavemen Tower entity.
+     */
     public static Entity createCavemenTower(CurrencyType currencyType) {
         TowerConfig.TowerStats stats = towers.cavemenTower;
 

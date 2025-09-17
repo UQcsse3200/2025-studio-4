@@ -118,7 +118,8 @@ public class TowerHotbarDisplay extends UIComponent {
      * @param batch sprite batch (unused)
      */
     @Override
-    public void draw(SpriteBatch batch) { /* stage draws */ }
+    public void draw(SpriteBatch batch) {
+    }
 
     /**
      * Disposes of UI elements when no longer needed.

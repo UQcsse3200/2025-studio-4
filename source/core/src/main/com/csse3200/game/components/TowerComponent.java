@@ -18,7 +18,6 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,130 +40,339 @@ public class TowerComponent extends Component {
 
     private boolean selected = false;
 
-    /** Constructs a single-tile tower */
-    public TowerComponent(String type) {
+    /**
+     * Constructs a single-tile tower.
+     *
+     * @param type The type of the tower.
+     */
+    public TowerComponent(String type)
+    {
         this(type, 1, 1);
     }
 
-    /** Constructs a multi-tile tower */
-    public TowerComponent(String type, int width, int height) {
+    /**
+     * Constructs a multi-tile tower.
+     *
+     * @param type The type of the tower.
+     * @param width The width of the tower in tiles.
+     * @param height The height of the tower in tiles.
+     */
+    public TowerComponent(String type, int width, int height)
+    {
         this.type = type;
         this.width = width;
         this.height = height;
     }
 
-    public TowerComponent withHead(Entity head, RotatingTextureRenderComponent headRender, Vector2 offset, float zNudge) {
+    /**
+     * Attaches a head entity and renderer to this tower.
+     *
+     * @param head The head entity.
+     * @param headRender The head's renderer.
+     * @param offset The offset for the head's position.
+     * @param zNudge The z-axis nudge for rendering.
+     * @return This TowerComponent for chaining.
+     */
+    public TowerComponent withHead(Entity head, RotatingTextureRenderComponent headRender, Vector2 offset, float zNudge)
+    {
         this.headEntity = head;
         this.headRenderer = headRender;
-        if (offset != null) this.headOffset.set(offset);
-        if (zNudge > 0f) this.zNudge = zNudge;
+        if (offset != null)
+        {
+            this.headOffset.set(offset);
+        }
+        if (zNudge > 0f)
+        {
+            this.zNudge = zNudge;
+        }
         return this;
     }
 
-    public String getType() { return type; }
-    public int getWidth() { return width; }
-    public int getHeight() { return height; }
+    /**
+     * Gets the type of the tower.
+     *
+     * @return The tower type.
+     */
+    public String getType()
+    {
+        return type;
+    }
 
-    public void setSelectedPurchaseCurrency(CurrencyType currencyType) {
+    /**
+     * Gets the width of the tower in tiles.
+     *
+     * @return The tower width.
+     */
+    public int getWidth()
+    {
+        return width;
+    }
+
+    /**
+     * Gets the height of the tower in tiles.
+     *
+     * @return The tower height.
+     */
+    public int getHeight()
+    {
+        return height;
+    }
+
+    /**
+     * Sets the selected purchase currency for this tower.
+     *
+     * @param currencyType The currency type to set.
+     */
+    public void setSelectedPurchaseCurrency(CurrencyType currencyType)
+    {
         this.selectedPurchaseCurrency = currencyType;
     }
-    public CurrencyType getSelectedPurchaseCurrency() { return selectedPurchaseCurrency; }
 
-    public TowerComponent setActive(boolean v) { this.active = v; return this; }
-    public boolean isActive() { return active; }
+    /**
+     * Gets the selected purchase currency for this tower.
+     *
+     * @return The selected currency type.
+     */
+    public CurrencyType getSelectedPurchaseCurrency()
+    {
+        return selectedPurchaseCurrency;
+    }
 
-    public boolean isSelected() { return selected; }
-    public void setSelected(boolean selected) { this.selected = selected; }
+    /**
+     * Sets whether this tower is active.
+     *
+     * @param v True to activate, false to deactivate.
+     * @return This TowerComponent for chaining.
+     */
+    public TowerComponent setActive(boolean v)
+    {
+        this.active = v;
+        return this;
+    }
 
-    public Entity getHeadEntity() { return headEntity; }
-    public boolean hasHead() { return headEntity != null; }
+    /**
+     * Checks if this tower is active.
+     *
+     * @return True if active, false otherwise.
+     */
+    public boolean isActive()
+    {
+        return active;
+    }
 
-    /** Can the player afford this tower with selected currency */
-    public boolean canAffordWithSelectedCurrency(CurrencyManagerComponent playerCurrencyManager) {
+    /**
+     * Checks if this tower is currently selected.
+     *
+     * @return True if selected, false otherwise.
+     */
+    public boolean isSelected()
+    {
+        return selected;
+    }
+
+    /**
+     * Sets whether this tower is selected.
+     *
+     * @param selected True if selected, false otherwise.
+     */
+    public void setSelected(boolean selected)
+    {
+        this.selected = selected;
+    }
+
+    /**
+     * Gets the head entity attached to this tower.
+     *
+     * @return The head entity, or null if none.
+     */
+    public Entity getHeadEntity()
+    {
+        return headEntity;
+    }
+
+    /**
+     * Checks if this tower has a head entity.
+     *
+     * @return True if a head entity is attached, false otherwise.
+     */
+    public boolean hasHead()
+    {
+        return headEntity != null;
+    }
+
+    /**
+     * Checks if the player can afford this tower with the selected currency.
+     *
+     * @param playerCurrencyManager The player's currency manager.
+     * @return True if affordable, false otherwise.
+     */
+    public boolean canAffordWithSelectedCurrency(CurrencyManagerComponent playerCurrencyManager)
+    {
         TowerCostComponent costComponent = entity.getComponent(TowerCostComponent.class);
-        if (costComponent == null) return false;
+        if (costComponent == null)
+        {
+            return false;
+        }
         int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
         return playerCurrencyManager.canAffordAndSpendSingleCurrency(selectedPurchaseCurrency, cost);
     }
 
-    /** Checks if an entity is a valid enemy target */
-    private static boolean isEnemyTarget(Entity e) {
-        if (e.getComponent(ProjectileComponent.class) != null) return false;
-        if (e.getComponent(CombatStatsComponent.class) == null) return false;
+    /**
+     * Checks if an entity is a valid enemy target.
+     *
+     * @param e The entity to check.
+     * @return True if the entity is a valid enemy target, false otherwise.
+     */
+    private static boolean isEnemyTarget(Entity e)
+    {
+        if (e.getComponent(ProjectileComponent.class) != null)
+        {
+            return false;
+        }
+        if (e.getComponent(CombatStatsComponent.class) == null)
+        {
+            return false;
+        }
 
         HitboxComponent hb = e.getComponent(HitboxComponent.class);
-        if (hb == null || hb.getFixture() == null || hb.getFixture().getFilterData() == null) return false;
+        if (hb == null || hb.getFixture() == null || hb.getFixture().getFilterData() == null)
+        {
+            return false;
+        }
         short cat = hb.getFixture().getFilterData().categoryBits;
         return PhysicsLayer.contains(PhysicsLayer.NPC, cat);
     }
 
-    private Entity findPlayerEntity(java.util.List<Entity> entities) {
-        for (Entity e : entities) {
-            if (e.getComponent(CurrencyManagerComponent.class) != null) return e;
+    /**
+     * Finds the player entity from a list of entities.
+     *
+     * @param entities The list of entities.
+     * @return The player entity, or null if not found.
+     */
+    private Entity findPlayerEntity(java.util.List<Entity> entities)
+    {
+        for (Entity e : entities)
+        {
+            if (e.getComponent(CurrencyManagerComponent.class) != null)
+            {
+                return e;
+            }
         }
         return null;
     }
 
-    private com.badlogic.gdx.graphics.Camera getCamera() {
+    /**
+     * Gets the current camera from the renderer.
+     *
+     * @return The camera, or null if not found.
+     */
+    private com.badlogic.gdx.graphics.Camera getCamera()
+    {
         Renderer renderer = Renderer.getCurrentRenderer();
-        if (renderer != null && renderer.getCamera() != null) {
+        if (renderer != null && renderer.getCamera() != null)
+        {
             return renderer.getCamera().getCamera();
         }
         return null;
     }
 
-    private void sellTower(java.util.List<Entity> entities) {
+    /**
+     * Sells this tower, refunding a portion of its cost to the player.
+     *
+     * @param entities The list of entities to search for the player.
+     */
+    private void sellTower(java.util.List<Entity> entities)
+    {
         TowerCostComponent costComponent = entity.getComponent(TowerCostComponent.class);
-        if (costComponent == null) return;
+        if (costComponent == null)
+        {
+            return;
+        }
         float refundRate = 0.75f;
         Entity player = findPlayerEntity(entities);
-        if (player == null) return;
+        if (player == null)
+        {
+            return;
+        }
         CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-        if (currencyManager == null) return;
+        if (currencyManager == null)
+        {
+            return;
+        }
         int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
-        if (cost > 0) currencyManager.refundSingleCurrency(selectedPurchaseCurrency, cost, refundRate);
+        if (cost > 0)
+        {
+            currencyManager.refundSingleCurrency(selectedPurchaseCurrency, cost, refundRate);
+        }
         entity.dispose();
     }
 
+    /**
+     * Updates the tower logic, including attacking and selection/sell logic.
+     */
     @Override
-    public void update() {
-        if (!active) return;
+    public void update()
+    {
+        if (!active)
+        {
+            return;
+        }
 
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
-        if (stats == null) return;
+        if (stats == null)
+        {
+            return;
+        }
 
         // Update attack timer
         float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
         stats.updateAttackTimer(dt);
 
         // Rotate head toward target and shoot projectile if available
-        if (headEntity != null) headEntity.setPosition(
+        if (headEntity != null)
+        {
+            headEntity.setPosition(
                 entity.getPosition().x + headOffset.x, entity.getPosition().y + headOffset.y - zNudge
-        );
+            );
+        }
 
-        if (stats.canAttack()) {
+        if (stats.canAttack())
+        {
             Vector2 myCenter = entity.getCenterPosition();
             Entity target = null;
             float range = stats.getRange();
 
-            for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
-                if (other == entity || !isEnemyTarget(other)) continue;
+            for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy())
+            {
+                if (other == entity || !isEnemyTarget(other))
+                {
+                    continue;
+                }
 
                 CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
-                if (targetStats == null) continue;
+                if (targetStats == null)
+                {
+                    continue;
+                }
 
                 Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
-                if (toOther.len() <= range) {
+                if (toOther.len() <= range)
+                {
                     target = other;
                     break;
                 }
             }
 
-            if (target != null) {
+            if (target != null)
+            {
                 Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
-                if (!dir.isZero(0.0001f)) {
+                if (!dir.isZero(0.0001f))
+                {
                     dir.nor();
-                    if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
+                    if (headRenderer != null)
+                    {
+                        headRenderer.setRotation(dir.angleDeg());
+                    }
 
                     // Fire projectile
                     float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
@@ -174,7 +382,10 @@ public class TowerComponent extends Component {
 
                     Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
                     var es = ServiceLocator.getEntityService();
-                    if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
+                    if (es != null)
+                    {
+                        Gdx.app.postRunnable(() -> es.register(bullet));
+                    }
                 }
                 stats.resetAttackTimer();
             }
@@ -182,26 +393,36 @@ public class TowerComponent extends Component {
 
         // --- SELL / SELECTION LOGIC ---
         java.util.List<Entity> entities = new java.util.ArrayList<>();
-        for (Entity e : ServiceLocator.getEntityService().getEntitiesCopy()) entities.add(e);
+        for (Entity e : ServiceLocator.getEntityService().getEntitiesCopy())
+        {
+            entities.add(e);
+        }
 
-        if (isSelected()) {
-            if (!showSellButton) {
+        if (isSelected())
+        {
+            if (!showSellButton)
+            {
                 showSellButton = true;
                 System.out.println("[Tower] Sell button shown for " + type + " tower at " + entity.getPosition());
             }
-            if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT))
+            {
                 sellTower(entities);
                 showSellButton = false;
             }
-        } else if (showSellButton) {
+        }
+        else if (showSellButton)
+        {
             showSellButton = false;
             System.out.println("[Tower] Sell button hidden for " + type + " tower at " + entity.getPosition());
         }
 
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
+        {
             Vector3 worldClickPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             com.badlogic.gdx.graphics.Camera camera = getCamera();
-            if (camera != null) {
+            if (camera != null)
+            {
                 camera.unproject(worldClickPos);
                 Vector2 towerPos = entity.getPosition();
                 float clickRadius = 1.0f;

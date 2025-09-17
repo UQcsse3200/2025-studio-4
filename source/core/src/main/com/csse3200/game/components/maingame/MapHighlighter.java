@@ -31,6 +31,13 @@ public class MapHighlighter extends UIComponent {
     private final TowerFactory towerFactory;
     private Entity selectedTower = null; // currently selected tower
 
+    /**
+     * Constructs a MapHighlighter for the given terrain and placement controller.
+     *
+     * @param terrain the terrain component
+     * @param placementController the placement controller
+     * @param towerFactory the tower factory
+     */
     public MapHighlighter(TerrainComponent terrain,
                           SimplePlacementController placementController,
                           TowerFactory towerFactory) {
@@ -40,6 +47,9 @@ public class MapHighlighter extends UIComponent {
         this.towerFactory = towerFactory;
     }
 
+    /**
+     * Updates the highlighter, handling tower selection on mouse click.
+     */
     @Override
     public void update() {
         if (Gdx.input.justTouched()) {
@@ -64,6 +74,11 @@ public class MapHighlighter extends UIComponent {
         }
     }
 
+    /**
+     * Gets the world position of the last mouse click.
+     *
+     * @return the world position as a Vector2, or null if camera not found
+     */
     private Vector2 getWorldClickPosition() {
         Camera camera = null;
         Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
@@ -81,6 +96,11 @@ public class MapHighlighter extends UIComponent {
         return new Vector2(screenPos.x, screenPos.y);
     }
 
+    /**
+     * Draws the grid overlay and tower range highlights.
+     *
+     * @param batch the sprite batch
+     */
     @Override
     public void draw(SpriteBatch batch) {
         boolean showGrid = placementController != null && placementController.isPlacementActive();
@@ -98,6 +118,9 @@ public class MapHighlighter extends UIComponent {
         batch.begin();
     }
 
+    /**
+     * Draws the grid and preview for tower placement.
+     */
     private void drawGridAndPreview() {
         GridPoint2 mapBounds = terrain.getMapBounds(0);
         float tileSize = terrain.getTileSize();
@@ -163,6 +186,9 @@ public class MapHighlighter extends UIComponent {
         shapeRenderer.end();
     }
 
+    /**
+     * Draws the attack range of the currently selected tower.
+     */
     private void drawSelectedTowerRange() {
         if (selectedTower == null) return;
 
@@ -182,6 +208,14 @@ public class MapHighlighter extends UIComponent {
         shapeRenderer.end();
     }
 
+    /**
+     * Checks if a tile is free for tower placement.
+     *
+     * @param tileX the x coordinate of the tile
+     * @param tileY the y coordinate of the tile
+     * @param entities the list of entities
+     * @return true if the tile is free, false otherwise
+     */
     private boolean isTileFree(int tileX, int tileY, Array<Entity> entities) {
         if (entities == null) return true;
 
@@ -220,6 +254,9 @@ public class MapHighlighter extends UIComponent {
         return true;
     }
 
+    /**
+     * Disposes of the shape renderer when no longer needed.
+     */
     @Override
     public void dispose() {
         shapeRenderer.dispose();

@@ -19,16 +19,17 @@ import java.util.*;
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
     private List<Entity> currencyEntityList = new ArrayList<>();
-    
+
     /**
      * Define initial values for each currency type at game start.
      */
     @Override
     public void create() {
+        currencies.clear(); // Ensure no leftover values from previous runs/tests
         this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
-        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 0);
-        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 1000);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 300);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 50);
         this.updateAllCurrencyUI();
     }
 
@@ -142,7 +143,7 @@ public class CurrencyManagerComponent extends Component {
         });
     }
 
-     /**
+    /**
      * Checks if the player has enough currency to cover the specified cost,
      * and if so, deducts the amount and returns true. Otherwise, returns false
      * and does not deduct anything.
@@ -182,5 +183,34 @@ public class CurrencyManagerComponent extends Component {
             this.addCurrencyAmount(type, (int) (value * refundRate));
             this.updateCurrencyUI(type);
         });
+    }
+
+    /**
+     * Checks if the player has enough of a single currency to cover the specified cost,
+     * and if so, deducts the amount and returns true. Otherwise, returns false.
+     *
+     * @param type the currency type to use
+     * @param cost the cost in that currency
+     * @return true if the player can afford and the currency is deducted, false otherwise
+     */
+    public boolean canAffordAndSpendSingleCurrency(CurrencyType type, int cost) {
+        if (cost > this.getCurrencyAmount(type)) {
+            return false;
+        }
+        this.subtractCurrencyAmount(type, cost);
+        this.updateCurrencyUI(type);
+        return true;
+    }
+
+    /**
+     * Refunds a portion of the cost in a single currency.
+     *
+     * @param type the currency type to refund
+     * @param cost the original cost
+     * @param refundRate the refund rate (e.g., 0.75f)
+     */
+    public void refundSingleCurrency(CurrencyType type, int cost, float refundRate) {
+        this.addCurrencyAmount(type, (int) (cost * refundRate));
+        this.updateCurrencyUI(type);
     }
 }

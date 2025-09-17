@@ -72,37 +72,44 @@ public class HeroUpgradeWalletIntegrationTest {
     }
 
     @Test
-    void firstUpgradeSucceeds_secondUpgradeFails_dueToInsufficientFunds() {
-        // Arrange
+    void twoUpgradesSucceed_withSufficientFunds() {
         CurrencyManagerComponent wallet = new CurrencyManagerComponent();
-        Entity player = makePlayerWithRealWallet(wallet); // METAL_SCRAP = 500
+        Entity player = makePlayerWithRealWallet(wallet);
+
         HeroUpgradeComponent upgrade = new HeroUpgradeComponent();
         CombatStatsComponent stats = stats(100, 20);
         Entity hero = makeHeroAttachedToPlayer(player, stats, upgrade);
 
-        AtomicInteger upgradeCount = new AtomicInteger();
+        AtomicInteger upgradedCount = new AtomicInteger();
         AtomicBoolean failed = new AtomicBoolean(false);
-        hero.getEvents().addListener("upgraded", (Integer level, CurrencyType type, Integer cost) -> upgradeCount.incrementAndGet());
+        hero.getEvents().addListener("upgraded", (Integer level, CurrencyType type, Integer cost) -> upgradedCount.incrementAndGet());
         hero.getEvents().addListener("upgradeFailed", (String msg) -> failed.set(true));
 
-        int atk0 = stats.getBaseAttack(); // 20
-        int hp0 = stats.getHealth();     // 100
+        int initBalance = wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP);
+        int atk0 = stats.getBaseAttack();
+        int hp0  = stats.getHealth();
 
-        // Act1: 1 -> 2 (cost = 400)
+        final int costL2 = 400;
+        final int costL3 = 600;
+
         hero.getEvents().trigger("requestUpgrade", player);
-        assertEquals(100, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP));
+        assertFalse(failed.get(), "First upgrade should succeed");
+        assertEquals(2, upgrade.getLevel());
+        assertEquals(initBalance - costL2, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP));
         assertEquals(atk0 + 10, stats.getBaseAttack());
-        assertEquals(hp0 + 20, stats.getHealth());
-        assertEquals(2, upgrade.getLevel());
-        assertEquals(1, upgradeCount.get());
+        assertEquals(hp0 + 20,  stats.getHealth());
+        assertEquals(1, upgradedCount.get());
 
-        failed.set(false);
+
         hero.getEvents().trigger("requestUpgrade", player);
-
-        assertTrue(failed.get(), "Second upgrade should fail due to insufficient funds");
-        assertEquals(100, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP));
-        assertEquals(2, upgrade.getLevel());
+        assertFalse(failed.get(), "Second upgrade should also succeed with enough funds");
+        assertEquals(3, upgrade.getLevel());
+        assertEquals(initBalance - costL2 - costL3, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP));
+        assertEquals(atk0 + 20, stats.getBaseAttack());
+        assertEquals(hp0 + 40,  stats.getHealth());
+        assertEquals(2, upgradedCount.get());
     }
+
 
     @Test
     void atMaxLevel_thirdUpgradeShouldFail_withMockWalletAlwaysAffordable() {
@@ -138,11 +145,11 @@ public class HeroUpgradeWalletIntegrationTest {
 
     @Test
     void upgradeWhenNotEnoughFunds_shouldNotDeductAndShouldFailEvent() {
-        // Arrange
         CurrencyManagerComponent wallet = new CurrencyManagerComponent();
-        Entity player = makePlayerWithRealWallet(wallet); // initial 500
-        // Empty wallet: spend all 500
-        assertTrue(spend(wallet, CurrencyType.METAL_SCRAP, 500));
+        Entity player = makePlayerWithRealWallet(wallet);
+        int initBalance = wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP);
+
+        assertTrue(spend(wallet, CurrencyType.METAL_SCRAP, initBalance));
         assertEquals(0, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP));
 
         HeroUpgradeComponent upgrade = new HeroUpgradeComponent();
@@ -157,14 +164,14 @@ public class HeroUpgradeWalletIntegrationTest {
 
         int before = wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP);
 
-        // Act: attempt upgrade without enough funds (cost = 400)
+        // Act: attempt upgrade without enough funds
         hero.getEvents().trigger("requestUpgrade", player);
 
         // Assert
         assertTrue(failed.get());
         assertNotNull(reason[0]);
         assertTrue(reason[0].toLowerCase().contains("not enough"));
-        assertEquals(before, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP)); // No deduction
+        assertEquals(before, wallet.getCurrencyAmount(CurrencyType.METAL_SCRAP));
         assertEquals(1, upgrade.getLevel()); // Level unchanged
     }
 }

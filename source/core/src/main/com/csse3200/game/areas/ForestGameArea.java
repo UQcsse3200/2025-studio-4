@@ -479,7 +479,14 @@ public class ForestGameArea extends GameArea {
             up.attachPlayer(player);
         }
 
+        // 左键点击英雄 -> 打开数值/升级界面
+        hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
         spawnEntityAt(hero, cell, true, true);
+
+        // 放置完成后提示：按 1/2/3 切换武器
+        com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
+        com.csse3200.game.ui.HintToast.show(stage, "英雄已放置：按 1/2/3 切换武器", 3f);
     }
 
     private void playMusic() {

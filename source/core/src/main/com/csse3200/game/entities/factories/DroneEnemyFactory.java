@@ -50,6 +50,7 @@ public class DroneEnemyFactory {
 
         drone
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new clickable(clickRadius));
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));

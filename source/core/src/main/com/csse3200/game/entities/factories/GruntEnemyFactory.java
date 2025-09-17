@@ -49,6 +49,7 @@ public class GruntEnemyFactory {
         "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f);
         grunt
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new clickable(clickRadius));
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));

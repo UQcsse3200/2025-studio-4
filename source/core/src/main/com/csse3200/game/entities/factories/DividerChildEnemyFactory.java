@@ -51,6 +51,7 @@ public class DividerChildEnemyFactory {
 
         DividerChild
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new clickable(clickRadius));
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));

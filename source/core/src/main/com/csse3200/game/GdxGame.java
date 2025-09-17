@@ -9,6 +9,8 @@ import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
 import com.csse3200.game.screens.OpeningCutsceneScreen;
+import com.csse3200.game.services.AudioService;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +28,17 @@ public class GdxGame extends Game {
   public void create() {
     logger.info("Creating game");
     loadSettings();
+    initializeAudioService();
 
     // Sets background to light yellow
     Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
 
     setScreen(ScreenType.OPENING_CUTSCENE);
+  }
+
+  private void initializeAudioService() {
+    AudioService audioService = new AudioService();
+    ServiceLocator.registerAudioService(audioService);
   }
 
   /**

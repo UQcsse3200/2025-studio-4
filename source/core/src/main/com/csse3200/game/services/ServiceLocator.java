@@ -25,6 +25,7 @@ public class ServiceLocator {
   private static InputService inputService;
   private static ResourceService resourceService;
   private static GdxGame gameService;
+  private static AudioService audioService;
 
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
@@ -54,6 +55,10 @@ public class ServiceLocator {
 
   public static GdxGame getGameService() {
     return gameService;
+  }
+
+  public static AudioService getAudioService() {
+    return audioService;
   }
 
   public static void registerEntityService(EntityService service) {
@@ -101,6 +106,11 @@ public class ServiceLocator {
     gameService = source;
   }
 
+  public static void registerAudioService(AudioService source) {
+    logger.debug("Registering audio service {}", source);
+    audioService = source;
+  }
+
   public static void clear() {
     entityService = null;
     renderService = null;
@@ -109,6 +119,7 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
+    audioService = null;
     leaderboardService = null;
   }
 

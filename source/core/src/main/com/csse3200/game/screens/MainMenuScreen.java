@@ -14,6 +14,7 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.AudioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,10 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/main_menu_background.png",
     "images/Main_Menu_Button_Background.png"
   };
+  
+  private static final String[] mainMenuMusic = {
+    "sounds/BGM_03_mp3.mp3"
+  };
 
 
   public MainMenuScreen(GdxGame game) {
@@ -38,11 +43,17 @@ public class MainMenuScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+    
+    if (ServiceLocator.getAudioService() == null) {
+      ServiceLocator.registerAudioService(new AudioService());
+    }
 
     renderer = RenderFactory.createRenderer();
 
     loadAssets();
+    registerAudioAssets();
     createUI();
+    playMenuMusic();
   }
 
   @Override
@@ -83,7 +94,20 @@ public class MainMenuScreen extends ScreenAdapter {
     logger.debug("Loading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.loadTextures(mainMenuTextures);
+    resourceService.loadMusic(mainMenuMusic);
     ServiceLocator.getResourceService().loadAll();
+  }
+  
+  private void registerAudioAssets() {
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/BGM_03_mp3.mp3");
+    }
+  }
+  
+  private void playMenuMusic() {
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().playMusic("menu_bgm", true);
+    }
   }
 
   private void unloadAssets() {

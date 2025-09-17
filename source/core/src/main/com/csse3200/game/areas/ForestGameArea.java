@@ -117,6 +117,7 @@ public class ForestGameArea extends GameArea {
   public void create() {
     // Load assets (textures, sounds, etc.) before creating anything that needs them
     loadAssets();
+    registerAudioAssets();
 
     // Set up the UI display for the game area
     displayUI();
@@ -177,7 +178,20 @@ public class ForestGameArea extends GameArea {
     Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
     spawnEntity(placement);
 
-    playMusic();
+    playBackgroundMusic();
+  }
+
+  private void registerAudioAssets() {
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
+      ServiceLocator.getAudioService().registerSound("impact", "sounds/Impact4.ogg");
+    }
+  }
+
+  private void playBackgroundMusic() {
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+    }
   }
 
   private void displayUI() {

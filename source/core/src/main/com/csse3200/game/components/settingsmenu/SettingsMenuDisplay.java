@@ -293,6 +293,9 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
+                    if (ServiceLocator.getAudioService() != null) {
+                        ServiceLocator.getAudioService().setMusicVolume(value);
+                    }
                     return true;
                 });
 
@@ -300,6 +303,9 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = soundVolumeSlider.getValue();
                     soundVolumeValue.setText(String.format("%.0f%%", value * 100));
+                    if (ServiceLocator.getAudioService() != null) {
+                        ServiceLocator.getAudioService().setSoundVolume(value);
+                    }
                     return true;
                 });
 
@@ -401,6 +407,10 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.language = languageSelect.getSelected();
 
         UserSettings.set(settings, true);
+        
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().updateSettings();
+        }
     }
 
     private void exitMenu() {

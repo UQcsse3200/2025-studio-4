@@ -91,8 +91,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TowerFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">Factory class for creating different types of tower entities.
- Loads tower stats from configuration and attaches relevant components.</div>
+<div class="block">Factory class for creating different types of tower entities.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -121,19 +120,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBoneTower()" class="member-name-link">createBoneTower</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBoneTower(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">createBoneTower</a><wbr>(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a Bone Tower entity with its stats and components.</div>
+<div class="block">Creates a Bone Tower entity with the specified currency type for cost.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCavemenTower()" class="member-name-link">createCavemenTower</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCavemenTower(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">createCavemenTower</a><wbr>(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a Cavemen Tower entity with its stats and components.</div>
+<div class="block">Creates a Cavemen Tower entity with the specified currency type for cost.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDinoTower()" class="member-name-link">createDinoTower</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDinoTower(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">createDinoTower</a><wbr>(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a Dino Tower entity with its stats and components.</div>
+<div class="block">Creates a Dino Tower entity with the specified currency type for cost.</div>
 </div>
 </div>
 </div>
@@ -167,35 +166,41 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createBoneTower()">
+<section class="detail" id="createBoneTower(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)">
 <h3>createBoneTower</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBoneTower</span>()</div>
-<div class="block">Creates a Bone Tower entity with its stats and components.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBoneTower</span><wbr><span class="parameters">(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</span></div>
+<div class="block">Creates a Bone Tower entity with the specified currency type for cost.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>currencyType</code> - The currency type used for purchasing the tower.</dd>
 <dt>Returns:</dt>
-<dd>Entity representing a Bone Tower</dd>
+<dd>The created Bone Tower entity.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createDinoTower()">
+<section class="detail" id="createDinoTower(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)">
 <h3>createDinoTower</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDinoTower</span>()</div>
-<div class="block">Creates a Dino Tower entity with its stats and components.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDinoTower</span><wbr><span class="parameters">(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</span></div>
+<div class="block">Creates a Dino Tower entity with the specified currency type for cost.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>currencyType</code> - The currency type used for purchasing the tower.</dd>
 <dt>Returns:</dt>
-<dd>Entity representing a Dino Tower</dd>
+<dd>The created Dino Tower entity.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="createCavemenTower()">
+<section class="detail" id="createCavemenTower(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)">
 <h3>createCavemenTower</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCavemenTower</span>()</div>
-<div class="block">Creates a Cavemen Tower entity with its stats and components.</div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCavemenTower</span><wbr><span class="parameters">(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</span></div>
+<div class="block">Creates a Cavemen Tower entity with the specified currency type for cost.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>currencyType</code> - The currency type used for purchasing the tower.</dd>
 <dt>Returns:</dt>
-<dd>Entity representing a Cavemen Tower</dd>
+<dd>The created Cavemen Tower entity.</dd>
 </dl>
 </section>
 </li>

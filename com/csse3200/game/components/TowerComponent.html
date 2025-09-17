@@ -94,7 +94,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TowerComponent</span>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Component representing a tower entity, including its type and size.
- Handles tower attack logic in the update method.</div>
+ Handles tower attack logic, sell logic, and tower selection.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -117,13 +117,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String)" class="member-name-link">TowerComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs a single-tile tower component.</div>
+<div class="block">Constructs a single-tile tower.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.lang.String,int,int)" class="member-name-link">TowerComponent</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
  int&nbsp;width,
  int&nbsp;height)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Constructs a multi-tile tower component.</div>
+<div class="block">Constructs a multi-tile tower.</div>
 </div>
 </div>
 </section>
@@ -139,19 +139,78 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canAffordWithSelectedCurrency(com.csse3200.game.components.currencysystem.CurrencyManagerComponent)" class="member-name-link">canAffordWithSelectedCurrency</a><wbr>(<a href="currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a>&nbsp;playerCurrencyManager)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if the player can afford this tower with the selected currency.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeadEntity()" class="member-name-link">getHeadEntity</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the head entity attached to this tower.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeight()" class="member-name-link">getHeight</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWidth()" class="member-name-link">getWidth</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the height of the tower in tiles.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSelectedPurchaseCurrency()" class="member-name-link">getSelectedPurchaseCurrency</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates the tower logic, including attack timer and attacking entities in range.</div>
+<div class="block">Gets the selected purchase currency for this tower.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getType()" class="member-name-link">getType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the type of the tower.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWidth()" class="member-name-link">getWidth</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the width of the tower in tiles.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasHead()" class="member-name-link">hasHead</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if this tower has a head entity.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive()" class="member-name-link">isActive</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if this tower is active.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSelected()" class="member-name-link">isSelected</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if this tower is currently selected.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TowerComponent.html" title="class in com.csse3200.game.components">TowerComponent</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setActive(boolean)" class="member-name-link">setActive</a><wbr>(boolean&nbsp;v)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets whether this tower is active.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelected(boolean)" class="member-name-link">setSelected</a><wbr>(boolean&nbsp;selected)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets whether this tower is selected.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelectedPurchaseCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">setSelectedPurchaseCurrency</a><wbr>(<a href="currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the selected purchase currency for this tower.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Updates the tower logic, including attacking and selection/sell logic.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TowerComponent.html" title="class in com.csse3200.game.components">TowerComponent</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withHead(com.csse3200.game.entities.Entity,com.csse3200.game.rendering.RotatingTextureRenderComponent,com.badlogic.gdx.math.Vector2,float)" class="member-name-link">withHead</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;head,
+ <a href="../rendering/RotatingTextureRenderComponent.html" title="class in com.csse3200.game.rendering">RotatingTextureRenderComponent</a>&nbsp;headRender,
+ com.badlogic.gdx.math.Vector2&nbsp;offset,
+ float&nbsp;zNudge)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attaches a head entity and renderer to this tower.</div>
 </div>
 </div>
 </div>
@@ -177,10 +236,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(java.lang.String)">
 <h3>TowerComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TowerComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type)</span></div>
-<div class="block">Constructs a single-tile tower component.</div>
+<div class="block">Constructs a single-tile tower.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>type</code> - The type of the tower</dd>
+<dd><code>type</code> - The type of the tower.</dd>
 </dl>
 </section>
 </li>
@@ -190,12 +249,12 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TowerComponent</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;type,
  int&nbsp;width,
  int&nbsp;height)</span></div>
-<div class="block">Constructs a multi-tile tower component.</div>
+<div class="block">Constructs a multi-tile tower.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>type</code> - The type of the tower</dd>
-<dd><code>width</code> - Width in tiles</dd>
-<dd><code>height</code> - Height in tiles</dd>
+<dd><code>type</code> - The type of the tower.</dd>
+<dd><code>width</code> - The width of the tower in tiles.</dd>
+<dd><code>height</code> - The height of the tower in tiles.</dd>
 </dl>
 </section>
 </li>
@@ -208,12 +267,32 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="withHead(com.csse3200.game.entities.Entity,com.csse3200.game.rendering.RotatingTextureRenderComponent,com.badlogic.gdx.math.Vector2,float)">
+<h3>withHead</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TowerComponent.html" title="class in com.csse3200.game.components">TowerComponent</a></span>&nbsp;<span class="element-name">withHead</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;head,
+ <a href="../rendering/RotatingTextureRenderComponent.html" title="class in com.csse3200.game.rendering">RotatingTextureRenderComponent</a>&nbsp;headRender,
+ com.badlogic.gdx.math.Vector2&nbsp;offset,
+ float&nbsp;zNudge)</span></div>
+<div class="block">Attaches a head entity and renderer to this tower.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>head</code> - The head entity.</dd>
+<dd><code>headRender</code> - The head's renderer.</dd>
+<dd><code>offset</code> - The offset for the head's position.</dd>
+<dd><code>zNudge</code> - The z-axis nudge for rendering.</dd>
+<dt>Returns:</dt>
+<dd>This TowerComponent for chaining.</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getType()">
 <h3>getType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getType</span>()</div>
+<div class="block">Gets the type of the tower.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>The type of the tower</dd>
+<dd>The tower type.</dd>
 </dl>
 </section>
 </li>
@@ -221,9 +300,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getWidth()">
 <h3>getWidth</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getWidth</span>()</div>
+<div class="block">Gets the width of the tower in tiles.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Width of the tower in tiles</dd>
+<dd>The tower width.</dd>
 </dl>
 </section>
 </li>
@@ -231,9 +311,113 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getHeight()">
 <h3>getHeight</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getHeight</span>()</div>
+<div class="block">Gets the height of the tower in tiles.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>Height of the tower in tiles</dd>
+<dd>The tower height.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setSelectedPurchaseCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)">
+<h3>setSelectedPurchaseCurrency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSelectedPurchaseCurrency</span><wbr><span class="parameters">(<a href="currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</span></div>
+<div class="block">Sets the selected purchase currency for this tower.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>currencyType</code> - The currency type to set.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getSelectedPurchaseCurrency()">
+<h3>getSelectedPurchaseCurrency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></span>&nbsp;<span class="element-name">getSelectedPurchaseCurrency</span>()</div>
+<div class="block">Gets the selected purchase currency for this tower.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The selected currency type.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setActive(boolean)">
+<h3>setActive</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TowerComponent.html" title="class in com.csse3200.game.components">TowerComponent</a></span>&nbsp;<span class="element-name">setActive</span><wbr><span class="parameters">(boolean&nbsp;v)</span></div>
+<div class="block">Sets whether this tower is active.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>v</code> - True to activate, false to deactivate.</dd>
+<dt>Returns:</dt>
+<dd>This TowerComponent for chaining.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isActive()">
+<h3>isActive</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isActive</span>()</div>
+<div class="block">Checks if this tower is active.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if active, false otherwise.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isSelected()">
+<h3>isSelected</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isSelected</span>()</div>
+<div class="block">Checks if this tower is currently selected.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if selected, false otherwise.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setSelected(boolean)">
+<h3>setSelected</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSelected</span><wbr><span class="parameters">(boolean&nbsp;selected)</span></div>
+<div class="block">Sets whether this tower is selected.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>selected</code> - True if selected, false otherwise.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getHeadEntity()">
+<h3>getHeadEntity</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">getHeadEntity</span>()</div>
+<div class="block">Gets the head entity attached to this tower.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The head entity, or null if none.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasHead()">
+<h3>hasHead</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasHead</span>()</div>
+<div class="block">Checks if this tower has a head entity.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if a head entity is attached, false otherwise.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="canAffordWithSelectedCurrency(com.csse3200.game.components.currencysystem.CurrencyManagerComponent)">
+<h3>canAffordWithSelectedCurrency</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canAffordWithSelectedCurrency</span><wbr><span class="parameters">(<a href="currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a>&nbsp;playerCurrencyManager)</span></div>
+<div class="block">Checks if the player can afford this tower with the selected currency.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>playerCurrencyManager</code> - The player's currency manager.</dd>
+<dt>Returns:</dt>
+<dd>True if affordable, false otherwise.</dd>
 </dl>
 </section>
 </li>
@@ -241,7 +425,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Updates the tower logic, including attack timer and attacking entities in range.</div>
+<div class="block">Updates the tower logic, including attacking and selection/sell logic.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>

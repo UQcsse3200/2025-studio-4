@@ -11,6 +11,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
+/**
+ * HeroPlacementComponent:
+ * Handles the two-phase placement of a hero entity on the map.
+ *
+ * <ul>
+ *   <li>Right mouse button: Creates a semi-transparent ghost preview at a valid grid cell.</li>
+ *   <li>Left mouse button: Confirms placement if the click hits the preview cell.</li>
+ *   <li>Key '4': Cancels the preview.</li>
+ * </ul>
+ */
 public class HeroPlacementComponent extends InputComponent {
     private static final Logger logger = LoggerFactory.getLogger(HeroPlacementComponent.class);
 
@@ -31,16 +41,18 @@ public class HeroPlacementComponent extends InputComponent {
     @Override
     public void create() {
         super.create();
-        logger.info("HeroPlacement ready. RMB preview, LMB confirm, 'S' cancel.");
+        logger.info("HeroPlacement ready. RMB = preview, LMB = confirm, '4' = cancel.");
     }
 
-    // 键盘：S 取消预览
+    /**
+     * Keyboard input: cancel preview with '4'.
+     */
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.NUM_4 || keycode == Input.Keys.NUMPAD_4) {
             Gdx.app.postRunnable(() -> {
                 if (preview.hasGhost()) {
-                    logger.info("[HeroPlacement] S -> cancel preview");
+                    logger.info("[HeroPlacement] Key '4' -> cancel preview");
                     preview.remove();
                 }
             });
@@ -49,21 +61,27 @@ public class HeroPlacementComponent extends InputComponent {
         return false;
     }
 
-    // 鼠标
+    /**
+     * Mouse input:
+     * <ul>
+     *   <li>Right click: Spawn preview at a valid grid cell (if none exists).</li>
+     *   <li>Left click: Confirm placement at the preview cell (with validation).</li>
+     * </ul>
+     */
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (pointer != 0) return false;
 
-        // 右键：生成预览（仅合法格）
+        // Right mouse button: create preview (only if the cell is valid)
         if (button == Input.Buttons.RIGHT) {
             if (!preview.hasGhost()) {
                 GridPoint2 cell = HeroPlacementRules.screenToGridNoClamp(screenX, screenY, terrain);
                 if (cell == null) {
-                    warn("超出地图边界");
+                    warn("Out of map bounds");
                     return true;
                 }
                 if (HeroPlacementRules.isBlockedCell(cell.x, cell.y, mapEditor)) {
-                    warn("该位置不可放置（障碍/路径/禁放区）");
+                    warn("Cell is blocked (obstacle/path/restricted area)");
                     return true;
                 }
                 preview.spawnAt(cell);
@@ -73,20 +91,22 @@ public class HeroPlacementComponent extends InputComponent {
             return false;
         }
 
-        // 左键：点击预览格确认（再次校验）
+        // Left mouse button: confirm placement on the preview cell (with re-check)
         if (button == Input.Buttons.LEFT) {
             if (preview.hasGhost() && preview.hitByScreen(screenX, screenY)) {
                 GridPoint2 cell = preview.getCell();
-                // 再校验一次
+
+                // Re-validate position
                 GridPoint2 recheck = HeroPlacementRules.screenToGridNoClamp(screenX, screenY, terrain);
                 if (recheck == null) {
-                    warn("超出地图边界");
+                    warn("Out of map bounds");
                     return true;
                 }
                 if (HeroPlacementRules.isBlockedCell(cell.x, cell.y, mapEditor)) {
-                    warn("该位置不可放置（障碍/路径/禁放区）");
+                    warn("Cell is blocked (obstacle/path/restricted area)");
                     return true;
                 }
+
                 try {
                     if (onPlace != null) onPlace.accept(new GridPoint2(cell));
                 } finally {
@@ -101,9 +121,12 @@ public class HeroPlacementComponent extends InputComponent {
         return false;
     }
 
+    /**
+     * Logs and prints a placement warning message.
+     */
     private void warn(String msg) {
         logger.warn("Placement blocked: {}", msg);
-        System.out.println("❌ 放置失败: " + msg);
+        System.out.println("❌ Placement failed: " + msg);
     }
 
     @Override

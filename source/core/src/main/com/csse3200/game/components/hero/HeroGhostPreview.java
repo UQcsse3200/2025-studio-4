@@ -9,6 +9,11 @@ import com.csse3200.game.entities.factories.HeroFactory;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * HeroGhostPreview:
+ * Handles the temporary "ghost" entity used to preview hero placement on the map.
+ * Provides methods to spawn, remove, and detect clicks on the preview.
+ */
 final class HeroGhostPreview {
     private final TerrainComponent terrain;
     private final float ghostAlpha;
@@ -20,9 +25,18 @@ final class HeroGhostPreview {
         this.ghostAlpha = ghostAlpha;
     }
 
+    /** @return true if a ghost entity currently exists */
     boolean hasGhost() { return ghost != null; }
+
+    /** @return the grid cell where the ghost is currently placed */
     GridPoint2 getCell() { return cell; }
 
+    /**
+     * Spawn the ghost preview entity at the given grid cell.
+     * If a ghost already exists, it will be removed first.
+     *
+     * @param gridCell the target grid cell
+     */
     void spawnAt(GridPoint2 gridCell) {
         if (ghost != null) remove();
         ghost = HeroFactory.createHeroGhost(ghostAlpha);
@@ -31,6 +45,9 @@ final class HeroGhostPreview {
         cell = new GridPoint2(gridCell);
     }
 
+    /**
+     * Remove the current ghost preview entity if it exists.
+     */
     void remove() {
         if (ghost != null) {
             ghost.dispose();
@@ -39,7 +56,14 @@ final class HeroGhostPreview {
         cell = null;
     }
 
-    /** 点击是否命中当前预览格（按 1×1 大小）。 */
+    /**
+     * Check whether a screen click (in screen coordinates) hits the current
+     * preview cell (assumed to be size 1x1 in grid space).
+     *
+     * @param sx screen X coordinate
+     * @param sy screen Y coordinate
+     * @return true if the click overlaps the ghost's grid cell
+     */
     boolean hitByScreen(int sx, int sy) {
         if (ghost == null || cell == null) return false;
         Renderer r = Renderer.getCurrentRenderer();
@@ -55,6 +79,12 @@ final class HeroGhostPreview {
         return world.x >= x0 && world.x <= x1 && world.y >= y0 && world.y <= y1;
     }
 
+    /**
+     * Place an entity at the given grid cell, scaling it to match the tile size.
+     *
+     * @param e    the entity to place
+     * @param grid the grid cell to position the entity
+     */
     private void placeEntityAtCell(Entity e, GridPoint2 grid) {
         float tile = terrain.getTileSize();
         e.setScale(tile, tile);

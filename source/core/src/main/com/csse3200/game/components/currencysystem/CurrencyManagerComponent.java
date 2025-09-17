@@ -184,33 +184,4 @@ public class CurrencyManagerComponent extends Component {
             this.updateCurrencyUI(type);
         });
     }
-
-    /**
-     * Checks if the player has enough of a single currency to cover the specified cost,
-     * and if so, deducts the amount and returns true. Otherwise, returns false.
-     *
-     * @param type the currency type to use
-     * @param cost the cost in that currency
-     * @return true if the player can afford and the currency is deducted, false otherwise
-     */
-    public boolean canAffordAndSpendSingleCurrency(CurrencyType type, int cost) {
-        if (cost > this.getCurrencyAmount(type)) {
-            return false;
-        }
-        this.subtractCurrencyAmount(type, cost);
-        this.updateCurrencyUI(type);
-        return true;
-    }
-
-    /**
-     * Refunds a portion of the cost in a single currency.
-     *
-     * @param type the currency type to refund
-     * @param cost the original cost
-     * @param refundRate the refund rate (e.g., 0.75f)
-     */
-    public void refundSingleCurrency(CurrencyType type, int cost, float refundRate) {
-        this.addCurrencyAmount(type, (int) (cost * refundRate));
-        this.updateCurrencyUI(type);
-    }
 }

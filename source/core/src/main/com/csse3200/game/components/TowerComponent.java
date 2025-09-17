@@ -214,7 +214,7 @@ public class TowerComponent extends Component {
             return false;
         }
         int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
-        return playerCurrencyManager.canAffordAndSpendSingleCurrency(selectedPurchaseCurrency, cost);
+        return playerCurrencyManager.canAffordAndSpendCurrency(Map.of(selectedPurchaseCurrency, cost));
     }
 
     /**
@@ -302,7 +302,7 @@ public class TowerComponent extends Component {
         int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
         if (cost > 0)
         {
-            currencyManager.refundSingleCurrency(selectedPurchaseCurrency, cost, refundRate);
+            currencyManager.refundCurrency(Map.of(selectedPurchaseCurrency, cost), refundRate);
         }
         entity.dispose();
     }

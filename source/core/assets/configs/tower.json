@@ -6,7 +6,7 @@
     "metalScrapCost": 500,
     "projectileSpeed": 2.0,
     "projectileLife": 1,
-    "projectileTexture": "images/towers/boneproj.png"
+    "projectileTexture": "images/towers/bone_projectile.png"
   },
   "dinoTower": {
     "damage": 8,

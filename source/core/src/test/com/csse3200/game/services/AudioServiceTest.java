@@ -209,4 +209,50 @@ class AudioServiceTest {
         verify(mockMusic).stop();
         verify(mockMusic2).play();
     }
+
+    @Test
+    void shouldNotPlayNonexistentMusic() {
+        audioService.playMusic("nonexistentMusic", true);
+        verify(mockMusic, never()).play();
+    }
+
+    @Test
+    void shouldNotPlayNonexistentSound() {
+        audioService.playSound("nonexistentSound");
+        verify(mockSound, never()).play(anyFloat());
+    }
+
+    @Test
+    void shouldNotFailWhenPausingOrResumingWithNoMusic() {
+        audioService.pauseMusic();
+        audioService.resumeMusic();
+
+        verifyNoInteractions(mockMusic, mockSound);
+    }
+
+    @Test
+    void shouldDisposeResources() {
+        Music mockMusic2 = mock(Music.class);
+        Sound mockSound2 = mock(Sound.class);
+
+        when(resourceService.getAsset("test1.mp3", Music.class)).thenReturn(mockMusic);
+        when(resourceService.getAsset("test2.mp3", Music.class)).thenReturn(mockMusic2);
+        when(resourceService.getAsset("test1.ogg", Sound.class)).thenReturn(mockSound);
+        when(resourceService.getAsset("test2.ogg", Sound.class)).thenReturn(mockSound2);
+
+        audioService.registerMusic("music1", "test1.mp3");
+        audioService.registerMusic("music2", "test2.mp3");
+        audioService.registerSound("sound1", "test1.ogg");
+        audioService.registerSound("sound2", "test2.ogg");
+
+        audioService.playMusic("music1", true);
+
+        audioService.dispose();
+
+        verify(mockMusic).stop();
+        verify(mockMusic).dispose();
+        verify(mockMusic2).dispose();
+        verify(mockSound).dispose();
+        verify(mockSound2).dispose();
+    }
 }

@@ -15,6 +15,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+
+import java.util.Map;
+import java.util.EnumMap;
+
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -141,9 +147,9 @@ public class TowerUpgradeMenu extends UIComponent {
 
     /**
      * Attempts to apply an upgrade to the selected tower if the player
-     * can afford it. The upgrade is defined by an UpgradeAction.
+     * can afford it. Uses the CurrencyManagerComponent's cost map system.
      *
-     * @param cost the cost of the upgrade
+     * @param cost  the cost of the upgrade
      * @param action the upgrade action to apply
      */
     private void attemptUpgrade(int cost, UpgradeAction action) {
@@ -155,7 +161,11 @@ public class TowerUpgradeMenu extends UIComponent {
         CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
         if (currencyManager == null) return;
 
-        if (!currencyManager.canAffordAndSpendSingleCurrency(UPGRADE_CURRENCY, cost)) {
+        // Build a cost map for the upgrade
+        Map<CurrencyType, Integer> costMap = new EnumMap<>(CurrencyType.class);
+        costMap.put(UPGRADE_CURRENCY, cost);
+
+        if (!currencyManager.canAffordAndSpendCurrency(costMap)) {
             System.out.println("Not enough " + UPGRADE_CURRENCY + " for upgrade!");
             return;
         }
@@ -166,6 +176,7 @@ public class TowerUpgradeMenu extends UIComponent {
         System.out.println("Upgrade successful! Remaining " + UPGRADE_CURRENCY + ": " +
                 currencyManager.getCurrencyAmount(UPGRADE_CURRENCY));
     }
+
 
     /**
      * Finds the player entity that holds the currency manager component.

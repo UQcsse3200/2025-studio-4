@@ -15,12 +15,13 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * A ui component for displaying player stats, e.g. health.
+ * A ui component for displaying player stats, e.g. health and player name.
  */
 public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
+  private Label playerNameLabel;
 
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
@@ -46,6 +47,13 @@ public class PlayerStatsDisplay extends UIComponent {
     table.top().left();
     table.setFillParent(true);
     table.padTop(45f).padLeft(5f);
+
+    // Player name
+    String playerName = ServiceLocator.getPlayerNameService() != null ? 
+      ServiceLocator.getPlayerNameService().getPlayerName() : "Player";
+    playerNameLabel = new Label("Player: " + playerName, skin, "large");
+    table.add(playerNameLabel).colspan(2).pad(5);
+    table.row();
 
     // Heart image
     float heartSideLength = 60f;

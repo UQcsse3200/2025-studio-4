@@ -26,6 +26,7 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static GdxGame gameService;
   private static GameStateService gameStateService;
+  private static PlayerNameService playerNameService;
 
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
@@ -58,6 +59,8 @@ public class ServiceLocator {
   }
 
   public static GameStateService getGameStateService() { return gameStateService; }
+
+  public static PlayerNameService getPlayerNameService() { return playerNameService; }
 
   public static void registerEntityService(EntityService service) {
     logger.debug("Registering entity service {}", service);
@@ -109,6 +112,11 @@ public class ServiceLocator {
     gameStateService = source;
   }
 
+  public static void registerPlayerNameService(PlayerNameService source) {
+    logger.debug("Registering player name service {}", source);
+    playerNameService = source;
+  }
+
   public static void clear() {
     entityService = null;
     renderService = null;
@@ -117,6 +125,8 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
+    gameStateService = null;
+    playerNameService = null;
     leaderboardService = null;
   }
 

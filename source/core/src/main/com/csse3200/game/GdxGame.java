@@ -9,6 +9,7 @@ import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,9 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
+    
+    // instantiate player name service with default name
+    ServiceLocator.registerPlayerNameService(new PlayerNameService());
 
     setScreen(ScreenType.MAIN_MENU);
   }

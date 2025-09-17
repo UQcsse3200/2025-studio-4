@@ -19,14 +19,12 @@ public class SoundEffectComponent extends Component {
     private void playSound(String soundName) {
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().playSound(soundName);
-            logger.debug("Playing sound: {}", soundName);
         }
     }
     
     private void playSoundWithVolume(String soundName, Float volume) {
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().playSound(soundName, volume);
-            logger.debug("Playing sound: {} at volume {}", soundName, volume);
         }
     }
 }

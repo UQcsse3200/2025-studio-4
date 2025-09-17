@@ -24,7 +24,6 @@ public class BackgroundMusicComponent extends Component {
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().playMusic(musicName, true);
             currentMusicName = musicName;
-            logger.debug("Started playing music: {}", musicName);
         }
     }
     
@@ -32,21 +31,18 @@ public class BackgroundMusicComponent extends Component {
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().stopMusic();
             currentMusicName = null;
-            logger.debug("Stopped music");
         }
     }
     
     private void pauseMusic() {
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().pauseMusic();
-            logger.debug("Paused music");
         }
     }
     
     private void resumeMusic() {
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().resumeMusic();
-            logger.debug("Resumed music");
         }
     }
     
@@ -55,7 +51,6 @@ public class BackgroundMusicComponent extends Component {
             ServiceLocator.getAudioService().stopMusic();
             ServiceLocator.getAudioService().playMusic(newMusicName, true);
             currentMusicName = newMusicName;
-            logger.debug("Changed music to: {}", newMusicName);
         }
     }
     

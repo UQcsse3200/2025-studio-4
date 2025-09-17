@@ -33,13 +33,11 @@ public class AudioService {
     public void registerMusic(String name, String filepath) {
         Music music = ServiceLocator.getResourceService().getAsset(filepath, Music.class);
         musicMap.put(name, music);
-        logger.debug("Registered music: {} -> {}", name, filepath);
     }
     
     public void registerSound(String name, String filepath) {
         Sound sound = ServiceLocator.getResourceService().getAsset(filepath, Sound.class);
         soundMap.put(name, sound);
-        logger.debug("Registered sound: {} -> {}", name, filepath);
     }
     
     public void playMusic(String name, boolean loop) {
@@ -59,7 +57,6 @@ public class AudioService {
         currentMusic.setVolume(musicVolume);
         currentMusic.setLooping(loop);
         currentMusic.play();
-        logger.debug("Playing music: {}", name);
     }
     
     public void stopMusic() {
@@ -95,7 +92,6 @@ public class AudioService {
         }
         
         sound.play(volume);
-        logger.debug("Playing sound: {} at volume {}", name, volume);
     }
     
     public void setMusicVolume(float volume) {

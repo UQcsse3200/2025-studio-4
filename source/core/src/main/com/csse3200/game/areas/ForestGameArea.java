@@ -69,6 +69,8 @@ public class ForestGameArea extends GameArea {
     private boolean hasExistingPlayer = false;
     private MapEditor mapEditor;
 
+    // 一次性提示是否已显示
+    private boolean heroHintShown = false;
 
     // 障碍物坐标单一事实源：由关卡（GameArea）定义
     // create barriers areas
@@ -392,8 +394,12 @@ public class ForestGameArea extends GameArea {
 
         spawnEntityAt(hero, cell, true, true);
 
-        com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
-        com.csse3200.game.ui.HintToast.show(stage, "press 1/2/3 switch weapon", 3f);
+        // 放置完成后的一次性提示窗口
+        if (!heroHintShown) {
+            com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
+            heroHintShown = true;
+        }
     }
 
     private void playMusic() {

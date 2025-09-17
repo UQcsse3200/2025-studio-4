@@ -17,18 +17,26 @@ import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.Gdx;
 
 /**
  * 英雄数值窗口：显示等级、生命、攻击，并支持升级。
  */
 public class HeroStatsDialog extends Window {
     private final Entity hero;
-    private final Label lvlLabel, hpLabel, atkLabel, costLabel, tipLabel;
+    private final Label lvlLabel, hpLabel, atkLabel, costLabel;
     private final TextButton upgradeBtn, closeBtn;
 
     // Follow settings
     private final Vector3 tmp = new Vector3();
     private final Vector2 offset = new Vector2(0f, 48f); // pixels above hero
+
+    // High-res fonts (dispose on remove)
+    private BitmapFont fontTitle;
+    private BitmapFont fontBody;
+    private BitmapFont fontButton;
 
     public HeroStatsDialog(Entity hero) {
         super("Hero Information", SimpleUI.windowStyle());
@@ -44,10 +52,47 @@ public class HeroStatsDialog extends Window {
         hpLabel = new Label("", SimpleUI.label());
         atkLabel = new Label("", SimpleUI.label());
         costLabel = new Label("", SimpleUI.muted());
-        tipLabel = new Label("Hint: press keyboard 1/2/3 can change weapon", SimpleUI.muted());
 
         upgradeBtn = new TextButton("Upgrade", SimpleUI.primaryButton());
         closeBtn = new TextButton("Close", SimpleUI.darkButton());
+
+        // 使用高分辨率位图字体并小幅缩放（避免放大导致模糊）
+        fontTitle = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
+        fontTitle.getData().setScale(0.85f);
+        fontTitle.setColor(Color.BLACK);
+
+        fontBody = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
+        fontBody.getData().setScale(0.7f);
+        fontBody.setColor(Color.BLACK);
+
+        fontButton = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
+        fontButton.getData().setScale(0.75f);
+        fontButton.setColor(Color.BLACK);
+
+        getTitleLabel().setStyle(new Label.LabelStyle(fontTitle, Color.BLACK));
+        Label.LabelStyle body = new Label.LabelStyle(fontBody, Color.BLACK);
+        lvlLabel.setStyle(body);
+        hpLabel.setStyle(body);
+        atkLabel.setStyle(body);
+        costLabel.setStyle(new Label.LabelStyle(fontBody, Color.BLACK));
+
+        TextButton.TextButtonStyle upStyle = SimpleUI.primaryButton();
+        upStyle.font = fontButton;
+        upStyle.fontColor = Color.BLACK;
+        upStyle.overFontColor = Color.BLACK;
+        upStyle.downFontColor = Color.BLACK;
+        upgradeBtn.setStyle(upStyle);
+
+        TextButton.TextButtonStyle closeStyle = SimpleUI.darkButton();
+        closeStyle.font = fontButton;
+        closeStyle.fontColor = Color.BLACK;
+        closeStyle.overFontColor = Color.BLACK;
+        closeStyle.downFontColor = Color.BLACK;
+        // 白色背景
+        closeStyle.up = SimpleUI.solid(Color.WHITE);
+        closeStyle.over = SimpleUI.solid(Color.WHITE);
+        closeStyle.down = SimpleUI.solid(Color.WHITE);
+        closeBtn.setStyle(closeStyle);
 
         Table t = new Table();
         t.defaults().pad(6).left();
@@ -55,11 +100,10 @@ public class HeroStatsDialog extends Window {
         t.add(hpLabel).row();
         t.add(atkLabel).row();
         t.add(costLabel).row();
-        t.add(tipLabel).padTop(4).row();
 
         Table actions = new Table();
-        actions.add(upgradeBtn).width(120).padRight(8);
-        actions.add(closeBtn).width(120);
+        actions.add(upgradeBtn).width(140).padRight(8);
+        actions.add(closeBtn).width(140);
 
         add(t).growX().row();
         add(new Separator()).height(8).growX().row();
@@ -95,6 +139,17 @@ public class HeroStatsDialog extends Window {
         hero.getEvents().addListener("upgradeFailed", (String msg) -> refresh());
     }
 
+    @Override
+    public boolean remove() {
+        boolean r = super.remove();
+        if (r) {
+            if (fontTitle != null) { fontTitle.dispose(); fontTitle = null; }
+            if (fontBody != null) { fontBody.dispose(); fontBody = null; }
+            if (fontButton != null) { fontButton.dispose(); fontButton = null; }
+        }
+        return r;
+    }
+
     private Entity findPlayer() {
         for (Entity e : ServiceLocator.getEntityService().getEntities()) {
             CurrencyManagerComponent wallet = e.getComponent(CurrencyManagerComponent.class);
@@ -116,7 +171,7 @@ public class HeroStatsDialog extends Window {
         atkLabel.setText("Damage: " + atk);
 
         int next = lvl + 1;
-        int cost = (next <= 3) ? next * 2 : 0;
+        int cost = (next <= 3) ? next * 200 : 0;
         costLabel.setText(next <= 3 ? ("Upgrade cost: " + cost) : "Already reach the max Level");
         upgradeBtn.setDisabled(next > 3);
     }
@@ -125,8 +180,8 @@ public class HeroStatsDialog extends Window {
         stage.addActor(this);
         pack();
         // Enforce a larger minimum size, then place near hero initially
-        float minW = 720f;
-        float minH = 520f;
+        float minW = 500f;
+        float minH = 300f;
         setSize(Math.max(getWidth(), minW), Math.max(getHeight(), minH));
         updateFollowPosition(stage);
         // 确保最新窗口在最上层

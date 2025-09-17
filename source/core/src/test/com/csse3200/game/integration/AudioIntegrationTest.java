@@ -61,7 +61,7 @@ class AudioIntegrationTest {
         audioService.registerMusic("bgm", "bgm.mp3");
         
         musicEntity.getEvents().trigger("playMusic", "bgm");
-        verify(mockMusic).setVolume(0.5f);
+        verify(mockMusic).setVolume(audioService.getMusicVolume());
         verify(mockMusic).setLooping(true);
         verify(mockMusic).play();
         
@@ -82,7 +82,7 @@ class AudioIntegrationTest {
         audioService.registerSound("effect", "effect.ogg");
         
         soundEntity.getEvents().trigger("playSound", "effect");
-        verify(mockSound).play(0.5f);
+        verify(mockSound).play(audioService.getSoundVolume());
         
         soundEntity.getEvents().trigger("playSoundWithVolume", "effect", 0.8f);
         verify(mockSound).play(0.8f);

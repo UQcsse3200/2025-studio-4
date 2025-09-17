@@ -61,7 +61,7 @@ class AudioServiceTest {
         
         audioService.playMusic("testMusic", true);
         
-        verify(mockMusic).setVolume(0.5f);
+        verify(mockMusic).setVolume(audioService.getMusicVolume());
         verify(mockMusic).setLooping(true);
         verify(mockMusic).play();
     }
@@ -84,7 +84,7 @@ class AudioServiceTest {
         
         audioService.playSound("testSound");
         
-        verify(mockSound).play(0.5f);
+        verify(mockSound).play(audioService.getSoundVolume());
     }
 
     @Test

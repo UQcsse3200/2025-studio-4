@@ -283,6 +283,9 @@ public class ForestGameArea extends GameArea {
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
+        // Trigger player name update after player is created and spawned
+        newPlayer.getEvents().trigger("updatePlayerName");
+
         // Initialize MapEditor
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path

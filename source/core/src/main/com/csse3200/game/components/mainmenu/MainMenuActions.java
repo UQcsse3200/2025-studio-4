@@ -46,6 +46,10 @@ public class MainMenuActions extends Component {
         logger.info("Player name confirmed: {}", playerName);
         // Register the player name service with the entered name
         ServiceLocator.registerPlayerNameService(new PlayerNameService(playerName));
+        // Also store the name in the game instance for persistence across screen transitions
+        if (game instanceof GdxGame) {
+          ((GdxGame) game).setStoredPlayerName(playerName);
+        }
         // Now start the game
         startGame();
       }

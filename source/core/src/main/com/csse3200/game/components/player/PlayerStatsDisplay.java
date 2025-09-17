@@ -36,6 +36,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
     entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
+    entity.getEvents().addListener("updatePlayerName", this::updatePlayerNameUI);
   }
 
   /**
@@ -107,6 +108,15 @@ public class PlayerStatsDisplay extends UIComponent {
   public void updatePlayerHealthUI(int health) {
     CharSequence text = String.format("Health: %d", health);
     healthLabel.setText(text);
+  }
+
+  /**
+   * Updates the player's name on the ui.
+   */
+  public void updatePlayerNameUI() {
+    String playerName = ServiceLocator.getPlayerNameService() != null ? 
+      ServiceLocator.getPlayerNameService().getPlayerName() : "Player";
+    playerNameLabel.setText("Player: " + playerName);
   }
 
   /**

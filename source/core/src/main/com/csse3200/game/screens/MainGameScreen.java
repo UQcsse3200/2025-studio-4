@@ -19,6 +19,8 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -74,6 +76,22 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerGameService(game);
     ServiceLocator.registerLeaderboardService(
             new InMemoryLeaderboardService("player-001"));
+
+    // Re-register GameStateService since it was cleared by previous screen disposal
+    if (ServiceLocator.getGameStateService() == null) {
+      ServiceLocator.registerGameStateService(new GameStateService());
+    }
+    
+    // Re-register PlayerNameService, but preserve any existing name from the game instance
+    if (ServiceLocator.getPlayerNameService() == null) {
+      // Try to get the player name from the game instance if it was stored there
+      String playerName = (game instanceof GdxGame) ? ((GdxGame) game).getStoredPlayerName() : null;
+      if (playerName != null && !playerName.isEmpty()) {
+        ServiceLocator.registerPlayerNameService(new PlayerNameService(playerName));
+      } else {
+        ServiceLocator.registerPlayerNameService(new PlayerNameService());
+      }
+    }
 
     logger.debug("Initialising main game screen services (Continue: {}, Save: {})", isContinue, saveFileName);
 

@@ -33,6 +33,16 @@ public class TowerStatsComponent extends Component {
     /** @return Damage dealt per attack */
     public float getDamage() { return damage; }
 
+    /** Sets the damage dealth per attack */
+    public void setDamage(float damage) {
+        this.damage = Math.max(0, damage);
+    }
+
+    /** Sets the attack range */
+    public void setRange(float range) {
+        this.range = Math.max(0, range);
+    }
+
     /** @return Attack range in game units */
     public float getRange() { return range; }
 

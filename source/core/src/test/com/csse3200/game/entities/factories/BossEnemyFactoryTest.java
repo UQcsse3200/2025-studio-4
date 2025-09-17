@@ -169,7 +169,7 @@ public class BossEnemyFactoryTest {
         Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(800, stats.getHealth());
+        assertEquals(1200, stats.getHealth());
         assertEquals(80, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());

@@ -86,9 +86,32 @@ public class MainGameActions extends Component {
         ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
       }
       
+      // Record current game pause state
+      boolean wasGamePaused = isPaused;
+      
       LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
       LeaderboardController controller = new LeaderboardController(leaderboardService);
       LeaderboardPopup popup = new LeaderboardPopup(skin, controller);
+      
+      // Set close callback to restore game state
+      popup.setOnCloseCallback(() -> {
+        try {
+          // Only resume if game wasn't already paused
+          if (!wasGamePaused) {
+            onResume();
+            logger.info("Game resumed after closing leaderboard");
+          }
+        } catch (Exception e) {
+          logger.error("Error resuming game after leaderboard close", e);
+        }
+      });
+      
+      // Pause game if it wasn't already paused
+      if (!wasGamePaused) {
+        onPause();
+        logger.info("Game paused for leaderboard");
+      }
+      
       popup.showOn(stage);
       
     } catch (Exception e) {

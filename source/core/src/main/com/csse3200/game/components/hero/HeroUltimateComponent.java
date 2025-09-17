@@ -15,7 +15,7 @@ import java.util.Map;
  * - Lasts for 5 seconds, then resets to normal.
  */
 public class HeroUltimateComponent extends Component {
-    private static final int ULT_COST = 2;             // Currency cost per ultimate activation
+    private static final int ULT_COST = 200;             // Currency cost per ultimate activation
     private static final long ULT_DURATION_MS = 5000;  // Duration: 5 seconds
     private static final float ULT_MULTIPLIER = 2.0f;  // Damage multiplier during ultimate
 

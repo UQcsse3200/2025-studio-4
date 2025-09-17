@@ -12,7 +12,6 @@ import java.util.Map;
 final class HeroPlacementRules {
     private HeroPlacementRules() {}
 
-    /** 屏幕 -> 网格；不 clamp；越界返回 null。 */
     static GridPoint2 screenToGridNoClamp(int sx, int sy, TerrainComponent terrain) {
         Renderer r = Renderer.getCurrentRenderer();
         if (r == null || r.getCamera() == null) return null;
@@ -30,7 +29,6 @@ final class HeroPlacementRules {
         return new GridPoint2(gx, gy);
     }
 
-    /** 单格是否在禁放清单（MapEditor.getInvalidTiles 合并了 path/barrier/snow/snowTree）。 */
     static boolean isBlockedCell(int x, int y, MapEditor mapEditor) {
         if (mapEditor == null) return false;
         Map<String, GridPoint2> invalid = mapEditor.getInvalidTiles();

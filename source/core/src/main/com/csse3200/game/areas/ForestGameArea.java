@@ -233,7 +233,6 @@ public class ForestGameArea extends GameArea {
                 logger.warn("Expected existing player not found, creating new one");
                 player = spawnPlayer();
             } else {
-                // ✅ 确保旧的 player 也有 CurrencyManagerComponent
                 if (player.getComponent(CurrencyManagerComponent.class) == null) {
                     player.addComponent(new CurrencyManagerComponent());
                 }
@@ -283,8 +282,6 @@ public class ForestGameArea extends GameArea {
 
         playMusic();
 
-
-        // 1) 准备三套配置（你已有 HeroConfig / HeroConfig2 / HeroConfig3）
         HeroConfig cfg1 = new HeroConfig();
         cfg1.heroTexture = "images/hero/Heroshoot.png";
         cfg1.bulletTexture = "images/hero/Bullet.png";
@@ -463,7 +460,6 @@ public class ForestGameArea extends GameArea {
             heroCfg3 = new HeroConfig3();
         }
 
-        // ✅ 在创建 hero 前预加载资源
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
@@ -473,20 +469,17 @@ public class ForestGameArea extends GameArea {
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity hero = HeroFactory.createHero(heroCfg, cam);
 
-        // attachPlayer 等逻辑照旧
         var up = hero.getComponent(HeroUpgradeComponent.class);
         if (up != null) {
             up.attachPlayer(player);
         }
 
-        // 左键点击英雄 -> 打开数值/升级界面
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
         spawnEntityAt(hero, cell, true, true);
 
-        // 放置完成后提示：按 1/2/3 切换武器
         com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
-        com.csse3200.game.ui.HintToast.show(stage, "英雄已放置：按 1/2/3 切换武器", 3f);
+        com.csse3200.game.ui.HintToast.show(stage, "press 1/2/3 switch weapon", 3f);
     }
 
     private void playMusic() {

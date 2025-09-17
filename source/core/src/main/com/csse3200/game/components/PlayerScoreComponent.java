@@ -9,12 +9,12 @@ public class PlayerScoreComponent extends Component {
     public int getTotalScore() { return this.totalScore; }
 
     /**
-     * Adds points and notifies HUD via a player event (like updateHealth/updateScrap).
+     * Adds points to the total score and notifies the HUD on change.
      */
     public void addPoints(int points) {
         totalScore += points;
         if (entity != null) {
-            entity.getEvents().trigger("updateScore", points); // <- same style as updateHealth/updateScrap
+            entity.getEvents().trigger("updateScore", totalScore);
         }
     }
 

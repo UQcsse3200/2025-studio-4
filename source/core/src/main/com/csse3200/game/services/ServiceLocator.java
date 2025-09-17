@@ -8,8 +8,6 @@ import com.csse3200.game.rendering.RenderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.csse3200.game.services.ScoreService;     // import ScoreService to store globally
-
 /**
  * A simplified implementation of the Service Locator pattern:
  * https://martinfowler.com/articles/injection.html#UsingAServiceLocator
@@ -28,8 +26,6 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static GdxGame gameService;
   private static GameStateService gameStateService;
-
-  private static ScoreService scoreService;       // hold the only ScoreService for the current game
 
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
@@ -112,7 +108,6 @@ public class ServiceLocator {
 
   public static void clear() {
     entityService = null;
-    scoreService = null;        // remove scoreService instance
     renderService = null;
     physicsService = null;
     timeSource = null;

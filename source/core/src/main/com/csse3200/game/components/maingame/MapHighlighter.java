@@ -29,6 +29,8 @@ public class MapHighlighter extends UIComponent {
     private final ShapeRenderer shapeRenderer;
     private final SimplePlacementController placementController;
     private final TowerFactory towerFactory;
+    private TowerUpgradeMenu towerUpgradeMenu;
+
     private Entity selectedTower = null; // currently selected tower
 
     /**
@@ -53,7 +55,13 @@ public class MapHighlighter extends UIComponent {
     @Override
     public void update() {
         if (Gdx.input.justTouched()) {
+            // if the ui is touched, ignore for tower selection
+            if (towerUpgradeMenu != null && towerUpgradeMenu.isTouched(Gdx.input.getX(), Gdx.input.getY())) {
+                return;
+            }
+
             Vector2 clickWorld = getWorldClickPosition();
+            boolean towerFound = false;
             if (clickWorld != null) {
                 Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
                 for (Entity e : entities) {
@@ -63,16 +71,30 @@ public class MapHighlighter extends UIComponent {
                     Vector2 pos = e.getPosition();
                     float tileSize = terrain.getTileSize();
 
+                    // Check if click lands inside this tower's footprint
                     if (clickWorld.x >= pos.x && clickWorld.x <= pos.x + tower.getWidth() * tileSize &&
                             clickWorld.y >= pos.y && clickWorld.y <= pos.y + tower.getHeight() * tileSize) {
                         selectedTower = e;
-                        return;
+
+                        if (towerUpgradeMenu != null) {
+                            towerUpgradeMenu.setSelectedTower(selectedTower);
+                        }
+                        towerFound = true;
+                        break;
                     }
                 }
+            }
+
+            //if no tower was found at click location, deselect the current one
+            if (!towerFound) {
                 selectedTower = null;
+                if  (towerUpgradeMenu != null) {
+                    towerUpgradeMenu.setSelectedTower(null);
+                }
             }
         }
     }
+
 
     /**
      * Gets the world position of the last mouse click.
@@ -253,6 +275,11 @@ public class MapHighlighter extends UIComponent {
 
         return true;
     }
+
+    public void setTowerUpgradeMenu(TowerUpgradeMenu menu) {
+        this.towerUpgradeMenu = menu;
+    }
+
 
     /**
      * Disposes of the shape renderer when no longer needed.

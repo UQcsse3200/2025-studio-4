@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.PlayerScoreComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -173,5 +174,22 @@ public class GruntEnemyFactoryTest {
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.8f, 0.8f), GruntEnemyFactory.getSpeed());
+    }
+
+    @Test
+    void gruntEnemyDeathPoints() {
+        Entity player = PlayerFactory.createPlayer();
+        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
+        int before = score.getTotalScore(); // baseline
+        java.util.List<Entity> waypoints = new java.util.ArrayList<>();
+        waypoints.add(new Entity());
+
+        // Create an enemy and simulate death
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypoints, player, Difficulty.MEDIUM);
+        grunt.getEvents().trigger("entityDeath");
+
+        // Total should have increased by the grunt’s configured points
+        int expected = GruntEnemyFactory.getPoints(); // default
+        assertEquals(before + expected, score.getTotalScore());
     }
 }

@@ -167,6 +167,10 @@ public class DroneEnemyFactory {
     public static String getDisplayName() {
         return displayName;
     }
+
+    public static int getPoints() {
+        return points;
+    }
     
     // Setters   
     public static void setResistance(DamageTypeConfig resistance) {

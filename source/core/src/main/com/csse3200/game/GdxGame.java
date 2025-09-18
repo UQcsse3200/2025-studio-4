@@ -28,6 +28,9 @@ import static com.badlogic.gdx.Gdx.app;
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
 
+  /** Used by MainMenuScreen to avoid restarting BGM repeatedly (0 = not started, 1 = playing). */
+  public static int musicON = 0;
+
   @Override
   public void create() {
     logger.info("Creating game");

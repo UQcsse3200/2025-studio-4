@@ -192,8 +192,4 @@ public class CurrencyManagerComponent extends Component {
             this.updateCurrencyUI(type);
         });
     }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

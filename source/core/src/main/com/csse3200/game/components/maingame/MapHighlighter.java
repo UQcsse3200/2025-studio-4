@@ -31,10 +31,7 @@ public class MapHighlighter extends UIComponent {
     private final ShapeRenderer shapeRenderer;
     private final SimplePlacementController placementController;
     private final TowerFactory towerFactory;
-<<<<<<< HEAD
-=======
     private TowerUpgradeMenu towerUpgradeMenu;
->>>>>>> origin/main
 
     private Entity selectedTower = null; // currently selected tower
 
@@ -90,14 +87,10 @@ public class MapHighlighter extends UIComponent {
                         break;
                     }
                 }
-<<<<<<< HEAD
-                // Deselect if no tower clicked
-=======
             }
 
             //if no tower was found at click location, deselect the current one
             if (!towerFound) {
->>>>>>> origin/main
                 selectedTower = null;
                 if  (towerUpgradeMenu != null) {
                     towerUpgradeMenu.setSelectedTower(null);
@@ -279,9 +272,6 @@ public class MapHighlighter extends UIComponent {
         return true; // free tile
     }
 
-<<<<<<< HEAD
-
-=======
     public void setTowerUpgradeMenu(TowerUpgradeMenu menu) {
         this.towerUpgradeMenu = menu;
     }
@@ -290,7 +280,6 @@ public class MapHighlighter extends UIComponent {
     /**
      * Disposes of the shape renderer when no longer needed.
      */
->>>>>>> origin/main
     @Override
     public void dispose() {
         shapeRenderer.dispose();

@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InMemoryLeaderboardService implements LeaderboardService {
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryLeaderboardService.class);
     private final List<LeaderboardEntry> all = new ArrayList<>();
     private final String myId;
 
@@ -22,6 +25,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
             if (loadedEntries != null) {
                 all.addAll(loadedEntries);
                 all.sort((e1, e2) -> Long.compare(e2.score, e1.score));
+                logger.debug("Leaderboard entries loaded into InMemoryLeaderboardService: {}", all); // Added logging
             }
         }
     }

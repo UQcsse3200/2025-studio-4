@@ -284,6 +284,7 @@ public class SaveGameService {
             FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName + ".json");
             saveFile.writeString(saveJson, false);
             logger.info("Leaderboard saved successfully to {}", saveFile.path());
+            logger.debug("Saved leaderboard JSON: {}", saveJson); // Added logging
         } catch (Exception e) {
             logger.error("Failed to save leaderboard", e);
         }
@@ -313,8 +314,11 @@ public class SaveGameService {
                 return null;
             }
             String saveJson = saveFile.readString();
+            logger.debug("Loaded leaderboard JSON: {}", saveJson); // Added logging
             // Use fromJson with type parameters to handle generic list
-            return json.fromJson(List.class, LeaderboardService.LeaderboardEntry.class, saveJson);
+            List<LeaderboardService.LeaderboardEntry> loadedEntries = json.fromJson(List.class, LeaderboardService.LeaderboardEntry.class, saveJson);
+            logger.debug("Deserialized leaderboard entries: {}", loadedEntries); // Added logging
+            return loadedEntries;
         } catch (Exception e) {
             logger.error("Failed to load leaderboard from {}", fileName, e);
             return null;

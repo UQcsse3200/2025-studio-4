@@ -111,6 +111,7 @@ public class MainGameScreen extends ScreenAdapter {
 
 
       saveGameService = new SaveGameService(ServiceLocator.getEntityService());
+      ServiceLocator.registerSaveGameService(saveGameService); // Added: Register SaveGameService
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);

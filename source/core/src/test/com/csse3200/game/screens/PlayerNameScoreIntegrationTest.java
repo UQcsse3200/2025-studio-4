@@ -279,20 +279,20 @@ class PlayerNameScoreIntegrationTest {
     }
 
     @Test
-    void shouldHandleUnicodeCharacters() {
+    void shouldRejectUnicodeCharacters() {
         // Given
         String[] unicodeNames = {
             "玩家", // Chinese characters
-            "Joueur", // French with accents
+            "Joueur", // French with accents  
             "Игрок", // Cyrillic
             "プレイヤー" // Japanese
         };
 
         // When & Then
         for (String name : unicodeNames) {
-            // Note: Current implementation only allows ASCII, so these should be invalid
+            // Current implementation only allows ASCII characters, so Unicode should be rejected
             assertFalse(name.matches("^[a-zA-Z0-9\\s._-]+$"), 
-                "Unicode name '" + name + "' should be invalid with current validation");
+                "Unicode name '" + name + "' should be rejected by current ASCII-only validation");
         }
     }
 

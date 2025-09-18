@@ -54,11 +54,19 @@ public class DroneEnemyFactory {
      * @return entity
      */
     public static Entity createDroneEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
-        Entity drone = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+        return createDroneEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createDroneEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity drone = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints,
+        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add drone-specific waypoint component
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
         drone.addComponent(waypointComponent);
 
         drone

@@ -132,13 +132,13 @@ public class MainGameActions extends Component {
   }
 
   private void onPerformSave() {
-    logger.info("Performing save operation");
+    logger.info("Performing save operation (CI sync)");
     
     try {
       var entityService = ServiceLocator.getEntityService();
       if (entityService != null) {
-        var saveService = new com.csse3200.game.services.SaveGameService(entityService);
-        boolean success = saveService.saveGame();
+        var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
+        boolean success = saveService.save();
         if (success) {
           logger.info("Manual save completed successfully");
           entity.getEvents().trigger("showSaveSuccess");

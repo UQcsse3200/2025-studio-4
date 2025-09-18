@@ -46,14 +46,13 @@ public class MainMenuScreen extends ScreenAdapter {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
     
-<<<<<<< HEAD
     // Register GameStateService for MainMenuDisplay to access stars
     if (ServiceLocator.getGameStateService() == null) {
       ServiceLocator.registerGameStateService(new GameStateService());
-=======
+    }
+    
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());
->>>>>>> origin/main
     }
 
     renderer = RenderFactory.createRenderer();

@@ -53,11 +53,8 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Main_Game_Button.png",
           "images/scrap.png",
           "images/Game_Over.png",
-<<<<<<< HEAD
-          "images/score_trophy.png"
-=======
+          "images/score_trophy.png",
           "images/Game_Victory.png"
->>>>>>> origin/main
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -89,7 +86,6 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerLeaderboardService(
             new InMemoryLeaderboardService("player-001"));
 
-<<<<<<< HEAD
     // Re-register GameStateService since it was cleared by previous screen disposal
     if (ServiceLocator.getGameStateService() == null) {
       ServiceLocator.registerGameStateService(new GameStateService());
@@ -106,10 +102,7 @@ public class MainGameScreen extends ScreenAdapter {
       }
     }
 
-    logger.debug("Initialising main game screen services (Continue: {}, Save: {})", isContinue, saveFileName);
-=======
     logger.debug("Initialising main game screen services (Continue: {}, Save/Arg: {})", isContinue, saveFileName);
->>>>>>> origin/main
 
     ServiceLocator.registerTimeSource(new GameTime());
 
@@ -129,13 +122,9 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-<<<<<<< HEAD
     // Display collision volume
     //renderer.getDebug().setActive(true);
-
-=======
     // renderer.getDebug().setActive(true); // collision debug
->>>>>>> origin/main
 
     loadAssets();
     ui = createUI();

@@ -106,17 +106,21 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBaseEnemy(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">createBaseEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2&nbsp;speed)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBaseEnemy(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,java.util.List,int)" class="member-name-link">createBaseEnemy</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+ com.badlogic.gdx.math.Vector2&nbsp;speed,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;waypoints,
+ int&nbsp;waypointIndex)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a generic Enemy to be used as a base entity by more specific Enemy creation methods.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBaseEnemyAnimated(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,java.lang.String,float,java.lang.Float)" class="member-name-link">createBaseEnemyAnimated</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBaseEnemyAnimated(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,java.util.List,java.lang.String,float,java.lang.Float,int)" class="member-name-link">createBaseEnemyAnimated</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  com.badlogic.gdx.math.Vector2&nbsp;speed,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;waypoints,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlasPath,
  float&nbsp;walkFrameDur,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Float.html" title="class or interface in java.lang" class="external-link">Float</a>&nbsp;idleFrameDur)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Float.html" title="class or interface in java.lang" class="external-link">Float</a>&nbsp;idleFrameDur,
+ int&nbsp;waypointIndex)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -136,10 +140,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createBaseEnemy(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)">
+<section class="detail" id="createBaseEnemy(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,java.util.List,int)">
 <h3>createBaseEnemy</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBaseEnemy</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
- com.badlogic.gdx.math.Vector2&nbsp;speed)</span></div>
+ com.badlogic.gdx.math.Vector2&nbsp;speed,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;waypoints,
+ int&nbsp;waypointIndex)</span></div>
 <div class="block">Creates a generic Enemy to be used as a base entity by more specific Enemy creation methods.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -151,13 +157,15 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createBaseEnemyAnimated(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,java.lang.String,float,java.lang.Float)">
+<section class="detail" id="createBaseEnemyAnimated(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2,java.util.List,java.lang.String,float,java.lang.Float,int)">
 <h3>createBaseEnemyAnimated</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBaseEnemyAnimated</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;target,
  com.badlogic.gdx.math.Vector2&nbsp;speed,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&gt;&nbsp;waypoints,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlasPath,
  float&nbsp;walkFrameDur,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Float.html" title="class or interface in java.lang" class="external-link">Float</a>&nbsp;idleFrameDur)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Float.html" title="class or interface in java.lang" class="external-link">Float</a>&nbsp;idleFrameDur,
+ int&nbsp;waypointIndex)</span></div>
 </section>
 </li>
 </ul>

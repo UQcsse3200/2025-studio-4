@@ -36,7 +36,7 @@ public class DividerEnemyFactory {
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
     private static final int DEFAULT_POINTS = 300;
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    
+
     // Configurable properties
     private static int health = DEFAULT_HEALTH;
     private static int damage = DEFAULT_DAMAGE;
@@ -61,8 +61,8 @@ public class DividerEnemyFactory {
 
 
     public static Entity createDividerEnemy(java.util.List<Entity> waypoints, GameArea area, Entity player, Difficulty difficulty) {
-        Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints, 
-        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, 0);
+        Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints,
+                "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
         divider.addComponent(waypointComponent);

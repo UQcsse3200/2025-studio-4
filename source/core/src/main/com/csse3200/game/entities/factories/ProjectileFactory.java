@@ -79,7 +79,7 @@ public final class ProjectileFactory {
                         DamageTypeConfig.None,
                         DamageTypeConfig.None
                 ))
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 5f))
+                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 0f))
                 .addComponent(new DestroyOnHitComponent(PhysicsLayer.NPC));
 
         bullet.setPosition(startPos);

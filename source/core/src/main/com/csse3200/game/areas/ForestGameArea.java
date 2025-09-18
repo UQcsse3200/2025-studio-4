@@ -61,6 +61,7 @@ public class ForestGameArea extends GameArea {
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
+    private static ForestGameArea currentGameArea;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -168,12 +169,35 @@ public class ForestGameArea extends GameArea {
         }
 
         /**
-         * Schedule the next enemy spawn with delay
+         * Schedule the next enemy spawn with delay (with comprehensive safety checks)
          */
         private void scheduleNextEnemySpawn() {
-            if (enemySpawnQueue.isEmpty()) {
+            // Safety check: ensure this game area is still the active one
+            if (currentGameArea != this) {
+                logger.info("Game area changed, stopping wave spawning");
+                forceStopWave();
+                return;
+            }
+            
+            // Safety check: ensure services are still available
+            try {
+                if (ServiceLocator.getPhysicsService() == null || 
+                    ServiceLocator.getEntityService() == null ||
+                    ServiceLocator.getResourceService() == null) {
+                    logger.warn("Services not available, stopping wave spawning");
+                    forceStopWave();
+                    return;
+                }
+            } catch (Exception e) {
+                logger.warn("Error checking services, stopping wave spawning: {}", e.getMessage());
+                forceStopWave();
+                return;
+            }
+            
+            if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
                 // Wave complete
                 waveInProgress = false;
+                logger.info("Wave completed successfully");
                 return;
             }
             
@@ -186,17 +210,36 @@ public class ForestGameArea extends GameArea {
             waveSpawnTask = Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    if (!enemySpawnQueue.isEmpty()) {
-                        // Spawn the next enemy
-                        Runnable spawnAction = enemySpawnQueue.remove(0);
-                        spawnAction.run();
-                        
-                        // Schedule the next one
-                        scheduleNextEnemySpawn();
+                    // Double-check we're still the active game area
+                    if (currentGameArea != ForestGameArea.this) {
+                        logger.info("Game area changed during spawn, stopping");
+                        return;
                     }
-                }
-            }, spawnDelay);
-        }
+                    
+                    // Double-check services are still available when task runs
+                    try {
+                        if (ServiceLocator.getPhysicsService() == null || 
+                            ServiceLocator.getEntityService() == null) {
+                            logger.warn("Services disposed during spawn, stopping wave");
+                            forceStopWave();
+                            return;
+                        }
+                        
+                        if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
+                            // Spawn the next enemy
+                            Runnable spawnAction = enemySpawnQueue.remove(0);
+                            spawnAction.run();
+                            
+                            // Schedule the next one
+                            scheduleNextEnemySpawn();
+                        }
+                    } catch (Exception e) {
+                        logger.error("Error spawning enemy: {}", e.getMessage());
+                        forceStopWave();
+                        }
+                    }
+                }, spawnDelay);
+            }
 
 
     /**
@@ -206,6 +249,7 @@ public class ForestGameArea extends GameArea {
     public void create() {
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
+        registerForCleanup();
 
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
@@ -513,6 +557,35 @@ public class ForestGameArea extends GameArea {
         resourceService.unloadAssets(forestTextureAtlases);
         resourceService.unloadAssets(forestSounds);
         resourceService.unloadAssets(forestMusic);
+    }
+
+    public static void cleanupAllWaves() {
+        if (currentGameArea != null) {
+            currentGameArea.forceStopWave();
+            currentGameArea = null;
+        }
+        logger.info("Wave cleanup completed");
+    }
+
+    private void registerForCleanup() {
+        currentGameArea = this;
+    }
+
+    public void forceStopWave() {
+    try {
+        if (waveSpawnTask != null) {
+            waveSpawnTask.cancel();
+            waveSpawnTask = null;
+        }
+        waveInProgress = false;
+        if (enemySpawnQueue != null) {
+            enemySpawnQueue.clear();
+            enemySpawnQueue = null;
+        }
+        logger.info("Wave spawning force stopped");
+    } catch (Exception e) {
+        logger.error("Error during force stop: {}", e.getMessage());
+    }
     }
 
     @Override

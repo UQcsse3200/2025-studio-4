@@ -30,4 +30,9 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     public void submitScore(long score) {
 
     }
+
+    @Override
+    public void addEntry(String playerName, int finalScore2) {
+
+    }
 }

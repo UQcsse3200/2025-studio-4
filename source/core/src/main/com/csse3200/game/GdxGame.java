@@ -9,6 +9,7 @@ import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import static com.badlogic.gdx.Gdx.app;
  */
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+  private String storedPlayerName = null;
 
   @Override
   public void create() {
@@ -33,6 +35,9 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
+    
+    // instantiate player name service with default name
+    ServiceLocator.registerPlayerNameService(new PlayerNameService());
 
     setScreen(ScreenType.MAIN_MENU);
   }
@@ -119,6 +124,22 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION
+  }
+
+  /**
+   * Store the player name for use across screen transitions
+   * @param playerName the player name to store
+   */
+  public void setStoredPlayerName(String playerName) {
+    this.storedPlayerName = playerName;
+  }
+
+  /**
+   * Get the stored player name
+   * @return the stored player name, or null if none is stored
+   */
+  public String getStoredPlayerName() {
+    return storedPlayerName;
   }
 
   /**

@@ -2,7 +2,9 @@ package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.services.SaveGameService;
+import com.csse3200.game.services.PlayerNameService;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.PlayerNameInputDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +29,49 @@ public class MainMenuActions extends Component {
   }
 
   /**
-   * Swaps to the Main Game screen.
+   * Shows player name input dialog, then starts the game.
    */
   private void onStart() {
-    logger.info("Start game");
+    logger.info("Start new game - requesting player name");
+    showPlayerNameDialog();
+  }
+  
+  /**
+   * Shows the player name input dialog
+   */
+  private void showPlayerNameDialog() {
+    PlayerNameInputDialog nameDialog = new PlayerNameInputDialog(new PlayerNameInputDialog.PlayerNameCallback() {
+      @Override
+      public void onNameConfirmed(String playerName) {
+        logger.info("Player name confirmed: {}", playerName);
+        // Register the player name service with the entered name
+        ServiceLocator.registerPlayerNameService(new PlayerNameService(playerName));
+        // Also store the name in the game instance for persistence across screen transitions
+        if (game instanceof GdxGame) {
+          ((GdxGame) game).setStoredPlayerName(playerName);
+        }
+        // Now start the game
+        startGame();
+      }
+      
+      @Override
+      public void onNameCancelled() {
+        logger.info("Player name input cancelled");
+        // User cancelled, stay on main menu
+      }
+    });
+    
+    // Show the dialog
+    nameDialog.show(ServiceLocator.getRenderService().getStage());
+  }
+  
+  /**
+   * Actually starts the game after name input
+   */
+  private void startGame() {
+    logger.info("Starting game with player name: {}", 
+      ServiceLocator.getPlayerNameService() != null ? 
+      ServiceLocator.getPlayerNameService().getPlayerName() : "Unknown");
     game.setScreen(GdxGame.ScreenType.MAIN_GAME);
   }
 

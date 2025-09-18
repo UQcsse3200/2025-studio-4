@@ -16,6 +16,7 @@ public class LeaderboardPopup extends Window {
     private final Table listTable = new Table();
     private final ScrollPane scroller;
     private final TextButton prevBtn, nextBtn, closeBtn, friendsBtn;
+    private Runnable onCloseCallback;
 
     public LeaderboardPopup(Skin skin, LeaderboardController controller) {
         super("Leaderboard", skin);
@@ -136,10 +137,14 @@ public class LeaderboardPopup extends Window {
         return dt.toString().replace('T', ' ');
     }
 
+    /**
+     * Sets a callback to be executed when the popup is closed
+     */
+    public void setOnCloseCallback(Runnable callback) {
+        this.onCloseCallback = callback;
+    }
+
     public void showOn(Stage stage) {
-        // 暂停游戏
-        ServiceLocator.getTimeSource().setTimeScale(0f);
-        
         stage.addActor(this);
         pack();
         setPosition(Math.round((stage.getWidth() - getWidth()) / 2f),
@@ -147,11 +152,13 @@ public class LeaderboardPopup extends Window {
     }
 
     public void dismiss() {
-        // 恢复游戏
-        ServiceLocator.getTimeSource().setTimeScale(1f);
-        
         addAction(Actions.sequence(
                 Actions.parallel(Actions.alpha(0f, 0.12f), Actions.scaleTo(0.98f, 0.98f, 0.12f)),
+                Actions.run(() -> {
+                    if (onCloseCallback != null) {
+                        onCloseCallback.run();
+                    }
+                }),
                 Actions.removeActor()
         ));
     }

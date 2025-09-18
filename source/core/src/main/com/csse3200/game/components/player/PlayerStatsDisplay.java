@@ -21,10 +21,9 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
+
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
-  private Image scoreImage;
-  private Label scoreLabel;
 
   /**
    * Creates reusable ui styles and adds actors to the stage.
@@ -36,7 +35,6 @@ public class PlayerStatsDisplay extends UIComponent {
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
     entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
-    entity.getEvents().addListener("updateScore", this::updatePlayerScoreUI);
   }
 
   /**
@@ -57,15 +55,6 @@ public class PlayerStatsDisplay extends UIComponent {
     int health = entity.getComponent(PlayerCombatStatsComponent.class).getHealth();
     CharSequence healthText = String.format("Health: %d", health);
     healthLabel = new Label(healthText, skin, "large");
-
-    // Score image (trophy)
-    float scoreSideLength = 64f;
-    scoreImage = new Image(ServiceLocator.getResourceService().getAsset("images/score_trophy.png", Texture.class));
-
-    // Score text
-    int score = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
-    CharSequence scoreText = String.format("Score: %d", score);
-    scoreLabel = new Label(scoreText, skin, "large");
 
     table.add(heartImage).size(heartSideLength).pad(5);
     table.add(healthLabel);
@@ -94,11 +83,6 @@ public class PlayerStatsDisplay extends UIComponent {
       table.add(currencyLabel).left();
       table.row();
     }
-
-    // Score text position
-    table.row();
-    table.add(scoreImage).size(scoreSideLength).pad(5);
-    table.add(scoreLabel).left().padTop(5f);
 
     stage.addActor(table);
   }
@@ -129,16 +113,6 @@ public class PlayerStatsDisplay extends UIComponent {
     }
   }
 
-  /**
-   * Updates the player's total score on the ui.
-   * @param totalScore player total score
-   */
-  private void updatePlayerScoreUI(int totalScore) {
-    CharSequence text = String.format("Score: %d", totalScore);
-    scoreLabel.setText(text);
-  }
-
-
   @Override
   public void dispose() {
     super.dispose();
@@ -153,7 +127,5 @@ public class PlayerStatsDisplay extends UIComponent {
     }
     currencyImages.clear();
     currencyLabels.clear();
-    scoreImage.remove();
-    scoreLabel.remove();
   }
 }

@@ -73,18 +73,16 @@ public class ForestGameArea extends GameArea {
     private MapEditor mapEditor;
 
 
-    // 障碍物坐标单一事实源：由关卡（GameArea）定义
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
             {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
              {5, 24}, {8, 20},
-             // 在x<31且y>13且x<13范围内随机添加的坐标点
              {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
              {7, 25}, {2, 15},  {6, 29}, 
     };
 
-    // create snowtree areas - 避开路径坐标
+    // create snowtree areas
     private static final int[][] SNOWTREE_COORDS = new int[][]{
             {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
 
@@ -145,7 +143,7 @@ public class ForestGameArea extends GameArea {
                 logger.warn("Expected existing player not found, creating new one");
                 player = spawnPlayer();
             } else {
-                // ✅ 确保旧的 player 也有 CurrencyManagerComponent
+                // Ensure existing player has CurrencyManagerComponent
                 if (player.getComponent(CurrencyManagerComponent.class) == null) {
                     player.addComponent(new CurrencyManagerComponent());
                 }
@@ -153,7 +151,7 @@ public class ForestGameArea extends GameArea {
         }
 
 
-        // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
+        // Now that mapEditor is created in spawnPlayer, link it to placementController
         if (mapEditor != null) {
             placementController.setMapEditor(mapEditor);
         }
@@ -193,7 +191,7 @@ public class ForestGameArea extends GameArea {
         playMusic();
 
 
-        // 1) 准备三套配置（你已有 HeroConfig / HeroConfig2 / HeroConfig3）
+        // 1) Prepare three configuration sets (HeroConfig / HeroConfig2 / HeroConfig3)
         HeroConfig cfg1 = new HeroConfig();
         cfg1.heroTexture = "images/hero/Heroshoot.png";
         cfg1.bulletTexture = "images/hero/Bullet.png";
@@ -206,7 +204,7 @@ public class ForestGameArea extends GameArea {
         cfg3.heroTexture = "images/hero3/Heroshoot.png";
         cfg3.bulletTexture = "images/hero3/Bullet.png";
 
-        // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
+        // 2) Mount one-time skin switching component (won't change other logic)
         Entity skinSwitcher = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
         );
@@ -251,10 +249,10 @@ public class ForestGameArea extends GameArea {
     }
 
 
-//Register to MapEditor’s invalidTiles and generate obstacles on the map.
+// Register to MapEditor's invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
-        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
+        // If mapEditor not created yet, cache locally; register after MapEditor is created in spawnPlayer()
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createBarrier(), new GridPoint2(p[0], p[1]), true, false);
@@ -264,11 +262,10 @@ public class ForestGameArea extends GameArea {
         }
     }
 
-    //注册雪树到 MapEditor 的 invalidTiles，并在地图上生成雪树障碍物。
-    //Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
+    // Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
     private void registerSnowTreeAndSpawn(int[][] coords) {
         if (coords == null) return;
-        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
+        // If mapEditor not created yet, cache locally; register after MapEditor is created in spawnPlayer()
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createSnowTree(), new GridPoint2(p[0], p[1]), true, false);
@@ -280,9 +277,9 @@ public class ForestGameArea extends GameArea {
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();
-        // 确保新玩家有钱包组件
+        // Ensure new player has currency component
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
-            newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
+            newPlayer.addComponent(new CurrencyManagerComponent());
         }
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
@@ -380,7 +377,7 @@ public class ForestGameArea extends GameArea {
             heroCfg3 = new HeroConfig3();
         }
 
-        // ✅ 在创建 hero 前预加载资源
+        // Preload resources before creating hero
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {

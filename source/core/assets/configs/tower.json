@@ -1,6 +1,6 @@
 {
   "boneTower": {
-    "damage": 5,
+    "damage": 10,
     "range": 3.0,
     "cooldown": 1.0,
     "metalScrapCost": 500,
@@ -9,7 +9,7 @@
     "projectileTexture": "images/towers/bone_projectile.png"
   },
   "dinoTower": {
-    "damage": 8,
+    "damage": 20,
     "range": 2.0,
     "cooldown": 0.8,
     "metalScrapCost": 1000,
@@ -18,7 +18,7 @@
     "projectileTexture": "images/towers/projectile animations/fireballdino.png"
   },
   "cavemenTower": {
-    "damage": 3,
+    "damage": 15,
     "range": 5.0,
     "cooldown": 0.8,
     "metalScrapCost": 750,

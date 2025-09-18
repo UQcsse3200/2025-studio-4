@@ -17,6 +17,8 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.PlayerScoreComponent;
+
 
 /**
  * Basement factory (renamed from PlayerFactory).
@@ -45,9 +47,10 @@ public class PlayerFactory {
             .addComponent(new PlayerCombatStatsComponent(stats.health, stats.baseAttack))
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
-            .addComponent(new PlayerStatsDisplay())
             .addComponent(new CurrencyManagerComponent())
-            .addComponent(new HomebaseDamageEffectComponent());
+            .addComponent(new PlayerStatsDisplay())
+            .addComponent(new HomebaseDamageEffectComponent())
+            .addComponent(new PlayerScoreComponent());
 
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);
@@ -60,4 +63,3 @@ public class PlayerFactory {
     throw new IllegalStateException("Instantiating static util class");
   }
 }
-

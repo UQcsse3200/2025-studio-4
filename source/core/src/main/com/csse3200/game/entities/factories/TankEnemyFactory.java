@@ -5,10 +5,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.utils.Difficulty;
+import java.util.Map;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class TankEnemyFactory {
     // Default tank configuration
@@ -18,10 +24,13 @@ public class TankEnemyFactory {
     private static final int DEFAULT_DAMAGE = 15;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(0.2f, 0.2f);
+    private static final Vector2 DEFAULT_SPEED = new Vector2(0.6f, 0.6f);
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
+    private static final int DEFAULT_POINTS = 300;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -33,28 +42,45 @@ public class TankEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static Entity self;
-    private static Entity currentTarget;
-    private static int priorityTaskCount = 1;
+    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
+    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
 
     /**
      * Creates a tank enemy with current configuration.
      *
-     * @param target entity to chase
+     * @param waypoints List of waypoint entities for the tank to follow
+     * @param player Reference to the player entity
      * @return entity
      */
-    public static Entity createTankEnemy(Entity target) {
-        // 使用基础敌人（无动画）并添加静态纹理，避免测试对 atlas 的依赖
-        Entity tank = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+    public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
+        Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints, 
+        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+
+        // Add waypoint component for independent waypoint tracking
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        tank.addComponent(waypointComponent);
+
         tank
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
 
-        self = tank;
-        currentTarget = target;
+        // Handle waypoint progression for this specific tank
+        tank.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = tank.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(tank, nextTarget);
+                }
+            }
+        });
+
+        var sz = tank.getScale(); 
+        tank.setScale(sz.x * 1.3f, sz.y * 1.3f);
 
         return tank;
     }
@@ -62,16 +88,48 @@ public class TankEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+
+            // Award points to player upon defeating enemy
+            PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+            if (psc != null) {
+                psc.addPoints(points);
+            }
+
+            // Drop currency upon defeating enemy
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
+        }
+
         Gdx.app.postRunnable(entity::dispose);
-        //Eventually add point/score logic here maybe?
+}
+
+    private static void updateSpeed(Entity tank, Vector2 newSpeed) {
+        WaypointComponent wc = tank.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setSpeed(newSpeed);
+            tank.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(wc.getCurrentTarget(), wc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
     }
 
-    private static void updateSpeed(Vector2 speed) {
-        priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    private static void updateChaseTarget(Entity tank, Entity newTarget) {
+        WaypointComponent wc = tank.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            tank.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed()));
+        }
     }
-        
-        
+
     // Getters    
     public static DamageTypeConfig getResistance() {
         return resistance;
@@ -92,6 +150,8 @@ public class TankEnemyFactory {
     public static String getDisplayName() {
         return displayName;
     }
+
+    public static int getPoints() { return points; }
     
     // Setters   
     public static void setResistance(DamageTypeConfig resistance) {
@@ -133,6 +193,7 @@ public class TankEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 
     private TankEnemyFactory() {

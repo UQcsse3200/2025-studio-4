@@ -6,13 +6,19 @@ import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.utils.Difficulty;
+import java.util.Map;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class DividerChildEnemyFactory {
-    // Default drone configuration
+    // Default divider child configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 50;
@@ -23,6 +29,9 @@ public class DividerChildEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final int DEFAULT_POINTS = 100;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -34,29 +43,48 @@ public class DividerChildEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
+    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
+    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
 
     private static Entity self;
     private static Entity currentTarget;
     private static int priorityTaskCount = 1;
 
     /**
-     * Creates a DividerChild enemy with current configuration. The DividerChild is capable of spawning multiple other enemies upon death
+     * Creates a DividerChild enemy with current configuration.
      *
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerChildChildEnemy(Entity target) {
-        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated( target, new Vector2(speed),
-        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f);
+    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
+        Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
+        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
+
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, target, speed);
+        waypointComponent.setCurrentWaypointIndex(waypointIndex);
+        DividerChild.addComponent(waypointComponent);
 
         DividerChild
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
 
+        DividerChild.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = DividerChild.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(DividerChild, nextTarget);
+                }
+            }
+        });
+
         var sz = DividerChild.getScale(); 
         DividerChild.setScale(sz.x * 0.85f, sz.y * 0.85f);
+
+        updateChaseTarget(DividerChild, waypoints.get(waypointIndex));
 
         self = DividerChild;
         currentTarget = target;
@@ -67,6 +95,26 @@ public class DividerChildEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        // Award points to player upon defeating enemy
+        if (currentTarget != null) {
+            PlayerScoreComponent totalScore = currentTarget.getComponent(PlayerScoreComponent.class);
+            if (totalScore != null) {
+                totalScore.addPoints(points);
+            }
+        }
+
+        // Drop currency upon defeat
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
+        }
+
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
@@ -75,7 +123,18 @@ public class DividerChildEnemyFactory {
         priorityTaskCount += 1;
         self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
     }
-        
+
+    private static void updateChaseTarget(Entity entity, Entity newTarget) {
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            entity.getComponent(AITaskComponent.class).addTask(
+                    new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed())
+            );
+        }
+    }
+
     // Getters    
     public static DamageTypeConfig getResistance() {
         return resistance;
@@ -95,6 +154,10 @@ public class DividerChildEnemyFactory {
     
     public static String getDisplayName() {
         return displayName;
+    }
+
+    public static int getPoints() {
+        return points;
     }
     
     // Setters   
@@ -137,6 +200,7 @@ public class DividerChildEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 
     private DividerChildEnemyFactory() {

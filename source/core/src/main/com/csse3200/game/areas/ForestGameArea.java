@@ -84,6 +84,8 @@ public class ForestGameArea extends GameArea {
     private boolean hasExistingPlayer = false;
     private MapEditor mapEditor;
 
+    // 一次性提示是否已显示
+    private boolean heroHintShown = false;
 
     // 障碍物坐标单一事实源：由关卡（GameArea）定义
     // create barriers areas
@@ -283,7 +285,6 @@ private void scheduleNextEnemySpawn() {
                 logger.warn("Expected existing player not found, creating new one");
                 player = spawnPlayer();
             } else {
-                // ✅ 确保旧的 player 也有 CurrencyManagerComponent
                 if (player.getComponent(CurrencyManagerComponent.class) == null) {
                     player.addComponent(new CurrencyManagerComponent());
                 }
@@ -327,14 +328,12 @@ private void scheduleNextEnemySpawn() {
 
         // Add hero placement system
 
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
+        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
 
         spawnEntity(placement);
 
         playMusic();
 
-
-        // 1) 准备三套配置（你已有 HeroConfig / HeroConfig2 / HeroConfig3）
         HeroConfig cfg1 = new HeroConfig();
         cfg1.heroTexture = "images/hero/Heroshoot.png";
         cfg1.bulletTexture = "images/hero/Bullet.png";
@@ -513,7 +512,6 @@ private void scheduleNextEnemySpawn() {
             heroCfg3 = new HeroConfig3();
         }
 
-        // ✅ 在创建 hero 前预加载资源
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
@@ -523,13 +521,21 @@ private void scheduleNextEnemySpawn() {
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity hero = HeroFactory.createHero(heroCfg, cam);
 
-        // attachPlayer 等逻辑照旧
         var up = hero.getComponent(HeroUpgradeComponent.class);
         if (up != null) {
             up.attachPlayer(player);
         }
 
+        hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
         spawnEntityAt(hero, cell, true, true);
+
+        // 放置完成后的一次性提示窗口
+        if (!heroHintShown) {
+            com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
+            heroHintShown = true;
+        }
     }
 
     private void playMusic() {

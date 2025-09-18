@@ -51,6 +51,7 @@ public class BossEnemyFactory {
 
         boss
                 .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+                .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
                 .addComponent(new clickable(clickRadius));
 
         // Set custom boss size

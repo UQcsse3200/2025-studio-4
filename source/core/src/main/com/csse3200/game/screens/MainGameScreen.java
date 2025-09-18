@@ -152,6 +152,16 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     forestGameArea.create();
+
+    // After game area and assets are ready, apply pending save restoration if any
+    if (hasExistingPlayer) {
+      boolean applied = saveGameService.applyPendingRestore();
+      if (applied) {
+        logger.info("Applied pending save restoration after game area creation");
+      } else {
+        logger.warn("No pending restoration to apply or failed to apply");
+      }
+    }
   }
 
   @Override

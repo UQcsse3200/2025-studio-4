@@ -27,6 +27,7 @@ public class ServiceLocator {
   private static GdxGame gameService;
   private static GameStateService gameStateService;
   private static PlayerNameService playerNameService;
+  private static SaveGameService saveGameService;
 
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
@@ -125,6 +126,7 @@ public class ServiceLocator {
     gameStateService = null;
     playerNameService = null;
     leaderboardService = null;
+    saveGameService = null;
   }
 
   private ServiceLocator() {
@@ -132,9 +134,11 @@ public class ServiceLocator {
   }
 
     public static SaveGameService getSaveGameService() {
-        return null;
+        return saveGameService;
     }
 
-    public static void registerSaveGameService(SaveGameService mockSaveGame) {
+    public static void registerSaveGameService(SaveGameService service) {
+        logger.debug("Registering save game service {}", service);
+        saveGameService = service;
     }
 }

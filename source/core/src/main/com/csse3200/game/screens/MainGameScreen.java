@@ -220,6 +220,10 @@ public class MainGameScreen extends ScreenAdapter {
     logger.debug("Unloading assets");
     ResourceService resourceService = ServiceLocator.getResourceService();
     resourceService.unloadAssets(mainGameTextures);
+    // Ensure music stops when leaving the main game to avoid overlap on re-entry
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().stopMusic();
+    }
   }
 
   /**

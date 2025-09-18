@@ -509,10 +509,17 @@ public class ForestGameArea extends GameArea {
     }
 
     private void playMusic() {
-        Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-        music.setLooping(true);
-        music.setVolume(0.3f);
-        music.play();
+        // Route all music through AudioService to avoid overlaps across screens
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
+            ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+            ServiceLocator.getAudioService().setMusicVolume(0.3f);
+        } else {
+            Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+            music.setLooping(true);
+            music.setVolume(0.3f);
+            music.play();
+        }
     }
 
     private void loadAssets() {
@@ -541,7 +548,11 @@ public class ForestGameArea extends GameArea {
         if (mapEditor != null) {
             mapEditor.cleanup();
         }
-        ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().stopMusic();
+        } else {
+            ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        }
         this.unloadAssets();
     }
 }

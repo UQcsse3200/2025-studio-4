@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -21,6 +22,7 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
+  private Label playerNameLabel;
 
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
@@ -35,6 +37,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
     entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
+    entity.getEvents().addListener("updatePlayerName", this::updatePlayerNameUI);
   }
 
   /**
@@ -46,6 +49,12 @@ public class PlayerStatsDisplay extends UIComponent {
     table.top().left();
     table.setFillParent(true);
     table.padTop(45f).padLeft(5f);
+
+    // Player name
+    String playerName = getPlayerName();
+    playerNameLabel = new Label("Player: " + playerName, skin, "large");
+    table.add(playerNameLabel).colspan(2).left().pad(5);
+    table.row();
 
     // Heart image
     float heartSideLength = 60f;
@@ -113,11 +122,36 @@ public class PlayerStatsDisplay extends UIComponent {
     }
   }
 
+  /**
+   * Gets the current player's name from the PlayerNameService.
+   * @return the player's name or "Player" if service is not available
+   */
+  private String getPlayerName() {
+    PlayerNameService playerNameService = ServiceLocator.getPlayerNameService();
+    if (playerNameService != null) {
+      return playerNameService.getPlayerName();
+    }
+    return "Player";
+  }
+
+  /**
+   * Updates the player's name on the UI.
+   */
+  public void updatePlayerNameUI() {
+    if (playerNameLabel != null) {
+      String playerName = getPlayerName();
+      playerNameLabel.setText("Player: " + playerName);
+    }
+  }
+
   @Override
   public void dispose() {
     super.dispose();
     heartImage.remove();
     healthLabel.remove();
+    if (playerNameLabel != null) {
+      playerNameLabel.remove();
+    }
 
     for (Image image : currencyImages.values()) {
       image.remove();

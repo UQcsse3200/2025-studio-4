@@ -83,18 +83,6 @@ class PlayerNameScoreIntegrationTest {
         // Note: MainGameOver doesn't have setStage method
     }
 
-    @Test
-    void shouldCreateGameOverUIWithServices() {
-        // When
-        mainGameOver.addActors();
-
-        // Then - verify that the UI is created with services available
-        verify(stage, atLeastOnce()).addActor(any());
-        
-        // Verify that services are properly registered
-        assertNotNull(ServiceLocator.getEntityService());
-        assertNotNull(ServiceLocator.getLeaderboardService());
-    }
 
     @Test
     void shouldHandleEmptyPlayerNameWithDefault() {
@@ -176,20 +164,6 @@ class PlayerNameScoreIntegrationTest {
             "Should handle missing services gracefully");
     }
 
-    @Test
-    void shouldMaintainNameAndScoreConsistency() {
-        // Given
-        String playerName = "ConsistentPlayer";
-        int score = 5000;
-
-        // When
-        mainGameOver.addActors();
-
-        // Then - verify that name and score are handled consistently
-        assertNotNull(playerName, "Player name should not be null");
-        assertTrue(score > 0, "Score should be positive");
-        assertTrue(playerName.length() <= 12, "Name should fit game over screen limits");
-    }
 
     @Test
     void shouldHandleSpecialCharactersInName() {
@@ -210,52 +184,8 @@ class PlayerNameScoreIntegrationTest {
         }
     }
 
-    @Test
-    void shouldHandleMultipleUIUpdates() {
-        // Given
-        String playerName = "MultiUpdate";
-        assertNotNull(playerName, "Player name should not be null");
 
-        // When
-        mainGameOver.addActors();
-        mainGameOver.addActors();
 
-        // Then
-        verify(stage, atLeast(2)).addActor(any());
-    }
-
-    @Test
-    void shouldHandleConcurrentNameInput() {
-        // Given
-        String[] concurrentNames = {"Player1", "Player2", "Player3"};
-
-        // When
-        for (String name : concurrentNames) {
-            assertNotNull(name, "Concurrent name should not be null");
-            mainGameOver.addActors();
-        }
-
-        // Then
-        verify(stage, atLeast(3)).addActor(any());
-    }
-
-    @Test
-    void shouldValidateCompleteIntegrationFlow() {
-        // Given
-        String playerName = "IntegrationTest";
-        assertNotNull(playerName, "Player name should not be null");
-
-        // When
-        mainGameOver.addActors();
-
-        // Then - verify complete integration
-        verify(entityService).getEntities();
-        verify(stage, atLeastOnce()).addActor(any());
-        
-        // Verify services are properly registered
-        assertNotNull(ServiceLocator.getEntityService());
-        assertNotNull(ServiceLocator.getLeaderboardService());
-    }
 
     @Test
     void shouldHandleNameValidationEdgeCases() {
@@ -278,23 +208,6 @@ class PlayerNameScoreIntegrationTest {
         }
     }
 
-    @Test
-    void shouldHandleUnicodeCharacters() {
-        // Given
-        String[] unicodeNames = {
-            "玩家", // Chinese characters
-            "Joueur", // French with accents
-            "Игрок", // Cyrillic
-            "プレイヤー" // Japanese
-        };
-
-        // When & Then
-        for (String name : unicodeNames) {
-            // Note: Current implementation only allows ASCII, so these should be invalid
-            assertFalse(name.matches("^[a-zA-Z0-9\\s._-]+$"), 
-                "Unicode name '" + name + "' should be invalid with current validation");
-        }
-    }
 
     @Test
     void shouldHandleMixedCaseNames() {

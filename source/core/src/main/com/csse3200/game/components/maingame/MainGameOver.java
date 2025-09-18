@@ -152,7 +152,4 @@ public class MainGameOver extends UIComponent {
     }
     super.dispose();
   }
-
-    public void saveScore(String noService, int i) {
-    }
 }

@@ -237,7 +237,7 @@ class PlayerNameValidationTest {
         String[] validGameOverNames = {
             "A", // 1 character
             "Player", // 6 characters
-            "ValidPlayer12" // 12 characters
+            "ValidPlayer1" // 12 characters
         };
 
         String[] invalidGameOverNames = {
@@ -258,20 +258,37 @@ class PlayerNameValidationTest {
     }
 
     @Test
-    void shouldHandleUnicodeCharacters() {
-        // Given
-        String[] unicodeNames = {
+    void shouldValidateEnglishNamesOnly() {
+        // Given - Test various English name patterns that should be valid
+        String[] validEnglishNames = {
+            "John", // Simple English name
+            "Mary Jane", // English name with space
+            "Alex-Smith", // English name with hyphen
+            "Player_1", // English name with underscore
+            "TestPlayer123", // English name with numbers
+            "J.R.R", // English name with periods
+        };
+        
+        // Test invalid non-English characters
+        String[] invalidNonEnglishNames = {
             "玩家", // Chinese characters
-            "Joueur", // French with accents
+            "Café", // French with accents
             "Игрок", // Cyrillic
-            "プレイヤー" // Japanese
+            "プレイヤー", // Japanese
+            "José", // Spanish with accent
+            "Müller" // German with umlaut
         };
 
-        // When & Then
-        for (String name : unicodeNames) {
-            // Note: Current implementation only allows ASCII, so these should be invalid
+        // When & Then - Valid English names should pass
+        for (String name : validEnglishNames) {
+            assertTrue(isValidPlayerName(name), 
+                "Valid English name '" + name + "' should be accepted");
+        }
+        
+        // When & Then - Non-English names should be rejected
+        for (String name : invalidNonEnglishNames) {
             assertFalse(isValidPlayerName(name), 
-                "Unicode name '" + name + "' should be invalid with current validation");
+                "Non-English name '" + name + "' should be rejected");
         }
     }
 

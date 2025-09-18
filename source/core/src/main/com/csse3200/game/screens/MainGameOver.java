@@ -129,7 +129,12 @@ public class MainGameOver extends UIComponent {
         }
     }
 
-    private void saveScore(String playerName, int finalScore) {
+    public void saveScore(String playerName, int finalScore) {
+        // Handle empty or null player name
+        if (playerName == null || playerName.trim().isEmpty()) {
+            playerName = "Player";
+        }
+        
         LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
         SaveGameService saveGameService = ServiceLocator.getSaveGameService();
 

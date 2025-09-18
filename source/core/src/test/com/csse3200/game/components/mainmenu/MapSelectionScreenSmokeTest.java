@@ -1,7 +1,8 @@
-package com.csse3200.game.screens;
+package com.csse3200.game.components.mainmenu;
 
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.screens.MapSelectionScreen;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;

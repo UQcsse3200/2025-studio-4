@@ -319,7 +319,7 @@ public class ForestGameArea extends GameArea {
 
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
-                new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
+                new MapHighlighter(terrain, placementController);
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
 
         spawnEntity(highlighterEntity);

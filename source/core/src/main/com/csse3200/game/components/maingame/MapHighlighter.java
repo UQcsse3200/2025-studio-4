@@ -30,7 +30,6 @@ public class MapHighlighter extends UIComponent {
     private final TerrainComponent terrain;
     private final ShapeRenderer shapeRenderer;
     private final SimplePlacementController placementController;
-    private final TowerFactory towerFactory;
     private TowerUpgradeMenu towerUpgradeMenu;
 
     private Entity selectedTower = null; // currently selected tower
@@ -40,15 +39,12 @@ public class MapHighlighter extends UIComponent {
      *
      * @param terrain             The terrain component used to get tile size and bounds.
      * @param placementController Controller for placement state (used to check pending tower).
-     * @param towerFactory        Factory used to query tower types for size info.
      */
     public MapHighlighter(TerrainComponent terrain,
-                          SimplePlacementController placementController,
-                          TowerFactory towerFactory) {
+                          SimplePlacementController placementController) {
         this.terrain = terrain;
         this.shapeRenderer = new ShapeRenderer();
         this.placementController = placementController;
-        this.towerFactory = towerFactory;
     }
 
     /**
@@ -147,13 +143,13 @@ public class MapHighlighter extends UIComponent {
             // Determine footprint of pending tower type
             Entity pendingEntity;
             String pendingType = placementController.getPendingType();
-            if ("Dino".equalsIgnoreCase(pendingType)) {
-                pendingEntity = towerFactory.createDinoTower();
-            } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
-                pendingEntity = towerFactory.createCavemenTower();
-            } else {
-                pendingEntity = towerFactory.createBoneTower();
-            }
+             if ("Dino".equalsIgnoreCase(pendingType)) {
+                 pendingEntity = TowerFactory.createDinoTower();
+             } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
+                 pendingEntity = TowerFactory.createCavemenTower();
+             } else {
+                 pendingEntity = TowerFactory.createBoneTower();
+             }
             TowerComponent placingTower = pendingEntity.getComponent(TowerComponent.class);
             int towerWidth = placingTower != null ? placingTower.getWidth() : 2;
             int towerHeight = placingTower != null ? placingTower.getHeight() : 2;

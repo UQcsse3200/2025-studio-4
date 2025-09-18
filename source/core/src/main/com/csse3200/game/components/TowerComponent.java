@@ -4,12 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.projectile.ProjectileComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -26,7 +26,7 @@ public class TowerComponent extends Component {
     private final int height; // in tiles
     
     // Additional fields for tower functionality
-    private CurrencyType selectedPurchaseCurrency = CurrencyType.GOLD;
+    private CurrencyType selectedPurchaseCurrency = CurrencyType.METAL_SCRAP;
     private boolean active = true;
     private boolean selected = false;
     private boolean showSellButton = false;
@@ -159,7 +159,7 @@ public class TowerComponent extends Component {
         {
             return false;
         }
-        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
+        int cost = costComponent.getCost();
         return playerCurrencyManager.canAffordAndSpendCurrency(Map.of(selectedPurchaseCurrency, cost));
     }
 
@@ -245,7 +245,7 @@ public class TowerComponent extends Component {
         {
             return;
         }
-        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
+        int cost = costComponent.getCost();
         if (cost > 0)
         {
             currencyManager.refundCurrency(Map.of(selectedPurchaseCurrency, cost), refundRate);
@@ -294,8 +294,10 @@ public class TowerComponent extends Component {
             if (!dir.isZero(0.0001f)) {
                 dir.nor(); // Normalize direction
 
+                // Note: AnimationRenderComponent doesn't support rotation
+                // Could be changed to RotatingTextureRenderComponent if rotation is needed
                 if (headRenderer != null) {
-                    headRenderer.setRotation(dir.angleDeg());
+                    // headRenderer.setRotation(dir.angleDeg()); // Method not available
                 }
 
                 // --- Adjust projectile speed and life to match tower range ---

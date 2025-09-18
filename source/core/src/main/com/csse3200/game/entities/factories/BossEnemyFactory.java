@@ -55,13 +55,6 @@ public class BossEnemyFactory {
      * @return entity
      */
     public static Entity createBossEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
-<<<<<<< HEAD
-        Entity boss = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
-
-        // Add waypoint component for independent waypoint tracking
-        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
-=======
         return createBossEnemy(waypoints, player, difficulty, 0);
     }
 
@@ -75,15 +68,11 @@ public class BossEnemyFactory {
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
->>>>>>> origin/main
         boss.addComponent(waypointComponent);
 
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
-<<<<<<< HEAD
-=======
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
->>>>>>> origin/main
                 .addComponent(new clickable(clickRadius));
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));

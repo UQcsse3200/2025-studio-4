@@ -1,7 +1,6 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.csse3200.game.input.InputComponent;
 
 /** Handles ESC / P to toggle the pause menu. */

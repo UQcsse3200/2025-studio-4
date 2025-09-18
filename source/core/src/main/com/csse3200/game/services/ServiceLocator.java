@@ -129,7 +129,6 @@ public class ServiceLocator {
     playerNameService = source;
   }
 
-
   // NEW: Audio registration
   public static void registerAudioService(AudioService source) {
     logger.debug("Registering audio service {}", source);

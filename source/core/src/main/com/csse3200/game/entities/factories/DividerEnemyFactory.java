@@ -34,15 +34,8 @@ public class DividerEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 5;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
-<<<<<<< HEAD
-    private static final int DEFAULT_POINTS = 200;
-    ///////////////////////////////////////////////////////////////////////////////////////////////
-    
-=======
     private static final int DEFAULT_POINTS = 300;
     ///////////////////////////////////////////////////////////////////////////////////////////////
-
->>>>>>> origin/main
     // Configurable properties
     private static int health = DEFAULT_HEALTH;
     private static int damage = DEFAULT_DAMAGE;
@@ -183,12 +176,9 @@ public class DividerEnemyFactory {
     public static String getTexturePath() { return texturePath; }
     public static String getDisplayName() { return displayName; }
     public static Difficulty getDifficulty() { return difficulty; }
-<<<<<<< HEAD
-=======
     public static int getPoints() {
         return points;
     }
->>>>>>> origin/main
 
     public static void setResistance(DamageTypeConfig r) { resistance = (r != null) ? r : DEFAULT_RESISTANCE; }
     public static void setWeakness(DamageTypeConfig w) { weakness = (w != null) ? w : DEFAULT_WEAKNESS; }

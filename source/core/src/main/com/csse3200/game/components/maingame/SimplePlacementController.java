@@ -19,8 +19,6 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.TowerCostComponent;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,7 +44,7 @@ public class SimplePlacementController extends Component {
     private MapEditor mapEditor;
     
     /** Selected currency type for purchasing towers */
-    private CurrencyType selectedCurrencyType = CurrencyType.GOLD;
+    private CurrencyType selectedCurrencyType = CurrencyType.METAL_SCRAP;
     /** Currency manager for handling costs */
     private CurrencyManagerComponent currencyManager;
 
@@ -193,15 +191,15 @@ public class SimplePlacementController extends Component {
 
             Entity newTower;
             if ("dino".equalsIgnoreCase(pendingType)) {
-                newTower = TowerFactory.createDinoTower(selectedCurrencyType);
+                newTower = TowerFactory.createDinoTower();
             } else if ("cavemen".equalsIgnoreCase(pendingType)) {
-                newTower = TowerFactory.createCavemenTower(selectedCurrencyType);
+                newTower = TowerFactory.createCavemenTower();
             } else {
-                newTower = TowerFactory.createBoneTower(selectedCurrencyType);
+                newTower = TowerFactory.createBoneTower();
             }
 
             TowerCostComponent costComponent = newTower.getComponent(TowerCostComponent.class);
-            int cost = costComponent != null ? costComponent.getCostForCurrency(selectedCurrencyType) : 0;
+            int cost = costComponent != null ? costComponent.getCost() : 0;
             if (currencyManager == null || !currencyManager.canAffordAndSpendCurrency(Map.of(selectedCurrencyType, cost))) return;
 
             if (ghostTower != null)

@@ -134,4 +134,7 @@ public class ServiceLocator {
     public static SaveGameService getSaveGameService() {
         return null;
     }
+
+    public static void registerSaveGameService(SaveGameService mockSaveGame) {
+    }
 }

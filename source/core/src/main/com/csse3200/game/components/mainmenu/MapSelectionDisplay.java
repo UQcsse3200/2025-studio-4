@@ -82,7 +82,7 @@ public class MapSelectionDisplay extends UIComponent {
         thumbImage.setScaling(Scaling.fit);
 
         mapNameLabel = new Label("", skin);
-        counterLabel  = new Label("", skin);
+        counterLabel = new Label("", skin);
 
         Table card = new Table();
         card.defaults().pad(6f);
@@ -91,19 +91,26 @@ public class MapSelectionDisplay extends UIComponent {
         card.add(counterLabel).padTop(2f);
 
         // Left/Right arrows
-        TextButton leftArrow  = new TextButton("<", skin);
+        TextButton leftArrow = new TextButton("<", skin);
         TextButton rightArrow = new TextButton(">", skin);
         leftArrow.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) { move(-1); }
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                move(-1);
+            }
         });
         rightArrow.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) { move(+1); }
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                move(+1);
+            }
         });
 
         // Play + Back (to corners)
         TextButton playBtn = new TextButton("Play", skin);
         playBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
                 MapEntry e = entries.get(currentIndex);
                 entity.getEvents().trigger("mapSelected", e.mapId); // may be null (default)
             }
@@ -111,7 +118,8 @@ public class MapSelectionDisplay extends UIComponent {
 
         TextButton backBtn = new TextButton("Back", skin);
         backBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
                 entity.getEvents().trigger("backToMainMenu");
             }
         });
@@ -169,7 +177,9 @@ public class MapSelectionDisplay extends UIComponent {
         counterLabel.setText((currentIndex + 1) + " / " + entries.size());
     }
 
-    /** Find .tmx maps under assets/maps/ (internal). */
+    /**
+     * Find .tmx maps under assets/maps/ (internal).
+     */
     private List<FileHandle> findMaps() {
         List<FileHandle> out = new ArrayList<>();
         FileHandle dir = Gdx.files.internal("maps");
@@ -182,9 +192,11 @@ public class MapSelectionDisplay extends UIComponent {
         return out;
     }
 
-    @Override protected void draw(SpriteBatch batch) { /* stage draws */ }
+    @Override
+    protected void draw(SpriteBatch batch) { /* stage draws */ }
 
-    @Override public void dispose() {
+    @Override
+    public void dispose() {
         if (root != null) root.clear();
         super.dispose();
     }
@@ -192,6 +204,6 @@ public class MapSelectionDisplay extends UIComponent {
     private static class MapEntry {
         String mapId;        // null for default
         String displayName;  // shown under thumbnail
-        String thumbTex;     // texture path
+        String thumbTex;     // texture path, final texture
     }
 }

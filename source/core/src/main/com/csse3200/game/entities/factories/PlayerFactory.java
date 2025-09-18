@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.HomebaseDamageEffectComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -17,6 +18,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.DamagePopupComponent;
 import com.csse3200.game.components.PlayerScoreComponent;
 
 
@@ -48,6 +50,9 @@ public class PlayerFactory {
             .addComponent(new InventoryComponent(stats.gold))
             .addComponent(inputComponent)
             .addComponent(new CurrencyManagerComponent())
+            .addComponent(new HomebaseDamageEffectComponent())
+            .addComponent(new DamagePopupComponent())
+            .addComponent(new HealthBarComponent())
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new HomebaseDamageEffectComponent())
             .addComponent(new PlayerScoreComponent());

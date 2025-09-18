@@ -176,25 +176,18 @@ public class BossEnemyFactoryTest {
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
     }
-<<<<<<< HEAD
-=======
-
-    @Test
-    void bossEnemyDeathPoints() {
-        Entity player = PlayerFactory.createPlayer();
-        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
-        int before = score.getTotalScore(); // baseline
-        java.util.List<Entity> waypoints = new java.util.ArrayList<>();
+> waypoints = new java.util.ArrayList<>();
         waypoints.add(new Entity());
 
         // Create an enemy and simulate death
         Entity boss = BossEnemyFactory.createBossEnemy(waypoints, player, Difficulty.MEDIUM);
         boss.getEvents().trigger("entityDeath");
 
-        // Total should have increased by the bossâ€™ configured points
+        // Total should have increased by the bossâ€?configured points
         int expected = BossEnemyFactory.getPoints(); // default
         assertEquals(before + expected, score.getTotalScore());
     }
 
->>>>>>> origin/main
+
 }
+

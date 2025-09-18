@@ -175,15 +175,7 @@ public class GruntEnemyFactoryTest {
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.8f, 0.8f), GruntEnemyFactory.getSpeed());
     }
-<<<<<<< HEAD
-=======
-
-    @Test
-    void gruntEnemyDeathPoints() {
-        Entity player = PlayerFactory.createPlayer();
-        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
-        int before = score.getTotalScore(); // baseline
-        java.util.List<Entity> waypoints = new java.util.ArrayList<>();
+> waypoints = new java.util.ArrayList<>();
         waypoints.add(new Entity());
 
         // Create an enemy and simulate death
@@ -194,5 +186,6 @@ public class GruntEnemyFactoryTest {
         int expected = GruntEnemyFactory.getPoints(); // default
         assertEquals(before + expected, score.getTotalScore());
     }
->>>>>>> origin/main
+
 }
+

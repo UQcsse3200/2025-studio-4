@@ -174,15 +174,7 @@ public class DroneEnemyFactoryTest {
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(1.2f, 1.2f), DroneEnemyFactory.getSpeed());
     }
-<<<<<<< HEAD
-=======
-
-    @Test
-    void droneEnemyDeathPoints() {
-        Entity player = PlayerFactory.createPlayer();
-        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
-        int before = score.getTotalScore(); // baseline
-        java.util.List<Entity> waypoints = new java.util.ArrayList<>();
+> waypoints = new java.util.ArrayList<>();
         waypoints.add(new Entity());
 
         // Create an enemy and simulate death
@@ -193,5 +185,6 @@ public class DroneEnemyFactoryTest {
         int expected = DroneEnemyFactory.getPoints(); // default
         assertEquals(before + expected, score.getTotalScore());
     }
->>>>>>> origin/main
+
 }
+

@@ -171,15 +171,7 @@ public class TankFactoryTest {
         assertEquals(60, stats.getBaseAttack());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
-<<<<<<< HEAD
-=======
-
-    @Test
-    void tankEnemyDeathPoints() {
-        Entity player = PlayerFactory.createPlayer();
-        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
-        int before = score.getTotalScore(); // baseline
-        java.util.List<Entity> waypoints = new java.util.ArrayList<>();
+> waypoints = new java.util.ArrayList<>();
         waypoints.add(new Entity());
 
         // Create an enemy and simulate death
@@ -190,5 +182,6 @@ public class TankFactoryTest {
         int expected = TankEnemyFactory.getPoints(); // default
         assertEquals(before + expected, score.getTotalScore());
     }
->>>>>>> origin/main
+
 }
+

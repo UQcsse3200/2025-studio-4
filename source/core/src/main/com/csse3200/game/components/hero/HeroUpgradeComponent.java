@@ -42,7 +42,7 @@ public class HeroUpgradeComponent extends Component {
 
     /** Upgrade cost formula (can be customized) */
     private int getCostForLevel(int nextLevel) {
-        return nextLevel * 2;
+        return nextLevel * 200;
     }
 
     @Override

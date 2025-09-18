@@ -37,6 +37,8 @@ public class MapEditor extends InputAdapter {
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
+    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
         initializePathTile();
@@ -199,6 +201,9 @@ public class MapEditor extends InputAdapter {
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
             markKeypoint(wp);
+            Entity waypoint = new Entity();
+            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypointList.add(waypoint);
         }
         int[][] redCircledArea = {
             {12, 17, 5, 12}, 

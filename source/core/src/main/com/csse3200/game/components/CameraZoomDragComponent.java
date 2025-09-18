@@ -69,7 +69,7 @@ public class CameraZoomDragComponent extends InputComponent {
         }
         
         // 处理WASD键盘移动
-        handleKeyboardMovement();
+        //handleKeyboardMovement();
     }
     
     /**
@@ -96,16 +96,9 @@ public class CameraZoomDragComponent extends InputComponent {
         }
     }
     
-    /**
-     * 处理鼠标滚轮缩放
-     * 暂时注释掉滚轮缩放功能
-     */
+    /*
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        // 暂时注释掉滚轮缩放功能
-        return false;
-        
-        /*
         if (camera == null) return false;
         
         // 获取鼠标在世界坐标中的位置
@@ -138,10 +131,10 @@ public class CameraZoomDragComponent extends InputComponent {
                     currentZoom, newZoom, camera.position.x, camera.position.y);
         
         return true;
-        */
     }
+    */
     
-  
+
     
     /**
      * 重置相机到默认位置和缩放

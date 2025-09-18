@@ -7,6 +7,8 @@ public interface LeaderboardService {
     LeaderboardEntry getMyBest();
     void submitScore(long score);
 
+    void addEntry(String playerName, int finalScore2);
+
     // --- 数据模型 ---
     final class LeaderboardEntry {
         public final int rank;

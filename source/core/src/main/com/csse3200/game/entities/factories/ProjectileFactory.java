@@ -84,16 +84,6 @@ public final class ProjectileFactory {
 
         bullet.setPosition(startPos);
 
-        if(texture.contains("fireballdino")) {
-            bullet.setScale(0.3f, 0.3f);
-        }
-        else if (texture.contains("boneproj")) {
-            bullet.setScale(0.3f, 0.3f);
-        }
-        else if (texture.contains("zap")) {
-            bullet.setScale(0.3f, 0.3f);
-        }
-
 
         float angleDeg = (float) Math.toDegrees(Math.atan2(vy, vx));
         float BULLET_FACING_OFFSET_DEG = -90f;

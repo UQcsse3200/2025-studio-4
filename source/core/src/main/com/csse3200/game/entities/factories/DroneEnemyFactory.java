@@ -71,7 +71,6 @@ public class DroneEnemyFactory {
 
         drone
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new clickable(clickRadius));

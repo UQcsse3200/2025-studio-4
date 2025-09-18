@@ -19,17 +19,16 @@ import java.util.*;
 public class CurrencyManagerComponent extends Component {
     private Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
     private List<Entity> currencyEntityList = new ArrayList<>();
-
+    
     /**
      * Define initial values for each currency type at game start.
      */
     @Override
     public void create() {
-        currencies.clear(); // Ensure no leftover values from previous runs/tests
         this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
-        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 1000);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 300);
-        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 50);
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 0);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
         this.updateAllCurrencyUI();
     }
 
@@ -152,7 +151,7 @@ public class CurrencyManagerComponent extends Component {
         });
     }
 
-    /**
+     /**
      * Checks if the player has enough currency to cover the specified cost,
      * and if so, deducts the amount and returns true. Otherwise, returns false
      * and does not deduct anything.

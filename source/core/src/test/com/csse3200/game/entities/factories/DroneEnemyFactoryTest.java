@@ -176,19 +176,24 @@ public class DroneEnemyFactoryTest {
     }
 
     @Test
-    void droneEnemyDeathPoints() {
+    void testEntityDeathScoring() {
+        // Setup player and waypoints
         Entity player = PlayerFactory.createPlayer();
-        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
-        int before = score.getTotalScore(); // baseline
         java.util.List<Entity> waypoints = new java.util.ArrayList<>();
         waypoints.add(new Entity());
+
+        // Get initial score
+        PlayerScoreComponent scoreComponent = player.getComponent(PlayerScoreComponent.class);
+        int before = scoreComponent.getTotalScore();
 
         // Create an enemy and simulate death
         Entity drone = DroneEnemyFactory.createDroneEnemy(waypoints, player, Difficulty.MEDIUM);
         drone.getEvents().trigger("entityDeath");
 
-        // Total should have increased by the drone’s configured points
+        // Total should have increased by the drone's configured points
         int expected = DroneEnemyFactory.getPoints(); // default
-        assertEquals(before + expected, score.getTotalScore());
+        assertEquals(before + expected, scoreComponent.getTotalScore());
     }
+
 }
+

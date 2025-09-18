@@ -66,7 +66,7 @@ public class DividerChildEnemyFactory {
         DividerChild.addComponent(waypointComponent);
 
         DividerChild
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new clickable(clickRadius));
 

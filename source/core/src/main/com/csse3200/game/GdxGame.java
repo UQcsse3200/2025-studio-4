@@ -14,6 +14,7 @@ import com.csse3200.game.screens.VictoryScreen;
 import com.csse3200.game.screens.MapSelectionScreen;
 
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import static com.badlogic.gdx.Gdx.app;
  */
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
+  private String storedPlayerName = null;
 
   /** Used by MainMenuScreen to avoid restarting BGM repeatedly (0 = not started, 1 = playing). */
   public static int musicON = 0;
@@ -41,6 +43,9 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
+    
+    // instantiate player name service with default name
+    ServiceLocator.registerPlayerNameService(new PlayerNameService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }
@@ -147,6 +152,22 @@ public class GdxGame extends Game {
       currentScreen.dispose();
     }
     setScreen(OpeningCutsceneScreen.withBackground(this, backgroundIndex));
+  }
+
+  /**
+   * Store the player name for use across screen transitions
+   * @param playerName the player name to store
+   */
+  public void setStoredPlayerName(String playerName) {
+    this.storedPlayerName = playerName;
+  }
+
+  /**
+   * Get the stored player name
+   * @return the stored player name, or null if none is stored
+   */
+  public String getStoredPlayerName() {
+    return storedPlayerName;
   }
 
   /**

@@ -30,7 +30,7 @@ public class TankEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
-    private static final int DEFAULT_POINTS = 200;
+    private static final int DEFAULT_POINTS = 300;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -54,16 +54,25 @@ public class TankEnemyFactory {
      * @return entity
      */
     public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
-        Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints, 
-        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+        return createTankEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints, 
+        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
         tank.addComponent(waypointComponent);
 
         tank
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new clickable(clickRadius));
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));

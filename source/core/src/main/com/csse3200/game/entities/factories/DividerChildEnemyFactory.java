@@ -31,7 +31,11 @@ public class DividerChildEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+<<<<<<< HEAD
     private static final int DEFAULT_POINTS = 50;
+=======
+    private static final int DEFAULT_POINTS = 100;
+>>>>>>> origin/main
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -66,7 +70,12 @@ public class DividerChildEnemyFactory {
         DividerChild.addComponent(waypointComponent);
 
         DividerChild
+<<<<<<< HEAD
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+=======
+            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
+>>>>>>> origin/main
             .addComponent(new clickable(clickRadius));
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
@@ -154,6 +163,10 @@ public class DividerChildEnemyFactory {
     
     public static String getDisplayName() {
         return displayName;
+    }
+
+    public static int getPoints() {
+        return points;
     }
     
     // Setters   

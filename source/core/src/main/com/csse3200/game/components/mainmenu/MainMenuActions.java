@@ -2,9 +2,12 @@ package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
+<<<<<<< HEAD
 import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.PlayerNameInputDialog;
+=======
+>>>>>>> origin/main
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +35,7 @@ public class MainMenuActions extends Component {
    * Shows player name input dialog, then starts the game.
    */
   private void onStart() {
+<<<<<<< HEAD
     logger.info("Start new game - requesting player name");
     showPlayerNameDialog();
   }
@@ -73,7 +77,12 @@ public class MainMenuActions extends Component {
       ServiceLocator.getPlayerNameService() != null ? 
       ServiceLocator.getPlayerNameService().getPlayerName() : "Unknown");
     game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+=======
+    logger.info("Open Map Selection");
+    game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
+>>>>>>> origin/main
   }
+
 
   /**
    * Opens the save selection interface.

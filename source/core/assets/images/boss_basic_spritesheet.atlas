@@ -1,8 +1,15 @@
-boss_basic_spritesheet.png
-size: 2048,1536
+Boss Spritesheet.png
+size: 16896,4608
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+idle
+  rotate: false
+  xy: 0, 0
+  size: 1024, 1536
+  orig: 1024, 1536
+  offset: 0, 0
+  index: 0
 walk
   rotate: false
   xy: 0, 0
@@ -17,10 +24,143 @@ walk
   orig: 1024, 1536
   offset: 0, 0
   index: 1
-idle
+walk
   rotate: false
-  xy: 0, 0
+  xy: 2048, 0
   size: 1024, 1536
   orig: 1024, 1536
   offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 3072, 0
+  size: 1024, 1536
+  orig: 1024, 1536
+  offset: 0, 0
+  index: 3
+death
+  rotate: false
+  xy: 0, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
   index: 0
+death
+  rotate: false
+  xy: 1536, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 1
+death
+  rotate: false
+  xy: 3072, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 2
+death
+  rotate: false
+  xy: 4608, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 3
+death
+  rotate: false
+  xy: 6144, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 4
+death
+  rotate: false
+  xy: 7680, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 5
+death
+  rotate: false
+  xy: 9216, 1536
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 6
+attack
+  rotate: false
+  xy: 0, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 1536, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 3072, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 4608, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 6144, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 4
+attack
+  rotate: false
+  xy: 7680, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 5
+attack
+  rotate: false
+  xy: 9216, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 6
+attack
+  rotate: false
+  xy: 10752, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 7
+attack
+  rotate: false
+  xy: 12288, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 8
+attack
+  rotate: false
+  xy: 13824, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 9
+attack
+  rotate: false
+  xy: 15360, 3072
+  size: 1536, 1536
+  orig: 1536, 1536
+  offset: 0, 0
+  index: 10

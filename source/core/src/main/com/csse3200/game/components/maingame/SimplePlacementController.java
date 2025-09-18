@@ -15,6 +15,13 @@ import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.MapEditor;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.currencysystem.CurrencyType;
+import com.csse3200.game.components.TowerCostComponent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Controller for managing tower placement within the game world.
@@ -37,6 +44,11 @@ public class SimplePlacementController extends Component {
     /** Ghost tower entity that previews placement before confirming */
     private Entity ghostTower = null;
     private MapEditor mapEditor;
+    
+    /** Selected currency type for purchasing towers */
+    private CurrencyType selectedCurrencyType = CurrencyType.GOLD;
+    /** Currency manager for handling costs */
+    private CurrencyManagerComponent currencyManager;
 
     public void setMapEditor(MapEditor mapEditor) {
         this.mapEditor = mapEditor;
@@ -181,11 +193,22 @@ public class SimplePlacementController extends Component {
 
             Entity newTower;
             if ("dino".equalsIgnoreCase(pendingType)) {
-                newTower = TowerFactory.createDinoTower();
+                newTower = TowerFactory.createDinoTower(selectedCurrencyType);
             } else if ("cavemen".equalsIgnoreCase(pendingType)) {
-                newTower = TowerFactory.createCavemenTower();
+                newTower = TowerFactory.createCavemenTower(selectedCurrencyType);
             } else {
-                newTower = TowerFactory.createBoneTower();
+                newTower = TowerFactory.createBoneTower(selectedCurrencyType);
+            }
+
+            TowerCostComponent costComponent = newTower.getComponent(TowerCostComponent.class);
+            int cost = costComponent != null ? costComponent.getCostForCurrency(selectedCurrencyType) : 0;
+            if (currencyManager == null || !currencyManager.canAffordAndSpendCurrency(Map.of(selectedCurrencyType, cost))) return;
+
+            if (ghostTower != null)
+            {
+                ghostTower.dispose();
+                ghostTower = null;
+>>>>>>> origin/main
             }
 
             newTower.setPosition(snapPos);

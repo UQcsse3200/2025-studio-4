@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.PlayerScoreComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -170,4 +171,24 @@ public class TankFactoryTest {
         assertEquals(60, stats.getBaseAttack());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
+<<<<<<< HEAD
+=======
+
+    @Test
+    void tankEnemyDeathPoints() {
+        Entity player = PlayerFactory.createPlayer();
+        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
+        int before = score.getTotalScore(); // baseline
+        java.util.List<Entity> waypoints = new java.util.ArrayList<>();
+        waypoints.add(new Entity());
+
+        // Create an enemy and simulate death
+        Entity tank = TankEnemyFactory.createTankEnemy(waypoints, player, Difficulty.MEDIUM);
+        tank.getEvents().trigger("entityDeath");
+
+        // Total should have increased by the tank’s configured points
+        int expected = TankEnemyFactory.getPoints(); // default
+        assertEquals(before + expected, score.getTotalScore());
+    }
+>>>>>>> origin/main
 }

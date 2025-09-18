@@ -30,7 +30,7 @@ public class DroneEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 100;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
-    private static final int DEFAULT_POINTS = 10;
+    private static final int DEFAULT_POINTS = 100;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties (these can remain static as they're defaults)
@@ -54,16 +54,25 @@ public class DroneEnemyFactory {
      * @return entity
      */
     public static Entity createDroneEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
-        Entity drone = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+        return createDroneEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createDroneEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity drone = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints,
+        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add drone-specific waypoint component
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
         drone.addComponent(waypointComponent);
 
         drone
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new clickable(clickRadius));
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
@@ -166,6 +175,10 @@ public class DroneEnemyFactory {
     
     public static String getDisplayName() {
         return displayName;
+    }
+
+    public static int getPoints() {
+        return points;
     }
     
     // Setters   

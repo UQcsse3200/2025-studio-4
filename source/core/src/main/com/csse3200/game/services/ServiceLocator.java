@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ServiceLocator {
   private static final Logger logger = LoggerFactory.getLogger(ServiceLocator.class);
+
   private static EntityService entityService;
   private static RenderService renderService;
   private static PhysicsService physicsService;
@@ -29,8 +30,13 @@ public class ServiceLocator {
   private static PlayerNameService playerNameService;
   private static SaveGameService saveGameService;
 
+  // NEW: centralised audio service
+  private static AudioService audioService;
+
+  // Leaderboard
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
 
+  // --- Getters ---
   public static EntityService getEntityService() {
     return entityService;
   }
@@ -59,22 +65,32 @@ public class ServiceLocator {
     return gameService;
   }
 
-  public static GameStateService getGameStateService() { return gameStateService; }
+  public static GameStateService getGameStateService() {
+    return gameStateService;
+  }
 
-  public static PlayerNameService getPlayerNameService() { return playerNameService; }
+  public static PlayerNameService getPlayerNameService() { 
+    return playerNameService; 
+  }
 
+  // NEW: Audio getter
+  public static AudioService getAudioService() {
+    return audioService;
+  }
+
+  public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
+    return leaderboardService;
+  }
+
+  // --- Registrations ---
   public static void registerEntityService(EntityService service) {
     logger.debug("Registering entity service {}", service);
     entityService = service;
   }
 
-    public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
-        leaderboardService = service;
-    }
-    public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
-        return leaderboardService;
-    }
-
+  public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
+    leaderboardService = service;
+  }
   public static void registerRenderService(RenderService service) {
     logger.debug("Registering render service {}", service);
     renderService = service;
@@ -106,15 +122,30 @@ public class ServiceLocator {
   }
 
   public static void registerGameStateService(GameStateService source) {
-    logger.debug("Registering game service {}", source);
+    logger.debug("Registering game state service {}", source);
     gameStateService = source;
   }
 
+<<<<<<< HEAD
   public static void registerPlayerNameService(PlayerNameService source) {
     logger.debug("Registering player name service {}", source);
     playerNameService = source;
   }
 
+=======
+  // NEW: Audio registration
+  public static void registerAudioService(AudioService source) {
+    logger.debug("Registering audio service {}", source);
+    audioService = source;
+  }
+
+  public static void registerLeaderboardService(
+          com.csse3200.game.services.leaderboard.LeaderboardService service) {
+    logger.debug("Registering leaderboard service {}", service);
+    leaderboardService = service;
+  }
+
+  // --- Teardown ---
   public static void clear() {
     entityService = null;
     renderService = null;
@@ -123,8 +154,9 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
-    gameStateService = null;
+    gameStateService = null; // ensure state service is cleared
     playerNameService = null;
+    audioService = null;     // ensure audio is cleared
     leaderboardService = null;
     saveGameService = null;
   }

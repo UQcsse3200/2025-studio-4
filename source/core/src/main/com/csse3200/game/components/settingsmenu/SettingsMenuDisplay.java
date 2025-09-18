@@ -207,21 +207,23 @@ public class SettingsMenuDisplay extends UIComponent {
 
         Label musicVolumeLabel = new Label("Music Volume:", skin);
         musicVolumeSlider = new Slider(0f, 1f, 0.1f, false, skin);
-        musicVolumeSlider.setValue(0.5f); // Default value
-        Label musicVolumeValue = new Label(String.format("%.0f%%", 0.5f * 100), skin);
+        musicVolumeSlider.setValue(settings.musicVolume);
+        Label musicVolumeValue = new Label(String.format("%.0f%%", settings.musicVolume * 100), skin);
 
         Label soundVolumeLabel = new Label("Sound Volume:", skin);
         soundVolumeSlider = new Slider(0f, 1f, 0.1f, false, skin);
-        soundVolumeSlider.setValue(0.5f); // Default value
-        Label soundVolumeValue = new Label(String.format("%.0f%%", 0.5f * 100), skin);
+        soundVolumeSlider.setValue(settings.soundVolume);
+        Label soundVolumeValue = new Label(String.format("%.0f%%", settings.soundVolume * 100), skin);
 
         Label difficultyLabel = new Label("Difficulty:", skin);
         difficultySelect = new SelectBox<>(skin);
         difficultySelect.setItems("Easy", "Normal", "Hard");
+        difficultySelect.setSelected(settings.difficulty);
 
         Label languageLabel = new Label("Language:", skin);
         languageSelect = new SelectBox<>(skin);
         languageSelect.setItems("English", "中文", "Español");
+        languageSelect.setSelected(settings.language);
 
         Label displayModeLabel = new Label("Resolution:", skin);
         displayModeSelect = new SelectBox<>(skin);
@@ -291,6 +293,9 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
+                    if (ServiceLocator.getAudioService() != null) {
+                        ServiceLocator.getAudioService().setMusicVolume(value);
+                    }
                     return true;
                 });
 
@@ -298,6 +303,9 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = soundVolumeSlider.getValue();
                     soundVolumeValue.setText(String.format("%.0f%%", value * 100));
+                    if (ServiceLocator.getAudioService() != null) {
+                        ServiceLocator.getAudioService().setSoundVolume(value);
+                    }
                     return true;
                 });
 
@@ -336,14 +344,14 @@ public class SettingsMenuDisplay extends UIComponent {
     private Table makeMenuBtns() {
         // Create custom button style
         TextButtonStyle customButtonStyle = createCustomButtonStyle();
-        
+
         TextButton backBtn = new TextButton("Back", customButtonStyle);
         TextButton applyBtn = new TextButton("Apply", customButtonStyle);
-        
+
         // Set button size
         float buttonWidth = 150f;
         float buttonHeight = 50f;
-        
+
         backBtn.getLabel().setColor(Color.WHITE);
         applyBtn.getLabel().setColor(Color.WHITE);
 
@@ -390,7 +398,19 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
         settings.vsync = vsyncCheck.isChecked();
 
+        // Audio settings
+        settings.musicVolume = musicVolumeSlider.getValue();
+        settings.soundVolume = soundVolumeSlider.getValue();
+
+        // Gameplay settings
+        settings.difficulty = difficultySelect.getSelected();
+        settings.language = languageSelect.getSelected();
+
         UserSettings.set(settings, true);
+
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().updateSettings();
+        }
     }
 
     private void exitMenu() {
@@ -439,36 +459,36 @@ public class SettingsMenuDisplay extends UIComponent {
      */
     private TextButtonStyle createCustomButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
-        
+
         // Use Segoe UI font
         style.font = skin.getFont("segoe_ui");
-        
+
         // Load button background image
         Texture buttonTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
-        
+
         // Create NinePatch for scalable button background
         NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        
+
         // Create pressed state NinePatch (slightly darker)
         NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
         pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-        
+
         // Create hover state NinePatch (slightly brighter)
         NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
         hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
-        
+
         // Set button states
         style.up = new NinePatchDrawable(buttonPatch);
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
-        
+
         // Set font colors
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
-        
+
         return style;
     }
 

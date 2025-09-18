@@ -15,7 +15,7 @@ public class HeroConfig3 extends BaseEntityConfig {
   public float moveSpeed = 220f;
 
   /** Attack cooldown (seconds per shot) — lower values mean faster attack speed */
-  public float attackCooldown = 0.15f;
+  public float attackCooldown = 1.50f;
 
   /** Bullet lifetime (seconds) */
   public float bulletLife = 1.6f;
@@ -45,7 +45,7 @@ public class HeroConfig3 extends BaseEntityConfig {
    */
   public HeroConfig3() {
     this.health = 100;
-    this.baseAttack = 20;
+    this.baseAttack = 100;
   }
 }
 

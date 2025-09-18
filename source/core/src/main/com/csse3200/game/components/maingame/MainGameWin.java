@@ -30,6 +30,20 @@ public class MainGameWin extends UIComponent {
   }
 
   public void addActors() {
+    // Ensure stage is initialized
+    if (stage == null) {
+      stage = ServiceLocator.getRenderService().getStage();
+      if (stage == null) {
+        logger.warn("Stage not available, cannot add actors");
+        return;
+      }
+    }
+    
+    // Remove existing UI if present
+    if (table != null && table.getStage() != null) {
+      table.remove();
+    }
+    
     table = new Table();
     table.top().center();
     table.setFillParent(true);
@@ -70,8 +84,16 @@ public class MainGameWin extends UIComponent {
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // Use Segoe UI font
-    style.font = skin.getFont("segoe_ui");
+    // Use skin font with fallback
+    try {
+      style.font = skin.getFont("font");
+    } catch (Exception e) {
+      // Fallback to default font if font is not available
+      style.font = skin.getFont("default");
+      if (style.font == null) {
+        style.font = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+      }
+    }
     
     // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()

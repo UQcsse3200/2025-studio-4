@@ -1,10 +1,16 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.currencysystem.CurrencyType;
+import com.csse3200.game.entities.factories.ProjectileFactory;
+import com.csse3200.game.rendering.AnimationRenderComponent;
+import java.util.Map;
 
 /**
  * Component representing a tower entity, including its type and size.
@@ -14,6 +20,14 @@ public class TowerComponent extends Component {
     private final String type;
     private final int width;  // in tiles
     private final int height; // in tiles
+    
+    // Additional fields for tower functionality
+    private CurrencyType selectedPurchaseCurrency = CurrencyType.GOLD;
+    private boolean active = true;
+    private boolean selected = false;
+    private boolean showSellButton = false;
+    private Entity headEntity;
+    private AnimationRenderComponent headRenderer;
 
     /**
      * Constructs a single-tile tower component.
@@ -47,7 +61,196 @@ public class TowerComponent extends Component {
     public int getHeight() { return height; }
 
     /**
-     * Updates the tower logic, including attack timer and attacking entities in range.
+     * Sets the selected purchase currency for this tower.
+     *
+     * @param currencyType The currency type to set.
+     */
+    public void setSelectedPurchaseCurrency(CurrencyType currencyType)
+    {
+        this.selectedPurchaseCurrency = currencyType;
+    }
+
+    /**
+     * Gets the selected purchase currency for this tower.
+     *
+     * @return The selected currency type.
+     */
+    public CurrencyType getSelectedPurchaseCurrency()
+    {
+        return selectedPurchaseCurrency;
+    }
+
+    /**
+     * Sets whether this tower is active.
+     *
+     * @param v True to activate, false to deactivate.
+     * @return This TowerComponent for chaining.
+     */
+    public TowerComponent setActive(boolean v)
+    {
+        this.active = v;
+        return this;
+    }
+
+    /**
+     * Checks if this tower is active.
+     *
+     * @return True if active, false otherwise.
+     */
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    /**
+     * Checks if this tower is currently selected.
+     *
+     * @return True if selected, false otherwise.
+     */
+    public boolean isSelected()
+    {
+        return selected;
+    }
+
+    /**
+     * Sets whether this tower is selected.
+     *
+     * @param selected True if selected, false otherwise.
+     */
+    public void setSelected(boolean selected)
+    {
+        this.selected = selected;
+    }
+
+    /**
+     * Gets the head entity attached to this tower.
+     *
+     * @return The head entity, or null if none.
+     */
+    public Entity getHeadEntity()
+    {
+        return headEntity;
+    }
+
+    /**
+     * Checks if this tower has a head entity.
+     *
+     * @return True if a head entity is attached, false otherwise.
+     */
+    public boolean hasHead()
+    {
+        return headEntity != null;
+    }
+
+    /**
+     * Checks if the player can afford this tower with the selected currency.
+     *
+     * @param playerCurrencyManager The player's currency manager.
+     * @return True if affordable, false otherwise.
+     */
+    public boolean canAffordWithSelectedCurrency(CurrencyManagerComponent playerCurrencyManager)
+    {
+        TowerCostComponent costComponent = entity.getComponent(TowerCostComponent.class);
+        if (costComponent == null)
+        {
+            return false;
+        }
+        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
+        return playerCurrencyManager.canAffordAndSpendCurrency(Map.of(selectedPurchaseCurrency, cost));
+    }
+
+    /**
+     * Checks if an entity is a valid enemy target.
+     *
+     * @param e The entity to check.
+     * @return True if the entity is a valid enemy target, false otherwise.
+     */
+    private static boolean isEnemyTarget(Entity e)
+    {
+        if (e.getComponent(ProjectileComponent.class) != null)
+        {
+            return false;
+        }
+        if (e.getComponent(CombatStatsComponent.class) == null)
+        {
+            return false;
+        }
+
+        HitboxComponent hb = e.getComponent(HitboxComponent.class);
+        if (hb == null || hb.getFixture() == null || hb.getFixture().getFilterData() == null)
+        {
+            return false;
+        }
+        short cat = hb.getFixture().getFilterData().categoryBits;
+        return PhysicsLayer.contains(PhysicsLayer.NPC, cat);
+    }
+
+    /**
+     * Finds the player entity from a list of entities.
+     *
+     * @param entities The list of entities.
+     * @return The player entity, or null if not found.
+     */
+    private Entity findPlayerEntity(java.util.List<Entity> entities)
+    {
+        for (Entity e : entities)
+        {
+            if (e.getComponent(CurrencyManagerComponent.class) != null)
+            {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets the current camera from the renderer.
+     *
+     * @return The camera, or null if not found.
+     */
+    private com.badlogic.gdx.graphics.Camera getCamera()
+    {
+        Renderer renderer = Renderer.getCurrentRenderer();
+        if (renderer != null && renderer.getCamera() != null)
+        {
+            return renderer.getCamera().getCamera();
+        }
+        return null;
+    }
+
+    /**
+     * Sells this tower, refunding a portion of its cost to the player.
+     *
+     * @param entities The list of entities to search for the player.
+     */
+    private void sellTower(java.util.List<Entity> entities)
+    {
+        TowerCostComponent costComponent = entity.getComponent(TowerCostComponent.class);
+        if (costComponent == null)
+        {
+            return;
+        }
+        float refundRate = 0.75f;
+        Entity player = findPlayerEntity(entities);
+        if (player == null)
+        {
+            return;
+        }
+        CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+        if (currencyManager == null)
+        {
+            return;
+        }
+        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
+        if (cost > 0)
+        {
+            currencyManager.refundCurrency(Map.of(selectedPurchaseCurrency, cost), refundRate);
+        }
+        entity.dispose();
+    }
+
+    /**
+     * Updates the tower logic, including attacking and selection/sell logic.
      */
     @Override
     public void update() {
@@ -59,21 +262,99 @@ public class TowerComponent extends Component {
 
         if (!stats.canAttack()) return;
 
-        // Iterate over all entities
-        for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) { // <-- use getEntitiesCopy()
+        Vector2 myCenter = entity.getCenterPosition();
+        float range = stats.getRange();
+        Entity target = null;
+
+        // Find the nearest enemy target within range
+        for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
             if (other == entity) continue;
 
             // Only attack entities that have CombatStatsComponent
             CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
             if (targetStats == null) continue;
 
-            Vector2 direction = other.getCenterPosition().cpy().sub(entity.getCenterPosition());
-            if (direction.len() <= stats.getRange()) {
-                targetStats.hit(
-                    new CombatStatsComponent(0, (int) stats.getDamage(), DamageTypeConfig.None, DamageTypeConfig.None)
-                );
-                stats.resetAttackTimer();
-                break; // attack one target per update
+            // Check if entity is a valid enemy target
+            if (!isEnemyTarget(other)) continue;
+
+            Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
+            if (toOther.len() <= range) {
+                target = other;
+                break;
+            }
+        }
+
+        // Attack the target if found
+        if (target != null) {
+            Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
+            if (!dir.isZero(0.0001f)) {
+                dir.nor(); // Normalize direction
+
+                if (headRenderer != null) {
+                    headRenderer.setRotation(dir.angleDeg());
+                }
+
+                // --- Adjust projectile speed and life to match tower range ---
+                float towerRange = stats.getRange();
+                float baseProjectileSpeed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+
+                // Set speed proportional to default base (optional) or just use base speed
+                float speed = baseProjectileSpeed;
+
+                // Set projectile life so it dies at max range: life = range / speed
+                float life = towerRange / speed;
+
+                String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
+                int damage = (int) stats.getDamage();
+
+                Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
+                var es = ServiceLocator.getEntityService();
+                if (es != null) {
+                    Gdx.app.postRunnable(() -> es.register(bullet));
+                }
+            }
+
+            stats.resetAttackTimer();
+        }
+
+        // --- SELL / SELECTION LOGIC ---
+        java.util.List<Entity> entities = new java.util.ArrayList<>();
+        for (Entity e : ServiceLocator.getEntityService().getEntitiesCopy())
+        {
+            entities.add(e);
+        }
+
+        if (isSelected())
+        {
+            if (!showSellButton)
+            {
+                showSellButton = true;
+                System.out.println("[Tower] Sell button shown for " + type + " tower at " + entity.getPosition());
+            }
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT))
+            {
+                sellTower(entities);
+                showSellButton = false;
+            }
+        }
+        else if (showSellButton)
+        {
+            showSellButton = false;
+            System.out.println("[Tower] Sell button hidden for " + type + " tower at " + entity.getPosition());
+        }
+
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
+        {
+            Vector3 worldClickPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+            com.badlogic.gdx.graphics.Camera camera = getCamera();
+            if (camera != null)
+            {
+                camera.unproject(worldClickPos);
+                Vector2 towerPos = entity.getPosition();
+                float clickRadius = 1.0f;
+                setSelected(Math.abs(worldClickPos.x - towerPos.x) < clickRadius &&
+                        Math.abs(worldClickPos.y - towerPos.y) < clickRadius);
+>>>>>>> origin/main
             }
         }
     }

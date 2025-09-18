@@ -28,9 +28,11 @@ public class MainGameActions extends Component {
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("gameover", this::onExit);
-    entity.getEvents().addListener("gamewin", this::onExit);
+    entity.getEvents().addListener("gamewin", this::onVictory);
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
+    entity.getEvents().addListener("performSave", this::onPerformSave);
+    entity.getEvents().addListener("performSaveAs", this::onPerformSaveAs);
     entity.getEvents().addListener("togglePause", this::onTogglePause);
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
@@ -52,21 +54,21 @@ public class MainGameActions extends Component {
   private void onPause() {
     ServiceLocator.getTimeSource().setTimeScale(0f);
     isPaused = true;
-    entity.getEvents().trigger("showPauseUI"); // tells UI to show overlay
+    entity.getEvents().trigger("showPauseUI"); 
   }
 
   private void onResume() {
     ServiceLocator.getTimeSource().setTimeScale(1f);
     isPaused = false;
-    entity.getEvents().trigger("hidePauseUI"); // tells UI to hide overlay
+    entity.getEvents().trigger("hidePauseUI"); 
   }
 
   private void onOpenSettings() {
-    // Opens the same Settings screen you use from main menu
     game.setScreen(GdxGame.ScreenType.SETTINGS);
   }
 
   private void onQuitToMenu() {
+    ForestGameArea.cleanupAllWaves();
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 
@@ -108,29 +110,49 @@ public class MainGameActions extends Component {
     logger.info("Exiting main game screen");
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
+  
   /**
-   * Saves the current game state.
+   * Swaps to the Victory screen.
    */
+  private void onVictory() {
+    logger.info("Game won, showing victory screen");
+    game.setScreen(GdxGame.ScreenType.VICTORY);
+  }
+  
   private void onSave() {
     logger.info("Manual save requested");
-    
+    // Show save menu instead of directly saving
+    entity.getEvents().trigger("showSaveUI");
+  }
+
+  private void onPerformSave() {
+    logger.info("Performing save operation (CI sync)");
     
     try {
-     
       var entityService = ServiceLocator.getEntityService();
       if (entityService != null) {
-      
-        var saveService = new com.csse3200.game.services.SaveGameService(entityService);
-        boolean success = saveService.saveGame();
+        var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
+        boolean success = saveService.save();
         if (success) {
           logger.info("Manual save completed successfully");
+          entity.getEvents().trigger("showSaveSuccess");
+          // auto-close save UI after success
+          entity.getEvents().trigger("hideSaveUI");
         } else {
           logger.warn("Manual save failed");
+          entity.getEvents().trigger("showSaveError");
         }
       }
     } catch (Exception e) {
       logger.error("Error during manual save", e);
+      entity.getEvents().trigger("showSaveError");
     }
+  }
+
+  private void onPerformSaveAs() {
+    logger.info("Save As requested");
+    // TODO: Implement save as functionality
+    entity.getEvents().trigger("showSaveError"); // For now, show error
   }
 
   /**

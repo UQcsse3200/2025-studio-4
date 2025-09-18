@@ -30,7 +30,7 @@ public class GruntEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
-    private static final int DEFAULT_POINTS = 50;
+    private static final int DEFAULT_POINTS = 150;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -55,16 +55,25 @@ public class GruntEnemyFactory {
      */
 
     public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
-        Entity grunt = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
-        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+        return createGruntEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity grunt = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints,
+        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
         grunt.addComponent(waypointComponent);
 
         grunt
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new clickable(clickRadius));
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
@@ -148,6 +157,10 @@ public class GruntEnemyFactory {
     
     public static String getDisplayName() {
         return displayName;
+    }
+
+    public static int getPoints() {
+        return points;
     }
     
     // Setters   

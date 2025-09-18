@@ -31,7 +31,11 @@ public class BossEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 10;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
+<<<<<<< HEAD
     private static final int DEFAULT_POINTS = 1000;
+=======
+    private static final int DEFAULT_POINTS = 600;
+>>>>>>> origin/main
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -55,15 +59,35 @@ public class BossEnemyFactory {
      * @return entity
      */
     public static Entity createBossEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
+<<<<<<< HEAD
         Entity boss = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
         "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+=======
+        return createBossEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createBossEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity boss = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints,
+        "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
+
+        // Add waypoint component for independent waypoint tracking
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
+>>>>>>> origin/main
         boss.addComponent(waypointComponent);
 
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+<<<<<<< HEAD
+=======
+                .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
+>>>>>>> origin/main
                 .addComponent(new clickable(clickRadius));
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
@@ -150,6 +174,10 @@ public class BossEnemyFactory {
 
     public static String getDisplayName() {
         return displayName;
+    }
+
+    public static int getPoints() {
+        return points;
     }
 
     // Setters

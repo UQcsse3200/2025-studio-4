@@ -1,8 +1,15 @@
-divider_basic_spritesheet.png
-size: 2038,863
+Divider Spritesheet.png
+size: 14000,2589
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+idle
+  rotate: false
+  xy: 2038, 0
+  size: 1019, 863
+  orig: 1019, 863
+  offset: 0, 0
+  index: 0
 walk
   rotate: false
   xy: 0, 0
@@ -17,10 +24,108 @@ walk
   orig: 1019, 863
   offset: 0, 0
   index: 1
-idle
+walk
   rotate: false
-  xy: 0, 0
+  xy: 2038, 0
   size: 1019, 863
   orig: 1019, 863
   offset: 0, 0
+  index: 2
+walk
+  rotate: false
+  xy: 3057, 0
+  size: 1019, 863
+  orig: 1019, 863
+  offset: 0, 0
+  index: 3
+death
+  rotate: false
+  xy: 0, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
   index: 0
+death
+  rotate: false
+  xy: 2000, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 1
+death
+  rotate: false
+  xy: 4000, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 2
+death
+  rotate: false
+  xy: 6000, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 3
+death
+  rotate: false
+  xy: 8000, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 4
+death
+  rotate: false
+  xy: 10000, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 5
+death
+  rotate: false
+  xy: 12000, 836
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 6
+attack
+  rotate: false
+  xy: 0, 1672
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 0
+attack
+  rotate: false
+  xy: 2000, 1672
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 1
+attack
+  rotate: false
+  xy: 4000, 1672
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 2
+attack
+  rotate: false
+  xy: 6000, 1672
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 3
+attack
+  rotate: false
+  xy: 8000, 1672
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 4
+attack
+  rotate: false
+  xy: 10000, 1672
+  size: 2000, 863
+  orig: 2000, 863
+  offset: 0, 0
+  index: 5

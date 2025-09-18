@@ -2,7 +2,6 @@ package com.csse3200.game.services.leaderboard;
 
 import java.util.ArrayList;
 import java.util.List;
-import static com.csse3200.game.services.leaderboard.LeaderboardService.*;
 
 public class InMemoryLeaderboardService implements LeaderboardService {
     private final List<LeaderboardEntry> all = new ArrayList<>();
@@ -29,5 +28,18 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     @Override
     public void submitScore(long score) {
 
+    }
+
+    @Override
+    public void addEntry(String playerName, int finalScore2) {
+        // Create a new leaderboard entry with the player name and score
+        LeaderboardEntry entry = new LeaderboardEntry(
+            all.size() + 1, // rank (simple implementation)
+            myId, // player ID
+            playerName, // display name
+            finalScore2, // score
+            System.currentTimeMillis() // timestamp
+        );
+        all.add(entry);
     }
 }

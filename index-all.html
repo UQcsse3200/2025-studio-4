@@ -56,6 +56,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#achievedAtMs" class="member-name-link">achievedAtMs</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroHintDialog.html#act(float)" class="member-name-link">act(float)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroHintDialog.html" title="class in com.csse3200.game.ui">HeroHintDialog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatsDialog.html#act(float)" class="member-name-link">act(float)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatsDialog.html" title="class in com.csse3200.game.ui">HeroStatsDialog</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/commands/Command.html#action(java.util.ArrayList)" class="member-name-link">action(ArrayList&lt;String&gt;)</a> - Method in interface com.csse3200.game.ui.terminal.commands.<a href="com/csse3200/game/ui/terminal/commands/Command.html" title="interface in com.csse3200.game.ui.terminal.commands">Command</a></dt>
 <dd>
 <div class="block">Action a command.</div>
@@ -497,6 +501,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/PerformanceDisplay.html" title="class in com.csse3200.game.components.gamearea">PerformanceDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html" title="class in com.csse3200.game.components.hero">HeroAppearanceComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -1794,6 +1800,14 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html#%3Cinit%3E(com.csse3200.game.entities.configs.HeroConfig)" class="member-name-link">HeroAppearanceComponent(HeroConfig)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html" title="class in com.csse3200.game.components.hero">HeroAppearanceComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
+<dd>
+<div class="block">左键点击英雄，弹出英雄数值与升级界面。</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#%3Cinit%3E()" class="member-name-link">HeroClickableComponent()</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#%3Cinit%3E(float)" class="member-name-link">HeroClickableComponent(float)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/HeroConfig.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">HeroConfig</a> - Class in <a href="com/csse3200/game/entities/configs/package-summary.html">com.csse3200.game.entities.configs</a></dt>
 <dd>
 <div class="block">Configuration class for the hero entity.</div>
@@ -1822,21 +1836,27 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Factory class for creating hero entities.</div>
 </dd>
+<dt><a href="com/csse3200/game/ui/HeroHintDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">HeroHintDialog</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
+<dd>
+<div class="block">一次性提示窗口：只显示武器切换提示与关闭按钮。</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/HeroHintDialog.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">HeroHintDialog(Entity)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroHintDialog.html" title="class in com.csse3200.game.ui">HeroHintDialog</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
-<div class="block">One-shot "hero skin switch" component.</div>
+<div class="block">One-shot component for switching hero form (weapon/skin).</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#%3Cinit%3E(com.csse3200.game.entities.configs.HeroConfig,com.csse3200.game.entities.configs.HeroConfig2,com.csse3200.game.entities.configs.HeroConfig3)" class="member-name-link">HeroOneShotFormSwitchComponent(HeroConfig, HeroConfig2, HeroConfig3)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainComponent,com.csse3200.game.areas.MapEditor,java.util.function.Consumer)" class="member-name-link">HeroPlacementComponent(TerrainComponent, MapEditor, Consumer&lt;GridPoint2&gt;)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatsDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">HeroStatsDialog</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>
-<div class="block">Two-phase hero placement component:
- 
-   Right-click: Create a semi-transparent ghost preview at the clicked grid cell.
-   Left-click: If the preview is active and the click hits the preview cell,
-       confirm placement by calling <code>onPlace(cell)</code>.</div>
+<div class="block">英雄数值窗口：显示等级、生命、攻击，并支持升级。</div>
 </dd>
-<dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainComponent,java.util.function.Consumer)" class="member-name-link">HeroPlacementComponent(TerrainComponent, Consumer&lt;GridPoint2&gt;)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
+<dt><a href="com/csse3200/game/ui/HeroStatsDialog.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">HeroStatsDialog(Entity)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatsDialog.html" title="class in com.csse3200.game.ui">HeroStatsDialog</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/HeroConfig.html#heroTexture" class="member-name-link">heroTexture</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a></dt>
 <dd>
@@ -1875,6 +1895,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/RankingDialog.html#hide()" class="member-name-link">hide()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/RankingDialog.html" title="class in com.csse3200.game.ui">RankingDialog</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HintToast.html" class="type-name-link" title="class in com.csse3200.game.ui">HintToast</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
+<dd>
+<div class="block">屏幕底部的临时提示条</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/raycast/SingleHitCallback.html#hit" class="member-name-link">hit</a> - Variable in class com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/SingleHitCallback.html" title="class in com.csse3200.game.physics.raycast">SingleHitCallback</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/CombatStatsComponent.html#hit(com.csse3200.game.components.CombatStatsComponent)" class="member-name-link">hit(CombatStatsComponent)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a></dt>
@@ -2046,7 +2070,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">处理键盘按下事件</div>
 </dd>
-<dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#keyDown(int)" class="member-name-link">keyDown(int)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
+<dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#keyDown(int)" class="member-name-link">keyDown(int)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseInputComponent.html#keyDown(int)" class="member-name-link">keyDown(int)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseInputComponent.html" title="class in com.csse3200.game.components.maingame">PauseInputComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2075,8 +2099,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Handles input if the terminal is open.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#keyTyped(char)" class="member-name-link">keyTyped(char)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseInputComponent.html#keyTyped(char)" class="member-name-link">keyTyped(char)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseInputComponent.html" title="class in com.csse3200.game.components.maingame">PauseInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#keyTyped(char)" class="member-name-link">keyTyped(char)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
@@ -2771,6 +2793,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#remainingHealth" class="member-name-link">remainingHealth</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroHintDialog.html#remove()" class="member-name-link">remove()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroHintDialog.html" title="class in com.csse3200.game.ui">HeroHintDialog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatsDialog.html#remove()" class="member-name-link">remove()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatsDialog.html" title="class in com.csse3200.game.ui">HeroStatsDialog</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/AnimationRenderComponent.html#removeAnimation(java.lang.String)" class="member-name-link">removeAnimation(String)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/AnimationRenderComponent.html" title="class in com.csse3200.game.rendering">AnimationRenderComponent</a></dt>
 <dd>
 <div class="block">Remove an animation from this animator.</div>
@@ -3082,6 +3108,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set body type</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html#setBulletParams(float,float)" class="member-name-link">setBulletParams(float, float)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html#setBulletTexture(java.lang.String)" class="member-name-link">setBulletTexture(String)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/CameraZoomDragComponent.html#setCameraPosition(com.badlogic.gdx.math.Vector2)" class="member-name-link">setCameraPosition(Vector2)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CameraZoomDragComponent.html" title="class in com.csse3200.game.components">CameraZoomDragComponent</a></dt>
 <dd>
 <div class="block">设置相机位置</div>
@@ -3098,6 +3128,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set the tint color (including alpha).</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html#setCooldown(float)" class="member-name-link">setCooldown(float)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#setCurrentTarget(com.csse3200.game.entities.Entity)" class="member-name-link">setCurrentTarget(Entity)</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
 <dd>
 <div class="block">Sets the current target entity.</div>
@@ -3442,7 +3474,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/RankingDialog.html#show(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">show(Stage)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/RankingDialog.html" title="class in com.csse3200.game.ui">RankingDialog</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HintToast.html#show(com.badlogic.gdx.scenes.scene2d.Stage,java.lang.String,float)" class="member-name-link">show(Stage, String, float)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HintToast.html" title="class in com.csse3200.game.ui">HintToast</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatsDialog.html#showOn(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">showOn(Stage)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatsDialog.html" title="class in com.csse3200.game.ui">HeroStatsDialog</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/LeaderboardPopup.html#showOn(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">showOn(Stage)</a> - Method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardPopup.html" title="class in com.csse3200.game.ui.leaderboard">LeaderboardPopup</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroHintDialog.html#showOnceOn(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">showOnceOn(Stage)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroHintDialog.html" title="class in com.csse3200.game.ui">HeroHintDialog</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
@@ -3694,6 +3732,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Iterates over registered input handlers in descending priority and stops as soon as the input is
  processed</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#touchDown(int,int,int,int)" class="member-name-link">touchDown(int, int, int, int)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseInputComponent.html#touchDown(int,int,int,int)" class="member-name-link">touchDown(int, int, int, int)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseInputComponent.html" title="class in com.csse3200.game.components.maingame">PauseInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/TouchPlayerInputComponent.html#touchDown(int,int,int,int)" class="member-name-link">touchDown(int, int, int, int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/TouchPlayerInputComponent.html" title="class in com.csse3200.game.components.player">TouchPlayerInputComponent</a></dt>
@@ -3901,6 +3941,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Handles player interaction for collecting the entity.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/enemy/clickable.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/clickable.html" title="class in com.csse3200.game.components.enemy">clickable</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></dt>
 <dd>&nbsp;</dd>

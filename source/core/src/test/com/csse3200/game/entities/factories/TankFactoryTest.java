@@ -10,6 +10,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,25 +31,34 @@ public class TankFactoryTest {
         // Load assets needed for PlayerFactory
         resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
         resourceService.loadAll();
+
+        TankEnemyFactory.resetToDefaults();
     }
     @Test
     void tankEnemyHasCorrectStats() {
         Entity target = PlayerFactory.createPlayer();
-        Entity tank = TankEnemyFactory.createTankEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(150, stats.getHealth());
         assertEquals(15, stats.getBaseAttack());
-        assertEquals(new Vector2(0.2f, 0.2f), TankEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
 
     @Test
     void tankEnemyDiesCorrectly() {
         Entity target = PlayerFactory.createPlayer();
-        Entity tank = TankEnemyFactory.createTankEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         tank.getEvents().trigger("entityDeath");
+        assertEquals(0, stats.getHealth());
     }
 
     @Test
@@ -142,8 +152,22 @@ public class TankFactoryTest {
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, TankEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, TankEnemyFactory.getWeakness());
-        assertEquals(new Vector2(0.2f, 0.2f), TankEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
         assertEquals("images/tank_enemy.png", TankEnemyFactory.getTexturePath());
         assertEquals("Tank Enemy", TankEnemyFactory.getDisplayName());
+    }
+
+    @Test
+    void tankEnemyHasCorrectDifficulty() {
+        Entity target = PlayerFactory.createPlayer();
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.HARD);
+        CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
+        assertNotNull(stats);
+        assertEquals(600, stats.getHealth());
+        assertEquals(60, stats.getBaseAttack());
+        assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
 }

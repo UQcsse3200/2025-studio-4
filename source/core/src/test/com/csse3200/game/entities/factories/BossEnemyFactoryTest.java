@@ -10,6 +10,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,25 +31,33 @@ public class BossEnemyFactoryTest {
         // Load assets needed for PlayerFactory
         resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
         resourceService.loadAll();
+
+        BossEnemyFactory.resetToDefaults();
     }
 
     @Test
     void bossEnemyHasCorrectStats() {
         Entity target = PlayerFactory.createPlayer();
-        Entity boss = BossEnemyFactory.createBossEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(200, stats.getHealth());
+        assertEquals(300, stats.getHealth());
         assertEquals(20, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
-        assertEquals(new Vector2(0.7f, 0.7f), BossEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
     }
 
     @Test
     void bossEnemyDiesCorrectly() {
         Entity target = PlayerFactory.createPlayer();
-        Entity boss = BossEnemyFactory.createBossEnemy(target);
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         stats.setHealth(0);
         boss.getEvents().trigger("entityDeath");
@@ -136,7 +145,7 @@ public class BossEnemyFactoryTest {
         // Verify that default values have been changed
         assertNotEquals(DamageTypeConfig.None, BossEnemyFactory.getResistance());
         assertNotEquals(DamageTypeConfig.None, BossEnemyFactory.getWeakness());
-        assertNotEquals(new Vector2(0.7f, 0.7f), BossEnemyFactory.getSpeed());
+        assertNotEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
         assertNotEquals("images/boss_enemy.png", BossEnemyFactory.getTexturePath());
         assertNotEquals("Boss Enemy", BossEnemyFactory.getDisplayName());
 
@@ -146,9 +155,24 @@ public class BossEnemyFactoryTest {
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, BossEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, BossEnemyFactory.getWeakness());
-        assertEquals(new Vector2(0.7f, 0.7f), BossEnemyFactory.getSpeed());
+        assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
         assertEquals("images/boss_enemy.png", BossEnemyFactory.getTexturePath());
         assertEquals("Boss Enemy", BossEnemyFactory.getDisplayName());
     }
 
+    @Test
+    void bossEnemyHasCorrectDifficulty() {
+        Entity target = PlayerFactory.createPlayer();
+        java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+        Entity waypoint = new Entity();
+        waypointList.add(waypoint);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypointList, target, Difficulty.HARD);
+        CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
+        assertNotNull(stats);
+        assertEquals(1200, stats.getHealth());
+        assertEquals(80, stats.getBaseAttack());
+        assertEquals(DamageTypeConfig.None, stats.getResistances());
+        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
+    }
 }

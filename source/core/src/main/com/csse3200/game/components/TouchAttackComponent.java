@@ -71,6 +71,7 @@ public class TouchAttackComponent extends Component {
       PlayerCombatStatsComponent playerStats = target2.getComponent(PlayerCombatStatsComponent.class);
       if (playerStats != null) {
         playerStats.hit(combatStats);
+        entity.getEvents().trigger("entityDeath");
       }
     }
 

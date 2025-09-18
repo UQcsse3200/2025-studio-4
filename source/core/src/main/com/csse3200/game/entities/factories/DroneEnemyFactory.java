@@ -5,10 +5,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.utils.Difficulty;
+import java.util.Map;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class DroneEnemyFactory {
     // Default drone configuration
@@ -18,13 +24,16 @@ public class DroneEnemyFactory {
     private static final int DEFAULT_DAMAGE = 10;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(1f, 1f);
+    private static final Vector2 DEFAULT_SPEED = new Vector2(1.2f, 1.2f);
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final int DEFAULT_POINTS = 10;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
-    // Configurable properties
+    // Configurable properties (these can remain static as they're defaults)
     private static int health = DEFAULT_HEALTH;
     private static int damage = DEFAULT_DAMAGE;
     private static DamageTypeConfig resistance = DEFAULT_RESISTANCE;
@@ -33,43 +42,109 @@ public class DroneEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-
-    private static Entity self;
-    private static Entity currentTarget;
-    private static int priorityTaskCount = 1;
+    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
+    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
 
     /**
      * Creates a drone enemy with current configuration.
      *
-     * @param target entity to chase
+     * @param waypoints a list of entities that follow the path of the level
+     * @param player the player entity reference
      * @return entity
      */
-    public static Entity createDroneEnemy(Entity target) {
-        // 使用基础敌人（无动画），并添加静态纹理，避免测试环境缺少 atlas/region 导致的异常
-        Entity drone = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+    public static Entity createDroneEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
+        Entity drone = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints,
+        "images/drone_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+
+        // Add drone-specific waypoint component
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        drone.addComponent(waypointComponent);
+
         drone
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new clickable(clickRadius));
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
 
-        self = drone;
-        currentTarget = target;
+        // Each drone handles its own waypoint progression
+        drone.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
+            if (dwc != null && dwc.hasMoreWaypoints()) {
+                Entity nextTarget = dwc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(drone, nextTarget);
+                }
+            }
+        });
+
+        var sz = drone.getScale(); 
+        drone.setScale(sz.x * 0.8f, sz.y * 0.8f);
 
         return drone;
     }
 
+    /**
+     * Handles the destruction of a drone enemy.
+     *
+     * @param entity The drone entity to destroy
+     */
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+
+            // Drop currency upon defeat
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
+            // Add points to score
+            PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+            if (psc != null) {
+                psc.addPoints(points);
+            }
+        }
+
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 
-    private static void updateSpeed(Vector2 speed) {
-        priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    /**
+     * Updates the speed of a specific drone.
+     *
+     * @param drone The drone entity to update
+     * @param newSpeed The new speed vector
+     */
+    private static void updateSpeed(Entity drone, Vector2 newSpeed) {
+        WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
+        if (dwc != null) {
+            dwc.incrementPriorityTaskCount();
+            dwc.setSpeed(newSpeed);
+            drone.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(dwc.getCurrentTarget(), dwc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
+    }
+
+    /**
+     * Updates the chase target for a specific drone.
+     *
+     * @param drone The drone entity to update
+     * @param newTarget The new target entity
+     */
+    private static void updateChaseTarget(Entity drone, Entity newTarget) {
+        WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
+        if (dwc != null) {
+            dwc.incrementPriorityTaskCount();
+            dwc.setCurrentTarget(newTarget);
+            drone.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(newTarget, dwc.getPriorityTaskCount(), 100f, 100f, dwc.getSpeed()));
+        }
     }
         
     // Getters    
@@ -133,6 +208,7 @@ public class DroneEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 
     private DroneEnemyFactory() {

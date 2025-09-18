@@ -1,6 +1,7 @@
 package com.csse3200.game.areas;
 
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,13 +41,15 @@ import com.csse3200.game.components.CameraZoomDragComponent;
 public class ForestGameArea extends GameArea {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
 
-    private static final int NUM_DRONES = 3;
-    private static final int NUM_GRUNTS = 2;
+    private static final int NUM_DRONES = 5;
+    private static final int NUM_GRUNTS = 3;
     private static final int NUM_TANKS = 2;
-    private static final int NUM_BOSSES = 1;
+    private static final int NUM_BOSSES = 0;
     private static final int NUM_DIVIDERS = 1;
-    public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
+    public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
+
+    public static Difficulty gameDifficulty = Difficulty.EASY;
 
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
@@ -102,6 +105,7 @@ public class ForestGameArea extends GameArea {
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
     }
+
 
     /**
      * Create the game area, including terrain, static entities (trees), dynamic entities (player)
@@ -302,63 +306,59 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnDrones() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
         for (int i = 0; i < NUM_DRONES; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity drone = DroneEnemyFactory.createDroneEnemy(player);
-            spawnEntityAt(drone, randomPos, true, true);
+            NUM_ENEMIES_TOTAL++;
+            Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
+            spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
         }
     }
 
-    private void spawnGrunts() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_GRUNTS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity grunt = GruntEnemyFactory.createGruntEnemy(player);
-            spawnEntityAt(grunt, randomPos, true, true);
-        }
-    }
+  private void spawnGrunts() {
+      for (int i = 0; i < NUM_GRUNTS; i++) {
+        NUM_ENEMIES_TOTAL++;
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
+      }
+  }
 
-    private void spawnTanks() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_TANKS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity tank = TankEnemyFactory.createTankEnemy(player);
-            spawnEntityAt(tank, randomPos, true, true);
-        }
-    }
+  private void spawnTanks() {
+      for (int i = 0; i < NUM_TANKS; i++) {
+        NUM_ENEMIES_TOTAL++;
+        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
+      }
+  }
 
-    private void spawnBosses() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_BOSSES; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity boss = BossEnemyFactory.createBossEnemy(player);
-            spawnEntityAt(boss, randomPos, true, true);
-        }
-    }
+  private void spawnBosses() {
+      for (int i = 0; i < NUM_BOSSES; i++) {
+        NUM_ENEMIES_TOTAL++;
+        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
+      }
+  }
 
-    private void spawnDividers() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < 1; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity divider2 = DividerEnemyFactory.createDividerEnemy(player, this);
-            spawnEntityAt(divider2, randomPos, true, true);
-        }
-    }
+  private void spawnDividers() {
+      for (int i = 0; i < NUM_DIVIDERS; i++) {
+        NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL + 4;
+        Entity divider2 = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
+        spawnEntityAt(divider2, new GridPoint2(0, 10), true, true);
+      }
+  }
 
-    public static void checkEnemyCount() {
-        if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-            MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
-
-        }
-    }
+  public static void checkEnemyCount() {
+      if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+          // Only try to access UI if we're in a real game environment
+          if (MainGameScreen.ui != null) {
+              MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+              if (winComponent != null) {
+                  winComponent.addActors();
+              }
+          }
+      }
+  }
 
     private void spawnHeroAt(GridPoint2 cell) {
+
         HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
         if (heroCfg == null) {
             logger.warn("Failed to load configs/hero.json, using default HeroConfig.");

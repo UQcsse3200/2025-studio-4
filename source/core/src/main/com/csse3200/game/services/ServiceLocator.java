@@ -67,15 +67,12 @@ public class ServiceLocator {
     entityService = service;
   }
 
-
     public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
         leaderboardService = service;
     }
     public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
         return leaderboardService;
     }
-
-
 
   public static void registerRenderService(RenderService service) {
     logger.debug("Registering render service {}", service);
@@ -133,4 +130,8 @@ public class ServiceLocator {
   private ServiceLocator() {
     throw new IllegalStateException("Instantiating static util class");
   }
+
+    public static SaveGameService getSaveGameService() {
+        return null;
+    }
 }

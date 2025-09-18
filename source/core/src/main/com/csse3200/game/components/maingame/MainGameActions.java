@@ -1,6 +1,7 @@
 package com.csse3200.game.components.maingame;
 
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.MockRanks;
@@ -95,6 +96,8 @@ public class MainGameActions extends Component {
    */
   private void onRestart() {
     logger.info("Restarting game");
+    ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
+    ForestGameArea.NUM_ENEMIES_TOTAL = 0;
     game.setScreen(GdxGame.ScreenType.MAIN_GAME, false);
   }
 

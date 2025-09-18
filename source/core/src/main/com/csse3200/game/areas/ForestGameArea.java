@@ -169,83 +169,78 @@ public class ForestGameArea extends GameArea {
             }
         }
 
-        /**
-         * Schedule the next enemy spawn with delay
-         */
-// REPLACE your existing scheduleNextEnemySpawn() method with this enhanced version:
-
-/**
- * Schedule the next enemy spawn with delay (with comprehensive safety checks)
- */
-private void scheduleNextEnemySpawn() {
-    // Safety check: ensure this game area is still the active one
-    if (currentGameArea != this) {
-        logger.info("Game area changed, stopping wave spawning");
-        forceStopWave();
-        return;
-    }
-    
-    // Safety check: ensure services are still available
-    try {
-        if (ServiceLocator.getPhysicsService() == null || 
-            ServiceLocator.getEntityService() == null ||
-            ServiceLocator.getResourceService() == null) {
-            logger.warn("Services not available, stopping wave spawning");
+    /**
+     * Schedule the next enemy spawn with delay (with comprehensive safety checks)
+     */
+    private void scheduleNextEnemySpawn() {
+        // Safety check: ensure this game area is still the active one
+        if (currentGameArea != this) {
+            logger.info("Game area changed, stopping wave spawning");
             forceStopWave();
             return;
         }
-    } catch (Exception e) {
-        logger.warn("Error checking services, stopping wave spawning: {}", e.getMessage());
-        forceStopWave();
-        return;
-    }
-    
-    if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
-        // Wave complete
-        waveInProgress = false;
-        logger.info("Wave completed successfully");
-        return;
-    }
-    
-    // Cancel any existing spawn task
-    if (waveSpawnTask != null) {
-        waveSpawnTask.cancel();
-    }
-    
-    // Schedule next spawn
-    waveSpawnTask = Timer.schedule(new Timer.Task() {
-        @Override
-        public void run() {
-            // Double-check we're still the active game area
-            if (currentGameArea != ForestGameArea.this) {
-                logger.info("Game area changed during spawn, stopping");
+        
+        // Safety check: ensure services are still available
+        try {
+            if (ServiceLocator.getPhysicsService() == null || 
+                ServiceLocator.getEntityService() == null ||
+                ServiceLocator.getResourceService() == null) {
+                logger.warn("Services not available, stopping wave spawning");
+                forceStopWave();
                 return;
             }
-            
-            // Double-check services are still available when task runs
-            try {
-                if (ServiceLocator.getPhysicsService() == null || 
-                    ServiceLocator.getEntityService() == null) {
-                    logger.warn("Services disposed during spawn, stopping wave");
-                    forceStopWave();
+        } catch (Exception e) {
+            logger.warn("Error checking services, stopping wave spawning: {}", e.getMessage());
+            forceStopWave();
+            return;
+        }
+        
+        if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
+            // Wave complete
+            waveInProgress = false;
+            logger.info("Wave completed successfully");
+            return;
+        }
+        
+        // Cancel any existing spawn task
+        if (waveSpawnTask != null) {
+            waveSpawnTask.cancel();
+        }
+        
+        // Schedule next spawn
+        waveSpawnTask = Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                // Double-check we're still the active game area
+                if (currentGameArea != ForestGameArea.this) {
+                    logger.info("Game area changed during spawn, stopping");
                     return;
                 }
                 
-                if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
-                    // Spawn the next enemy
-                    Runnable spawnAction = enemySpawnQueue.remove(0);
-                    spawnAction.run();
+                // Double-check services are still available when task runs
+                try {
+                    if (ServiceLocator.getPhysicsService() == null || 
+                        ServiceLocator.getEntityService() == null) {
+                        logger.warn("Services disposed during spawn, stopping wave");
+                        forceStopWave();
+                        return;
+                    }
                     
-                    // Schedule the next one
-                    scheduleNextEnemySpawn();
+                    if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
+                        // Spawn the next enemy
+                        Runnable spawnAction = enemySpawnQueue.remove(0);
+                        spawnAction.run();
+                        
+                        // Schedule the next one
+                        scheduleNextEnemySpawn();
+                    }
+                } catch (Exception e) {
+                    logger.error("Error spawning enemy: {}", e.getMessage());
+                    forceStopWave();
+                    }
                 }
-            } catch (Exception e) {
-                logger.error("Error spawning enemy: {}", e.getMessage());
-                forceStopWave();
-                }
-            }
-        }, spawnDelay);
-    }
+            }, spawnDelay);
+        }
 
 
     /**

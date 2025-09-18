@@ -445,13 +445,17 @@ public class SaveGameService {
 
     private Entity createTowerByType(String type) {
         if (type == null) return null;
+        // Use default currency type for restored towers
+        com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType defaultCurrency = 
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
+        
         switch (type) {
             case "bone":
-                return com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
+                return com.csse3200.game.entities.factories.TowerFactory.createBoneTower(defaultCurrency);
             case "dino":
-                return com.csse3200.game.entities.factories.TowerFactory.createDinoTower();
+                return com.csse3200.game.entities.factories.TowerFactory.createDinoTower(defaultCurrency);
             case "cavemen":
-                return com.csse3200.game.entities.factories.TowerFactory.createCavemenTower();
+                return com.csse3200.game.entities.factories.TowerFactory.createCavemenTower(defaultCurrency);
             default:
                 return null;
         }
@@ -459,17 +463,22 @@ public class SaveGameService {
 
     private Entity createEnemyByType(String type, Entity targetPlayer) {
         if (type == null) return null;
+        
+        // Use default values for restored enemies
+        java.util.List<Entity> emptyWaypoints = new java.util.ArrayList<>();
+        com.csse3200.game.utils.Difficulty defaultDifficulty = com.csse3200.game.utils.Difficulty.EASY;
+        
         switch (type) {
             case "grunt":
-                return com.csse3200.game.entities.factories.GruntEnemyFactory.createGruntEnemy(targetPlayer);
+                return com.csse3200.game.entities.factories.GruntEnemyFactory.createGruntEnemy(emptyWaypoints, targetPlayer, defaultDifficulty);
             case "drone":
-                return com.csse3200.game.entities.factories.DroneEnemyFactory.createDroneEnemy(targetPlayer);
+                return com.csse3200.game.entities.factories.DroneEnemyFactory.createDroneEnemy(emptyWaypoints, targetPlayer, defaultDifficulty);
             case "tank":
-                return com.csse3200.game.entities.factories.TankEnemyFactory.createTankEnemy(targetPlayer);
+                return com.csse3200.game.entities.factories.TankEnemyFactory.createTankEnemy(emptyWaypoints, targetPlayer, defaultDifficulty);
             case "boss":
-                return com.csse3200.game.entities.factories.BossEnemyFactory.createBossEnemy(targetPlayer);
+                return com.csse3200.game.entities.factories.BossEnemyFactory.createBossEnemy(emptyWaypoints, targetPlayer, defaultDifficulty);
             case "divider_child":
-                return com.csse3200.game.entities.factories.DividerChildEnemyFactory.createDividerChildChildEnemy(targetPlayer);
+                return com.csse3200.game.entities.factories.DividerChildEnemyFactory.createDividerChildChildEnemy(targetPlayer, emptyWaypoints, 0, defaultDifficulty);
             default:
                 return null;
         }

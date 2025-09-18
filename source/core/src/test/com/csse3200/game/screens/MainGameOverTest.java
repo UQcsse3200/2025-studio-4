@@ -4,6 +4,7 @@ import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
 import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.GameStateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +44,9 @@ class MainGameOverTest {
         // Register mocks in ServiceLocator
         ServiceLocator.registerLeaderboardService(mockLeaderboard);
         ServiceLocator.registerSaveGameService(mockSaveGame);
+        
+        // Register GameStateService to prevent NullPointerException
+        ServiceLocator.registerGameStateService(new GameStateService());
     }
 
     @Test

@@ -237,7 +237,7 @@ class PlayerNameValidationTest {
         String[] validGameOverNames = {
             "A", // 1 character
             "Player", // 6 characters
-            "ValidPlayer12" // 12 characters
+            "ValidPlayer1" // 12 characters
         };
 
         String[] invalidGameOverNames = {

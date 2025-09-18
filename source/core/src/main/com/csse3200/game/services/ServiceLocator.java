@@ -88,9 +88,6 @@ public class ServiceLocator {
     entityService = service;
   }
 
-  public static void registerLeaderboardService(com.csse3200.game.services.leaderboard.LeaderboardService service) {
-    leaderboardService = service;
-  }
   public static void registerRenderService(RenderService service) {
     logger.debug("Registering render service {}", service);
     renderService = service;
@@ -126,13 +123,13 @@ public class ServiceLocator {
     gameStateService = source;
   }
 
-<<<<<<< HEAD
+
   public static void registerPlayerNameService(PlayerNameService source) {
     logger.debug("Registering player name service {}", source);
     playerNameService = source;
   }
 
-=======
+
   // NEW: Audio registration
   public static void registerAudioService(AudioService source) {
     logger.debug("Registering audio service {}", source);

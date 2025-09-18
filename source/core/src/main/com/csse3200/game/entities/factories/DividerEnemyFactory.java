@@ -67,13 +67,8 @@ public class DividerEnemyFactory {
 
 
     public static Entity createDividerEnemy(java.util.List<Entity> waypoints, GameArea area, Entity player, Difficulty difficulty) {
-<<<<<<< HEAD
-        Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints, 
-        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, 0);
-=======
         Entity divider = EnemyFactory.createBaseEnemyAnimated(waypoints.get(currentWaypointIndex), new Vector2(speed), waypoints,
                 "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, 0);
->>>>>>> origin/main
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
         divider.addComponent(waypointComponent);

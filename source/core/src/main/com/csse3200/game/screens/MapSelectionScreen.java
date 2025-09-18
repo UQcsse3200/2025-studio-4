@@ -86,7 +86,7 @@ public class MapSelectionScreen extends ScreenAdapter {
         ServiceLocator.getRenderService().dispose();
         ServiceLocator.getEntityService().dispose();
         // NOTE: your InputService likely has no dispose(); do not call it
-        ServiceLocator.getResourceService().dispose();
-        ServiceLocator.clear();
+        //ServiceLocator.getResourceService().dispose();
+        //ServiceLocator.clear();
     }
 }

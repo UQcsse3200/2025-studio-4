@@ -98,9 +98,6 @@ public class DividerEnemyFactory {
     private static void destroyEnemy(Entity entity, Entity target, GameArea area) {
         if (entity == null) return;
 
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
-
         final Vector2 pos = entity.getPosition().cpy();
         final Vector2[] offsets = new Vector2[]{
                 new Vector2(+0.3f, 0f),
@@ -125,6 +122,8 @@ public class DividerEnemyFactory {
             WaypointComponent wc = entity.getComponent(WaypointComponent.class);
             // Dispose of the parent entity
             entity.dispose();
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
 
             // Spawn child entities with waypoints
             if (area != null && savedWaypoints != null) {

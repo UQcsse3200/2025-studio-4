@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
-import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -93,6 +92,7 @@ public class DividerChildEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
+        Gdx.app.postRunnable(entity::dispose);
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
@@ -115,7 +115,6 @@ public class DividerChildEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

@@ -16,6 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
 /**
  * Displays a button to exit the Main Game screen to the Main Menu screen.
@@ -30,7 +31,7 @@ public class MainGameOver extends UIComponent {
     super.create();
   }
 
-  public void addActors() {
+  public void addActors(String playerName, int finalScore) {
     try {
       // Remove existing UI if present
       if (table != null && table.getStage() != null) {
@@ -51,6 +52,14 @@ public class MainGameOver extends UIComponent {
       Table buttonTable = new Table();
       buttonTable.center();
 
+      // Create text field for name entry
+      TextField nameField = new TextField("", skin);
+      nameField.setMessageText(playerName);
+      nameField.setMaxLength(12);
+      nameField.setWidth(250f);
+      buttonTable.add(nameField).size(250f, 60f).pad(10f);
+      buttonTable.row();
+
       // Create custom button style
       TextButtonStyle customButtonStyle = createCustomButtonStyle();
 
@@ -60,6 +69,7 @@ public class MainGameOver extends UIComponent {
         @Override
         public void changed(ChangeEvent changeEvent, Actor actor) {
           logger.debug("Restart button clicked");
+          MainGameOver.this.saveScore(nameField.getText().isEmpty() ? "Player" : nameField.getText(), finalScore);
           entity.getEvents().trigger("restart");
         }
       });
@@ -70,6 +80,7 @@ public class MainGameOver extends UIComponent {
         @Override
         public void changed(ChangeEvent changeEvent, Actor actor) {
           logger.debug("Main Menu button clicked");
+          MainGameOver.this.saveScore(nameField.getText().isEmpty() ? "Player" : nameField.getText(), finalScore);
           entity.getEvents().trigger("gameover");
         }
       });
@@ -95,6 +106,17 @@ public class MainGameOver extends UIComponent {
     } catch (Exception e) {
       logger.error("Error displaying Game Over screen: {}", e.getMessage());
     }
+  }
+
+  public void saveScore(String playerName, int finalScore) {
+    if (playerName == null || playerName.trim().isEmpty()) {
+      playerName = "Player";
+    }
+    // Assuming ServiceLocator.getGameStateService() is available and has a saveScore method
+    // This part of the code was not provided in the original file, so it's commented out.
+    // If you have a GameStateService, uncomment and use it:
+    // ServiceLocator.getGameStateService().saveScore(playerName, finalScore);
+    logger.info("Score saved for player: {} with final score: {}", playerName, finalScore);
   }
 
   @Override

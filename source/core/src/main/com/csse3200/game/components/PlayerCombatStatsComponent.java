@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 import com.csse3200.game.components.maingame.MainGameOver;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.services.PlayerNameService;
 
 /**
  * Component used to store information related to combat such as health, attack, etc. Any entities
@@ -57,7 +59,21 @@ public class PlayerCombatStatsComponent extends Component {
       if (this.health == 0) {
         // Lose Condition
         ServiceLocator.getEntityService().unregister(entity);
-        MainGameScreen.ui.getComponent(MainGameOver.class).addActors();
+        
+        int finalScore = 0;
+        String playerName = "Player";
+
+        PlayerScoreComponent scoreComponent = entity.getComponent(PlayerScoreComponent.class);
+        if (scoreComponent != null) {
+            finalScore = scoreComponent.getTotalScore();
+        }
+        if (ServiceLocator.getPlayerNameService() != null) {
+            playerName = ServiceLocator.getPlayerNameService().getPlayerName();
+        }
+        // The addActors method in MainGameOver needs to be updated to accept parameters.
+        // For now, we'll create a temporary object to pass the data.
+        // We'll modify MainGameOver.addActors() in a later step.
+        MainGameScreen.ui.getComponent(MainGameOver.class).addActors(playerName, finalScore);
         }
       }
     }

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.csse3200.game.components.Component; // 或 UIComponent
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 
 public class LeaderboardUI extends Component {
     private Table root;
@@ -15,9 +14,9 @@ public class LeaderboardUI extends Component {
     public void create() {
         Stage stage = ServiceLocator.getRenderService().getStage();
         skin = MinimalSkinFactory.create();
-        if (ServiceLocator.getLeaderboardService() == null) {
-            ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
-        }
+        // if (ServiceLocator.getLeaderboardService() == null) { // Removed
+        //     ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001")); // Removed
+        // } // Removed
 
         root = new Table();
         root.setFillParent(true);

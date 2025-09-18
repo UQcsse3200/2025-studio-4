@@ -15,7 +15,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
@@ -27,10 +26,8 @@ import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
-
-
+import com.csse3200.game.components.PlayerScoreComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
@@ -68,7 +65,7 @@ public class ForestGameArea extends GameArea {
     private static final String[] forestMusic = {backgroundMusic};
 
     private final TerrainFactory terrainFactory;
-    private Entity player;
+    private static Entity player;
     private boolean hasExistingPlayer = false;
     private MapEditor mapEditor;
 
@@ -351,7 +348,23 @@ public class ForestGameArea extends GameArea {
           if (MainGameScreen.ui != null) {
               MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
               if (winComponent != null) {
-                  winComponent.addActors();
+                  int finalScore = 0;
+                  String playerName = "Player";
+
+                  // Removed the iteration over ServiceLocator.getEntityService().getEntities()
+                  // and directly use the player entity reference.
+                  if (ForestGameArea.player != null) {
+                      PlayerScoreComponent scoreComponent = ForestGameArea.player.getComponent(PlayerScoreComponent.class);
+                      if (scoreComponent != null) {
+                          finalScore = scoreComponent.getTotalScore();
+                      }
+                  }
+
+                  if (ServiceLocator.getPlayerNameService() != null) {
+                      playerName = ServiceLocator.getPlayerNameService().getPlayerName();
+                  }
+
+                  winComponent.addActors(playerName, finalScore);
               }
           }
       }

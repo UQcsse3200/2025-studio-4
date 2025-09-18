@@ -15,6 +15,9 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.services.SaveGameService;
+import java.util.List;
 
 /**
  * Displays a button to exit the Main Game screen to the Main Menu screen.
@@ -29,7 +32,8 @@ public class MainGameWin extends UIComponent {
     super.create();
   }
 
-  public void addActors() {
+  public void addActors(String playerName, int finalScore) {
+    logger.debug("MainGameWin.addActors() called.");
     table = new Table();
     table.top().center();
     table.setFillParent(true);
@@ -39,19 +43,52 @@ public class MainGameWin extends UIComponent {
 
     TextButton mainMenuBtn = new TextButton("You Won!", customButtonStyle);
 
+    final int scoreToSave = finalScore;
+    final String nameToSave = playerName;
+
     // Triggers an event when the button is pressed.
     mainMenuBtn.addListener(
       new ChangeListener() {
         @Override
         public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Win button clicked");
+          logger.debug("Win button clicked.");
+          MainGameWin.this.saveWinScore(nameToSave, scoreToSave); // Save score
+          logger.debug("Score saved, triggering awardStars and gamewin events.");
           entity.getEvents().trigger("awardStars", 1);
           entity.getEvents().trigger("gamewin");
         }
       });
     table.add(mainMenuBtn);
 
-    stage.addActor(table);
+    logger.debug("Adding table to stage.");
+    if (stage != null) {
+        stage.addActor(table);
+        logger.debug("Table added to stage successfully.");
+    } else {
+        logger.error("Stage is null when trying to add table.");
+    }
+  }
+
+  public void saveWinScore(String playerName, int finalScore) {
+    if (playerName == null || playerName.trim().isEmpty()) {
+      playerName = "Player";
+    }
+
+    LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
+    SaveGameService saveGameService = ServiceLocator.getSaveGameService();
+
+    if (leaderboard != null && saveGameService != null) {
+      leaderboard.addEntry(playerName, finalScore);
+
+      LeaderboardService.LeaderboardQuery query = new LeaderboardService.LeaderboardQuery(0, 100, false);
+      List<LeaderboardService.LeaderboardEntry> entries = leaderboard.getEntries(query);
+
+      saveGameService.save("leaderboard", entries);
+
+      logger.info("Score {} submitted and saved for player '{}'", finalScore, playerName);
+    } else {
+      logger.warn("Leaderboard or SaveGameService not available, score not saved.");
+    }
   }
 
   @Override

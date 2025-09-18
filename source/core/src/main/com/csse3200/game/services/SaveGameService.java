@@ -8,7 +8,6 @@ import com.badlogic.gdx.utils.JsonWriter;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.entities.factories.PlayerFactory;
-import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,7 +274,51 @@ public class SaveGameService {
         }
     }
 
-    public void save(String leaderboard, List<LeaderboardService.LeaderboardEntry> entries) {
+    public void save(String fileName, List<LeaderboardService.LeaderboardEntry> entries) {
+        try {
+            String saveJson = json.toJson(entries, List.class);
+            FileHandle savesDir = Gdx.files.local(SAVE_DIRECTORY);
+            if (!savesDir.exists()) {
+                savesDir.mkdirs();
+            }
+            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName + ".json");
+            saveFile.writeString(saveJson, false);
+            logger.info("Leaderboard saved successfully to {}", saveFile.path());
+        } catch (Exception e) {
+            logger.error("Failed to save leaderboard", e);
+        }
+    }
+
+    public <T> T load(String fileName, Class<T> type) {
+        try {
+            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName + ".json");
+            if (!saveFile.exists()) {
+                logger.info("Leaderboard save file not found: {}", fileName);
+                return null;
+            }
+            String saveJson = saveFile.readString();
+            return json.fromJson(type, saveJson);
+        } catch (Exception e) {
+            logger.error("Failed to load leaderboard from {}", fileName, e);
+            return null;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<LeaderboardService.LeaderboardEntry> loadLeaderboardEntries(String fileName) {
+        try {
+            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName + ".json");
+            if (!saveFile.exists()) {
+                logger.info("Leaderboard save file not found: {}", fileName);
+                return null;
+            }
+            String saveJson = saveFile.readString();
+            // Use fromJson with type parameters to handle generic list
+            return json.fromJson(List.class, LeaderboardService.LeaderboardEntry.class, saveJson);
+        } catch (Exception e) {
+            logger.error("Failed to load leaderboard from {}", fileName, e);
+            return null;
+        }
     }
 
     /**

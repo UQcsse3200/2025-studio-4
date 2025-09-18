@@ -26,6 +26,7 @@ public class SaveGameService {
     
     private final Json json;
     private final EntityService entityService;
+    private GameSaveData pendingRestoreData;
     
     public SaveGameService(EntityService entityService) {
         this.entityService = entityService;
@@ -43,8 +44,8 @@ public class SaveGameService {
             GameSaveData saveData = createSaveData();
             String saveJson = json.toJson(saveData);
             
-            // Create saves directory if it doesn't exist
-            FileHandle savesDir = Gdx.files.local(SAVE_DIRECTORY);
+            // Create saves directory at project working dir to align with SaveSelection
+            FileHandle savesDir = Gdx.files.absolute("./" + SAVE_DIRECTORY);
             if (!savesDir.exists()) {
                 savesDir.mkdirs();
             }
@@ -54,7 +55,7 @@ public class SaveGameService {
                 ? saveName.trim() + ".json" 
                 : SAVE_FILE_NAME;
             
-            FileHandle saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName);
+            FileHandle saveFile = Gdx.files.absolute("./" + SAVE_DIRECTORY + "/" + fileName);
             saveFile.writeString(saveJson, false);
             
             logger.info("Game saved successfully to {}", saveFile.path());
@@ -82,18 +83,15 @@ public class SaveGameService {
         try {
             String fileName = saveName + ".json";
             
-            // Try multiple possible save file locations
-            FileHandle saveFile = null;
-            
-            // First try local directory
-            saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName);
+            // Try multiple possible save file locations (prefer working dir ./saves)
+            FileHandle saveFile = Gdx.files.absolute("./" + SAVE_DIRECTORY + "/" + fileName);
             if (!saveFile.exists()) {
                 // Try internal assets directory
                 saveFile = Gdx.files.internal(SAVE_DIRECTORY + "/" + fileName);
             }
             if (!saveFile.exists()) {
-                // Try relative path from current working directory
-                saveFile = Gdx.files.absolute("./saves/" + fileName);
+                // Try local (platform-dependent) directory
+                saveFile = Gdx.files.local(SAVE_DIRECTORY + "/" + fileName);
             }
             if (!saveFile.exists()) {
                 // Try desktop build directory
@@ -106,13 +104,33 @@ public class SaveGameService {
             }
             
             String saveJson = saveFile.readString();
+            logger.info("Loading save from {} ({} bytes)", saveFile.path(), saveJson != null ? saveJson.length() : 0);
             GameSaveData saveData = json.fromJson(GameSaveData.class, saveJson);
-            
-            restoreGameState(saveData);
-            logger.info("Game loaded successfully from {}", saveFile.path());
+
+            // Defer actual restoration until after assets and game area are created
+            this.pendingRestoreData = saveData;
+            logger.info("Save data queued for restoration from {}", saveFile.path());
             return true;
         } catch (Exception e) {
             logger.error("Failed to load game from {}", saveName, e);
+            return false;
+        }
+    }
+
+    /**
+     * Apply pending restoration if available. Should be called after game area/assets are ready.
+     * @return true if restoration was applied, false otherwise
+     */
+    public boolean applyPendingRestore() {
+        if (pendingRestoreData == null) {
+            return false;
+        }
+        try {
+            restoreGameState(pendingRestoreData);
+            pendingRestoreData = null;
+            return true;
+        } catch (Exception e) {
+            logger.error("Failed to apply pending game restoration", e);
             return false;
         }
     }
@@ -150,6 +168,16 @@ public class SaveGameService {
             saveData.timestamp = System.currentTimeMillis();
         }
         
+        // Collect tower snapshots
+        saveData.towers = collectTowerData();
+
+        // Collect enemy snapshots
+        saveData.enemies = collectEnemyData();
+
+        logger.info("createSaveData: towers={}, enemies={}",
+                saveData.towers != null ? saveData.towers.size() : -1,
+                saveData.enemies != null ? saveData.enemies.size() : -1);
+
         return saveData;
     }
     
@@ -158,14 +186,14 @@ public class SaveGameService {
      * @param saveData the save data to restore from
      */
     private void restoreGameState(GameSaveData saveData) {
-        // Find and remove existing player entity only (don't clear everything)
-        Entity existingPlayer = findPlayerEntity();
-        if (existingPlayer != null) {
-            entityService.unregister(existingPlayer);
+        // Find existing player entity if present
+        Entity player = findPlayerEntity();
+        boolean createdNewPlayer = false;
+        if (player == null) {
+            // Create new player if none exists yet
+            player = PlayerFactory.createPlayer();
+            createdNewPlayer = true;
         }
-        
-        // Create new player at saved position
-        Entity player = PlayerFactory.createPlayer();
         
         // Validate and adjust player position to be within game bounds
         Vector2 validPosition = validatePlayerPosition(saveData.playerPosition);
@@ -174,12 +202,51 @@ public class SaveGameService {
         // Restore player stats
         restorePlayerStats(player, saveData);
         
-        // Register player
-        entityService.register(player);
+        // Register player only if newly created
+        if (createdNewPlayer) {
+            entityService.register(player);
+            logger.info("restoreGameState: created and registered new player entity");
+        } else {
+            logger.info("restoreGameState: reused existing player entity");
+        }
         
-        // TODO: Restore other game entities (enemies, items, etc.)
-        // Note: Terrain and other game elements will be preserved
-        logger.info("Game state restored - Player at position: {}", saveData.playerPosition);
+        // Remove existing towers/enemies and restore from save
+        removeExistingTowersAndEnemies();
+
+        // Restore towers
+        if (saveData.towers != null) {
+            for (GameSaveData.TowerData t : saveData.towers) {
+                Entity tower = createTowerByType(t.type);
+                if (tower != null) {
+                    tower.setPosition(t.position);
+                    var stats = tower.getComponent(com.csse3200.game.components.TowerStatsComponent.class);
+                    if (stats != null) {
+                        stats.setHealth(t.health);
+                        stats.setAttackCooldown(t.attackCooldown);
+                    }
+                    entityService.register(tower);
+                }
+            }
+        }
+
+        // Restore enemies
+        if (saveData.enemies != null) {
+            for (GameSaveData.EnemyData e : saveData.enemies) {
+                Entity enemy = createEnemyByType(e.type, player);
+                if (enemy != null) {
+                    enemy.setPosition(e.position);
+                    var combat = enemy.getComponent(com.csse3200.game.components.CombatStatsComponent.class);
+                    if (combat != null) {
+                        combat.setHealth(e.health);
+                    }
+                    entityService.register(enemy);
+                }
+            }
+        }
+
+        logger.info("Game state restored - Player at position: {} ({} towers, {} enemies)", saveData.playerPosition,
+                saveData.towers != null ? saveData.towers.size() : 0,
+                saveData.enemies != null ? saveData.enemies.size() : 0);
     }
     
     /**
@@ -275,6 +342,76 @@ public class SaveGameService {
     }
     
     /**
+     * Remove existing towers and enemies to avoid duplication when restoring from a save.
+     */
+    private void removeExistingTowersAndEnemies() {
+        List<Entity> toRemove = new ArrayList<>();
+        for (Entity entity : entityService.getEntities()) {
+            if (entity.getComponent(com.csse3200.game.components.TowerComponent.class) != null) {
+                toRemove.add(entity);
+                continue;
+            }
+            if (entity.getComponent(com.csse3200.game.components.enemy.EnemyTypeComponent.class) != null) {
+                toRemove.add(entity);
+            }
+        }
+        for (Entity e : toRemove) {
+            entityService.unregister(e);
+        }
+    }
+    
+    /**
+     * Traverse entities and collect tower states
+     */
+    private List<GameSaveData.TowerData> collectTowerData() {
+        List<GameSaveData.TowerData> towers = new ArrayList<>();
+        for (Entity entity : entityService.getEntities()) {
+            var tower = entity.getComponent(com.csse3200.game.components.TowerComponent.class);
+            if (tower == null) continue;
+
+            var stats = entity.getComponent(com.csse3200.game.components.TowerStatsComponent.class);
+            GameSaveData.TowerData data = new GameSaveData.TowerData();
+            data.type = tower.getType();
+            data.width = tower.getWidth();
+            data.height = tower.getHeight();
+            data.position = entity.getPosition();
+            if (stats != null) {
+                data.health = stats.getHealth();
+                data.damage = stats.getDamage();
+                data.range = stats.getRange();
+                data.attackCooldown = stats.getAttackCooldown();
+                data.attackTimer = stats.getAttackTimer();
+            }
+            towers.add(data);
+        }
+        return towers;
+    }
+
+    /**
+     * Traverse entities and collect enemy states (generic)
+     */
+    private List<GameSaveData.EnemyData> collectEnemyData() {
+        List<GameSaveData.EnemyData> enemies = new ArrayList<>();
+        for (Entity entity : entityService.getEntities()) {
+            // Exclude towers
+            if (entity.getComponent(com.csse3200.game.components.TowerComponent.class) != null) continue;
+            // Exclude player
+            if (entity.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null) continue;
+
+            var combat = entity.getComponent(com.csse3200.game.components.CombatStatsComponent.class);
+            if (combat == null) continue;
+
+            GameSaveData.EnemyData data = new GameSaveData.EnemyData();
+            data.position = entity.getPosition();
+            data.health = combat.getHealth();
+            var enemyType = entity.getComponent(com.csse3200.game.components.enemy.EnemyTypeComponent.class);
+            data.type = enemyType != null ? enemyType.getType() : "enemy";
+            enemies.add(data);
+        }
+        return enemies;
+    }
+    
+    /**
      * Data class for storing game save information
      */
     public static class GameSaveData {
@@ -282,7 +419,59 @@ public class SaveGameService {
         public int playerHealth = 100;
         public int playerGold = 0;
         public long timestamp = 0;
+        public List<TowerData> towers = new ArrayList<>();
+        public List<EnemyData> enemies = new ArrayList<>();
         
         public GameSaveData() {}
+
+        public static class TowerData {
+            public String type;
+            public int width;
+            public int height;
+            public Vector2 position;
+            public int health;
+            public float damage;
+            public float range;
+            public float attackCooldown;
+            public float attackTimer;
+        }
+
+        public static class EnemyData {
+            public String type; // concrete type for factory mapping
+            public Vector2 position;
+            public int health;
+        }
+    }
+
+    private Entity createTowerByType(String type) {
+        if (type == null) return null;
+        switch (type) {
+            case "bone":
+                return com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
+            case "dino":
+                return com.csse3200.game.entities.factories.TowerFactory.createDinoTower();
+            case "cavemen":
+                return com.csse3200.game.entities.factories.TowerFactory.createCavemenTower();
+            default:
+                return null;
+        }
+    }
+
+    private Entity createEnemyByType(String type, Entity targetPlayer) {
+        if (type == null) return null;
+        switch (type) {
+            case "grunt":
+                return com.csse3200.game.entities.factories.GruntEnemyFactory.createGruntEnemy(targetPlayer);
+            case "drone":
+                return com.csse3200.game.entities.factories.DroneEnemyFactory.createDroneEnemy(targetPlayer);
+            case "tank":
+                return com.csse3200.game.entities.factories.TankEnemyFactory.createTankEnemy(targetPlayer);
+            case "boss":
+                return com.csse3200.game.entities.factories.BossEnemyFactory.createBossEnemy(targetPlayer);
+            case "divider_child":
+                return com.csse3200.game.entities.factories.DividerChildEnemyFactory.createDividerChildChildEnemy(targetPlayer);
+            default:
+                return null;
+        }
     }
 } 

@@ -63,7 +63,8 @@ public class BossEnemyFactory {
         boss.addComponent(waypointComponent);
 
         boss
-                .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+                .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+                .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
                 .addComponent(new clickable(clickRadius));
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));

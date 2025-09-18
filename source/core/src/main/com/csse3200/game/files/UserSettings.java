@@ -90,6 +90,14 @@ public class UserSettings {
      */
     public float uiScale = 1f;
     public DisplaySettings displayMode = null;
+    
+    // Audio settings
+    public float musicVolume = 0.5f;
+    public float soundVolume = 0.5f;
+    
+    // Gameplay settings
+    public String difficulty = "Normal";
+    public String language = "English";
   }
 
   /**

@@ -20,14 +20,14 @@ import org.slf4j.LoggerFactory;
 
 public class PauseMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(PauseMenuDisplay.class);
-    private static final float Z_INDEX = 100f; // above other UI
-    private Texture dimTexHandle; // generated at runtime
+    private static final float Z_INDEX = 100f; 
+    private Texture dimTexHandle; 
 
     private final GdxGame game;
     private Table overlayTable;
     private Image dimImage;
     private Image pauseIcon;
-    private boolean shown = false;
+    private boolean shown = false; 
 
     public PauseMenuDisplay(GdxGame game) {
         this.game = game;
@@ -37,15 +37,15 @@ public class PauseMenuDisplay extends UIComponent {
     public void create() {
         super.create();
         addActors();
-        // listen for actions component commands
+        
         entity.getEvents().addListener("showPauseUI", this::showOverlay);
         entity.getEvents().addListener("hidePauseUI", this::hideOverlay);
     }
 
     private void addActors() {
-        // Dim background
+        
         Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
-        px.setColor(new Color(0f, 0f, 0f, 0.55f)); // semi-transparent black
+        px.setColor(new Color(0f, 0f, 0f, 0.55f)); 
         px.fill();
         dimTexHandle = new Texture(px);
         px.dispose();
@@ -54,7 +54,7 @@ public class PauseMenuDisplay extends UIComponent {
         dimImage.setVisible(false);
         stage.addActor(dimImage);
 
-        // Centered pause menu
+        
         overlayTable = new Table();
         overlayTable.setFillParent(true);
         overlayTable.setVisible(false);
@@ -107,7 +107,7 @@ public class PauseMenuDisplay extends UIComponent {
         overlayTable.add(window).center();
         stage.addActor(overlayTable);
 
-        // Small pause button (top-right)
+        
         Texture pauseTex = ServiceLocator.getResourceService()
                 .getAsset("images/pause_button.png", Texture.class);
         pauseIcon = new Image(pauseTex);
@@ -117,7 +117,7 @@ public class PauseMenuDisplay extends UIComponent {
         topLeft.add(pauseIcon).size(48f, 48f);
         stage.addActor(topLeft);
 
-        // Toggle on click
+        
         pauseIcon.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
                 entity.getEvents().trigger("togglePause");

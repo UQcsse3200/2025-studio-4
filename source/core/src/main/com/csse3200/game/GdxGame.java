@@ -8,6 +8,11 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
+import com.csse3200.game.screens.OpeningCutsceneScreen;
+import com.csse3200.game.screens.VictoryScreen;
+// NEW: Map selection screen
+import com.csse3200.game.screens.MapSelectionScreen;
+
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -23,6 +28,9 @@ import static com.badlogic.gdx.Gdx.app;
 public class GdxGame extends Game {
   private static final Logger logger = LoggerFactory.getLogger(GdxGame.class);
 
+  /** Used by MainMenuScreen to avoid restarting BGM repeatedly (0 = not started, 1 = playing). */
+  public static int musicON = 0;
+
   @Override
   public void create() {
     logger.info("Creating game");
@@ -34,7 +42,7 @@ public class GdxGame extends Game {
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
 
-    setScreen(ScreenType.MAIN_MENU);
+    setScreen(ScreenType.OPENING_CUTSCENE);
   }
 
   /**
@@ -58,7 +66,7 @@ public class GdxGame extends Game {
     }
     setScreen(newScreen(screenType));
   }
-  
+
   /**
    * Sets the game's screen to a new screen of the provided type with additional parameters.
    * @param screenType screen type
@@ -72,10 +80,11 @@ public class GdxGame extends Game {
    * Sets the game's screen to a new screen of the provided type with additional parameters.
    * @param screenType screen type
    * @param isContinue true if this is a continue operation, false for new game
-   * @param saveFileName specific save file to load (for continue operations)
+   * @param saveFileName specific save file to load (for continue operations); for new game,
+   *                     this string may be used to pass a selected map id.
    */
   public void setScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
-    logger.info("Setting game screen to {} (Continue: {}, Save: {})", screenType, isContinue, saveFileName);
+    logger.info("Setting game screen to {} (Continue: {}, Save/Arg: {})", screenType, isContinue, saveFileName);
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
@@ -86,7 +95,10 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
-    getScreen().dispose();
+    Screen current = getScreen();
+    if (current != null) {
+      current.dispose();
+    }
   }
 
   /**
@@ -96,10 +108,6 @@ public class GdxGame extends Game {
    */
   private Screen newScreen(ScreenType screenType) {
     return newScreen(screenType, false, null);
-  }
-   
-  private Screen newScreen(ScreenType screenType, boolean isContinue) {
-    return newScreen(screenType, isContinue, null);
   }
 
   private Screen newScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
@@ -112,13 +120,33 @@ public class GdxGame extends Game {
         return new SettingsScreen(this);
       case SAVE_SELECTION:
         return new SaveSelectionScreen(this);
+      case OPENING_CUTSCENE:
+        return new OpeningCutsceneScreen(this);
+      case VICTORY:
+        return new VictoryScreen(this);
+      case MAP_SELECTION: // NEW
+        return new MapSelectionScreen(this);
       default:
         return null;
     }
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
+    MAP_SELECTION
+  }
+
+  /**
+   * 设置带有指定背景的开场动画
+   * @param backgroundIndex 背景索引 (0-4)
+   */
+  public void setOpeningCutsceneWithBackground(int backgroundIndex) {
+    logger.info("Setting opening cutscene with background index: {}", backgroundIndex);
+    Screen currentScreen = getScreen();
+    if (currentScreen != null) {
+      currentScreen.dispose();
+    }
+    setScreen(OpeningCutsceneScreen.withBackground(this, backgroundIndex));
   }
 
   /**

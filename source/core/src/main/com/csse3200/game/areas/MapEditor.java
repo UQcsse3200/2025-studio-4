@@ -50,10 +50,10 @@ public class MapEditor extends InputAdapter {
     private void initializePathTile() {
         try {
             Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
-            // Avoid blurring when zooming避免放大时模糊
+            // Avoid blurring when zooming
             pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-            // Make the path tile size consistent with the base tile layer to prevent size anomalies使路径瓦片尺寸与基础图层瓦片一致，防止尺寸异常
+            // Make the path tile size consistent with the base tile layer to prevent size anomalies
             TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
             int tileW = baseLayer.getTileWidth();
             int tileH = baseLayer.getTileHeight();
@@ -61,9 +61,9 @@ public class MapEditor extends InputAdapter {
             int regionH = Math.min(tileH, pathTexture.getHeight());
             TextureRegion region = new TextureRegion(pathTexture, 0, 0, regionW, regionH);
             pathTile = new StaticTiledMapTile(region);
-            System.out.println("✅ path.png tile initialized successfully");
+            System.out.println("Path tile initialized successfully");
         } catch (Exception e) {
-            System.out.println("⚠️ path.png tile initialization failed: " + e.getMessage());
+            System.out.println("Path tile initialization failed: " + e.getMessage());
             pathTile = null;
         }
     }
@@ -73,7 +73,7 @@ public class MapEditor extends InputAdapter {
     private void initializeKeypointTile() {
         try {
             Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/path_keypoint.png", Texture.class);
-            // Avoid blurring when zooming避免放大时模糊
+            // Avoid blurring when zooming
             keypointTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
             // Make the keypoint tile size consistent with the base tile layer to prevent size anomalies使关键点瓦片尺寸与基础图层瓦片一致，防止尺寸异常

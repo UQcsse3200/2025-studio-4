@@ -10,6 +10,9 @@ import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
 import com.csse3200.game.screens.OpeningCutsceneScreen;
 import com.csse3200.game.screens.VictoryScreen;
+// NEW: Map selection screen
+import com.csse3200.game.screens.MapSelectionScreen;
+
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
@@ -60,7 +63,7 @@ public class GdxGame extends Game {
     }
     setScreen(newScreen(screenType));
   }
-  
+
   /**
    * Sets the game's screen to a new screen of the provided type with additional parameters.
    * @param screenType screen type
@@ -74,10 +77,11 @@ public class GdxGame extends Game {
    * Sets the game's screen to a new screen of the provided type with additional parameters.
    * @param screenType screen type
    * @param isContinue true if this is a continue operation, false for new game
-   * @param saveFileName specific save file to load (for continue operations)
+   * @param saveFileName specific save file to load (for continue operations); for new game,
+   *                     this string may be used to pass a selected map id.
    */
   public void setScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
-    logger.info("Setting game screen to {} (Continue: {}, Save: {})", screenType, isContinue, saveFileName);
+    logger.info("Setting game screen to {} (Continue: {}, Save/Arg: {})", screenType, isContinue, saveFileName);
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
@@ -88,7 +92,10 @@ public class GdxGame extends Game {
   @Override
   public void dispose() {
     logger.debug("Disposing of current screen");
-    getScreen().dispose();
+    Screen current = getScreen();
+    if (current != null) {
+      current.dispose();
+    }
   }
 
   /**
@@ -99,7 +106,6 @@ public class GdxGame extends Game {
   private Screen newScreen(ScreenType screenType) {
     return newScreen(screenType, false, null);
   }
-   
 
   private Screen newScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
     switch (screenType) {
@@ -115,13 +121,16 @@ public class GdxGame extends Game {
         return new OpeningCutsceneScreen(this);
       case VICTORY:
         return new VictoryScreen(this);
+      case MAP_SELECTION: // NEW
+        return new MapSelectionScreen(this);
       default:
         return null;
     }
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
+    MAP_SELECTION
   }
 
   /**

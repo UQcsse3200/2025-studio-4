@@ -30,9 +30,10 @@ public class MainMenuActions extends Component {
    * Swaps to the Main Game screen.
    */
   private void onStart() {
-    logger.info("Start game");
-    game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    logger.info("Open Map Selection");
+    game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }
+
 
   /**
    * Opens the save selection interface.

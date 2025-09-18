@@ -1,0 +1,92 @@
+package com.csse3200.game.screens;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.mainmenu.MapSelectionActions;
+import com.csse3200.game.components.mainmenu.MapSelectionDisplay;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.input.InputDecorator;
+import com.csse3200.game.input.InputService;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MapSelectionScreen extends ScreenAdapter {
+    private static final Logger logger = LoggerFactory.getLogger(MapSelectionScreen.class);
+
+    private final GdxGame game;
+    private Stage stage;
+
+    public MapSelectionScreen(GdxGame game) {
+        this.game = game;
+    }
+
+    @Override
+    public void show() {
+        logger.debug("Initialising MapSelectionScreen services");
+
+        // Core services
+        ServiceLocator.registerRenderService(new RenderService());
+        ServiceLocator.registerEntityService(new EntityService());
+        ServiceLocator.registerInputService(new InputService());
+        ServiceLocator.registerResourceService(new ResourceService());
+
+        // PRELOAD shared background (same as other menu screens)
+        String[] textures = {"images/main_menu_background.png"};
+        ServiceLocator.getResourceService().loadTextures(textures);
+        ServiceLocator.getResourceService().loadAll();
+
+        // Stage (no custom renderer/RenderFactory needed)
+        stage = new Stage();
+        ServiceLocator.getRenderService().setStage(stage);
+
+        // UI entity (display + actions)
+        Entity ui = new Entity()
+                .addComponent(new MapSelectionDisplay())
+                .addComponent(new MapSelectionActions(game));
+        ServiceLocator.getEntityService().register(ui);
+
+        // Route input to Stage via InputService (matches your project pattern)
+        ServiceLocator.getInputService().register(new InputDecorator(stage, 10));
+    }
+
+    @Override
+    public void render(float delta) {
+        // Update ECS + Stage, then draw
+        ServiceLocator.getEntityService().update();
+        stage.act(delta > 0 ? delta : Gdx.graphics.getDeltaTime());
+        stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        if (stage != null) {
+            stage.getViewport().update(width, height, true);
+        }
+    }
+
+    @Override
+    public void hide() {
+        // optional: keep Stage alive between show/hide cycles if your screens reuse services
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Disposing MapSelectionScreen");
+        // Dispose in a safe order
+        if (stage != null) {
+            stage.dispose();
+            stage = null;
+        }
+        ServiceLocator.getRenderService().dispose();
+        ServiceLocator.getEntityService().dispose();
+        // NOTE: your InputService likely has no dispose(); do not call it
+        ServiceLocator.getResourceService().dispose();
+        ServiceLocator.clear();
+    }
+}

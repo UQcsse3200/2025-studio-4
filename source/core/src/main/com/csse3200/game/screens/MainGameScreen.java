@@ -30,7 +30,7 @@ import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.screens.GameOverScreen;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
-import com.csse3200.game.services.SaveGameService;
+
 import com.csse3200.game.components.maingame.PauseMenuDisplay;
 import com.csse3200.game.components.maingame.PauseInputComponent;
 import com.csse3200.game.components.maingame.SaveMenuDisplay;
@@ -60,7 +60,7 @@ public class MainGameScreen extends ScreenAdapter {
   private final Renderer renderer;
   private final PhysicsEngine physicsEngine;
   public static Entity ui;
-  private SaveGameService saveGameService;
+  // private SaveGameService saveGameService;
 
   // NEW: carry the intent and arg generically (save name for Continue, mapId for New Game)
   private final boolean isContinue;
@@ -97,7 +97,8 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
 
-    saveGameService = new SaveGameService(ServiceLocator.getEntityService());
+    // Switched to SimpleSaveService
+    var simpleSave = new com.csse3200.game.services.SimpleSaveService(ServiceLocator.getEntityService());
 
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
@@ -113,16 +114,16 @@ public class MainGameScreen extends ScreenAdapter {
     boolean hasExistingPlayer = false;
     if (isContinue && startupArg != null) {
       logger.info("Loading specific save file: {}", startupArg);
-      boolean success = saveGameService.loadGame(startupArg);
+      boolean success = simpleSave.loadToPending();
       if (success) {
         logger.info("Save file loaded successfully");
         hasExistingPlayer = true;
       } else {
         logger.warn("Failed to load save file, starting new game");
       }
-    } else if (isContinue && saveGameService.hasSaveFile()) {
+    } else if (isContinue) {
       logger.info("Loading default saved game state for continue");
-      boolean success = saveGameService.loadGame();
+      boolean success = simpleSave.loadToPending();
       if (success) {
         hasExistingPlayer = true;
       }
@@ -151,13 +152,20 @@ public class MainGameScreen extends ScreenAdapter {
       }
     }
 
+    // If continuing from a save, avoid auto-starting waves to prevent duplicate enemies.
+    forestGameArea.setAutoStartWaves(!hasExistingPlayer);
     forestGameArea.create();
 
     // After game area and assets are ready, apply pending save restoration if any
     if (hasExistingPlayer) {
-      boolean applied = saveGameService.applyPendingRestore();
+      // Use area waypoints when restoring to avoid any initial drift
+      java.util.List<com.csse3200.game.entities.Entity> canonical = forestGameArea.getWaypointList();
+      boolean applied = (canonical != null && !canonical.isEmpty())
+              ? simpleSave.applyPendingRestoreWithWaypoints(canonical)
+              : simpleSave.applyPendingRestore();
       if (applied) {
         logger.info("Applied pending save restoration after game area creation");
+        // No longer need extra rebind pass; restore already bound with canonical waypoints
       } else {
         logger.warn("No pending restoration to apply or failed to apply");
       }

@@ -2,7 +2,7 @@ package com.csse3200.game.components.mainmenu;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.services.SaveGameService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +12,9 @@ import java.io.File;
 public class SaveSelectionActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(SaveSelectionActions.class);
   private GdxGame game;
-  private SaveGameService saveGameService;
 
   public SaveSelectionActions(GdxGame game) {
     this.game = game;
-    this.saveGameService = new SaveGameService(null);
   }
 
   @Override

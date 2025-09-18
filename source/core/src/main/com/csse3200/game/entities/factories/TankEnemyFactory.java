@@ -54,11 +54,19 @@ public class TankEnemyFactory {
      * @return entity
      */
     public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
-        Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(0), new Vector2(speed), waypoints, 
-        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, 0);
+        return createTankEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints, 
+        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
         tank.addComponent(waypointComponent);
 
         tank

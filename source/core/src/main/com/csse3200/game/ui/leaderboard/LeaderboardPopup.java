@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardEntry;
+import com.csse3200.game.services.ServiceLocator;
 import java.time.*;
 
 public class LeaderboardPopup extends Window {
@@ -15,6 +16,7 @@ public class LeaderboardPopup extends Window {
     private final Table listTable = new Table();
     private final ScrollPane scroller;
     private final TextButton prevBtn, nextBtn, closeBtn, friendsBtn;
+    private Runnable onCloseCallback;
 
     public LeaderboardPopup(Skin skin, LeaderboardController controller) {
         super("Leaderboard", skin);
@@ -135,6 +137,13 @@ public class LeaderboardPopup extends Window {
         return dt.toString().replace('T', ' ');
     }
 
+    /**
+     * Sets a callback to be executed when the popup is closed
+     */
+    public void setOnCloseCallback(Runnable callback) {
+        this.onCloseCallback = callback;
+    }
+
     public void showOn(Stage stage) {
         stage.addActor(this);
         pack();
@@ -145,6 +154,11 @@ public class LeaderboardPopup extends Window {
     public void dismiss() {
         addAction(Actions.sequence(
                 Actions.parallel(Actions.alpha(0f, 0.12f), Actions.scaleTo(0.98f, 0.98f, 0.12f)),
+                Actions.run(() -> {
+                    if (onCloseCallback != null) {
+                        onCloseCallback.run();
+                    }
+                }),
                 Actions.removeActor()
         ));
     }

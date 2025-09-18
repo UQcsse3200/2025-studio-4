@@ -19,21 +19,25 @@ class ServiceLocatorTest {
     RenderService renderService = new RenderService();
     PhysicsService physicsService = mock(PhysicsService.class);
     GameTime gameTime = new GameTime();
+    AudioService audioService = mock(AudioService.class);
 
     ServiceLocator.registerEntityService(entityService);
     ServiceLocator.registerRenderService(renderService);
     ServiceLocator.registerPhysicsService(physicsService);
     ServiceLocator.registerTimeSource(gameTime);
+    ServiceLocator.registerAudioService(audioService);
 
     assertEquals(ServiceLocator.getEntityService(), entityService);
     assertEquals(ServiceLocator.getRenderService(), renderService);
     assertEquals(ServiceLocator.getPhysicsService(), physicsService);
     assertEquals(ServiceLocator.getTimeSource(), gameTime);
+    assertEquals(ServiceLocator.getAudioService(), audioService);
 
     ServiceLocator.clear();
     assertNull(ServiceLocator.getEntityService());
     assertNull(ServiceLocator.getRenderService());
     assertNull(ServiceLocator.getPhysicsService());
     assertNull(ServiceLocator.getTimeSource());
+    assertNull(ServiceLocator.getAudioService());
   }
 }

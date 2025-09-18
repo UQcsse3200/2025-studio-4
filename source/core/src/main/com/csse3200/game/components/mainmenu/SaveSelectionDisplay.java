@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.SaveGameService;
+
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,12 +29,10 @@ public class SaveSelectionDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(SaveSelectionDisplay.class);
   private static final float Z_INDEX = 2f;
   private Table table;
-  private SaveGameService saveGameService;
 
   @Override
   public void create() {
     super.create();
-    saveGameService = new SaveGameService(null);
     addActors();
     
     entity.getEvents().addListener("refreshSaveList", this::refreshSaveList);

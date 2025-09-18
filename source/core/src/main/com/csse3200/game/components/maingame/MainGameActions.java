@@ -4,6 +4,13 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
+import com.csse3200.game.ui.leaderboard.LeaderboardController;
+import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
+import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +37,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
+    entity.getEvents().addListener("showRanking", this::onShowRanking);
     entity.getEvents().addListener("awardStars", this::awardStars);
   }
 
@@ -62,6 +70,31 @@ public class MainGameActions extends Component {
 
   private void onQuitToMenu() {
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+  }
+
+  /**
+   * Shows the ranking/leaderboard popup
+   */
+  private void onShowRanking() {
+    logger.info("Showing ranking/leaderboard");
+    
+    try {
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      Skin skin = MinimalSkinFactory.create();
+      
+      // Ensure leaderboard service is available
+      if (ServiceLocator.getLeaderboardService() == null) {
+        ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
+      }
+      
+      LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
+      LeaderboardController controller = new LeaderboardController(leaderboardService);
+      LeaderboardPopup popup = new LeaderboardPopup(skin, controller);
+      popup.showOn(stage);
+      
+    } catch (Exception e) {
+      logger.error("Error showing ranking", e);
+    }
   }
 
   /**

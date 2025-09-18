@@ -63,7 +63,7 @@ public class TankEnemyFactory {
 
         tank
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
 
             .addComponent(new clickable(clickRadius));

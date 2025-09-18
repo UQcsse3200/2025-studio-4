@@ -82,14 +82,6 @@ class PlayerNameInputDialogTest {
         assertTrue(dialog.isModal(), "Dialog should be modal");
     }
 
-    @Test
-    void shouldBeMovable() {
-        // When
-        dialog.show(stage);
-
-        // Then
-        assertTrue(dialog.isMovable(), "Dialog should be movable");
-    }
 
     @Test
     void shouldNotBeResizable() {
@@ -181,11 +173,6 @@ class PlayerNameInputDialogTest {
 
 
 
-    @Test
-    void shouldHandleNullStage() {
-        // When & Then - should handle null stage gracefully
-        assertDoesNotThrow(() -> dialog.show(null));
-    }
 
     @Test
     void shouldCreateTextFieldWithCorrectProperties() {

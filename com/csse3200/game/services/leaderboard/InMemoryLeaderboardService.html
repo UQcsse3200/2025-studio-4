@@ -132,15 +132,19 @@ implements <a href="LeaderboardService.html" title="interface in com.csse3200.ga
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEntries(com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardQuery)" class="member-name-link">getEntries</a><wbr>(<a href="LeaderboardService.LeaderboardQuery.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardQuery</a>&nbsp;q)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMyBest()" class="member-name-link">getMyBest</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#submitScore(long)" class="member-name-link">submitScore</a><wbr>(long&nbsp;score)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addEntry(java.lang.String,int)" class="member-name-link">addEntry</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;playerName,
+ int&nbsp;finalScore2)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEntries(com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardQuery)" class="member-name-link">getEntries</a><wbr>(<a href="LeaderboardService.LeaderboardQuery.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardQuery</a>&nbsp;q)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMyBest()" class="member-name-link">getMyBest</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#submitScore(long)" class="member-name-link">submitScore</a><wbr>(long&nbsp;score)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -199,6 +203,17 @@ implements <a href="LeaderboardService.html" title="interface in com.csse3200.ga
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="LeaderboardService.html#submitScore(long)">submitScore</a></code>&nbsp;in interface&nbsp;<code><a href="LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="addEntry(java.lang.String,int)">
+<h3>addEntry</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addEntry</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;playerName,
+ int&nbsp;finalScore2)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="LeaderboardService.html#addEntry(java.lang.String,int)">addEntry</a></code>&nbsp;in interface&nbsp;<code><a href="LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></code></dd>
 </dl>
 </section>
 </li>

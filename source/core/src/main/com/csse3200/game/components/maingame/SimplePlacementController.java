@@ -16,7 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.MapEditor;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.currencysystem.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.TowerCostComponent;
 
 import java.util.ArrayList;
@@ -208,7 +208,6 @@ public class SimplePlacementController extends Component {
             {
                 ghostTower.dispose();
                 ghostTower = null;
->>>>>>> origin/main
             }
 
             newTower.setPosition(snapPos);

@@ -31,11 +31,7 @@ public class BossEnemyFactory {
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 10;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
-<<<<<<< HEAD
-    private static final int DEFAULT_POINTS = 1000;
-=======
     private static final int DEFAULT_POINTS = 600;
->>>>>>> origin/main
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties

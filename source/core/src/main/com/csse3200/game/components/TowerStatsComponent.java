@@ -1,5 +1,7 @@
 package com.csse3200.game.components;
 
+import com.csse3200.game.components.Component;
+
 /**
  * Component storing stats for a tower, such as health, damage, range, and attack cooldown.
  */
@@ -51,19 +53,10 @@ public class TowerStatsComponent extends Component {
     /** Increments the attack timer by delta seconds. */
     public void updateAttackTimer(float delta) { attackTimer += delta; }
 
-<<<<<<< HEAD
     /** @return True if the tower can attack (timer >= cooldown) */
     public boolean canAttack() { return attackTimer >= attackCooldown; }
-=======
-    /**
-     * Returns the attack range in game units.
-     *
-     * @return attack range
-     */
-    public float getRange() {
-        return range;
-    }
-    /** Sets the damage dealth per attack */
+
+    /** Sets the damage dealt per attack */
     public void setDamage(float damage) {
         this.damage = Math.max(0, damage);
     }
@@ -74,57 +67,22 @@ public class TowerStatsComponent extends Component {
     }
 
     /**
-     * Returns the cooldown between attacks (seconds).
-     *
-     * @return attack cooldown
+     * Gets the projectile speed for this tower.
+     * Default implementation returns 500.
+     * @return projectile speed
      */
-    public float getAttackCooldown() {
-        return attackCooldown;
+    public float getProjectileSpeed() {
+        return 500f;
     }
 
     /**
-     * Sets the attack cooldown (seconds).
-     *
-     * @param attackCooldown new attack cooldown
+     * Gets the projectile texture path for this tower.
+     * Default implementation returns "projectile.png".
+     * @return projectile texture path
      */
-    public void setAttackCooldown(float attackCooldown) {
-        this.attackCooldown = attackCooldown;
+    public String getProjectileTexture() {
+        return "projectile.png";
     }
-
-    /**
-     * Returns the internal attack timer.
-     *
-     * @return attack timer
-     */
-    public float getAttackTimer() {
-        return attackTimer;
-    }
-
-    /**
-     * Resets the attack timer to zero.
-     */
-    public void resetAttackTimer() {
-        attackTimer = 0f;
-    }
-
-    /**
-     * Increments the attack timer by delta seconds.
-     *
-     * @param delta time to increment by (seconds)
-     */
-    public void updateAttackTimer(float delta) {
-        attackTimer += delta;
-    }
-
-    /**
-     * Returns true if the tower can attack (timer >= cooldown).
-     *
-     * @return true if tower can attack, false otherwise
-     */
-    public boolean canAttack() {
-        return attackTimer >= attackCooldown;
-    }
->>>>>>> origin/main
 
     /**
      * Returns the attack speed (attacks per second).

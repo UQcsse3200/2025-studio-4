@@ -7,9 +7,13 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.currencysystem.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.rendering.AnimationRenderComponent;
+import com.csse3200.game.components.projectile.ProjectileComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.rendering.Renderer;
 import java.util.Map;
 
 /**
@@ -354,7 +358,6 @@ public class TowerComponent extends Component {
                 float clickRadius = 1.0f;
                 setSelected(Math.abs(worldClickPos.x - towerPos.x) < clickRadius &&
                         Math.abs(worldClickPos.y - towerPos.y) < clickRadius);
->>>>>>> origin/main
             }
         }
     }

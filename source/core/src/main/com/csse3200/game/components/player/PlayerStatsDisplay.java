@@ -22,11 +22,7 @@ public class PlayerStatsDisplay extends UIComponent {
   Table table;
   private Image heartImage;
   private Label healthLabel;
-<<<<<<< HEAD
   private Label playerNameLabel;
-
-=======
->>>>>>> origin/main
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
   private Image scoreImage;
@@ -42,11 +38,8 @@ public class PlayerStatsDisplay extends UIComponent {
 
     entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
     entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
-<<<<<<< HEAD
     entity.getEvents().addListener("updatePlayerName", this::updatePlayerNameUI);
-=======
     entity.getEvents().addListener("updateScore", this::updatePlayerScoreUI);
->>>>>>> origin/main
   }
 
   /**
@@ -167,7 +160,8 @@ public class PlayerStatsDisplay extends UIComponent {
       playerNameLabel.setText("Player: " + playerName);
     }
   }
-=======
+
+  /**
    * Updates the player's total score on the ui.
    * @param totalScore player total score
    */
@@ -175,8 +169,6 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence text = String.format("Score: %d", totalScore);
     scoreLabel.setText(text);
   }
-
->>>>>>> origin/main
 
   @Override
   public void dispose() {

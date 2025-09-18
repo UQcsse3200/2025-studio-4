@@ -170,9 +170,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Appends the character to the end of the entered message.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#applyPendingRestore()" class="member-name-link">applyPendingRestore()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.html#applyPendingRestore()" class="member-name-link">applyPendingRestore()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.html#applyPendingRestoreWithWaypoints(java.util.List)" class="member-name-link">applyPendingRestoreWithWaypoints(List&lt;Entity&gt;)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
 <dd>
-<div class="block">Apply pending restoration if available.</div>
+<div class="block">Apply pending restore but using provided canonical waypoints from the current game area.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.html#applySettings(com.csse3200.game.files.UserSettings.Settings)" class="member-name-link">applySettings(UserSettings.Settings)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.html" title="class in com.csse3200.game.files">UserSettings</a></dt>
 <dd>
@@ -196,14 +198,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Attack cooldown (seconds per shot) — lower values mean faster attack speed</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#attackCooldown" class="member-name-link">attackCooldown</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/TowerState.html#ATTACKING" class="member-name-link">ATTACKING</a> - Enum constant in enum class com.csse3200.game.components.<a href="com/csse3200/game/components/TowerState.html" title="enum class in com.csse3200.game.components">TowerState</a></dt>
 <dd>
 <div class="block">Tower is actively attacking an enemy.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#attackTimer" class="member-name-link">attackTimer</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html" class="type-name-link" title="class in com.csse3200.game.services">AudioService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#%3Cinit%3E()" class="member-name-link">AudioService()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
@@ -334,6 +332,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Stats for the cavemen tower.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html#cd" class="member-name-link">cd</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html#CENTER" class="member-name-link">CENTER</a> - Enum constant in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html#CENTER" class="member-name-link">CENTER</a> - Enum constant in enum class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignY.html" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignY</a></dt>
@@ -657,6 +657,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a boss enemy with current configuration.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/BossEnemyFactory.html#createBossEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty,int)" class="member-name-link">createBossEnemy(List&lt;Entity&gt;, Entity, Difficulty, int)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/BossEnemyFactory.html" title="class in com.csse3200.game.entities.factories">BossEnemyFactory</a></dt>
+<dd>
+<div class="block">Overload: start from specific waypoint index (for save/load resume).</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/ProjectileFactory.html#createBullet(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,float)" class="member-name-link">createBullet(String, Vector2, float, float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ProjectileFactory.html" title="class in com.csse3200.game.entities.factories">ProjectileFactory</a></dt>
 <dd>
 <div class="block">Create a bullet with default damage.</div>
@@ -688,6 +692,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/DroneEnemyFactory.html#createDroneEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty)" class="member-name-link">createDroneEnemy(List&lt;Entity&gt;, Entity, Difficulty)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DroneEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DroneEnemyFactory</a></dt>
 <dd>
 <div class="block">Creates a drone enemy with current configuration.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/DroneEnemyFactory.html#createDroneEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty,int)" class="member-name-link">createDroneEnemy(List&lt;Entity&gt;, Entity, Difficulty, int)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DroneEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DroneEnemyFactory</a></dt>
+<dd>
+<div class="block">Overload: start from specific waypoint index (for save/load resume).</div>
 </dd>
 <dt><a href="com/csse3200/game/input/InputFactory.html#createForPlayer()" class="member-name-link">createForPlayer()</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputFactory.html" title="class in com.csse3200.game.input">InputFactory</a></dt>
 <dd>
@@ -727,6 +735,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a grunt enemy with current configuration.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/GruntEnemyFactory.html#createGruntEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty,int)" class="member-name-link">createGruntEnemy(List&lt;Entity&gt;, Entity, Difficulty, int)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/GruntEnemyFactory.html" title="class in com.csse3200.game.entities.factories">GruntEnemyFactory</a></dt>
+<dd>
+<div class="block">Overload: start from specific waypoint index (for save/load resume).</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/HeroFactory.html#createHero(com.csse3200.game.entities.configs.HeroConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createHero(HeroConfig, Camera)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HeroFactory.html" title="class in com.csse3200.game.entities.factories">HeroFactory</a></dt>
 <dd>
 <div class="block">Create a hero entity based on a <a href="com/csse3200/game/entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs"><code>HeroConfig</code></a>.</div>
@@ -750,6 +762,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/TankEnemyFactory.html#createTankEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty)" class="member-name-link">createTankEnemy(List&lt;Entity&gt;, Entity, Difficulty)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TankEnemyFactory.html" title="class in com.csse3200.game.entities.factories">TankEnemyFactory</a></dt>
 <dd>
 <div class="block">Creates a tank enemy with current configuration.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/TankEnemyFactory.html#createTankEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty,int)" class="member-name-link">createTankEnemy(List&lt;Entity&gt;, Entity, Difficulty, int)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TankEnemyFactory.html" title="class in com.csse3200.game.entities.factories">TankEnemyFactory</a></dt>
+<dd>
+<div class="block">Overload: start from specific waypoint index (for save/load resume).</div>
 </dd>
 <dt><a href="com/csse3200/game/areas/terrain/TerrainFactory.html#createTerrain(com.csse3200.game.areas.terrain.TerrainFactory.TerrainType)" class="member-name-link">createTerrain(TerrainFactory.TerrainType)</a> - Method in class com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainFactory.html" title="class in com.csse3200.game.areas.terrain">TerrainFactory</a></dt>
 <dd>
@@ -794,8 +810,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Damage dealt by the tower.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#damage" class="member-name-link">damage</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/DamagePopupComponent.html" class="type-name-link" title="class in com.csse3200.game.ui">DamagePopupComponent</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/DamagePopupComponent.html#%3Cinit%3E()" class="member-name-link">DamagePopupComponent()</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/DamagePopupComponent.html" title="class in com.csse3200.game.ui">DamagePopupComponent</a></dt>
@@ -1086,17 +1100,17 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsContactListener.html#endContact(com.badlogic.gdx.physics.box2d.Contact)" class="member-name-link">endContact(Contact)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsContactListener.html" title="class in com.csse3200.game.physics">PhysicsContactListener</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#enemies" class="member-name-link">enemies</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.html#enemies" class="member-name-link">enemies</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#enemiesKilled" class="member-name-link">enemiesKilled</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html#%3Cinit%3E()" class="member-name-link">Enemy()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.npc">EnemyAnimationController</a> - Class in <a href="com/csse3200/game/components/npc/package-summary.html">com.csse3200.game.components.npc</a></dt>
 <dd>
 <div class="block">Controller for enemies: switches between idle,walk and other animations.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/npc/EnemyAnimationController.html#%3Cinit%3E()" class="member-name-link">EnemyAnimationController()</a> - Constructor for class com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/EnemyAnimationController.html" title="class in com.csse3200.game.components.npc">EnemyAnimationController</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html#%3Cinit%3E()" class="member-name-link">EnemyData()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.EnemyData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/EnemyFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">EnemyFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
 <dd>&nbsp;</dd>
@@ -1247,8 +1261,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Displays a button to exit the Main Game screen to the Main Menu screen.</div>
 </dd>
 <dt><a href="com/csse3200/game/screens/GameOverScreen.html#%3Cinit%3E()" class="member-name-link">GameOverScreen()</a> - Constructor for class com.csse3200.game.screens.<a href="com/csse3200/game/screens/GameOverScreen.html" title="class in com.csse3200.game.screens">GameOverScreen</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#%3Cinit%3E()" class="member-name-link">GameSaveData()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameStateService.html" class="type-name-link" title="class in com.csse3200.game.services">GameStateService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>
@@ -1747,6 +1759,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns wallet component (used by other systems such as ultimate).</div>
 </dd>
+<dt><a href="com/csse3200/game/areas/ForestGameArea.html#getWaypointList()" class="member-name-link">getWaypointList()</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></dt>
+<dd>
+<div class="block">Expose current waypoint list generated by the map editor, for save/load rebinding.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#getWaypoints()" class="member-name-link">getWaypoints()</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
 <dd>
 <div class="block">Gets the list of waypoints for this enemy.</div>
@@ -1824,6 +1840,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/PlayerConfig.html#gold" class="member-name-link">gold</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/PlayerConfig.html" title="class in com.csse3200.game.entities.configs">PlayerConfig</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html#gold" class="member-name-link">gold</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Player</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/GridPoint2Utils.html" class="type-name-link" title="class in com.csse3200.game.utils.math">GridPoint2Utils</a> - Class in <a href="com/csse3200/game/utils/math/package-summary.html">com.csse3200.game.utils.math</a></dt>
 <dd>
 <div class="block">Contains additional utility constants and functions for common GridPoint2 operations.</div>
@@ -1869,21 +1887,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Checks if there are more waypoints available.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#hasSaveFile()" class="member-name-link">hasSaveFile()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
-<dd>
-<div class="block">Check if a save file exists</div>
-</dd>
 <dt><a href="com/csse3200/game/ui/Theme.html#HEADER_FG" class="member-name-link">HEADER_FG</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/Theme.html" title="class in com.csse3200.game.ui">Theme</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/BaseEntityConfig.html#health" class="member-name-link">health</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/BaseEntityConfig.html" title="class in com.csse3200.game.entities.configs">BaseEntityConfig</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html#health" class="member-name-link">health</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.EnemyData</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#health" class="member-name-link">health</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#height" class="member-name-link">height</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#height" class="member-name-link">height</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroAppearanceComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
@@ -2015,6 +2023,12 @@ loadScripts(document, 'script');</script>
 <div class="block">Component that handles visual damage effects for the homebase.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html#%3Cinit%3E()" class="member-name-link">HomebaseDamageEffectComponent()</a> - Constructor for class com.csse3200.game.components.<a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html" title="class in com.csse3200.game.components">HomebaseDamageEffectComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html#hp" class="member-name-link">hp</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html#hp" class="member-name-link">hp</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Player</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html#hp" class="member-name-link">hp</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
@@ -2313,14 +2327,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Loads assets for the specified duration in milliseconds.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#loadGame()" class="member-name-link">loadGame()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
-<dd>
-<div class="block">Load the game state from default file</div>
-</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#loadGame(java.lang.String)" class="member-name-link">loadGame(String)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
-<dd>
-<div class="block">Load the game state from a specific save file</div>
-</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#loadMusic(java.lang.String%5B%5D)" class="member-name-link">loadMusic(String[])</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
 <div class="block">Loads a list of music assets into the asset manager.</div>
@@ -2339,6 +2345,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Loads a list of texture assets into the asset manager.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.html#loadToPending()" class="member-name-link">loadToPending()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/FileLoader.Location.html#LOCAL" class="member-name-link">LOCAL</a> - Enum constant in enum class com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.Location.html" title="enum class in com.csse3200.game.files">FileLoader.Location</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#longPress(float,float)" class="member-name-link">longPress(float, float)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
@@ -2703,6 +2711,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Wrapper for pinch stop that can be overridden.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.html#player" class="member-name-link">player</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html#%3Cinit%3E()" class="member-name-link">Player()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Player</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsLayer.html#PLAYER" class="member-name-link">PLAYER</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html" class="type-name-link" title="class in com.csse3200.game.components.player">PlayerActions</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
@@ -2727,15 +2739,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Basement factory (renamed from PlayerFactory).</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#playerGold" class="member-name-link">playerGold</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#playerHealth" class="member-name-link">playerHealth</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#playerId" class="member-name-link">playerId</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/PlayerRank.html#playerId" class="member-name-link">playerId</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#playerPosition" class="member-name-link">playerPosition</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/PlayerRank.html" class="type-name-link" title="class in com.csse3200.game.ui">PlayerRank</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>&nbsp;</dd>
@@ -2771,9 +2777,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Point at which the raycast hit the fixture.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html#position" class="member-name-link">position</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.EnemyData</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html#pos" class="member-name-link">pos</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#position" class="member-name-link">position</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html#pos" class="member-name-link">pos</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Player</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html#pos" class="member-name-link">pos</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsContactListener.html#postSolve(com.badlogic.gdx.physics.box2d.Contact,com.badlogic.gdx.physics.box2d.ContactImpulse)" class="member-name-link">postSolve(Contact, ContactImpulse)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsContactListener.html" title="class in com.csse3200.game.physics">PhysicsContactListener</a></dt>
 <dd>&nbsp;</dd>
@@ -2842,8 +2850,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Attack range of the tower (in game units).</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#range" class="member-name-link">range</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#rank" class="member-name-link">rank</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/PlayerRank.html#rank" class="member-name-link">rank</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
@@ -2885,6 +2891,15 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/files/FileLoader.html#readClass(java.lang.Class,java.lang.String,com.csse3200.game.files.FileLoader.Location)" class="member-name-link">readClass(Class&lt;T&gt;, String, FileLoader.Location)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.html" title="class in com.csse3200.game.files">FileLoader</a></dt>
 <dd>
 <div class="block">Read generic Java classes from a JSON file.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#rebindWaypoints(java.util.List)" class="member-name-link">rebindWaypoints(List&lt;Entity&gt;)</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
+<dd>
+<div class="block">Rebind this enemy to a new waypoint list and reset progression to start.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#rebindWaypointsAndSnap(java.util.List,com.badlogic.gdx.math.Vector2)" class="member-name-link">rebindWaypointsAndSnap(List&lt;Entity&gt;, Vector2)</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
+<dd>
+<div class="block">Rebind to new waypoints and snap progression to the nearest waypoint
+ based on the entity's current world position.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#refreshInvalidTiles()" class="member-name-link">refreshInvalidTiles()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>
@@ -3146,29 +3161,11 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:S">S</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/services/SimpleSaveService.html#save()" class="member-name-link">save()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#SAVE_SELECTION" class="member-name-link">SAVE_SELECTION</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#saveGame()" class="member-name-link">saveGame()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
-<dd>
-<div class="block">Save the current game state to default file</div>
-</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#saveGame(java.lang.String)" class="member-name-link">saveGame(String)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
-<dd>
-<div class="block">Save the current game state to file with a custom name</div>
-</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html" class="type-name-link" title="class in com.csse3200.game.services">SaveGameService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
-<dd>
-<div class="block">Service for managing game saves and loading.</div>
-</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.html#%3Cinit%3E(com.csse3200.game.entities.EntityService)" class="member-name-link">SaveGameService(EntityService)</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.html" title="class in com.csse3200.game.services">SaveGameService</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" class="type-name-link" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
-<dd>
-<div class="block">Data class for storing game save information</div>
-</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html" class="type-name-link" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.EnemyData</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" class="type-name-link" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.html#%3Cinit%3E()" class="member-name-link">SaveData()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SaveMenuDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
@@ -3275,6 +3272,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set damage multiplier (×Y).</div>
 </dd>
+<dt><a href="com/csse3200/game/areas/ForestGameArea.html#setAutoStartWaves(boolean)" class="member-name-link">setAutoStartWaves(boolean)</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></dt>
+<dd>
+<div class="block">Control whether waves should auto start during create().</div>
+</dd>
 <dt><a href="com/csse3200/game/components/CombatStatsComponent.html#setBaseAttack(int)" class="member-name-link">setBaseAttack(int)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/PlayerCombatStatsComponent.html#setBaseAttack(int)" class="member-name-link">setBaseAttack(int)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerCombatStatsComponent.html" title="class in com.csse3200.game.components">PlayerCombatStatsComponent</a></dt>
@@ -3309,6 +3310,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html#setCooldown(float)" class="member-name-link">setCooldown(float)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#setCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">setCurrencyAmount(CurrencyComponent.CurrencyType, int)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
+<dd>
+<div class="block">Sets the amount of a currency type directly and updates UI.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#setCurrentTarget(com.csse3200.game.entities.Entity)" class="member-name-link">setCurrentTarget(Entity)</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
 <dd>
 <div class="block">Sets the current target entity.</div>
@@ -3685,6 +3690,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#%3Cinit%3E()" class="member-name-link">SimplePlacementController()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.html#%3Cinit%3E(com.csse3200.game.entities.EntityService)" class="member-name-link">SimpleSaveService(EntityService)</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Player</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/SimpleUI.html" class="type-name-link" title="class in com.csse3200.game.ui">SimpleUI</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/raycast/SingleHitCallback.html" class="type-name-link" title="class in com.csse3200.game.physics.raycast">SingleHitCallback</a> - Class in <a href="com/csse3200/game/physics/raycast/package-summary.html">com.csse3200.game.physics.raycast</a></dt>
@@ -3888,8 +3905,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#timeElapsed" class="member-name-link">timeElapsed</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#timestamp" class="member-name-link">timestamp</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#TITANIUM_CORE" class="member-name-link">TITANIUM_CORE</a> - Enum constant in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/TowerConfig.TowerStats.html#titaniumCoreCost" class="member-name-link">titaniumCoreCost</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/TowerConfig.TowerStats.html" title="class in com.csse3200.game.entities.configs">TowerConfig.TowerStats</a></dt>
@@ -3994,6 +4009,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Iterates over registered input handlers in descending priority and stops as soon as the input is
  processed</div>
 </dd>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html#%3Cinit%3E()" class="member-name-link">Tower()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/TowerComponent.html" class="type-name-link" title="class in com.csse3200.game.components">TowerComponent</a> - Class in <a href="com/csse3200/game/components/package-summary.html">com.csse3200.game.components</a></dt>
 <dd>
 <div class="block">Component representing a tower entity, including its type and size.</div>
@@ -4024,8 +4041,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructs a TowerCostComponent with the given cost map.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#%3Cinit%3E()" class="member-name-link">TowerData()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/TowerFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">TowerFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
 <dd>
 <div class="block">Factory class for creating different types of tower entities.</div>
@@ -4038,7 +4053,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html#%3Cinit%3E()" class="member-name-link">TowerHotbarDisplay()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">TowerHotbarDisplay</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.html#towers" class="member-name-link">towers</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.html#towers" class="member-name-link">towers</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#towersLeft" class="member-name-link">towersLeft</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -4086,9 +4101,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Used to trigger the component to update itself.</div>
 </dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.EnemyData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.EnemyData</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
+<dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:U">U</h2>
@@ -4387,8 +4402,6 @@ the order they are declared.</div>
 <dt><a href="com/csse3200/game/areas/MapEditor.html#waypointList" class="member-name-link">waypointList</a> - Variable in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/MapEditor.html" title="class in com.csse3200.game.areas">MapEditor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#width" class="member-name-link">width</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html#width" class="member-name-link">width</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SaveGameService.GameSaveData.TowerData.html" title="class in com.csse3200.game.services">SaveGameService.GameSaveData.TowerData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/Theme.html#WINDOW_BG" class="member-name-link">WINDOW_BG</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/Theme.html" title="class in com.csse3200.game.ui">Theme</a></dt>
 <dd>&nbsp;</dd>

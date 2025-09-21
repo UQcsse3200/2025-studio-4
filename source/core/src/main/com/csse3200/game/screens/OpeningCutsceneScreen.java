@@ -1,6 +1,7 @@
 package com.csse3200.game.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -49,6 +50,7 @@ public class OpeningCutsceneScreen implements Screen {
     private Label storyLabel;
     private Label instructionLabel;
     private Label versionLabel;
+    private Label skipLabel;
     private Table mainTable;
     private Table textTable;
     
@@ -65,6 +67,7 @@ public class OpeningCutsceneScreen implements Screen {
     private boolean storyShown = false;
     private boolean instructionShown = false;
     private boolean fadeStarted = false;
+    private boolean skipPressed = false;
     
     public OpeningCutsceneScreen(GdxGame game) {
         this(game, BACKGROUND_OPTIONS[0]);
@@ -203,6 +206,15 @@ public class OpeningCutsceneScreen implements Screen {
         versionLabel.setFontScale(1.0f);
         versionLabel.addAction(Actions.alpha(0f));
         textTable.add(versionLabel).expandX().center();
+        textTable.row();
+        
+        // Skip instruction
+        skipLabel = new Label("按 左 键跳过开场动画", MinimalSkinFactory.create(), "default");
+        skipLabel.setAlignment(Align.center);
+        skipLabel.setColor(Color.CYAN);
+        skipLabel.setFontScale(1.2f);
+        skipLabel.addAction(Actions.alpha(0f));
+        textTable.add(skipLabel).expandX().center().padTop(20f);
     }
     
     @Override
@@ -214,6 +226,12 @@ public class OpeningCutsceneScreen implements Screen {
     @Override
     public void render(float delta) {
         timeElapsed += delta;
+        
+        // Check for skip input (mouse left click)
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            skipCutscene();
+            return;
+        }
         
         updateAnimation(delta);
         
@@ -251,6 +269,7 @@ public class OpeningCutsceneScreen implements Screen {
         if (timeElapsed >= logoDuration + titleDuration + storyDuration + 1f && !instructionShown) {
             instructionLabel.addAction(Actions.fadeIn(1f));
             versionLabel.addAction(Actions.fadeIn(1f));
+            skipLabel.addAction(Actions.fadeIn(1f));
             instructionShown = true;
         }
         
@@ -262,6 +281,20 @@ public class OpeningCutsceneScreen implements Screen {
                 Actions.run(() -> cutsceneFinished = true)
             ));
         }
+    }
+    
+    private void skipCutscene() {
+        if (skipPressed) {
+            return; // Prevent multiple skip calls
+        }
+        skipPressed = true;
+        logger.info("Opening cutscene skipped by user");
+        
+        // Immediately fade out and transition
+        stage.addAction(Actions.sequence(
+            Actions.fadeOut(0.5f),
+            Actions.run(() -> cutsceneFinished = true)
+        ));
     }
     
     private void transitionToMainMenu() {
@@ -289,6 +322,11 @@ public class OpeningCutsceneScreen implements Screen {
     @Override
     public void hide() {
         logger.info("Opening cutscene hidden");
+        // 恢复InputService作为输入处理器
+        if (ServiceLocator.getInputService() != null) {
+            Gdx.input.setInputProcessor(ServiceLocator.getInputService());
+            logger.info("Restored InputService as input processor");
+        }
     }
     
     @Override

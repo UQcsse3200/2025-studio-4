@@ -24,6 +24,7 @@ import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
+import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
@@ -89,11 +90,11 @@ public class ForestGameArea extends GameArea {
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
-            {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
-             {5, 24}, {8, 20},
-             // 在x<31且y>13且x<13范围内随机添加的坐标点
-             {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
-             {7, 25}, {2, 15},  {6, 29}, 
+            {26, 3}, {27, 3}, {28, 3}, {29, 3},
+            {5, 24}, {8, 20},
+            // 在x<31且y>13且x<13范围内随机添加的坐标点
+            {8, 15}, {5, 17}, {11, 14}, {3, 18},
+            {7, 25}, {2, 15},  {6, 29},
     };
 
     // create snowtree areas - 避开路径坐标
@@ -120,83 +121,83 @@ public class ForestGameArea extends GameArea {
         this.hasExistingPlayer = hasExistingPlayer;
     }
 
-            /**
-         * Initialize and start the enemy wave spawning
-         */
-        private void startEnemyWave() {
-            if (waveInProgress) return;
-            
-            waveInProgress = true;
-            enemySpawnQueue = new ArrayList<>();
-            
-            buildSpawnQueue();
-            
-            scheduleNextEnemySpawn();
+    /**
+     * Initialize and start the enemy wave spawning
+     */
+    private void startEnemyWave() {
+        if (waveInProgress) return;
+
+        waveInProgress = true;
+        enemySpawnQueue = new ArrayList<>();
+
+        buildSpawnQueue();
+
+        scheduleNextEnemySpawn();
+    }
+
+
+    /**
+     * Build the queue of enemies to spawn in wave order
+     */
+    private void buildSpawnQueue() {
+        NUM_ENEMIES_TOTAL = (NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_BOSSES + (NUM_DIVIDERS * 4));
+        NUM_ENEMIES_DEFEATED = 0;
+        // Add drones to spawn queue
+        for (int i = 0; i < NUM_DRONES; i++) {
+            enemySpawnQueue.add(this::spawnSingleDrone);
         }
 
-
-        /**
-         * Build the queue of enemies to spawn in wave order
-         */
-        private void buildSpawnQueue() {
-            NUM_ENEMIES_TOTAL = (NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_BOSSES + (NUM_DIVIDERS * 4));
-            NUM_ENEMIES_DEFEATED = 0;
-            // Add drones to spawn queue
-            for (int i = 0; i < NUM_DRONES; i++) {
-                enemySpawnQueue.add(this::spawnSingleDrone);
-            }
-            
-            // Add grunts to spawn queue
-            for (int i = 0; i < NUM_GRUNTS; i++) {
-                enemySpawnQueue.add(this::spawnSingleGrunt);
-            }
-            
-            // Add tanks to spawn queue
-            for (int i = 0; i < NUM_TANKS; i++) {
-                enemySpawnQueue.add(this::spawnSingleTank);
-            }
-                        
-            // Add dividers to spawn queue
-            for (int i = 0; i < NUM_DIVIDERS; i++) {
-                enemySpawnQueue.add(this::spawnSingleDivider);
-            }
-
-            // Add bosses to spawn queue
-            for (int i = 0; i < NUM_BOSSES; i++) {
-                enemySpawnQueue.add(this::spawnSingleBoss);
-            }
+        // Add grunts to spawn queue
+        for (int i = 0; i < NUM_GRUNTS; i++) {
+            enemySpawnQueue.add(this::spawnSingleGrunt);
         }
 
-        /**
-         * Schedule the next enemy spawn with delay
-         */
-        private void scheduleNextEnemySpawn() {
-            if (enemySpawnQueue.isEmpty()) {
-                // Wave complete
-                waveInProgress = false;
-                return;
-            }
-            
-            // Cancel any existing spawn task
-            if (waveSpawnTask != null) {
-                waveSpawnTask.cancel();
-            }
-            
-            // Schedule next spawn
-            waveSpawnTask = Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    if (!enemySpawnQueue.isEmpty()) {
-                        // Spawn the next enemy
-                        Runnable spawnAction = enemySpawnQueue.remove(0);
-                        spawnAction.run();
-                        
-                        // Schedule the next one
-                        scheduleNextEnemySpawn();
-                    }
+        // Add tanks to spawn queue
+        for (int i = 0; i < NUM_TANKS; i++) {
+            enemySpawnQueue.add(this::spawnSingleTank);
+        }
+
+        // Add dividers to spawn queue
+        for (int i = 0; i < NUM_DIVIDERS; i++) {
+            enemySpawnQueue.add(this::spawnSingleDivider);
+        }
+
+        // Add bosses to spawn queue
+        for (int i = 0; i < NUM_BOSSES; i++) {
+            enemySpawnQueue.add(this::spawnSingleBoss);
+        }
+    }
+
+    /**
+     * Schedule the next enemy spawn with delay
+     */
+    private void scheduleNextEnemySpawn() {
+        if (enemySpawnQueue.isEmpty()) {
+            // Wave complete
+            waveInProgress = false;
+            return;
+        }
+
+        // Cancel any existing spawn task
+        if (waveSpawnTask != null) {
+            waveSpawnTask.cancel();
+        }
+
+        // Schedule next spawn
+        waveSpawnTask = Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                if (!enemySpawnQueue.isEmpty()) {
+                    // Spawn the next enemy
+                    Runnable spawnAction = enemySpawnQueue.remove(0);
+                    spawnAction.run();
+
+                    // Schedule the next one
+                    scheduleNextEnemySpawn();
                 }
-            }, spawnDelay);
-        }
+            }
+        }, spawnDelay);
+    }
 
 
     /**
@@ -252,9 +253,9 @@ public class ForestGameArea extends GameArea {
         placementController.refreshInvalidTiles();
 
         Timer.schedule(new Timer.Task() {
-        @Override
-        public void run() {
-            startEnemyWave();
+            @Override
+            public void run() {
+                startEnemyWave();
             }
         }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
 
@@ -278,30 +279,30 @@ public class ForestGameArea extends GameArea {
 
         // Add hero placement system
 
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
+        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnEngineerAt));
 
         spawnEntity(placement);
 
         playMusic();
 
-        HeroConfig cfg1 = new HeroConfig();
-        cfg1.heroTexture = "images/hero/Heroshoot.png";
-        cfg1.bulletTexture = "images/hero/Bullet.png";
+        // HeroConfig cfg1 = new HeroConfig();
+        // cfg1.heroTexture = "images/hero/Heroshoot.png";
+        // cfg1.bulletTexture = "images/hero/Bullet.png";
 
-        HeroConfig2 cfg2 = new HeroConfig2();
-        cfg2.heroTexture = "images/hero2/Heroshoot.png";
-        cfg2.bulletTexture = "images/hero2/Bullet.png";
+        // HeroConfig2 cfg2 = new HeroConfig2();
+        // cfg2.heroTexture = "images/hero2/Heroshoot.png";
+        //cfg2.bulletTexture = "images/hero2/Bullet.png";
 
-        HeroConfig3 cfg3 = new HeroConfig3();
-        cfg3.heroTexture = "images/hero3/Heroshoot.png";
-        cfg3.bulletTexture = "images/hero3/Bullet.png";
+        //HeroConfig3 cfg3 = new HeroConfig3();
+        //cfg3.heroTexture = "images/hero3/Heroshoot.png";
+        //cfg3.bulletTexture = "images/hero3/Bullet.png";
 
         // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
-        Entity skinSwitcher = new Entity().addComponent(
-                new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
-        );
-        com.csse3200.game.services.ServiceLocator.getEntityService().
-                register(skinSwitcher);
+        //Entity skinSwitcher = new Entity().addComponent(
+        //new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
+        // );
+        //com.csse3200.game.services.ServiceLocator.getEntityService().
+        // register(skinSwitcher);
 
     }
 
@@ -341,7 +342,7 @@ public class ForestGameArea extends GameArea {
     }
 
 
-//Register to MapEditor’s invalidTiles and generate obstacles on the map.
+    //Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
         // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
@@ -430,17 +431,17 @@ public class ForestGameArea extends GameArea {
         logger.debug("Spawned divider. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-  public static void checkEnemyCount() {
-      if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-          // Only try to access UI if we're in a real game environment
-          if (MainGameScreen.ui != null) {
-              MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
-              if (winComponent != null) {
-                  winComponent.addActors();
-              }
-          }
-      }
-  }
+    public static void checkEnemyCount() {
+        if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+            // Only try to access UI if we're in a real game environment
+            if (MainGameScreen.ui != null) {
+                MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+                if (winComponent != null) {
+                    winComponent.addActors();
+                }
+            }
+        }
+    }
 
     private void spawnHeroAt(GridPoint2 cell) {
 
@@ -487,6 +488,45 @@ public class ForestGameArea extends GameArea {
             heroHintShown = true;
         }
     }
+
+    private void spawnEngineerAt(GridPoint2 cell) {
+        // 1) 只读取工程师配置
+        EngineerConfig engCfg = FileLoader.readClass(EngineerConfig.class, "configs/engineer.json");
+        if (engCfg == null) {
+            logger.warn("Failed to load configs/engineer.json, using default EngineerConfig.");
+            engCfg = new EngineerConfig();
+        }
+
+        // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
+        ResourceService rs = ServiceLocator.getResourceService();
+        HeroFactory.loadAssets(rs, engCfg);  // 只传工程师
+        while (!rs.loadForMillis(10)) {
+            logger.info("Loading engineer assets... {}%", rs.getProgress());
+        }
+
+        // 3) 创建工程师实体（注意方法名：你现在实现的是 createEngineerHero）
+        Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
+        Entity engineer = HeroFactory.createEngineerHero(engCfg, cam);
+
+        var up = engineer.getComponent(HeroUpgradeComponent.class);
+        if (up != null) {
+            up.attachPlayer(player);
+        }
+
+        engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
+        // 4) 放置
+        spawnEntityAt(engineer, cell, true, true);
+
+        // 5) 一次性提示
+        if (!heroHintShown) {
+            var stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
+            heroHintShown = true;
+        }
+    }
+
+
 
     private void playMusic() {
         Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);

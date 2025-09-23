@@ -162,54 +162,8 @@ public class SimplePlacementController extends Component {
         // =========================
         // ===== 召唤物分支（ghostSummon）=====
         if (mode == Mode.SUMMON) {
-            if (ghostSummon == null) return;
-
-            GridPoint2 tile = new GridPoint2(
-                    (int) (mouseWorld.x / terrain.getTileSize()),
-                    (int) (mouseWorld.y / terrain.getTileSize())
-            );
-            GridPoint2 bounds = terrain.getMapBounds(0);
-            boolean inBounds = tile.x >= 0 && tile.y >= 0 && tile.x < bounds.x && tile.y < bounds.y;
-
-            // 只允许在路径上
-            boolean onPath = inBounds && isOnPath(tile);
-
-            // 吸附到格子（越界时保持跟随鼠标）
-            Vector2 snapPos = inBounds
-                    ? terrain.tileToWorldPosition(tile.x, tile.y)
-                    : mouseWorld;
-
-            // 移动幽灵
-            ghostSummon.setPosition(snapPos);
-
-
-            // 左键落地 —— 只在 onPath && cellFree 时生效
-            if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-                if (!(onPath)) {
-                    return; // 不在路径或被占用时忽略点击
-                }
-
-                // 删除幽灵
-                ghostSummon.dispose();
-                ghostSummon = null;
-
-                // 造真实召唤物（会挡路/能攻击）
-                Entity summon = SummonFactory.createMeleeSummon(
-                        pendingSummonTexture != null ? pendingSummonTexture : "images/engineer/Sentry.png",
-                        /*colliderSensor=*/false,
-                        /*scale=*/1f
-                );
-                summon.setPosition(snapPos);
-                ServiceLocator.getEntityService().register(summon);
-                summon.create();
-
-                // 退出模式
-                placementActive = false;
-                mode = Mode.NONE;
-                pendingType = "bone"; // 可选：恢复默认塔类型
-                System.out.println(">>> SUMMON placed at " + tile);
-            }
-            return; // 提前返回，不走塔逻辑
+            updateSummonPlacement(terrain, mouseWorld);
+            return; // 不走塔逻辑
         }
 
         // =========================
@@ -447,6 +401,7 @@ public class SimplePlacementController extends Component {
         this.selectedCurrencyType = currencyType;
     }
 
+
     // === 放在 SimplePlacementController 类里 ===
 
     // 放置状态
@@ -490,6 +445,57 @@ public class SimplePlacementController extends Component {
         this.ghostSummon.create();
 
         System.out.println(">>> placement ON (summon)");
+    }
+    private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
+        if (ghostSummon == null) return;
+
+        // 计算网格、边界
+        GridPoint2 tile = new GridPoint2(
+                (int) (mouseWorld.x / terrain.getTileSize()),
+                (int) (mouseWorld.y / terrain.getTileSize())
+        );
+        GridPoint2 bounds = terrain.getMapBounds(0);
+        boolean inBounds = tile.x >= 0 && tile.y >= 0 && tile.x < bounds.x && tile.y < bounds.y;
+
+        // 只允许在路径上
+        boolean onPath = inBounds && isOnPath(tile);
+
+        // 吸附/跟随
+        Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
+
+        // 移动幽灵
+        ghostSummon.setPosition(snapPos);
+
+        // 左键落地
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (!onPath) return; // 不合法直接忽略
+            placeSummon(snapPos, tile);
+        }
+    }
+
+    private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
+        // 清理幽灵
+        if (ghostSummon != null) {
+            ghostSummon.dispose();
+            ghostSummon = null;
+        }
+
+        // 造真实召唤物（可挡路/能攻击）
+        Entity summon = SummonFactory.createMeleeSummon(
+                (pendingSummonTexture != null && !pendingSummonTexture.isEmpty())
+                        ? pendingSummonTexture : "images/engineer/Sentry.png",
+                /*colliderSensor=*/false,
+                /*scale=*/1f
+        );
+        summon.setPosition(snapPos);
+        ServiceLocator.getEntityService().register(summon);
+        summon.create();
+
+        // 退出模式并复位标志
+        placementActive = false;
+        mode = Mode.NONE;
+        pendingType = "bone"; // 可选：恢复默认塔类型
+        System.out.println(">>> SUMMON placed at " + tile);
     }
 
 

@@ -1,7 +1,10 @@
 package com.csse3200.game.areas;
 
+import com.badlogic.gdx.Gdx;
+import com.csse3200.game.components.hero.HeroSelectionComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +34,7 @@ import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
 import com.badlogic.gdx.utils.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,12 +98,12 @@ public class ForestGameArea extends GameArea {
             {5, 24}, {8, 20},
             // 在x<31且y>13且x<13范围内随机添加的坐标点
             {8, 15}, {5, 17}, {11, 14}, {3, 18},
-            {7, 25}, {2, 15},  {6, 29},
+            {7, 25}, {2, 15}, {6, 29},
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
+            {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}};
 
     /**
      * Initialise this ForestGameArea to use the provided TerrainFactory.
@@ -279,30 +283,47 @@ public class ForestGameArea extends GameArea {
 
         // Add hero placement system
 
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnEngineerAt));
+        //Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnEngineerAt));
 
-        spawnEntity(placement);
+        //spawnEntity(placement);
+        var svc = ServiceLocator.getSelectedHeroService();
+        if (svc == null) {
+            throw new IllegalStateException("SelectedHeroService not registered before MAIN_GAME!");
+        }
+        SelectedHeroService.HeroType chosen = svc.getSelected();
+        Gdx.app.log("ForestGameArea", "chosen=" + chosen);
+
+// 根据选择安装一个只放“指定英雄”的放置器
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
+                (chosen == SelectedHeroService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
+
+        Entity placementEntity = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
+        );
+        spawnEntity(placementEntity);
+
+
 
         playMusic();
 
-        // HeroConfig cfg1 = new HeroConfig();
-        // cfg1.heroTexture = "images/hero/Heroshoot.png";
-        // cfg1.bulletTexture = "images/hero/Bullet.png";
+        HeroConfig cfg1 = new HeroConfig();
+        cfg1.heroTexture = "images/hero/Heroshoot.png";
+        cfg1.bulletTexture = "images/hero/Bullet.png";
 
-        // HeroConfig2 cfg2 = new HeroConfig2();
-        // cfg2.heroTexture = "images/hero2/Heroshoot.png";
-        //cfg2.bulletTexture = "images/hero2/Bullet.png";
+        HeroConfig2 cfg2 = new HeroConfig2();
+        cfg2.heroTexture = "images/hero2/Heroshoot.png";
+        cfg2.bulletTexture = "images/hero2/Bullet.png";
 
-        //HeroConfig3 cfg3 = new HeroConfig3();
-        //cfg3.heroTexture = "images/hero3/Heroshoot.png";
-        //cfg3.bulletTexture = "images/hero3/Bullet.png";
+        HeroConfig3 cfg3 = new HeroConfig3();
+        cfg3.heroTexture = "images/hero3/Heroshoot.png";
+        cfg3.bulletTexture = "images/hero3/Bullet.png";
 
-        // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
-        //Entity skinSwitcher = new Entity().addComponent(
-        //new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
-        // );
-        //com.csse3200.game.services.ServiceLocator.getEntityService().
-        // register(skinSwitcher);
+// 一次性换肤组件，注册到 EntityService
+        Entity skinSwitcher = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
+        );
+        com.csse3200.game.services.ServiceLocator.getEntityService().register(skinSwitcher);
+
 
     }
 
@@ -525,7 +546,6 @@ public class ForestGameArea extends GameArea {
             heroHintShown = true;
         }
     }
-
 
 
     private void playMusic() {

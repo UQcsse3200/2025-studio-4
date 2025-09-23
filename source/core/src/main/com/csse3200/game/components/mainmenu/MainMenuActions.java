@@ -26,8 +26,7 @@ public class MainMenuActions extends Component {
         entity.getEvents().addListener("continue", this::onContinue);
         entity.getEvents().addListener("exit", this::onExit);
         entity.getEvents().addListener("settings", this::onSettings);
-        entity.getEvents().addListener("heroSelect", this::onPickHero);
-        entity.getEvents().addListener("pickEngineer", this::onPickEngineer);
+        entity.getEvents().addListener("openHeroSelect", this::onOpenHeroSelect);
     }
 
     /**
@@ -63,18 +62,8 @@ public class MainMenuActions extends Component {
         game.setScreen(GdxGame.ScreenType.SETTINGS);
     }
 
-    private void onPickHero() {
-        var svc = ServiceLocator.getSelectedHeroService();
-        svc.setSelected(SelectedHeroService.HeroType.HERO);
-        logger.info("[Menu] setSelected=HERO");
-        game.setScreen(GdxGame.ScreenType.MAIN_GAME);
-    }
-
-    private void onPickEngineer() {
-        var svc = ServiceLocator.getSelectedHeroService();
-        svc.setSelected(SelectedHeroService.HeroType.ENGINEER);
-        logger.info("[Menu] setSelected=ENGINEER");
-        game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    private void onOpenHeroSelect() {
+        game.setScreen(GdxGame.ScreenType.HERO_SELECT);
     }
 
 }

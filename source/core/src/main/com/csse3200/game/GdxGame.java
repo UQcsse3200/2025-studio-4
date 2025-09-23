@@ -8,8 +8,10 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.screens.MainMenuScreen;
 import com.csse3200.game.screens.SettingsScreen;
 import com.csse3200.game.screens.SaveSelectionScreen;
+import com.csse3200.game.screens.HeroSelectScreen;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.SelectedHeroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,8 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
+      // register selected-hero service (only once during boot)
+      ServiceLocator.registerSelectedHeroService(new SelectedHeroService());
 
     setScreen(ScreenType.MAIN_MENU);
   }
@@ -111,14 +115,16 @@ public class GdxGame extends Game {
       case SETTINGS:
         return new SettingsScreen(this);
       case SAVE_SELECTION:
-        return new SaveSelectionScreen(this);
+         return new SaveSelectionScreen(this);
+         case HERO_SELECT:
+            return new HeroSelectScreen(this);
       default:
         return null;
     }
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, HERO_SELECT
   }
 
   /**

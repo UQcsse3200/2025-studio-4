@@ -43,14 +43,14 @@ public class CurrencyManagerComponent extends Component {
         currencies.put(type, currencies.getOrDefault(type, 0) + amount);
     }
 
-  /**
-   * Sets the amount of a currency type directly and updates UI.
-   * Value will be clamped to >= 0.
-   */
-  public void setCurrencyAmount(CurrencyType type, int amount) {
-    currencies.put(type, Math.max(0, amount));
-    updateCurrencyUI(type);
-  }
+    /**
+     * Sets the amount of a currency type directly and updates UI.
+     * Value will be clamped to >= 0.
+     */
+    public void setCurrencyAmount(CurrencyType type, int amount) {
+        currencies.put(type, Math.max(0, amount));
+        updateCurrencyUI(type);
+    }
 
     /**
      * Subtracts a specified amount of the given currency type.

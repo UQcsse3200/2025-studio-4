@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 /**
  * Component storing stats for a tower, such as health, damage, range, and attack cooldown.
+ * Upgrade paths now only increment level; no stats are changed.
  */
 public class TowerStatsComponent extends Component {
     private int health;
@@ -9,24 +10,18 @@ public class TowerStatsComponent extends Component {
     private float range; // Attack range in game units
     private float attackCooldown; // Time between attacks (seconds)
     private float attackTimer = 0f; // Internal timer
-
+    private int level_A = 0; // start at 0, upgrade goes 1-4
+    private int level_B = 0;
     private float projectileSpeed = 50f;
     private float projectileLife = 1f;
     private String projectileTexture = "projectiles/bullet.png";
 
     /**
      * Constructs a TowerStatsComponent with the given stats.
-     *
-     * @param health           Initial health of the tower
-     * @param damage           Damage dealt per attack
-     * @param range            Attack range in game units
-     * @param attackCooldown   Time between attacks (seconds)
-     * @param projectileSpeed  Speed of the projectile
-     * @param projectileLife   Lifetime of the projectile
-     * @param projectileTexture Texture path for the projectile
      */
     public TowerStatsComponent(int health, float damage, float range, float attackCooldown,
-                               float projectileSpeed, float projectileLife, String projectileTexture) {
+                               float projectileSpeed, float projectileLife,
+                               String projectileTexture, int level_A, int level_B) {
         this.health = health;
         this.damage = damage;
         this.range = range;
@@ -34,166 +29,107 @@ public class TowerStatsComponent extends Component {
         this.projectileSpeed = projectileSpeed;
         this.projectileLife = projectileLife;
         this.projectileTexture = projectileTexture;
+        this.level_A = level_A;
+        this.level_B = level_B;
     }
 
-    /**
-     * Returns the speed of the projectile fired by the tower.
-     *
-     * @return projectile speed
-     */
-    public float getProjectileSpeed() {
-        return projectileSpeed;
+    /** Increments the level of upgrade path A by 1, max 4. Only updates level. */
+    public void incrementLevel_A() {
+        if (this.level_A < 5) {
+            this.level_A += 1;
+        }
     }
 
-    /**
-     * Sets the speed of the projectile fired by the tower.
-     *
-     * @param projectileSpeed the new projectile speed
-     */
-    public void setProjectileSpeed(float projectileSpeed) {
-        this.projectileSpeed = projectileSpeed;
+    /** Increments the level of upgrade path B by 1, max 4. Only updates level. */
+    public void incrementLevel_B() {
+        if (this.level_B < 5) {
+            this.level_B += 1;
+        }
     }
 
-    /**
-     * Returns the lifetime of the projectile fired by the tower.
-     *
-     * @return projectile lifetime
-     */
-    public float getProjectileLife() {
-        return projectileLife;
+    public int getLevel_A() {
+        return level_A;
     }
 
-    /**
-     * Sets the lifetime of the projectile fired by the tower.
-     *
-     * @param projectileLife the new projectile lifetime
-     */
-    public void setProjectileLife(float projectileLife) {
-        this.projectileLife = projectileLife;
+    public int getLevel_B() {
+        return level_B;
     }
 
-    /**
-     * Returns the texture path of the projectile fired by the tower.
-     *
-     * @return projectile texture path
-     */
-    public String getProjectileTexture() {
-        return projectileTexture;
-    }
-
-    /**
-     * Sets the texture path of the projectile fired by the tower.
-     *
-     * @param projectileTexture the new projectile texture path
-     */
-    public void setProjectileTexture(String projectileTexture) {
-        this.projectileTexture = projectileTexture;
-    }
-
-    /**
-     * Returns the current health of the tower.
-     *
-     * @return current health
-     */
     public int getHealth() {
         return health;
     }
 
-    /**
-     * Sets the tower's health, clamped to a minimum of 0.
-     *
-     * @param health new health value
-     */
     public void setHealth(int health) {
         this.health = Math.max(0, health);
     }
 
-    /**
-     * Returns the damage dealt per attack.
-     *
-     * @return damage per attack
-     */
     public float getDamage() {
         return damage;
     }
 
-    /**
-     * Returns the attack range in game units.
-     *
-     * @return attack range
-     */
-    public float getRange() {
-        return range;
-    }
-    /** Sets the damage dealth per attack */
     public void setDamage(float damage) {
         this.damage = Math.max(0, damage);
     }
 
-    /** Sets the attack range */
+    public float getRange() {
+        return range;
+    }
+
     public void setRange(float range) {
         this.range = Math.max(0, range);
     }
 
-    /**
-     * Returns the cooldown between attacks (seconds).
-     *
-     * @return attack cooldown
-     */
     public float getAttackCooldown() {
         return attackCooldown;
     }
 
-    /**
-     * Sets the attack cooldown (seconds).
-     *
-     * @param attackCooldown new attack cooldown
-     */
     public void setAttackCooldown(float attackCooldown) {
         this.attackCooldown = attackCooldown;
     }
 
-    /**
-     * Returns the internal attack timer.
-     *
-     * @return attack timer
-     */
+    public float getProjectileSpeed() {
+        return projectileSpeed;
+    }
+
+    public void setProjectileSpeed(float projectileSpeed) {
+        this.projectileSpeed = projectileSpeed;
+    }
+
+    public float getProjectileLife() {
+        return projectileLife;
+    }
+
+    public void setProjectileLife(float projectileLife) {
+        this.projectileLife = projectileLife;
+    }
+
+    public String getProjectileTexture() {
+        return projectileTexture;
+    }
+
+    public void setProjectileTexture(String projectileTexture) {
+        this.projectileTexture = projectileTexture;
+    }
+
     public float getAttackTimer() {
         return attackTimer;
     }
 
-    /**
-     * Resets the attack timer to zero.
-     */
     public void resetAttackTimer() {
         attackTimer = 0f;
     }
 
-    /**
-     * Increments the attack timer by delta seconds.
-     *
-     * @param delta time to increment by (seconds)
-     */
     public void updateAttackTimer(float delta) {
         attackTimer += delta;
     }
 
-    /**
-     * Returns true if the tower can attack (timer >= cooldown).
-     *
-     * @return true if tower can attack, false otherwise
-     */
     public boolean canAttack() {
         return attackTimer >= attackCooldown;
     }
 
-    /**
-     * Returns the attack speed (attacks per second).
-     * If attackCooldown is 0, returns 0 to avoid division by zero.
-     *
-     * @return attack speed (attacks per second)
-     */
     public float getAttackSpeed() {
         return attackCooldown != 0f ? 1f / attackCooldown : 0f;
     }
+
+
 }

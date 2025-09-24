@@ -75,9 +75,6 @@ public class HeroUpgradeWalletIntegrationTest {
     void twoUpgradesSucceed_withSufficientFunds() {
         CurrencyManagerComponent wallet = new CurrencyManagerComponent();
         Entity player = makePlayerWithRealWallet(wallet);
-        
-        // Add extra funds to ensure both upgrades can succeed (400 + 600 = 1000 needed)
-        wallet.setCurrencyAmount(CurrencyType.METAL_SCRAP, 1200);
 
         HeroUpgradeComponent upgrade = new HeroUpgradeComponent();
         CombatStatsComponent stats = stats(100, 20);

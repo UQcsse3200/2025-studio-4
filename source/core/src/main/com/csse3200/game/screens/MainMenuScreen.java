@@ -14,7 +14,6 @@ import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.AudioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,11 +44,6 @@ public class MainMenuScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
-    
-    // Register GameStateService for MainMenuDisplay to access stars
-    if (ServiceLocator.getGameStateService() == null) {
-      ServiceLocator.registerGameStateService(new GameStateService());
-    }
     
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());

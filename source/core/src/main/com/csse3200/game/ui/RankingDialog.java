@@ -1,10 +1,7 @@
 package com.csse3200.game.ui;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -18,10 +15,9 @@ public class RankingDialog extends Dialog {
     private final List<PlayerRank> players;
     private final int pageSize;
     private int currentPage = 0;
-    private InputListener escKeyListener;
 
     public RankingDialog(String title, List<PlayerRank> players, int pageSize) {
-        super("", SimpleUI.windowStyle()); // 空标题，我们将自定义显示
+        super(title, SimpleUI.windowStyle());
         this.players = players;
         this.pageSize = pageSize;
 
@@ -29,23 +25,10 @@ public class RankingDialog extends Dialog {
         setMovable(true);
         setResizable(false);
 
-        // 添加自定义标题
-        addCustomTitle(title);
-        
         refreshPage();
 
         createBottomButtons();
     }
-
-    private void addCustomTitle(String titleText) {
-        Table titleTable = getTitleTable();
-        titleTable.clear();
-        
-        // 创建大标题标签
-        Label titleLabel = new Label(titleText, SimpleUI.largeTitle());
-        titleTable.add(titleLabel).center().expandX().pad(15);
-    }
-
     private Image createSeparator() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(1f, 1f, 1f, 0.2f)); // 半透明白线
@@ -149,33 +132,11 @@ public class RankingDialog extends Dialog {
                 (stage.getHeight() - prefH) / 2f
         );
 
-        // 创建ESC键监听器
-        escKeyListener = new InputListener() {
-            @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE && isVisible()) {
-                    // 关闭对话框
-                    hide();
-                    return true; // 消费这个事件
-                }
-                return false;
-            }
-        };
-        
-        // 添加ESC键监听器到对话框
-        this.addListener(escKeyListener);
-
         return d;
     }
 
     @Override
     public void hide() {
-        // 移除ESC键监听器
-        if (escKeyListener != null) {
-            this.removeListener(escKeyListener);
-            escKeyListener = null;
-        }
-        
         // 确保在所有关闭方式下都恢复游戏
         ServiceLocator.getTimeSource().setTimeScale(1f);
         super.hide();

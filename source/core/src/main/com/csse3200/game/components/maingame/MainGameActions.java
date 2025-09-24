@@ -4,11 +4,13 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.MockRanks;
-import com.csse3200.game.ui.PlayerRank;
-import com.csse3200.game.ui.RankingDialog;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
+import com.csse3200.game.ui.leaderboard.LeaderboardController;
+import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
+import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import java.util.List;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,13 +82,17 @@ public class MainGameActions extends Component {
     
     try {
       Stage stage = ServiceLocator.getRenderService().getStage();
+      Skin skin = MinimalSkinFactory.create();
       
-      // Generate mock ranking data
-      List<PlayerRank> players = MockRanks.make(30);
+      // Ensure leaderboard service is available
+      if (ServiceLocator.getLeaderboardService() == null) {
+        ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
+      }
       
-      // Create and show RankingDialog
-      RankingDialog rankingDialog = new RankingDialog("Leaderboard", players, 12);
-      rankingDialog.show(stage);
+      LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
+      LeaderboardController controller = new LeaderboardController(leaderboardService);
+      LeaderboardPopup popup = new LeaderboardPopup(skin, controller);
+      popup.showOn(stage);
       
     } catch (Exception e) {
       logger.error("Error showing ranking", e);

@@ -36,6 +36,7 @@ public class DividerEnemyFactory {
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
     private static final int DEFAULT_POINTS = 300;
     ///////////////////////////////////////////////////////////////////////////////////////////////
+
     // Configurable properties
     private static int health = DEFAULT_HEALTH;
     private static int damage = DEFAULT_DAMAGE;

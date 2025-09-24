@@ -1,68 +1,122 @@
 package com.csse3200.game.components;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
-import com.csse3200.game.entities.factories.ProjectileFactory;
-import com.csse3200.game.rendering.AnimationRenderComponent;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.TowerCostComponent;
+import com.csse3200.game.components.TowerStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.projectile.ProjectileComponent;
-import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
+import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rendering.RotatingTextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Component representing a tower entity, including its type and size.
- * Handles tower attack logic in the update method.
+ * Handles tower attack logic, sell logic, and tower selection.
  */
 public class TowerComponent extends Component {
     private final String type;
-    private final int width;  // in tiles
-    private final int height; // in tiles
-    
-    // Additional fields for tower functionality
+    private final int width;
+    private final int height;
     private CurrencyType selectedPurchaseCurrency = CurrencyType.METAL_SCRAP;
-    private boolean active = true;
-    private boolean selected = false;
     private boolean showSellButton = false;
+
     private Entity headEntity;
-    private AnimationRenderComponent headRenderer;
+    private RotatingTextureRenderComponent headRenderer;
+    private final Vector2 headOffset = new Vector2(0f, 0f);
+    private float zNudge = 0.01f;
+    private boolean active = true;
+
+    private boolean selected = false;
 
     /**
-     * Constructs a single-tile tower component.
-     * @param type The type of the tower
+     * Constructs a single-tile tower.
+     *
+     * @param type The type of the tower.
      */
-    public TowerComponent(String type) {
-        this(type, 1, 1); // default is 1x1
+    public TowerComponent(String type)
+    {
+        this(type, 1, 1);
     }
 
     /**
-     * Constructs a multi-tile tower component.
-     * @param type The type of the tower
-     * @param width Width in tiles
-     * @param height Height in tiles
+     * Constructs a multi-tile tower.
+     *
+     * @param type The type of the tower.
+     * @param width The width of the tower in tiles.
+     * @param height The height of the tower in tiles.
      */
-    public TowerComponent(String type, int width, int height) {
+    public TowerComponent(String type, int width, int height)
+    {
         this.type = type;
         this.width = width;
         this.height = height;
     }
 
-    /** @return The type of the tower */
-    public String getType() {
+    /**
+     * Attaches a head entity and renderer to this tower.
+     *
+     * @param head The head entity.
+     * @param headRender The head's renderer.
+     * @param offset The offset for the head's position.
+     * @param zNudge The z-axis nudge for rendering.
+     * @return This TowerComponent for chaining.
+     */
+    public TowerComponent withHead(Entity head, RotatingTextureRenderComponent headRender, Vector2 offset, float zNudge)
+    {
+        this.headEntity = head;
+        this.headRenderer = headRender;
+        if (offset != null)
+        {
+            this.headOffset.set(offset);
+        }
+        if (zNudge > 0f)
+        {
+            this.zNudge = zNudge;
+        }
+        return this;
+    }
+
+    /**
+     * Gets the type of the tower.
+     *
+     * @return The tower type.
+     */
+    public String getType()
+    {
         return type;
     }
 
-    /** @return Width of the tower in tiles */
-    public int getWidth() { return width; }
+    /**
+     * Gets the width of the tower in tiles.
+     *
+     * @return The tower width.
+     */
+    public int getWidth()
+    {
+        return width;
+    }
 
-    /** @return Height of the tower in tiles */
-    public int getHeight() { return height; }
+    /**
+     * Gets the height of the tower in tiles.
+     *
+     * @return The tower height.
+     */
+    public int getHeight()
+    {
+        return height;
+    }
 
     /**
      * Sets the selected purchase currency for this tower.
@@ -159,7 +213,7 @@ public class TowerComponent extends Component {
         {
             return false;
         }
-        int cost = costComponent.getCost();
+        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
         return playerCurrencyManager.canAffordAndSpendCurrency(Map.of(selectedPurchaseCurrency, cost));
     }
 
@@ -245,7 +299,7 @@ public class TowerComponent extends Component {
         {
             return;
         }
-        int cost = costComponent.getCost();
+        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
         if (cost > 0)
         {
             currencyManager.refundCurrency(Map.of(selectedPurchaseCurrency, cost), refundRate);
@@ -257,70 +311,90 @@ public class TowerComponent extends Component {
      * Updates the tower logic, including attacking and selection/sell logic.
      */
     @Override
-    public void update() {
-        TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
-        if (stats == null) return;
-
-        float delta = 1/60f; // or pass in the real delta time
-        stats.updateAttackTimer(delta);
-
-        if (!stats.canAttack()) return;
-
-        Vector2 myCenter = entity.getCenterPosition();
-        float range = stats.getRange();
-        Entity target = null;
-
-        // Find the nearest enemy target within range
-        for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
-            if (other == entity) continue;
-
-            // Only attack entities that have CombatStatsComponent
-            CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
-            if (targetStats == null) continue;
-
-            // Check if entity is a valid enemy target
-            if (!isEnemyTarget(other)) continue;
-
-            Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
-            if (toOther.len() <= range) {
-                target = other;
-                break;
-            }
+    public void update()
+    {
+        if (!active)
+        {
+            return;
         }
 
-        // Attack the target if found
-        if (target != null) {
-            Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
-            if (!dir.isZero(0.0001f)) {
-                dir.nor(); // Normalize direction
+        TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
+        if (stats == null)
+        {
+            return;
+        }
 
-                // Note: AnimationRenderComponent doesn't support rotation
-                // Could be changed to RotatingTextureRenderComponent if rotation is needed
-                if (headRenderer != null) {
-                    // headRenderer.setRotation(dir.angleDeg()); // Method not available
+        // Update attack timer
+        float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
+        stats.updateAttackTimer(dt);
+
+        // Rotate head toward target and shoot projectile if available
+        if (headEntity != null)
+        {
+            headEntity.setPosition(
+                entity.getPosition().x + headOffset.x, entity.getPosition().y + headOffset.y - zNudge
+            );
+        }
+
+        if (stats.canAttack())
+        {
+            Vector2 myCenter = entity.getCenterPosition();
+            Entity target = null;
+            float range = stats.getRange();
+
+            for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy())
+            {
+                if (other == entity || !isEnemyTarget(other))
+                {
+                    continue;
                 }
 
-                // --- Adjust projectile speed and life to match tower range ---
-                float towerRange = stats.getRange();
-                float baseProjectileSpeed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+                CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
+                if (targetStats == null)
+                {
+                    continue;
+                }
 
-                // Set speed proportional to default base (optional) or just use base speed
-                float speed = baseProjectileSpeed;
-
-                // Set projectile life so it dies at max range: life = range / speed
-                float life = towerRange / speed;
-
-                String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
-                int damage = (int) stats.getDamage();
-
-                Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
-                var es = ServiceLocator.getEntityService();
-                if (es != null) {
-                    Gdx.app.postRunnable(() -> es.register(bullet));
+                Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
+                if (toOther.len() <= range)
+                {
+                    target = other;
+                    break;
                 }
             }
 
-            stats.resetAttackTimer();
+            if (target != null) {
+                Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
+                if (!dir.isZero(0.0001f)) {
+                    dir.nor(); // Normalize direction
+
+                    if (headRenderer != null) {
+                        headRenderer.setRotation(dir.angleDeg());
+                    }
+
+                    // --- Adjust projectile speed and life to match tower range ---
+                    float towerRange = stats.getRange();
+                    float baseProjectileSpeed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+
+                    // Set speed proportional to default base (optional) or just use base speed
+                    float speed = baseProjectileSpeed;
+
+                    // Set projectile life so it dies at max range: life = range / speed
+                    float life = towerRange / speed;
+
+                    String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
+                    int damage = (int) stats.getDamage();
+
+                    Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
+                    var es = ServiceLocator.getEntityService();
+                    if (es != null) {
+                        Gdx.app.postRunnable(() -> es.register(bullet));
+                    }
+                }
+
+                stats.resetAttackTimer();
+            }
+
         }
 
         // --- SELL / SELECTION LOGIC ---

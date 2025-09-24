@@ -181,13 +181,13 @@ public class SimpleSaveService {
       var defaultCurrency = com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
       switch (type) {
         case "bone":
-          tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower(); break;
+          tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower(defaultCurrency); break;
         case "dino":
-          tower = com.csse3200.game.entities.factories.TowerFactory.createDinoTower(); break;
+          tower = com.csse3200.game.entities.factories.TowerFactory.createDinoTower(defaultCurrency); break;
         case "cavemen":
-          tower = com.csse3200.game.entities.factories.TowerFactory.createCavemenTower(); break;
+          tower = com.csse3200.game.entities.factories.TowerFactory.createCavemenTower(defaultCurrency); break;
         default:
-          tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
+          tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower(defaultCurrency);
       }
       if (tower != null) {
         tower.setPosition(t.pos);

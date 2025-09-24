@@ -49,7 +49,7 @@ public class ForestGameArea extends GameArea {
     private static final int NUM_DRONES = 5;
     private static final int NUM_GRUNTS = 3;
     private static final int NUM_TANKS = 2;
-    private static final int NUM_BOSSES = 0;
+    private static final int NUM_BOSSES = 1;
     private static final int NUM_DIVIDERS = 1;
     public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
@@ -95,11 +95,12 @@ public class ForestGameArea extends GameArea {
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
             {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
              {5, 24}, {8, 20},
+             // 在x<31且y>13且x<13范围内随机添加的坐标点
              {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
              {7, 25}, {2, 15},  {6, 29}, 
     };
 
-    // create snowtree areas
+    // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
             {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
 
@@ -296,7 +297,7 @@ public class ForestGameArea extends GameArea {
         }
 
 
-        // Now that mapEditor is created in spawnPlayer, link it to placementController
+        // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
         if (mapEditor != null) {
             placementController.setMapEditor(mapEditor);
         }
@@ -319,7 +320,7 @@ public class ForestGameArea extends GameArea {
 
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
-                new MapHighlighter(terrain, placementController);
+                new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
 
         spawnEntity(highlighterEntity);
@@ -352,7 +353,7 @@ public class ForestGameArea extends GameArea {
         cfg3.heroTexture = "images/hero3/Heroshoot.png";
         cfg3.bulletTexture = "images/hero3/Bullet.png";
 
-        // 2) Mount one-time skin switching component (won't change other logic)
+        // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
         Entity skinSwitcher = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
         );
@@ -397,10 +398,10 @@ public class ForestGameArea extends GameArea {
     }
 
 
-// Register to MapEditor's invalidTiles and generate obstacles on the map.
+//Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
-        // If mapEditor not created yet, cache locally; register after MapEditor is created in spawnPlayer()
+        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createBarrier(), new GridPoint2(p[0], p[1]), true, false);
@@ -410,10 +411,11 @@ public class ForestGameArea extends GameArea {
         }
     }
 
-    // Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
+    //注册雪树到 MapEditor 的 invalidTiles，并在地图上生成雪树障碍物。
+    //Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
     private void registerSnowTreeAndSpawn(int[][] coords) {
         if (coords == null) return;
-        // If mapEditor not created yet, cache locally; register after MapEditor is created in spawnPlayer()
+        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createSnowTree(), new GridPoint2(p[0], p[1]), true, false);
@@ -425,15 +427,12 @@ public class ForestGameArea extends GameArea {
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();
-        // Ensure new player has currency component
+        // 确保新玩家有钱包组件
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
-            newPlayer.addComponent(new CurrencyManagerComponent());
+            newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
-
-        // Trigger player name update after player is created and spawned
-        newPlayer.getEvents().trigger("updatePlayerName");
 
         // Initialize MapEditor
         mapEditor = new MapEditor(terrain, newPlayer);

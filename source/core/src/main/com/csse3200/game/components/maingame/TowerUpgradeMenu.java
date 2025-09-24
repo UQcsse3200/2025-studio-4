@@ -31,7 +31,7 @@ import java.util.EnumMap;
 
 /**
  * UI component for displaying and upgrading towers.
- * Shows separate upgrade paths (Path A and Path B) for each tower type.
+ * Shows separate upgrade paths for each tower type.
  */
 public class TowerUpgradeMenu extends UIComponent {
 

@@ -1,5 +1,6 @@
 package com.csse3200.game.components.deck;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -15,13 +16,13 @@ public class DeckComponent {
     }
 
     public enum StatType {
-        NAME("", ""),
-        MAX_HEALTH("Max Health", ""),
-        HEALTH("Health", ""),
-        DAMAGE("Damage", ""),
-        RANGE("Range", ""),
-        SPEED("Speed", ""),
-        COOLDOWN("Cooldown", "");
+        NAME("NAME", ""),
+        MAX_HEALTH("MAX HEALTH", ""),
+        HEALTH("HEALTH", ""),
+        DAMAGE("DAMAGE", ""),
+        RANGE("RANGE", ""),
+        SPEED("SPEED", ""),
+        COOLDOWN("COOLDOWN", "");
 
         private final String texturePath;
         private final String displayName;
@@ -98,15 +99,20 @@ public class DeckComponent {
         public TowerDeckComponent(String name, int damage, double range, double cooldown) {
             super(
                     DeckType.TOWER,
-                    Map.of(
-                            StatType.NAME, name.toUpperCase(),
-                            StatType.DAMAGE, String.valueOf(damage),
-                            StatType.RANGE, String.valueOf(range),
-                            StatType.COOLDOWN, String.valueOf(cooldown)
-                    )
+                    createOrderedStats(name, damage, range, cooldown)
             );
         }
+
+        private static Map<StatType, String> createOrderedStats(String name, int damage, double range, double cooldown) {
+            Map<StatType, String> stats = new LinkedHashMap<>();
+            stats.put(StatType.NAME, name.toUpperCase());    // Name first
+            stats.put(StatType.DAMAGE, String.valueOf(damage));
+            stats.put(StatType.RANGE, String.valueOf(range));
+            stats.put(StatType.COOLDOWN, String.valueOf(cooldown));
+            return stats;
+        }
     }
+
 
     /**
      * Specialized deck component for enemies.
@@ -115,12 +121,17 @@ public class DeckComponent {
         public EnemyDeckComponent(String name, int health, int damage) {
             super(
                     DeckType.ENEMY,
-                    Map.of(
-                            StatType.NAME, name.toUpperCase(),
-                            StatType.MAX_HEALTH, String.valueOf(health),
-                            StatType.DAMAGE, String.valueOf(damage)
-                    )
+                    createOrderedStats(name, health, damage)
             );
         }
+
+        private static Map<StatType, String> createOrderedStats(String name, int health, int damage) {
+            Map<StatType, String> stats = new LinkedHashMap<>();
+            stats.put(StatType.NAME, name.toUpperCase());    // Name first
+            stats.put(StatType.MAX_HEALTH, String.valueOf(health));
+            stats.put(StatType.DAMAGE, String.valueOf(damage));
+            return stats;
+        }
     }
+
 }

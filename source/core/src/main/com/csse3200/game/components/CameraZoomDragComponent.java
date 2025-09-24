@@ -126,13 +126,13 @@ public class CameraZoomDragComponent extends InputComponent {
     /**
      * 处理鼠标滚轮缩放
      */
-    @Override
-    public boolean scrolled(float amountX, float amountY) {
-        if (camera == null) return false;
-        
-        handleZoomInput(amountY);
-        return true;
-    }
+   // @Override
+   // public boolean scrolled(float amountX, float amountY) {
+   //     if (camera == null) return false;
+   //     
+   //     handleZoomInput(amountY);
+   //     return true;
+   // }
     
     /**
      * 处理滚轮缩放

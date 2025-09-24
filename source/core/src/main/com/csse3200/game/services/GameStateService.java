@@ -41,4 +41,26 @@ public class GameStateService {
     public void updateStars(int increment) {
         stars += increment;
     }
+
+    /**
+     * Attempts to spend the given number of stars.
+     *
+     * @param amount number of stars to spend
+     * @return true if the stars were successfully spent, false if not enough stars
+     */
+    public boolean spendStars(int amount) {
+        if (amount < 0) {
+            logger.warn("Tried to spend a negative amount of stars: {}", amount);
+            return false;
+        }
+        if (stars >= amount) {
+            stars -= amount;
+            logger.info("Spent {} stars. Remaining: {}", amount, stars);
+            return true;
+        } else {
+            logger.info("Not enough stars to spend {}. Current: {}", amount, stars);
+            return false;
+        }
+    }
+
 }

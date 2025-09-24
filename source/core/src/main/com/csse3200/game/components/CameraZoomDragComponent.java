@@ -24,7 +24,7 @@ public class CameraZoomDragComponent extends InputComponent {
     private static final float MOVE_SPEED = 5.0f; // 相机移动速度
     
     // 鼠标拖拽相关常量
-    private static final float DRAG_SENSITIVITY = 0.01f; // 拖拽灵敏度（数值越小越不敏感）
+   // private static final float DRAG_SENSITIVITY = 0.01f; // 拖拽灵敏度（数值越小越不敏感）
     
     // 键盘状态跟踪
     private boolean wPressed = false;
@@ -33,9 +33,9 @@ public class CameraZoomDragComponent extends InputComponent {
     private boolean dPressed = false;
     
     // 鼠标右键拖拽相关变量
-    private boolean isDragging = false;
-    private Vector2 lastMousePosition = new Vector2();
-    private Vector2 dragStartPosition = new Vector2();
+//     private boolean isDragging = false;
+//     private Vector2 lastMousePosition = new Vector2();
+//     private Vector2 dragStartPosition = new Vector2();
     
     // 相机引用
     private Camera camera;
@@ -65,8 +65,9 @@ public class CameraZoomDragComponent extends InputComponent {
             }
         }
         
+
         handleKeyboardMovement();
-        handleMouseDrag();
+        //handleMouseDrag();
     }
     
     /**
@@ -94,10 +95,38 @@ public class CameraZoomDragComponent extends InputComponent {
     }
     
     /**
+
      * 处理鼠标右键拖拽
      */
-    private void handleMouseDrag() {
-        if (camera == null) return;
+//     private void handleMouseDrag() {
+//         if (camera == null) return;
+
+//      * 处理鼠标滚轮缩放
+//      * 暂时注释掉滚轮缩放功能
+//      */
+//     @Override
+//     public boolean scrolled(float amountX, float amountY) {
+//         // 暂时注释掉滚轮缩放功能
+//         return false;
+        
+        /*
+        if (camera == null) return false;
+        
+        // 获取鼠标在世界坐标中的位置
+        Vector3 mouseWorldPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(mouseWorldPos);
+        
+        // 计算缩放前的世界坐标
+        Vector2 worldPosBeforeZoom = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
+        
+        // 计算新的缩放级别
+        float currentZoom = ((OrthographicCamera) camera).zoom;
+        float zoomDelta = amountY * ZOOM_SPEED;
+        float newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, currentZoom + zoomDelta));
+        
+        // 应用缩放
+        ((OrthographicCamera) camera).zoom = newZoom;
+        camera.update();
         
         if (isDragging) {
             Vector2 currentMousePosition = new Vector2(Gdx.input.getX(), Gdx.input.getY());
@@ -137,31 +166,34 @@ public class CameraZoomDragComponent extends InputComponent {
     /**
      * 处理滚轮缩放
      */
-    private void handleZoomInput(float wheelAmount) {
-        if (camera == null || !(camera instanceof OrthographicCamera)) return;
+//     private void handleZoomInput(float wheelAmount) {
+//         if (camera == null || !(camera instanceof OrthographicCamera)) return;
         
-        OrthographicCamera orthoCamera = (OrthographicCamera) camera;
-        float currentZoom = orthoCamera.zoom;
-        float newZoom = currentZoom;
+//         OrthographicCamera orthoCamera = (OrthographicCamera) camera;
+//         float currentZoom = orthoCamera.zoom;
+//         float newZoom = currentZoom;
         
-        if (wheelAmount > 0) {
-            // 滚轮向上：放大
-            newZoom = Math.min(MAX_ZOOM, currentZoom + ZOOM_SPEED);
-        } else if (wheelAmount < 0) {
-            // 滚轮向下：缩小
-            newZoom = Math.max(MIN_ZOOM, currentZoom - ZOOM_SPEED);
-        } else {
-            return;
-        }
+//         if (wheelAmount > 0) {
+//             // 滚轮向上：放大
+//             newZoom = Math.min(MAX_ZOOM, currentZoom + ZOOM_SPEED);
+//         } else if (wheelAmount < 0) {
+//             // 滚轮向下：缩小
+//             newZoom = Math.max(MIN_ZOOM, currentZoom - ZOOM_SPEED);
+//         } else {
+//             return;
+//         }
         
-        if (newZoom != currentZoom) {
-            orthoCamera.zoom = newZoom;
-            camera.update();
-        }
-    }
+//         if (newZoom != currentZoom) {
+//             orthoCamera.zoom = newZoom;
+//             camera.update();
+//         }
+//     }
     
+//         return true;
+//         */
+//     }
     
-
+  
     
     /**
      * 重置相机到默认位置和缩放
@@ -232,31 +264,31 @@ public class CameraZoomDragComponent extends InputComponent {
         }
     }
     
-    /**
-     * 处理鼠标按下事件
-     */
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.RIGHT) {
-            isDragging = true;
-            lastMousePosition.set(screenX, screenY);
-            dragStartPosition.set(screenX, screenY);
-            return true;
-        }
-        return false;
-    }
+//     /**
+//      * 处理鼠标按下事件
+//      */
+//     @Override
+//     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+//         if (button == Input.Buttons.RIGHT) {
+//             isDragging = true;
+//             lastMousePosition.set(screenX, screenY);
+//             dragStartPosition.set(screenX, screenY);
+//             return true;
+//         }
+//         return false;
+//     }
     
-    /**
-     * 处理鼠标释放事件
-     */
-    @Override
-    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.RIGHT) {
-            isDragging = false;
-            return true;
-        }
-        return false;
-    }
+//     /**
+//      * 处理鼠标释放事件
+//      */
+//     @Override
+//     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+//         if (button == Input.Buttons.RIGHT) {
+//             isDragging = false;
+//             return true;
+//         }
+//         return false;
+//     }
     
     /**
      * 处理键盘按下事件

@@ -17,7 +17,7 @@ public class CameraZoomDragComponent extends InputComponent {
     // 缩放相关常量
     private static final float MIN_ZOOM = 0.5f;
     private static final float MAX_ZOOM = 1.8f;
-    private static final float ZOOM_SPEED = 0.1f;
+    //private static final float ZOOM_SPEED = 0.1f;
     private static final float DEFAULT_ZOOM = 1.4f; // 默认缩放倍数（1.4倍，显示更多内容）
     
     // 键盘移动相关常量
@@ -217,32 +217,32 @@ public class CameraZoomDragComponent extends InputComponent {
         camera.update();
     }
     
-    /**
-     * 获取当前缩放级别
-     */
-    public float getZoom() {
-        if (camera == null) return DEFAULT_ZOOM;
-        return ((OrthographicCamera) camera).zoom;
-    }
-    
+//    /**
+//     * 获取当前缩放级别
+//     */
+//    public float getZoom() {
+//        if (camera == null) return DEFAULT_ZOOM;
+//        return ((OrthographicCamera) camera).zoom;
+//    }
+//
     /**
      * 获取相机位置
      */
-    public Vector2 getCameraPosition() {
-        if (camera == null) return new Vector2(0, 0);
-        return new Vector2(camera.position.x, camera.position.y);
-    }
+//    public Vector2 getCameraPosition() {
+//        if (camera == null) return new Vector2(0, 0);
+//        return new Vector2(camera.position.x, camera.position.y);
+//    }
     
     
     /**
      * 设置相机位置
      */
-    public void setCameraPosition(Vector2 position) {
-        if (camera == null) return;
-        
-        camera.position.set(position.x, position.y, 0);
-        camera.update();
-    }
+//    public void setCameraPosition(Vector2 position) {
+//        if (camera == null) return;
+//
+//        camera.position.set(position.x, position.y, 0);
+//        camera.update();
+//    }
     
     /**
      * 模拟按W键向上移动相机一格

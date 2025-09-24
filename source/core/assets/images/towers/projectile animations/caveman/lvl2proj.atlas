@@ -1,0 +1,12 @@
+lvl2proj.png
+size: 244, 302
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pma: false
+pixil-frame-0 (5)
+  bounds: 0, 0, 162, 302
+  offsets: 859, 1079, 2000, 2000
+pixil-frame-0 (6)
+  bounds: 162, 0, 82, 162
+  offsets: 899, 1139, 2000, 2000

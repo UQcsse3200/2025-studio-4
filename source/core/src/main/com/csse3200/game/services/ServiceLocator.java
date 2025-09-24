@@ -27,8 +27,6 @@ public class ServiceLocator {
   private static ResourceService resourceService;
   private static GdxGame gameService;
   private static GameStateService gameStateService;
-  private static PlayerNameService playerNameService;
-  private static SaveGameService saveGameService;
 
   // NEW: centralised audio service
   private static AudioService audioService;
@@ -67,10 +65,6 @@ public class ServiceLocator {
 
   public static GameStateService getGameStateService() {
     return gameStateService;
-  }
-
-  public static PlayerNameService getPlayerNameService() { 
-    return playerNameService; 
   }
 
   // NEW: Audio getter
@@ -123,12 +117,6 @@ public class ServiceLocator {
     gameStateService = source;
   }
 
-
-  public static void registerPlayerNameService(PlayerNameService source) {
-    logger.debug("Registering player name service {}", source);
-    playerNameService = source;
-  }
-
   // NEW: Audio registration
   public static void registerAudioService(AudioService source) {
     logger.debug("Registering audio service {}", source);
@@ -151,22 +139,11 @@ public class ServiceLocator {
     resourceService = null;
     gameService = null;
     gameStateService = null; // ensure state service is cleared
-    playerNameService = null;
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
-    saveGameService = null;
   }
 
   private ServiceLocator() {
     throw new IllegalStateException("Instantiating static util class");
   }
-
-    public static SaveGameService getSaveGameService() {
-        return saveGameService;
-    }
-
-    public static void registerSaveGameService(SaveGameService service) {
-        logger.debug("Registering save game service {}", service);
-        saveGameService = service;
-    }
 }

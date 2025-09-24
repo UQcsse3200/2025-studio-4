@@ -173,24 +173,19 @@ public class TankFactoryTest {
     }
 
     @Test
-    void testEntityDeathScoring() {
-        // Setup player and waypoints
+    void tankEnemyDeathPoints() {
         Entity player = PlayerFactory.createPlayer();
+        PlayerScoreComponent score = player.getComponent(PlayerScoreComponent.class);
+        int before = score.getTotalScore(); // baseline
         java.util.List<Entity> waypoints = new java.util.ArrayList<>();
         waypoints.add(new Entity());
-
-        // Get initial score
-        PlayerScoreComponent scoreComponent = player.getComponent(PlayerScoreComponent.class);
-        int before = scoreComponent.getTotalScore();
 
         // Create an enemy and simulate death
         Entity tank = TankEnemyFactory.createTankEnemy(waypoints, player, Difficulty.MEDIUM);
         tank.getEvents().trigger("entityDeath");
 
-        // Total should have increased by the tank's configured points
+        // Total should have increased by the tank’s configured points
         int expected = TankEnemyFactory.getPoints(); // default
-        assertEquals(before + expected, scoreComponent.getTotalScore());
+        assertEquals(before + expected, score.getTotalScore());
     }
-
 }
-

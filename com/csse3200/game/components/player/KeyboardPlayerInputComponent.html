@@ -99,8 +99,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">KeyboardPlayerInputComponent</span>
 <span class="extends-implements">extends <a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></span></div>
-<div class="block">Input handler for the player for keyboard input.
- This input handler only handles attack input since player movement is disabled.</div>
+<div class="block">Input handler for the player for keyboard and touch (mouse) input.
+ This input handler only uses keyboard input.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -191,8 +191,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="keyDown(int)">
 <h3>keyDown</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyDown</span><wbr><span class="parameters">(int&nbsp;keycode)</span></div>
-<div class="block">Triggers player events on specific keycodes.
- Only handles attack input since player movement is disabled.</div>
+<div class="block">Triggers player events on specific keycodes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>keyDown</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
@@ -213,8 +212,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="keyUp(int)">
 <h3>keyUp</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyUp</span><wbr><span class="parameters">(int&nbsp;keycode)</span></div>
-<div class="block">Triggers player events on specific keycodes.
- No keyUp events needed since only attack is handled.</div>
+<div class="block">Triggers player events on specific keycodes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>keyUp</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>

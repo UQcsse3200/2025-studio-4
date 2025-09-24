@@ -99,8 +99,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TouchPlayerInputComponent</span>
 <span class="extends-implements">extends <a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></span></div>
-<div class="block">Input handler for the player for touch (mouse) input.
- This input handler only handles attack input since player movement is disabled.</div>
+<div class="block">Input handler for the player for keyboard and touch (mouse) input.
+ This input handler uses keyboard and touch input.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -156,7 +156,7 @@ loadScripts(document, 'script');</script>
  int&nbsp;pointer,
  int&nbsp;button)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Triggers the player attack on touch/click.</div>
+<div class="block">Triggers the player attack.</div>
 </div>
 </div>
 </div>
@@ -199,8 +199,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="keyDown(int)">
 <h3>keyDown</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyDown</span><wbr><span class="parameters">(int&nbsp;keycode)</span></div>
-<div class="block">Triggers player events on specific keycodes.
- No keyboard input needed since player movement is disabled.</div>
+<div class="block">Triggers player events on specific keycodes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>keyDown</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
@@ -221,8 +220,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="keyUp(int)">
 <h3>keyUp</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyUp</span><wbr><span class="parameters">(int&nbsp;keycode)</span></div>
-<div class="block">Triggers player events on specific keycodes.
- No keyboard input needed since player movement is disabled.</div>
+<div class="block">Triggers player events on specific keycodes.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>keyUp</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
@@ -246,7 +244,7 @@ loadScripts(document, 'script');</script>
  int&nbsp;screenY,
  int&nbsp;pointer,
  int&nbsp;button)</span></div>
-<div class="block">Triggers the player attack on touch/click.</div>
+<div class="block">Triggers the player attack.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>touchDown</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>

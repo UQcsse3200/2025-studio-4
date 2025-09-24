@@ -94,10 +94,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SimplePlacementController</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Controller for managing tower placement within the game world.
- <p>
- Handles the "ghost" tower preview that follows the mouse, snaps towers to tiles,
- ensures placement is within bounds, and prevents overlap with other towers and paths.
- </p></div>
+ Handles ghost preview, snapping, currency checks, path restrictions, and tower placement.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -136,33 +133,48 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cancelPlacement()" class="member-name-link">cancelPlacement</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Cancels the current placement and disposes of the ghost tower.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Registers placement event listeners.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int[][]</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFixedPath()" class="member-name-link">getFixedPath</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the fixed path as a 2D array of tile coordinates.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPendingType()" class="member-name-link">getPendingType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the pending tower type for placement.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPlacementActive()" class="member-name-link">isPlacementActive</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if placement mode is currently active.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refreshInvalidTiles()" class="member-name-link">refreshInvalidTiles</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">外部在更新 MapEditor 的 invalidTiles 后调用，刷新本地禁放区缓存</div>
+<div class="block">Refreshes the list of invalid tiles for placement.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMapEditor(com.csse3200.game.areas.MapEditor)" class="member-name-link">setMapEditor</a><wbr>(<a href="../../areas/MapEditor.html" title="class in com.csse3200.game.areas">MapEditor</a>&nbsp;mapEditor)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the map editor and refreshes invalid tiles.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelectedCurrencyType(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">setSelectedCurrencyType</a><wbr>(<a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Sets the selected currency type for tower placement.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Updates the placement controller, handling ghost tower and placement logic.</div>
 </div>
 </div>
 </div>
@@ -202,28 +214,36 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setMapEditor(com.csse3200.game.areas.MapEditor)">
 <h3>setMapEditor</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setMapEditor</span><wbr><span class="parameters">(<a href="../../areas/MapEditor.html" title="class in com.csse3200.game.areas">MapEditor</a>&nbsp;mapEditor)</span></div>
+<div class="block">Sets the map editor and refreshes invalid tiles.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>mapEditor</code> - the map editor to set</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="refreshInvalidTiles()">
 <h3>refreshInvalidTiles</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refreshInvalidTiles</span>()</div>
-<div class="block">外部在更新 MapEditor 的 invalidTiles 后调用，刷新本地禁放区缓存</div>
+<div class="block">Refreshes the list of invalid tiles for placement.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getFixedPath()">
 <h3>getFixedPath</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int[][]</span>&nbsp;<span class="element-name">getFixedPath</span>()</div>
+<div class="block">Gets the fixed path as a 2D array of tile coordinates.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the fixed path</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Registers placement event listeners.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -234,9 +254,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Updates the placement controller, handling ghost tower and placement logic.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -247,18 +265,40 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="cancelPlacement()">
 <h3>cancelPlacement</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">cancelPlacement</span>()</div>
+<div class="block">Cancels the current placement and disposes of the ghost tower.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="isPlacementActive()">
 <h3>isPlacementActive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isPlacementActive</span>()</div>
+<div class="block">Checks if placement mode is currently active.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if placement is active, false otherwise</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getPendingType()">
 <h3>getPendingType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getPendingType</span>()</div>
+<div class="block">Gets the pending tower type for placement.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the pending tower type</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setSelectedCurrencyType(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)">
+<h3>setSelectedCurrencyType</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSelectedCurrencyType</span><wbr><span class="parameters">(<a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</span></div>
+<div class="block">Sets the selected currency type for tower placement.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>currencyType</code> - the currency type to set</dd>
+</dl>
 </section>
 </li>
 </ul>

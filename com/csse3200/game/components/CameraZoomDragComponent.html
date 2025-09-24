@@ -176,19 +176,26 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">重置相机到默认位置和缩放</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCameraPosition(com.badlogic.gdx.math.Vector2)" class="member-name-link">setCameraPosition</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scrolled(float,float)" class="member-name-link">scrolled</a><wbr>(float&nbsp;amountX,
+ float&nbsp;amountY)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">设置相机位置</div>
+<div class="block">处理鼠标滚轮缩放
+ 暂时注释掉滚轮缩放功能</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setZoom(float)" class="member-name-link">setZoom</a><wbr>(float&nbsp;zoom)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCameraPosition(com.badlogic.gdx.math.Vector2)" class="member-name-link">setCameraPosition</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;position)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">设置相机缩放级别</div>
+<div class="block">设置相机位置</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setZoom(float)" class="member-name-link">setZoom</a><wbr>(float&nbsp;zoom)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">设置相机缩放级别</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
@@ -196,7 +203,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.input.InputComponent">Methods inherited from class&nbsp;com.csse3200.game.input.<a href="../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></h3>
-<code><a href="../input/InputComponent.html#dispose()">dispose</a>, <a href="../input/InputComponent.html#fling(float,float,int)">fling</a>, <a href="../input/InputComponent.html#getPriority()">getPriority</a>, <a href="../input/InputComponent.html#keyTyped(char)">keyTyped</a>, <a href="../input/InputComponent.html#longPress(float,float)">longPress</a>, <a href="../input/InputComponent.html#mouseMoved(int,int)">mouseMoved</a>, <a href="../input/InputComponent.html#pan(float,float,float,float)">pan</a>, <a href="../input/InputComponent.html#panStop(float,float,int,int)">panStop</a>, <a href="../input/InputComponent.html#pinch(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">pinch</a>, <a href="../input/InputComponent.html#pinchStop()">pinchStop</a>, <a href="../input/InputComponent.html#pinchStopHandled()">pinchStopHandled</a>, <a href="../input/InputComponent.html#scrolled(float,float)">scrolled</a>, <a href="../input/InputComponent.html#setPriority(int)">setPriority</a>, <a href="../input/InputComponent.html#tap(float,float,int,int)">tap</a>, <a href="../input/InputComponent.html#touchDown(float,float,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDown(int,int,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDragged(int,int,int)">touchDragged</a>, <a href="../input/InputComponent.html#touchUp(int,int,int,int)">touchUp</a>, <a href="../input/InputComponent.html#zoom(float,float)">zoom</a></code></div>
+<code><a href="../input/InputComponent.html#dispose()">dispose</a>, <a href="../input/InputComponent.html#fling(float,float,int)">fling</a>, <a href="../input/InputComponent.html#getPriority()">getPriority</a>, <a href="../input/InputComponent.html#keyTyped(char)">keyTyped</a>, <a href="../input/InputComponent.html#longPress(float,float)">longPress</a>, <a href="../input/InputComponent.html#mouseMoved(int,int)">mouseMoved</a>, <a href="../input/InputComponent.html#pan(float,float,float,float)">pan</a>, <a href="../input/InputComponent.html#panStop(float,float,int,int)">panStop</a>, <a href="../input/InputComponent.html#pinch(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">pinch</a>, <a href="../input/InputComponent.html#pinchStop()">pinchStop</a>, <a href="../input/InputComponent.html#pinchStopHandled()">pinchStopHandled</a>, <a href="../input/InputComponent.html#setPriority(int)">setPriority</a>, <a href="../input/InputComponent.html#tap(float,float,int,int)">tap</a>, <a href="../input/InputComponent.html#touchDown(float,float,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDown(int,int,int,int)">touchDown</a>, <a href="../input/InputComponent.html#touchDragged(int,int,int)">touchDragged</a>, <a href="../input/InputComponent.html#touchUp(int,int,int,int)">touchUp</a>, <a href="../input/InputComponent.html#zoom(float,float)">zoom</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.Component">Methods inherited from class&nbsp;com.csse3200.game.components.<a href="Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="Component.html#earlyUpdate()">earlyUpdate</a>, <a href="Component.html#getEntity()">getEntity</a>, <a href="Component.html#setEnabled(boolean)">setEnabled</a>, <a href="Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="Component.html#toString()">toString</a>, <a href="Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="Component.html#triggerUpdate()">triggerUpdate</a></code></div>
@@ -251,6 +258,27 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="scrolled(float,float)">
+<h3>scrolled</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">scrolled</span><wbr><span class="parameters">(float&nbsp;amountX,
+ float&nbsp;amountY)</span></div>
+<div class="block">处理鼠标滚轮缩放
+ 暂时注释掉滚轮缩放功能</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>scrolled</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
+<dt>Overrides:</dt>
+<dd><code><a href="../input/InputComponent.html#scrolled(float,float)">scrolled</a></code>&nbsp;in class&nbsp;<code><a href="../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list-long">
+<li><code>InputProcessor.scrolled(float, float)</code></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>

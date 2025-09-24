@@ -102,13 +102,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">MapHighlighter</span>
 <span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
 <div class="block">A grid overlay that visually highlights map tiles during tower placement and
- shows tower attack ranges when a tower is selected.
-
- Features:
- - Highlights every tile: green if free, red if occupied.
- - Draws black borders around every tile.
- - Shows a semi-transparent preview of the pending tower’s footprint.
- - Allows players to click towers and see their attack range visualised as a circle.</div>
+ shows tower attack ranges when a tower is selected.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -132,10 +126,11 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainComponent,com.csse3200.game.components.maingame.SimplePlacementController)" class="member-name-link">MapHighlighter</a><wbr>(<a href="../../areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a>&nbsp;terrain,
- <a href="SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a>&nbsp;placementController)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainComponent,com.csse3200.game.components.maingame.SimplePlacementController,com.csse3200.game.entities.factories.TowerFactory)" class="member-name-link">MapHighlighter</a><wbr>(<a href="../../areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a>&nbsp;terrain,
+ <a href="SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a>&nbsp;placementController,
+ <a href="../../entities/factories/TowerFactory.html" title="class in com.csse3200.game.entities.factories">TowerFactory</a>&nbsp;towerFactory)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates a new MapHighlighter.</div>
+<div class="block">Constructs a MapHighlighter for the given terrain and placement controller.</div>
 </div>
 </div>
 </section>
@@ -159,8 +154,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Renders overlays:
- - Green/red semi-transparent tiles for placement validity.</div>
+<div class="block">Draws the grid overlay and tower range highlights.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTowerUpgradeMenu(com.csse3200.game.components.maingame.TowerUpgradeMenu)" class="member-name-link">setTowerUpgradeMenu</a><wbr>(<a href="TowerUpgradeMenu.html" title="class in com.csse3200.game.components.maingame">TowerUpgradeMenu</a>&nbsp;menu)</code></div>
@@ -168,8 +162,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates game logic each frame:
- - Detects tower selection by clicking on them.</div>
+<div class="block">Updates the highlighter, handling tower selection on mouse click.</div>
 </div>
 </div>
 </div>
@@ -204,15 +197,17 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(com.csse3200.game.areas.terrain.TerrainComponent,com.csse3200.game.components.maingame.SimplePlacementController)">
+<section class="detail" id="&lt;init&gt;(com.csse3200.game.areas.terrain.TerrainComponent,com.csse3200.game.components.maingame.SimplePlacementController,com.csse3200.game.entities.factories.TowerFactory)">
 <h3>MapHighlighter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">MapHighlighter</span><wbr><span class="parameters">(<a href="../../areas/terrain/TerrainComponent.html" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a>&nbsp;terrain,
- <a href="SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a>&nbsp;placementController)</span></div>
-<div class="block">Creates a new MapHighlighter.</div>
+ <a href="SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a>&nbsp;placementController,
+ <a href="../../entities/factories/TowerFactory.html" title="class in com.csse3200.game.entities.factories">TowerFactory</a>&nbsp;towerFactory)</span></div>
+<div class="block">Constructs a MapHighlighter for the given terrain and placement controller.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>terrain</code> - The terrain component used to get tile size and bounds.</dd>
-<dd><code>placementController</code> - Controller for placement state (used to check pending tower).</dd>
+<dd><code>terrain</code> - the terrain component</dd>
+<dd><code>placementController</code> - the placement controller</dd>
+<dd><code>towerFactory</code> - the tower factory</dd>
 </dl>
 </section>
 </li>
@@ -228,9 +223,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Updates game logic each frame:
- - Detects tower selection by clicking on them.
- - Deselects if clicking empty space.</div>
+<div class="block">Updates the highlighter, handling tower selection on mouse click.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -241,16 +234,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
 <h3>draw</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
-<div class="block">Renders overlays:
- - Green/red semi-transparent tiles for placement validity.
- - Black grid lines.
- - Preview outline of the pending tower footprint.
- - Range circle for the selected tower.</div>
+<div class="block">Draws the grid overlay and tower range highlights.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a></code>&nbsp;in class&nbsp;<code><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>batch</code> - Batch to render to.</dd>
+<dd><code>batch</code> - the sprite batch</dd>
 </dl>
 </section>
 </li>

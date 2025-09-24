@@ -49,22 +49,30 @@ public class DeckDisplay extends UIComponent {
 
         table.clear();
 
-        // Title row: Tower or Enemy
-        Label title = new Label(deck.getType().toString(), skin, "large");
-        table.add(title).padBottom(10f);
-        table.row();
+        // First: display NAME stat as the title row (if present)
+        String name = deck.getStats().get(DeckComponent.StatType.NAME);
+        if (name != null) {
+            Label title = new Label(name, skin, "large");
+            table.add(title).padBottom(15f);  // extra spacing below
+            table.row();
+        }
 
-        // Render each stat
+        // Then display all other stats except NAME
         for (Map.Entry<DeckComponent.StatType, String> entry : deck.getStats().entrySet()) {
+            if (entry.getKey() == DeckComponent.StatType.NAME) {
+                continue; // skip NAME since it's already displayed
+            }
+
             Label statLabel = new Label(
                     entry.getKey().getDisplayName() + ": " + entry.getValue(),
                     skin,
                     "default"
             );
-            table.add(statLabel).right().pad(5f);
+            table.add(statLabel).left().pad(5f);
             table.row();
         }
     }
+
 
     /**
      * Hide the deck UI

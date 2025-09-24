@@ -10,11 +10,6 @@ import java.util.Map;
  * in the deck UI.
  */
 public class DeckComponent {
-    public enum DeckType {
-        TOWER,
-        ENEMY
-    }
-
     public enum StatType {
         NAME("NAME", ""),
         MAX_HEALTH("MAX HEALTH", ""),
@@ -22,7 +17,8 @@ public class DeckComponent {
         DAMAGE("DAMAGE", ""),
         RANGE("RANGE", ""),
         SPEED("SPEED", ""),
-        COOLDOWN("COOLDOWN", "");
+        COOLDOWN("COOLDOWN", ""),
+        TEXTURE_PATH("", "");
 
         private final String texturePath;
         private final String displayName;
@@ -57,29 +53,17 @@ public class DeckComponent {
         }
     }
 
-    private final DeckType type;
     private final Map<StatType, String> stats;
 
     /**
      * Constructs a new {@code DeckComponent} with the specified type and statistics.
      *
-     * @param type  the type of entity this deck represents (e.g., {@link DeckType#TOWER} or {@link DeckType#ENEMY})
      * @param stats a map containing the statistics of the entity,
      *              where the key is the stat name (e.g., "Health", "Damage")
      *              and the value is the stat value represented as a string
      */
-    public DeckComponent(DeckType type, Map<StatType, String> stats) {
-        this.type = type;
+    public DeckComponent(Map<StatType, String> stats) {
         this.stats = stats;
-    }
-
-    /**
-     * Returns the type of this deck component.
-     *
-     * @return the {@link DeckType} of this deck component
-     */
-    public DeckType getType() {
-        return type;
     }
 
     /**
@@ -98,7 +82,6 @@ public class DeckComponent {
     public static class TowerDeckComponent extends DeckComponent {
         public TowerDeckComponent(String name, int damage, double range, double cooldown) {
             super(
-                    DeckType.TOWER,
                     createOrderedStats(name, damage, range, cooldown)
             );
         }
@@ -120,7 +103,6 @@ public class DeckComponent {
     public static class EnemyDeckComponent extends DeckComponent {
         public EnemyDeckComponent(String name, int health, int damage) {
             super(
-                    DeckType.ENEMY,
                     createOrderedStats(name, health, damage)
             );
         }

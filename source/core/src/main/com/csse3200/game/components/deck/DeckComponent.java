@@ -12,12 +12,12 @@ import java.util.Map;
 public class DeckComponent {
     public enum StatType {
         NAME("NAME", ""),
-        MAX_HEALTH("MAX HEALTH", ""),
-        HEALTH("HEALTH", ""),
-        DAMAGE("DAMAGE", ""),
-        RANGE("RANGE", ""),
-        SPEED("SPEED", ""),
-        COOLDOWN("COOLDOWN", ""),
+        MAX_HEALTH("MAX HEALTH", "images/deck/heart.png"),
+        HEALTH("HEALTH", "images/deck/heart.png"),
+        DAMAGE("DAMAGE", "images/deck/sword.png"),
+        RANGE("RANGE", "images/deck/bullseye_target.png"),
+        SPEED("SPEED", "images/deck/shoe.png"),
+        COOLDOWN("COOLDOWN", "images/deck/hourglass.png"),
         TEXTURE_PATH("", "");
 
         private final String texturePath;
@@ -78,20 +78,25 @@ public class DeckComponent {
 
     /**
      * Specialized deck component for towers.
+     *
+     * Usage:
+     *      // Example inside TowerComponent or EnemyComponent click handler
+     *      playerEntity.getEvents().trigger("displayDeck", towerEntity.getComponent(DeckComponent.class));
      */
     public static class TowerDeckComponent extends DeckComponent {
-        public TowerDeckComponent(String name, int damage, double range, double cooldown) {
+        public TowerDeckComponent(String name, int damage, double range, double cooldown, String texturePath) {
             super(
-                    createOrderedStats(name, damage, range, cooldown)
+                    createOrderedStats(name, damage, range, cooldown, texturePath)
             );
         }
 
-        private static Map<StatType, String> createOrderedStats(String name, int damage, double range, double cooldown) {
+        private static Map<StatType, String> createOrderedStats(String name, int damage, double range, double cooldown, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
             stats.put(StatType.DAMAGE, String.valueOf(damage));
             stats.put(StatType.RANGE, String.valueOf(range));
             stats.put(StatType.COOLDOWN, String.valueOf(cooldown));
+            stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;
         }
     }
@@ -99,19 +104,24 @@ public class DeckComponent {
 
     /**
      * Specialized deck component for enemies.
+     *
+     * Usage:
+     *      // Example inside TowerComponent or EnemyComponent click handler
+     *      playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));
      */
     public static class EnemyDeckComponent extends DeckComponent {
-        public EnemyDeckComponent(String name, int health, int damage) {
+        public EnemyDeckComponent(String name, int health, int damage, String texturePath) {
             super(
-                    createOrderedStats(name, health, damage)
+                    createOrderedStats(name, health, damage, texturePath)
             );
         }
 
-        private static Map<StatType, String> createOrderedStats(String name, int health, int damage) {
+        private static Map<StatType, String> createOrderedStats(String name, int health, int damage, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
             stats.put(StatType.MAX_HEALTH, String.valueOf(health));
             stats.put(StatType.DAMAGE, String.valueOf(damage));
+            stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;
         }
     }

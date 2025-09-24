@@ -3,7 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.hero.HeroAppearanceComponent;
-import com.csse3200.game.components.hero.SamuraiSpinAttackComponent;
+import com.csse3200.game.components.hero.samurai.SamuraiSpinAttackComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -191,10 +191,9 @@ public final class HeroFactory {
                 .addComponent(body) // ← 只加这一份渲染组件
                 .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
                 .addComponent(new SamuraiSpinAttackComponent(
-                        cfg.swordAngularSpeed,
-                        cfg.swordRadius,
-                        cfg.swordTexture,
-                        camera
+                        cfg.swordRadius,   // 直接传半径
+                        cfg.swordTexture,  // 贴图
+                        camera             // 相机
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())

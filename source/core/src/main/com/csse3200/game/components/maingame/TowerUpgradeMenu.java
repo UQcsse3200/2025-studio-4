@@ -16,8 +16,9 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
 
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.TowerComponent;
+import com.csse3200.game.components.TowerStatsComponent;
+import com.csse3200.game.components.TowerCostComponent;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -47,6 +48,9 @@ public class TowerUpgradeMenu extends UIComponent {
     private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
     private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
 
+    /**
+     * Creates the UI for the tower upgrade menu and sets up listeners.
+     */
     @Override
     public void create() {
         super.create();
@@ -110,6 +114,65 @@ public class TowerUpgradeMenu extends UIComponent {
         containerContent.row().padTop(15);
         containerContent.add(sellButton).colspan(2).width(180).center();
 
+        // --- Sell button listener ---
+        sellButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (selectedTower == null) return;
+                TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
+                TowerCostComponent costComp = selectedTower.getComponent(TowerCostComponent.class);
+                TowerStatsComponent statsComp = selectedTower.getComponent(TowerStatsComponent.class);
+                if (towerComp == null || costComp == null || statsComp == null) return;
+                Entity player = findPlayerEntity();
+                if (player == null) return;
+                CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                if (currencyManager == null) return;
+
+                // --- Calculate total spent ---
+                int totalSpent = 0;
+                CurrencyType refundCurrencyType = CurrencyType.METAL_SCRAP; // Only refund METAL_SCRAP
+
+                // Base cost
+                totalSpent += costComp.getCostForCurrency(refundCurrencyType);
+
+                // Path A upgrades
+                Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerComp.getType().toLowerCase());
+                int levelA = statsComp.getLevel_A();
+                for (int lvl = 2; lvl <= levelA; lvl++) {
+                    if (upgradesA != null && upgradesA.containsKey(lvl)) {
+                        totalSpent += upgradesA.get(lvl).cost;
+                    }
+                }
+
+                // Path B upgrades
+                Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerComp.getType().toLowerCase());
+                int levelB = statsComp.getLevel_B();
+                for (int lvl = 2; lvl <= levelB; lvl++) {
+                    if (upgradesB != null && upgradesB.containsKey(lvl)) {
+                        totalSpent += upgradesB.get(lvl).cost;
+                    }
+                }
+
+                // Refund 75% of total spent
+                currencyManager.refundCurrency(
+                    Map.of(refundCurrencyType, totalSpent), 0.75f
+                );
+
+                // Remove the tower's head entity if present
+                if (towerComp.hasHead()) {
+                    Entity head = towerComp.getHeadEntity();
+                    if (head != null) {
+                        head.dispose();
+                        com.csse3200.game.services.ServiceLocator.getEntityService().unregister(head);
+                    }
+                }
+                // Remove the tower entity
+                selectedTower.dispose();
+                com.csse3200.game.services.ServiceLocator.getEntityService().unregister(selectedTower);
+                selectedTower = null;
+                rootTable.setVisible(false);
+            }
+        });
 
         rootTable.add(container);
         stage.addActor(rootTable);
@@ -132,11 +195,17 @@ public class TowerUpgradeMenu extends UIComponent {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    /**
+     * Draws the UI component. (No custom drawing needed here.)
+     *
+     * @param batch The SpriteBatch used for rendering.
+     */
     @Override
     protected void draw(SpriteBatch batch) { }
 
     /**
      * Sets the currently selected tower for upgrades.
+     *
      * @param tower The tower entity.
      * @param towerType Tower type string.
      */
@@ -149,12 +218,22 @@ public class TowerUpgradeMenu extends UIComponent {
 
     /**
      * Returns true if the upgrade menu is touched at the given screen coordinates.
+     *
+     * @param screenX The X coordinate on the screen.
+     * @param screenY The Y coordinate on the screen.
+     * @return True if the menu is touched, false otherwise.
      */
     public boolean isTouched(int screenX, int screenY) {
         Vector2 stageCoords = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
         return rootTable.hit(stageCoords.x, stageCoords.y, true) != null;
     }
 
+    /**
+     * Sets up the content of an upgrade button with the cost and icon.
+     *
+     * @param button The button to set up.
+     * @param cost   The cost to display.
+     */
     private void setupButtonContent(TextButton button, int cost) {
         Table content = new Table(skin);
         Image scrapIcon = new Image(new TextureRegionDrawable(
@@ -166,6 +245,11 @@ public class TowerUpgradeMenu extends UIComponent {
         button.add(content).expand().fill();
     }
 
+    /**
+     * Attempts to upgrade the selected tower along the specified path.
+     *
+     * @param isLevelA True for Path A, false for Path B.
+     */
     private void attemptUpgrade(boolean isLevelA) {
         if (selectedTower == null || currentTowerType == null) return;
 
@@ -238,6 +322,11 @@ public class TowerUpgradeMenu extends UIComponent {
 
 
 
+    /**
+     * Finds and returns the player entity that has a CurrencyManagerComponent.
+     *
+     * @return The player entity, or null if not found.
+     */
     private Entity findPlayerEntity() {
         Array<Entity> entities = safeEntities();
         if (entities == null) return null;
@@ -247,6 +336,11 @@ public class TowerUpgradeMenu extends UIComponent {
         return null;
     }
 
+    /**
+     * Safely retrieves a copy of all entities from the entity service.
+     *
+     * @return An array of entities, or null if retrieval fails.
+     */
     private Array<Entity> safeEntities() {
         try {
             return com.csse3200.game.services.ServiceLocator.getEntityService().getEntitiesCopy();
@@ -255,6 +349,9 @@ public class TowerUpgradeMenu extends UIComponent {
         }
     }
 
+    /**
+     * Updates the labels and button states for the upgrade menu based on the selected tower's levels.
+     */
     private void updateLabels() {
         if (selectedTower == null || currentTowerType == null) return;
 

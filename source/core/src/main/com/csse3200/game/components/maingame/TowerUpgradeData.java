@@ -12,13 +12,16 @@ public class TowerUpgradeData {
      * Represents the upgrade stats for a tower at a certain level.
      */
     public static class UpgradeStats {
-        public final int damage;
-        public final float range;
-        public final float cooldown;
-        public final float speed;
-        public final int cost;
-        public final String imagePath; // 🔹 new field for upgrade texture
-
+        /**
+         * Constructs an UpgradeStats object with the specified parameters.
+         *
+         * @param damage     Damage value for the upgrade.
+         * @param range      Range value for the upgrade.
+         * @param cooldown   Cooldown value for the upgrade.
+         * @param speed      Projectile speed for the upgrade.
+         * @param cost       Cost of the upgrade.
+         * @param imagePath  Texture path for the upgrade.
+         */
         public UpgradeStats(int damage, float range, float cooldown, float speed, int cost, String imagePath) {
             this.damage = damage;
             this.range = range;
@@ -27,10 +30,19 @@ public class TowerUpgradeData {
             this.cost = cost;
             this.imagePath = imagePath;
         }
+
+        public final int damage;
+        public final float range;
+        public final float cooldown;
+        public final float speed;
+        public final int cost;
+        public final String imagePath; // 🔹 new field for upgrade texture
     }
 
     /**
      * Returns a mapping of tower types to their Path A upgrades.
+     *
+     * @return Map of tower type strings to their Path A upgrade levels and stats.
      */
     public static Map<String, Map<Integer, UpgradeStats>> getPathAUpgrades() {
         Map<String, Map<Integer, UpgradeStats>> pathA = new HashMap<>();
@@ -64,6 +76,8 @@ public class TowerUpgradeData {
 
     /**
      * Returns a mapping of tower types to their Path B upgrades.
+     *
+     * @return Map of tower type strings to their Path B upgrade levels and stats.
      */
     public static Map<String, Map<Integer, UpgradeStats>> getPathBUpgrades() {
         Map<String, Map<Integer, UpgradeStats>> pathB = new HashMap<>();

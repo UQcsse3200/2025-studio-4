@@ -23,7 +23,7 @@ public class TowerFactory {
             FileLoader.readClass(TowerConfig.class, "configs/tower.json");
 
     /**
-     * Helper to scale the tower sprite to match its footprint.
+     * Scales the tower base and head entities to match the specified footprint size.
      *
      * @param base       Tower base entity.
      * @param head       Tower head entity (can be null).
@@ -38,6 +38,17 @@ public class TowerFactory {
         }
     }
 
+    /**
+     * Creates a tower entity of the specified type, footprint, currency, stats, and texture.
+     *
+     * @param type         The tower type string.
+     * @param footprintX   Width in tiles.
+     * @param footprintY   Height in tiles.
+     * @param currencyType The currency type used for purchase.
+     * @param stats        The tower stats configuration.
+     * @param texturePath  The texture path for the tower base.
+     * @return The constructed tower entity.
+     */
     private static Entity createTower(String type, int footprintX, int footprintY, CurrencyType currencyType, TowerConfig.TowerStats stats, String texturePath) {
         Map<CurrencyType, Integer> costMap = new HashMap<>();
         costMap.put(currencyType, stats.metalScrapCost);
@@ -63,16 +74,34 @@ public class TowerFactory {
         return base;
     }
 
+    /**
+     * Creates a bone tower entity using the specified currency type.
+     *
+     * @param currencyType The currency type used for purchase.
+     * @return The constructed bone tower entity.
+     */
     public static Entity createBoneTower(CurrencyType currencyType) {
         TowerConfig.TowerStats stats = towers.boneTower.base;
         return createTower("bone", 2, 2, currencyType, stats, "images/towers/rock1.png");
     }
 
+    /**
+     * Creates a dino tower entity using the specified currency type.
+     *
+     * @param currencyType The currency type used for purchase.
+     * @return The constructed dino tower entity.
+     */
     public static Entity createDinoTower(CurrencyType currencyType) {
         TowerConfig.TowerStats stats = towers.dinoTower.base;
         return createTower("dino", 2, 2, currencyType, stats, "images/towers/rock2.png");
     }
 
+    /**
+     * Creates a cavemen tower entity using the specified currency type.
+     *
+     * @param currencyType The currency type used for purchase.
+     * @return The constructed cavemen tower entity.
+     */
     public static Entity createCavemenTower(CurrencyType currencyType) {
         TowerConfig.TowerStats stats = towers.cavemenTower.base;
         return createTower("cavemen", 3, 3, currencyType, stats, "images/towers/rock4.png");

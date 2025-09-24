@@ -8,7 +8,8 @@ public class SelectedHeroService {
     /** 先做两个选项；后续要扩展可以继续加 */
     public enum HeroType {
         HERO,       // 普通英雄
-        ENGINEER    // 工程师
+        ENGINEER,    // 工程师
+        SAMURAI
     }
 
     /** 默认选 HERO（防止未设置时为 null） */

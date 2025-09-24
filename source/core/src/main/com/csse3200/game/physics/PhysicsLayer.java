@@ -10,6 +10,8 @@ public class PhysicsLayer {
   public static final short NPC = (1 << 3);
   public static final short PROJECTILE = (1 << 4);
   public static final short ALL = ~0;
+  public static final short PLAYER_ATTACK = (1 << 5);
+  public static final short ENEMY = NPC;
 
   public static boolean contains(short filterBits, short layer) {
     return (filterBits & layer) != 0;

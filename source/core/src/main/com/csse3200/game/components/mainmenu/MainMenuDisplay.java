@@ -51,6 +51,7 @@ public class MainMenuDisplay extends UIComponent {
         TextButton loadBtn = new TextButton("Continue", customButtonStyle);
         TextButton heroSelectBtn = new TextButton("Select Hero", customButtonStyle);   // NEW
         TextButton engineerBtn = new TextButton("Pick Engineer", customButtonStyle); // NEW
+        TextButton samuraiBtn = new TextButton("Pick Samurai", customButtonStyle);
         TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
         TextButton exitBtn = new TextButton("Exit", customButtonStyle);
 
@@ -75,6 +76,7 @@ public class MainMenuDisplay extends UIComponent {
         loadBtn.getLabel().setColor(Color.WHITE);
         heroSelectBtn.getLabel().setColor(Color.WHITE);   // NEW
         engineerBtn.getLabel().setColor(Color.WHITE);     // NEW
+        samuraiBtn.getLabel().setColor(Color.WHITE);
         settingsBtn.getLabel().setColor(Color.WHITE);
         exitBtn.getLabel().setColor(Color.WHITE);
 
@@ -112,6 +114,14 @@ public class MainMenuDisplay extends UIComponent {
             }
         });
 
+        samuraiBtn.addListener(new ChangeListener() {     // NEW
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                logger.debug("Pick Samurai button clicked");
+                entity.getEvents().trigger("pickSamurai");
+            }
+        });
+
         settingsBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -143,6 +153,8 @@ public class MainMenuDisplay extends UIComponent {
         table.add(heroSelectBtn).size(buttonWidth, buttonHeight).padTop(20f);   // NEW
         table.row();
         table.add(engineerBtn).size(buttonWidth, buttonHeight).padTop(20f);     // NEW
+        table.row();
+        table.add(samuraiBtn).size(buttonWidth, buttonHeight).padTop(20f);     // NEW
         table.row();
         table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
         table.row();

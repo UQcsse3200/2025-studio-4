@@ -32,6 +32,7 @@ import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
+import com.csse3200.game.entities.configs.SamuraiConfig;
 
 import com.badlogic.gdx.utils.Timer;
 
@@ -294,8 +295,13 @@ public class ForestGameArea extends GameArea {
         Gdx.app.log("ForestGameArea", "chosen=" + chosen);
 
 // 根据选择安装一个只放“指定英雄”的放置器
-        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
-                (chosen == SelectedHeroService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
+        switch (chosen) {
+            case ENGINEER -> placeCb = this::spawnEngineerAt;
+            case SAMURAI  -> placeCb = this::spawnSamuraiAt;   // ★ 新增武士
+            default       -> placeCb = this::spawnHeroAt;
+        }
+
 
         Entity placementEntity = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
@@ -508,6 +514,7 @@ public class ForestGameArea extends GameArea {
             new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
             heroHintShown = true;
         }
+
     }
 
     private void spawnEngineerAt(GridPoint2 cell) {
@@ -543,6 +550,45 @@ public class ForestGameArea extends GameArea {
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
+            heroHintShown = true;
+        }
+    }
+    private void spawnSamuraiAt(GridPoint2 cell) {
+        // 1) 读 samurai 配置
+        SamuraiConfig samCfg = FileLoader.readClass(SamuraiConfig.class, "configs/samurai.json");
+        if (samCfg == null) {
+            logger.warn("Failed to load configs/samurai.json, using default SamuraiConfig.");
+            samCfg = new SamuraiConfig();
+        }
+
+        // 2) 预加载 samurai 资源（主体 + 刀）
+        ResourceService rs = ServiceLocator.getResourceService();
+        HeroFactory.loadAssets(rs, samCfg);
+        while (!rs.loadForMillis(10)) {
+            logger.info("Loading samurai assets... {}%", rs.getProgress());
+        }
+
+        // 3) 创建 samurai 英雄（你之前实现的 createSamuraiHero）
+        Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
+        Entity samurai = HeroFactory.createSamuraiHero(samCfg, cam);
+
+        // 4) 附加钱包/升级等（和其他英雄保持一致）
+        if (samurai.getComponent(CurrencyManagerComponent.class) == null) {
+            samurai.addComponent(new CurrencyManagerComponent());
+        }
+        var up = samurai.getComponent(HeroUpgradeComponent.class);
+        if (up != null) {
+            up.attachPlayer(player);
+        }
+        samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
+        // 5) 放置
+        spawnEntityAt(samurai, cell, true, true);
+
+        // 6) 一次性提示
+        if (!heroHintShown) {
+            var stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
         }
     }

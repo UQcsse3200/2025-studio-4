@@ -28,6 +28,7 @@ public class MainMenuActions extends Component {
         entity.getEvents().addListener("settings", this::onSettings);
         entity.getEvents().addListener("heroSelect", this::onPickHero);
         entity.getEvents().addListener("pickEngineer", this::onPickEngineer);
+        entity.getEvents().addListener("pickSamurai", this::onPickSamurai);
     }
 
     /**
@@ -74,6 +75,12 @@ public class MainMenuActions extends Component {
         var svc = ServiceLocator.getSelectedHeroService();
         svc.setSelected(SelectedHeroService.HeroType.ENGINEER);
         logger.info("[Menu] setSelected=ENGINEER");
+        game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    }
+    private void onPickSamurai(){
+        var svc = ServiceLocator.getSelectedHeroService();
+        svc.setSelected(SelectedHeroService.HeroType.SAMURAI);
+        logger.info("[Menu] setSelected=SAMURAI");
         game.setScreen(GdxGame.ScreenType.MAIN_GAME);
     }
 

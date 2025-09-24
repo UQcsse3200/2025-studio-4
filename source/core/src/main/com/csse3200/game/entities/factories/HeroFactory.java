@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.hero.HeroAppearanceComponent;
+import com.csse3200.game.components.hero.SamuraiSpinAttackComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
@@ -37,26 +38,33 @@ public final class HeroFactory {
     }
 
     public static void loadAssets(ResourceService rs,
-                                  HeroConfig... configs) { // 可接收 EngineerConfig 等各种子类
+                                  BaseEntityConfig... configs) {
         LinkedHashSet<String> textures = new LinkedHashSet<>();
-        for (HeroConfig cfg : configs) {
-            if (cfg == null) continue;
-            if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) textures.add(cfg.heroTexture);
-            if (cfg.levelTextures != null) {
-                for (String s : cfg.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
-            }
-            if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) textures.add(cfg.bulletTexture);
+        for (BaseEntityConfig base : configs) {
+            if (base == null) continue;
 
-            // EngineerConfig 额外字段
-            if (cfg instanceof EngineerConfig ec) {
-                if (ec.summonTexture != null && !ec.summonTexture.isBlank()) textures.add(ec.summonTexture);
-            }
-        }
+            if (base instanceof HeroConfig cfg) {
+                if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) textures.add(cfg.heroTexture);
+                if (cfg.levelTextures != null) {
+                    for (String s : cfg.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
+                }
+                if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) textures.add(cfg.bulletTexture);
 
-        if (!textures.isEmpty()) {
-            rs.loadTextures(textures.toArray(new String[0]));
+                if (cfg instanceof EngineerConfig ec) {
+                    if (ec.summonTexture != null && !ec.summonTexture.isBlank()) textures.add(ec.summonTexture);
+                }
+            } else if (base instanceof SamuraiConfig sc) {
+                if (sc.heroTexture != null && !sc.heroTexture.isBlank()) textures.add(sc.heroTexture);
+                if (sc.levelTextures != null) {
+                    for (String s : sc.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
+                }
+                if (sc.swordTexture != null && !sc.swordTexture.isBlank()) textures.add(sc.swordTexture);
+            }
+            // 未来还要加别的职业/形态就在这里继续 instanceof ...
         }
+        if (!textures.isEmpty()) rs.loadTextures(textures.toArray(new String[0]));
     }
+
 
 
     /**
@@ -165,6 +173,68 @@ public final class HeroFactory {
         hero.setScale(1f, 1f);
         return hero;
     }
+
+    // imports 需要：SamuraiConfig, PhysicsLayer, PhysicsComponent, ColliderComponent, HitboxComponent,
+// RotatingTextureRenderComponent, CombatStatsComponent, DamageTypeConfig, Camera, Entity 等
+
+    public static Entity createSamuraiHero(SamuraiConfig cfg, Camera camera) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        // 1) 先构造渲染组件，并只用这一份（不要后面再 new 一份）
+        RotatingTextureRenderComponent body = new RotatingTextureRenderComponent(cfg.heroTexture);
+
+        Entity hero = new Entity()
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent().setSensor(true))
+                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                .addComponent(body) // ← 只加这一份渲染组件
+                .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
+                .addComponent(new SamuraiSpinAttackComponent(
+                        cfg.swordAngularSpeed,
+                        cfg.swordRadius,
+                        cfg.swordTexture,
+                        camera
+                ))
+                .addComponent(new HeroUpgradeComponent())
+                .addComponent(new HeroUltimateComponent())
+                .addComponent(new UltimateButtonComponent());
+
+        hero.setScale(1f, 1f);
+
+        // 2) 把贴图原点设到中心（如果组件支持；避免“绕左下角转”的问题）
+        try {
+            // 常见封装：有就直接用
+            body.getClass().getMethod("setOriginToCenter").invoke(body);
+        } catch (Throwable ignore) {
+            try {
+                // 次优方案：用宽高的一半作为原点
+                float w = (float) body.getClass().getMethod("getTextureWidth").invoke(body);
+                float h = (float) body.getClass().getMethod("getTextureHeight").invoke(body);
+                body.getClass().getMethod("setOrigin", float.class, float.class).invoke(body, w / 2f, h / 2f);
+            } catch (Throwable ignore2) {
+                // 如果你的渲染组件完全不支持设置 origin，就在剑的轨道组件上做“圆心偏移”补偿（见下方 3）
+            }
+        }
+
+        // 3) （可选但推荐）如果你无法设置 origin，或看起来还不居中：给剑的轨道加 pivotOffset 进行微调
+        SamuraiSpinAttackComponent spin = hero.getComponent(SamuraiSpinAttackComponent.class);
+        if (spin != null) {
+            // 让 sword 围绕“我们想要的可视中心”来转：
+            // 如果实体 position 是“左下角”，而 getCenterPosition() 用的是 pos + scale/2，
+            // 且你的贴图实际中心≠ scale/2，可以用 pivotOffset 细调（比如 0.5,0.5 是 1x1 世界单位贴图的中心）
+            // 先从 (0,0) 开始，如果仍偏，就一点点调：
+            spin.setSpriteForwardOffsetDeg(0f);    // 贴图默认朝向：→=0, ↑=90, ←=180, ↓=270
+            // 如果还偏移，再到 SwordOrbitPhysicsComponent 上调用 setPivotOffset(ox, oy)（见下行注释）
+            // 在 SamuraiSpinAttackComponent 里你是通过 SwordFactory/Orbit 组件构建的：
+            // 取到 orbit 组件后：orbit.setPivotOffset(ox, oy);  先试 (0,0)，不行再微调
+        }
+
+        return hero;
+    }
+
+
+
 
 
 }

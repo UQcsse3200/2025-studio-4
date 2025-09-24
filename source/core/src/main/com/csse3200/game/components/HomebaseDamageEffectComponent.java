@@ -135,9 +135,8 @@ public class HomebaseDamageEffectComponent extends Component {
         
         // 检查是否受到伤害（生命值减少）
         if (previousHealth > 0 && newHealth < previousHealth) {
-            int damageAmount = previousHealth - newHealth;
-            logger.debug("Damage detected! Damage amount: {}", damageAmount);
-            showDamageEffect(damageAmount);
+            logger.debug("Damage detected! Triggering damage effect");
+            showDamageEffect();
         }
         
         // 更新previousHealth
@@ -147,7 +146,7 @@ public class HomebaseDamageEffectComponent extends Component {
     /**
      * 显示受击效果
      */
-    private void showDamageEffect(int damageAmount) {
+    private void showDamageEffect() {
         if (isShowingDamageEffect) {
             return; // 已经在显示受击效果
         }
@@ -167,29 +166,13 @@ public class HomebaseDamageEffectComponent extends Component {
             textureComponent.setColor(DAMAGE_COLOR);
         }
         
-        // 显示伤害数字
-        showDamageNumber(damageAmount);
-        
         // 播放受击音效
         if (hitSound != null) {
             hitSound.play();
             logger.debug("Playing homebase hit sound");
         }
         
-        logger.debug("Showing homebase damage effect with damage: {}", damageAmount);
-    }
-    
-    /**
-     * 显示伤害数字
-     */
-    private void showDamageNumber(int damageAmount) {
-        try {
-            // 触发伤害数字显示事件，让UI系统处理
-            entity.getEvents().trigger("showDamage", damageAmount, entity.getCenterPosition().cpy());
-            logger.debug("Triggered damage number display: {} damage", damageAmount);
-        } catch (Exception e) {
-            logger.error("Failed to show damage number: {}", e.getMessage());
-        }
+        logger.debug("Showing homebase damage effect");
     }
     
     /**

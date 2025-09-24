@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.HomebaseDamageEffectComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -19,7 +20,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.PlayerScoreComponent;
-
+import com.csse3200.game.ui.DamagePopupComponent;
 
 /**
  * Basement factory (renamed from PlayerFactory).
@@ -51,6 +52,10 @@ public class PlayerFactory {
             .addComponent(new CurrencyManagerComponent())
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new HomebaseDamageEffectComponent())
+            .addComponent(new PlayerScoreComponent())
+            .addComponent(new HomebaseDamageEffectComponent())
+            .addComponent(new DamagePopupComponent())
+            .addComponent(new HealthBarComponent())
             .addComponent(new PlayerScoreComponent())
             .addComponent(new DeckDisplay());
 

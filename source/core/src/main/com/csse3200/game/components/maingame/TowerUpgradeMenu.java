@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.InputAdapter;
 
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.TowerComponent;
@@ -191,7 +192,12 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         });
 
-        InputMultiplexer multiplexer = new InputMultiplexer(stage);
+        InputMultiplexer multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
+        if (Gdx.input.getInputProcessor() != null) {
+            multiplexer.addProcessor(Gdx.input.getInputProcessor());
+        }
+        multiplexer.addProcessor(new InputAdapter() {});
         Gdx.input.setInputProcessor(multiplexer);
     }
 

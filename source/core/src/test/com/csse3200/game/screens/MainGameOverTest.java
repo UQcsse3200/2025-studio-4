@@ -2,7 +2,6 @@ package com.csse3200.game.screens;
 
 import com.csse3200.game.extensions.GameExtension;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.services.SaveGameService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.GameStateService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,16 +24,14 @@ import static org.mockito.Mockito.*;
 class MainGameOverTest {
     private MainGameOver mainGameOver;
     private LeaderboardService mockLeaderboard;
-    private SaveGameService mockSaveGame;
 
     @BeforeEach
     void setUp() {
         // Create new instance for each test
         mainGameOver = new MainGameOver();
 
-        // Mock leaderboard and saveGame
+        // Mock leaderboard
         mockLeaderboard = mock(LeaderboardService.class);
-        mockSaveGame = mock(SaveGameService.class);
 
         // Setup mock behavior for getEntries
         List<LeaderboardService.LeaderboardEntry> mockEntries = new ArrayList<>();
@@ -43,7 +40,6 @@ class MainGameOverTest {
 
         // Register mocks in ServiceLocator
         ServiceLocator.registerLeaderboardService(mockLeaderboard);
-        ServiceLocator.registerSaveGameService(mockSaveGame);
         
         // Register GameStateService to prevent NullPointerException
         ServiceLocator.registerGameStateService(new GameStateService());
@@ -56,7 +52,7 @@ class MainGameOverTest {
 
         // Assert
         verify(mockLeaderboard).addEntry("Vincent", 100);
-        verify(mockSaveGame).save(eq("leaderboard"), any());
+        // SaveGameService.save() is not called because PersistentLeaderboardService handles saving automatically
     }
 
     @Test
@@ -66,7 +62,7 @@ class MainGameOverTest {
 
         // Assert
         verify(mockLeaderboard).addEntry("Player", 200);
-        verify(mockSaveGame).save(eq("leaderboard"), any());
+        // SaveGameService.save() is not called because PersistentLeaderboardService handles saving automatically
     }
 
     @Test

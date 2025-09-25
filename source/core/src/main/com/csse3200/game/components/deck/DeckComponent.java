@@ -110,16 +110,16 @@ public class DeckComponent {
      *      playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));
      */
     public static class EnemyDeckComponent extends DeckComponent {
-        public EnemyDeckComponent(String name, int health, int damage, String texturePath) {
+        public EnemyDeckComponent(String name, int maxHealth, int damage, String texturePath) {
             super(
-                    createOrderedStats(name, health, damage, texturePath)
+                    createOrderedStats(name, maxHealth, damage, texturePath)
             );
         }
 
-        private static Map<StatType, String> createOrderedStats(String name, int health, int damage, String texturePath) {
+        private static Map<StatType, String> createOrderedStats(String name, int maxHealth, int damage, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
-            stats.put(StatType.MAX_HEALTH, String.valueOf(health));
+            stats.put(StatType.MAX_HEALTH, String.valueOf(maxHealth));
             stats.put(StatType.DAMAGE, String.valueOf(damage));
             stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;

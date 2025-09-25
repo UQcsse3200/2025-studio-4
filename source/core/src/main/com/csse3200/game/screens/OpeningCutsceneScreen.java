@@ -44,27 +44,21 @@ public class OpeningCutsceneScreen implements Screen {
     // UI Elements
     private Image backgroundImage;
     private Image logoImage;
-    private Label titleLabel;
-    private Label subtitleLabel;
-    private Label storyLabel;
-    private Label instructionLabel;
-    private Label versionLabel;
     private Table mainTable;
-    private Table textTable;
     
-    // Animation timing
-    private float totalDuration = 12f; // 12 seconds total
     private float logoDuration = 3f;
-    private float titleDuration = 2f;
-    private float storyDuration = 4f;
+    private float blackScreenDelay = 1f;
     private float fadeDuration = 2f;
     
-    // Animation states
     private boolean logoShown = false;
-    private boolean titleShown = false;
-    private boolean storyShown = false;
-    private boolean instructionShown = false;
-    private boolean fadeStarted = false;
+    private boolean backgroundFaded = false;
+    private boolean scrollTextStarted = false;
+    private boolean scrollTextFinished = false;
+    
+    private Label scrollLabel;
+    private float scrollSpeed = 30f;
+    private float scrollStartY;
+    private float scrollEndY;
     
     public OpeningCutsceneScreen(GdxGame game) {
         this(game, BACKGROUND_OPTIONS[0]);
@@ -144,65 +138,38 @@ public class OpeningCutsceneScreen implements Screen {
         logoImage = new Image(ServiceLocator.getResourceService()
             .getAsset("images/logo.png", Texture.class));
         logoImage.setSize(300, 150);
-        logoImage.addAction(Actions.alpha(0f)); // Start invisible
+        logoImage.addAction(Actions.alpha(0f));
         mainTable.add(logoImage).center().padBottom(50f);
         mainTable.row();
         
-        // Text table
-        textTable = new Table();
-        textTable.setFillParent(true);
-        textTable.top().padTop(300f);
-        stage.addActor(textTable);
+        setupScrollingText();
+    }
+    
+    private void setupScrollingText() {
+        String scrollText = "In a distant future, Earth has been conquered by a mechanical army...\n\n" +
+                           "As the last resistance commander, you must establish\n" +
+                           "the final defense line in the Box Forest against the invasion.\n\n" +
+                           "Face the aerial threats of drone swarms, the frontal assault of grunts,\n" +
+                           "the crushing force of heavy tanks, and mysterious dividers...\n\n" +
+                           "Build defensive towers, deploy hero units, and use strategy and wisdom\n" +
+                           "to protect your base and fight for humanity's future!";
         
-        // Title
-        titleLabel = new Label("Box Forest Defense", MinimalSkinFactory.create(), "title");
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setColor(Color.WHITE);
-        titleLabel.setFontScale(3.0f);
-        titleLabel.addAction(Actions.alpha(0f));
-        textTable.add(titleLabel).expandX().center().padBottom(20f);
-        textTable.row();
+        scrollLabel = new Label(scrollText, MinimalSkinFactory.create(), "default");
+        scrollLabel.setAlignment(Align.center);
+        scrollLabel.setColor(Color.WHITE);
+        scrollLabel.setFontScale(1.8f);
+        scrollLabel.setWrap(true);
+        scrollLabel.setWidth(Gdx.graphics.getWidth() * 0.7f);
         
-        // Subtitle
-        subtitleLabel = new Label("A Tower Defense Adventure", MinimalSkinFactory.create(), "default");
-        subtitleLabel.setAlignment(Align.center);
-        subtitleLabel.setColor(Color.LIGHT_GRAY);
-        subtitleLabel.setFontScale(1.5f);
-        subtitleLabel.addAction(Actions.alpha(0f));
-        textTable.add(subtitleLabel).expandX().center().padBottom(40f);
-        textTable.row();
+        scrollStartY = -scrollLabel.getPrefHeight() - 100f;
+        scrollEndY = (Gdx.graphics.getHeight() - scrollLabel.getPrefHeight()) / 2f + 100f;
+        scrollLabel.setPosition(
+            (Gdx.graphics.getWidth() - scrollLabel.getWidth()) / 2f,
+            scrollStartY
+        );
+        scrollLabel.addAction(Actions.alpha(0f));
         
-        // Story
-        storyLabel = new Label("In the mystical Box Forest, ancient enemies are awakening...\n" +
-                              "As the last defender, you must build towers and protect your base\n" +
-                              "from waves of dangerous creatures.\n\n" +
-                              "Use strategy, timing, and courage to survive!",
-                              MinimalSkinFactory.create(), "default");
-        storyLabel.setAlignment(Align.center);
-        storyLabel.setColor(Color.WHITE);
-        storyLabel.setFontScale(1.3f);
-        storyLabel.addAction(Actions.alpha(0f));
-        textTable.add(storyLabel).expandX().center().padBottom(30f);
-        textTable.row();
-        
-        // Instructions
-        instructionLabel = new Label("Click 'New Game' to begin your adventure!\n" +
-                                   "Use WASD to move, mouse to place towers, and survive as long as possible!",
-                                   MinimalSkinFactory.create(), "default");
-        instructionLabel.setAlignment(Align.center);
-        instructionLabel.setColor(Color.YELLOW);
-        instructionLabel.setFontScale(1.4f);
-        instructionLabel.addAction(Actions.alpha(0f));
-        textTable.add(instructionLabel).expandX().center().padBottom(20f);
-        textTable.row();
-        
-        // Version
-        versionLabel = new Label("Version 1.0 | Made with LibGDX", MinimalSkinFactory.create(), "default");
-        versionLabel.setAlignment(Align.center);
-        versionLabel.setColor(Color.GRAY);
-        versionLabel.setFontScale(1.0f);
-        versionLabel.addAction(Actions.alpha(0f));
-        textTable.add(versionLabel).expandX().center();
+        stage.addActor(scrollLabel);
     }
     
     @Override
@@ -227,39 +194,43 @@ public class OpeningCutsceneScreen implements Screen {
     }
     
     private void updateAnimation(float delta) {
-        // Logo fade in
         if (timeElapsed >= 1f && !logoShown) {
             logoImage.addAction(Actions.fadeIn(1f));
             logoShown = true;
         }
         
-        // Title fade in
-        if (timeElapsed >= logoDuration + 1f && !titleShown) {
-            titleLabel.addAction(Actions.fadeIn(1f));
-            subtitleLabel.addAction(Actions.fadeIn(1f));
-            titleShown = true;
+        if (timeElapsed >= logoDuration + blackScreenDelay && !backgroundFaded) {
+            backgroundImage.addAction(Actions.fadeOut(1f));
+            logoImage.addAction(Actions.fadeOut(1f));
+            backgroundFaded = true;
         }
         
-        // Story fade in
-        if (timeElapsed >= logoDuration + titleDuration + 1f && !storyShown) {
-            storyLabel.addAction(Actions.fadeIn(1.5f));
-            storyShown = true;
+        if (timeElapsed >= logoDuration + blackScreenDelay + 1f && !scrollTextStarted) {
+            scrollLabel.addAction(Actions.fadeIn(1f));
+            scrollTextStarted = true;
         }
         
-        // Instructions fade in
-        if (timeElapsed >= logoDuration + titleDuration + storyDuration + 1f && !instructionShown) {
-            instructionLabel.addAction(Actions.fadeIn(1f));
-            versionLabel.addAction(Actions.fadeIn(1f));
-            instructionShown = true;
-        }
-        
-        // Start fade out after all content is shown
-        if (timeElapsed >= totalDuration && !fadeStarted) {
-            fadeStarted = true;
-            stage.addAction(Actions.sequence(
-                Actions.fadeOut(fadeDuration),
-                Actions.run(() -> cutsceneFinished = true)
-            ));
+        if (scrollTextStarted && !scrollTextFinished) {
+            float currentY = scrollLabel.getY();
+            float newY = currentY + scrollSpeed * delta;
+            
+            if (newY >= scrollEndY) {
+                scrollTextFinished = true;
+                scrollLabel.setY(scrollEndY);
+                scrollLabel.addAction(Actions.sequence(
+                    Actions.delay(3f),
+                    Actions.fadeOut(1f),
+                    Actions.run(() -> {
+                        stage.addAction(Actions.sequence(
+                            Actions.delay(0.5f),
+                            Actions.fadeOut(fadeDuration),
+                            Actions.run(() -> cutsceneFinished = true)
+                        ));
+                    })
+                ));
+            } else {
+                scrollLabel.setY(newY);
+            }
         }
     }
     

@@ -93,6 +93,12 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldDropCurrency() {
+        // Mock ResourceService to avoid loading actual sound files
+        ResourceService resourceService = mock(ResourceService.class);
+        Sound mockSound = mock(Sound.class);
+        when(resourceService.getAsset(anyString(), eq(Sound.class))).thenReturn(mockSound);
+        ServiceLocator.registerResourceService(resourceService);
+
         Entity player = new Entity();
         CurrencyManagerComponent manager = new CurrencyManagerComponent();
         player.addComponent(manager);
@@ -143,6 +149,12 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldNotDeductCurrency() {
+        // Mock ResourceService to avoid loading actual sound files
+        ResourceService resourceService = mock(ResourceService.class);
+        Sound mockSound = mock(Sound.class);
+        when(resourceService.getAsset(anyString(), eq(Sound.class))).thenReturn(mockSound);
+        ServiceLocator.registerResourceService(resourceService);
+
         // Create sample cost for testing
         Map<CurrencyComponent.CurrencyType,Integer> costMap = new EnumMap<>(CurrencyComponent.CurrencyType.class);
         costMap.put(CurrencyComponent.CurrencyType.METAL_SCRAP, 5);

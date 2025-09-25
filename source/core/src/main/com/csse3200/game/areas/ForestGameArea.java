@@ -31,6 +31,7 @@ import com.badlogic.gdx.graphics.Camera;
 
 import com.badlogic.gdx.utils.Timer;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 
@@ -76,7 +77,8 @@ public class ForestGameArea extends GameArea {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            CurrencyManagerComponent.soundPath
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};

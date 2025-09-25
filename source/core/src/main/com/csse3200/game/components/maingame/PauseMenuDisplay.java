@@ -69,6 +69,7 @@ public class PauseMenuDisplay extends UIComponent {
 
         TextButton resumeBtn = new TextButton("Resume", customButtonStyle);
         TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
+        TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
         TextButton quitBtn = new TextButton("Quit to Main Menu", customButtonStyle);
 
         resumeBtn.addListener(new ChangeListener() {
@@ -84,6 +85,13 @@ public class PauseMenuDisplay extends UIComponent {
             }
         });
 
+        rankingBtn.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                entity.getEvents().trigger("hidePauseUI");
+                entity.getEvents().trigger("showRanking");
+            }
+        });
+
         quitBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
                 entity.getEvents().trigger("quitToMenu");
@@ -93,6 +101,7 @@ public class PauseMenuDisplay extends UIComponent {
         window.add(title).row();
         window.add(resumeBtn).size(280f, 50f).row();
         window.add(settingsBtn).size(280f, 50f).row();
+        window.add(rankingBtn).size(280f, 50f).row();
         window.add(quitBtn).size(280f, 50f).row();
 
         overlayTable.add(window).center();

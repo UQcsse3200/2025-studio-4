@@ -1,8 +1,16 @@
 package com.csse3200.game.components.maingame;
 
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
+import com.csse3200.game.ui.leaderboard.LeaderboardController;
+import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
+import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +39,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
+    entity.getEvents().addListener("showRanking", this::onShowRanking);
     entity.getEvents().addListener("awardStars", this::awardStars);
   }
 
@@ -65,10 +74,37 @@ public class MainGameActions extends Component {
   }
 
   /**
+   * Shows the ranking/leaderboard popup
+   */
+  private void onShowRanking() {
+    logger.info("Showing ranking/leaderboard");
+    
+    try {
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      Skin skin = MinimalSkinFactory.create();
+      
+      // Ensure leaderboard service is available
+      if (ServiceLocator.getLeaderboardService() == null) {
+        ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
+      }
+      
+      LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
+      LeaderboardController controller = new LeaderboardController(leaderboardService);
+      LeaderboardPopup popup = new LeaderboardPopup(skin, controller);
+      popup.showOn(stage);
+      
+    } catch (Exception e) {
+      logger.error("Error showing ranking", e);
+    }
+  }
+
+  /**
    * Restarts the game by creating a new MainGameScreen.
    */
   private void onRestart() {
     logger.info("Restarting game");
+    ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
+    ForestGameArea.NUM_ENEMIES_TOTAL = 0;
     game.setScreen(GdxGame.ScreenType.MAIN_GAME, false);
   }
 
@@ -95,16 +131,18 @@ public class MainGameActions extends Component {
   }
 
   private void onPerformSave() {
-    logger.info("Performing save operation");
+    logger.info("Performing save operation (CI sync)");
     
     try {
       var entityService = ServiceLocator.getEntityService();
       if (entityService != null) {
-        var saveService = new com.csse3200.game.services.SaveGameService(entityService);
-        boolean success = saveService.saveGame();
+        var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
+        boolean success = saveService.save();
         if (success) {
           logger.info("Manual save completed successfully");
           entity.getEvents().trigger("showSaveSuccess");
+          // auto-close save UI after success
+          entity.getEvents().trigger("hideSaveUI");
         } else {
           logger.warn("Manual save failed");
           entity.getEvents().trigger("showSaveError");

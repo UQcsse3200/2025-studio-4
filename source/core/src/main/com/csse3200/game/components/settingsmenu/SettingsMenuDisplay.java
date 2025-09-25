@@ -3,7 +3,6 @@ package com.csse3200.game.components.settingsmenu;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Graphics.Monitor;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -72,13 +71,6 @@ public class SettingsMenuDisplay extends UIComponent {
     // Added: single container to keep dim behind panel but above other UI
     private Stack overlayStack;
 
-    // Added: global background music (do NOT dispose here; ResourceService or game should handle lifecycle)
-    private Music backgroundMusic;
-    private static final String MUSIC_ASSET = "sounds/new_menutheme.mp3"; // change path if needed
-
-    // Guard to avoid registering overlay listeners multiple times
-    private boolean overlayListenersAdded = false;
-
     public SettingsMenuDisplay(GdxGame game) {
         super();
         this.game = game;
@@ -97,49 +89,7 @@ public class SettingsMenuDisplay extends UIComponent {
         addActors();
     }
 
-    private void initBackgroundMusic() {
-        // Only initialize once
-        if (backgroundMusic != null) return;
-
-        // Try to get the Music from the ResourceService first (recommended)
-        try {
-            backgroundMusic =
-                    ServiceLocator.getResourceService()
-                            .getAsset(MUSIC_ASSET, Music.class);
-        } catch (Exception e) {
-            logger.debug("ResourceService did not return music asset: {}", e.toString());
-            backgroundMusic = null;
-        }
-
-        // Fallback to loading directly if ResourceService doesn't have it
-        if (backgroundMusic == null) {
-            try {
-                backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal(MUSIC_ASSET));
-            } catch (Exception e) {
-                logger.warn("Failed to load background music from '{}': {}", MUSIC_ASSET, e.toString());
-                backgroundMusic = null;
-            }
-        }
-
-        // Configure and start music if available
-        if (backgroundMusic != null) {
-            backgroundMusic.setLooping(true);
-            float initial = UserSettings.get().musicVolume;
-            backgroundMusic.setVolume(initial);
-            if (!backgroundMusic.isPlaying()) {
-                try {
-                    backgroundMusic.play();
-                } catch (Exception e) {
-                    logger.warn("Failed to play background music: {}", e.toString());
-                }
-            }
-        }
-    }
-
     private void addActors() {
-        // Initialize music before creating sliders so listeners can adjust it immediately.
-        initBackgroundMusic();
-
         // Background image (only create when not overlaying in-game)
         if (!overlayMode) {
             backgroundImage =
@@ -203,15 +153,12 @@ public class SettingsMenuDisplay extends UIComponent {
             overlayStack.setVisible(false);
 
             // Events used by Pause overlay to toggle Settings overlay
-            if (!overlayListenersAdded) {
-                entity.getEvents().addListener("showSettingsOverlay", () -> {
-                    if (overlayStack != null) overlayStack.setVisible(true);
-                });
-                entity.getEvents().addListener("hideSettingsOverlay", () -> {
-                    if (overlayStack != null) overlayStack.setVisible(false);
-                });
-                overlayListenersAdded = true;
-            }
+            entity.getEvents().addListener("showSettingsOverlay", () -> {
+                if (overlayStack != null) overlayStack.setVisible(true);
+            });
+            entity.getEvents().addListener("hideSettingsOverlay", () -> {
+                if (overlayStack != null) overlayStack.setVisible(false);
+            });
 
             // Handle ESC/P while settings overlay is visible: behave like "Back"
             stage.addListener(new InputListener() {
@@ -346,27 +293,21 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    // LIVE update to playing music (if available)
-                    if (backgroundMusic != null) {
-                        try {
-                            backgroundMusic.setVolume(value);
-                        } catch (Exception e) {
-                            logger.debug("Failed to set music volume: {}", e.toString());
-                        }
+                    if (ServiceLocator.getAudioService() != null) {
+                        ServiceLocator.getAudioService().setMusicVolume(value);
                     }
                     return true;
                 });
 
-        soundVolumeSlider.addListener(event -> {
-            float value = soundVolumeSlider.getValue();
-            soundVolumeValue.setText(String.format("%.0f%%", value * 100));
-
-            // Store globally in UserSettings
-            UserSettings.get().soundVolume = value;
-
-            return true;
-        });
-
+        soundVolumeSlider.addListener(
+                (Event event) -> {
+                    float value = soundVolumeSlider.getValue();
+                    soundVolumeValue.setText(String.format("%.0f%%", value * 100));
+                    if (ServiceLocator.getAudioService() != null) {
+                        ServiceLocator.getAudioService().setSoundVolume(value);
+                    }
+                    return true;
+                });
 
         return table;
     }
@@ -465,16 +406,11 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.difficulty = difficultySelect.getSelected();
         settings.language = languageSelect.getSelected();
 
-        // Apply music volume live and persist
-        if (backgroundMusic != null) {
-            try {
-                backgroundMusic.setVolume(settings.musicVolume);
-            } catch (Exception e) {
-                logger.debug("Failed to set background music volume on apply: {}", e.toString());
-            }
-        }
-
         UserSettings.set(settings, true);
+
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().updateSettings();
+        }
     }
 
     private void exitMenu() {
@@ -573,8 +509,6 @@ public class SettingsMenuDisplay extends UIComponent {
             panelTexHandle.dispose();
             panelTexHandle = null;
         }
-        // NOTE: We do NOT stop/dispose backgroundMusic here so music keeps playing across menus/overlays.
-        // Background music lifecycle should be handled by your ResourceService or GdxGame disposal.
         super.dispose();
     }
 }

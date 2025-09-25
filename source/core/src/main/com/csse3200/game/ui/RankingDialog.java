@@ -8,14 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.services.ServiceLocator;
 import java.util.List;
 
 public class RankingDialog extends Dialog {
     private final List<PlayerRank> players;
     private final int pageSize;
     private int currentPage = 0;
-    private float prefW = 1000f, prefH = 650f;
 
     public RankingDialog(String title, List<PlayerRank> players, int pageSize) {
         super(title, SimpleUI.windowStyle());
@@ -97,6 +96,8 @@ public class RankingDialog extends Dialog {
         closeBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                // 恢复游戏
+                ServiceLocator.getTimeSource().setTimeScale(1f);
                 hide();
             }
         });
@@ -115,6 +116,9 @@ public class RankingDialog extends Dialog {
     }
     @Override
     public Dialog show(Stage stage) {
+        // 暂停游戏
+        ServiceLocator.getTimeSource().setTimeScale(0f);
+        
         Dialog d = super.show(stage);
 
         // Customized width and height (adjusted as needed)
@@ -129,6 +133,13 @@ public class RankingDialog extends Dialog {
         );
 
         return d;
+    }
+
+    @Override
+    public void hide() {
+        // 确保在所有关闭方式下都恢复游戏
+        ServiceLocator.getTimeSource().setTimeScale(1f);
+        super.hide();
     }
 
 }

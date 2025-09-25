@@ -1,6 +1,8 @@
 package com.csse3200.game.areas;
 
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,10 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
+import com.badlogic.gdx.utils.Timer;
+import java.util.ArrayList;
+import java.util.List;
+
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
@@ -40,13 +46,23 @@ import com.csse3200.game.components.CameraZoomDragComponent;
 public class ForestGameArea extends GameArea {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
 
-    private static final int NUM_DRONES = 3;
-    private static final int NUM_GRUNTS = 2;
+    private static final int NUM_DRONES = 5;
+    private static final int NUM_GRUNTS = 3;
     private static final int NUM_TANKS = 2;
     private static final int NUM_BOSSES = 1;
     private static final int NUM_DIVIDERS = 1;
-    public static final int NUM_ENEMIES_TOTAL = NUM_BOSSES + NUM_DRONES + NUM_GRUNTS + NUM_TANKS + (1 + NUM_DIVIDERS * 3);
+    public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
+
+    private Timer.Task waveSpawnTask;
+    private List<Runnable> enemySpawnQueue;
+    private boolean waveInProgress = false;
+    private float spawnDelay = 2f; // Delay between spawns
+
+    // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
+    private boolean autoStartWaves = true;
+
+    public static Difficulty gameDifficulty = Difficulty.EASY;
 
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
@@ -69,8 +85,10 @@ public class ForestGameArea extends GameArea {
     private boolean hasExistingPlayer = false;
     private MapEditor mapEditor;
 
+    // One-time prompt: Has this been displayed?
+    private boolean heroHintShown = false;
 
-    // 障碍物坐标单一事实源：由关卡（GameArea）定义
+    // Obstacle Coordinate Single Fact Source: Defined by the GameArea
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
@@ -104,6 +122,93 @@ public class ForestGameArea extends GameArea {
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
     }
+
+    /**
+     * Control whether waves should auto start during create().
+     * Useful to disable when restoring from a save to avoid duplicated spawns.
+     */
+    public void setAutoStartWaves(boolean autoStartWaves) {
+        this.autoStartWaves = autoStartWaves;
+    }
+
+            /**
+         * Initialize and start the enemy wave spawning
+         */
+        private void startEnemyWave() {
+            if (waveInProgress) return;
+            
+            waveInProgress = true;
+            enemySpawnQueue = new ArrayList<>();
+            
+            buildSpawnQueue();
+            
+            scheduleNextEnemySpawn();
+        }
+
+
+        /**
+         * Build the queue of enemies to spawn in wave order
+         */
+        private void buildSpawnQueue() {
+            NUM_ENEMIES_TOTAL = (NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_BOSSES + (NUM_DIVIDERS * 4));
+            NUM_ENEMIES_DEFEATED = 0;
+            // Add drones to spawn queue
+            for (int i = 0; i < NUM_DRONES; i++) {
+                enemySpawnQueue.add(this::spawnSingleDrone);
+            }
+            
+            // Add grunts to spawn queue
+            for (int i = 0; i < NUM_GRUNTS; i++) {
+                enemySpawnQueue.add(this::spawnSingleGrunt);
+            }
+            
+            // Add tanks to spawn queue
+            for (int i = 0; i < NUM_TANKS; i++) {
+                enemySpawnQueue.add(this::spawnSingleTank);
+            }
+                        
+            // Add dividers to spawn queue
+            for (int i = 0; i < NUM_DIVIDERS; i++) {
+                enemySpawnQueue.add(this::spawnSingleDivider);
+            }
+
+            // Add bosses to spawn queue
+            for (int i = 0; i < NUM_BOSSES; i++) {
+                enemySpawnQueue.add(this::spawnSingleBoss);
+            }
+        }
+
+        /**
+         * Schedule the next enemy spawn with delay
+         */
+        private void scheduleNextEnemySpawn() {
+            if (enemySpawnQueue.isEmpty()) {
+                // Wave complete
+                waveInProgress = false;
+                return;
+            }
+            
+            // Cancel any existing spawn task
+            if (waveSpawnTask != null) {
+                waveSpawnTask.cancel();
+            }
+            
+            // Schedule next spawn
+            waveSpawnTask = Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if (!enemySpawnQueue.isEmpty()) {
+                        // Spawn the next enemy
+                        Runnable spawnAction = enemySpawnQueue.remove(0);
+                        spawnAction.run();
+                        
+                        // Schedule the next one
+                        scheduleNextEnemySpawn();
+                    }
+                }
+            }, spawnDelay);
+        }
+
 
     /**
      * Create the game area, including terrain, static entities (trees), dynamic entities (player)
@@ -141,7 +246,6 @@ public class ForestGameArea extends GameArea {
                 logger.warn("Expected existing player not found, creating new one");
                 player = spawnPlayer();
             } else {
-                // ✅ 确保旧的 player 也有 CurrencyManagerComponent
                 if (player.getComponent(CurrencyManagerComponent.class) == null) {
                     player.addComponent(new CurrencyManagerComponent());
                 }
@@ -158,17 +262,14 @@ public class ForestGameArea extends GameArea {
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
 
-        // Enemies
-        spawnDrones();
-
-        spawnGrunts();
-
-        spawnTanks();
-
-        spawnBosses();
-
-        spawnDividers();
-
+        if (autoStartWaves) {
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    startEnemyWave();
+                }
+            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
+        }
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
@@ -180,16 +281,22 @@ public class ForestGameArea extends GameArea {
 
         spawnEntity(highlighterEntity);
 
+        //Tower Upgrade Menu
+        TowerUpgradeMenu towerUpgradeMenu = new TowerUpgradeMenu();
+        Entity upgradeUI = new Entity().addComponent(towerUpgradeMenu);
+        spawnEntity(upgradeUI);
+
+        //Link the upgrade menu to the map highlighter
+        mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
+
         // Add hero placement system
 
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, this::spawnHeroAt));
+        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
 
         spawnEntity(placement);
 
         playMusic();
 
-
-        // 1) 准备三套配置（你已有 HeroConfig / HeroConfig2 / HeroConfig3）
         HeroConfig cfg1 = new HeroConfig();
         cfg1.heroTexture = "images/hero/Heroshoot.png";
         cfg1.bulletTexture = "images/hero/Bullet.png";
@@ -301,64 +408,62 @@ public class ForestGameArea extends GameArea {
         return null;
     }
 
-    private void spawnDrones() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_DRONES; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity drone = DroneEnemyFactory.createDroneEnemy(player);
-            spawnEntityAt(drone, randomPos, true, true);
-        }
+    /**
+     * Expose current waypoint list generated by the map editor, for save/load rebinding.
+     */
+    public java.util.List<Entity> getWaypointList() {
+        return (mapEditor != null) ? mapEditor.waypointList : java.util.Collections.emptyList();
     }
 
-    private void spawnGrunts() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_GRUNTS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity grunt = GruntEnemyFactory.createGruntEnemy(player);
-            spawnEntityAt(grunt, randomPos, true, true);
-        }
+    private void spawnSingleDrone() {
+        //NUM_ENEMIES_TOTAL++;
+        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnTanks() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_TANKS; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity tank = TankEnemyFactory.createTankEnemy(player);
-            spawnEntityAt(tank, randomPos, true, true);
-        }
+    private void spawnSingleGrunt() {
+        //NUM_ENEMIES_TOTAL++;
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnBosses() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < NUM_BOSSES; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity boss = BossEnemyFactory.createBossEnemy(player);
-            spawnEntityAt(boss, randomPos, true, true);
-        }
+    private void spawnSingleTank() {
+        //NUM_ENEMIES_TOTAL++;
+        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnDividers() {
-        GridPoint2 minPos = new GridPoint2(0, 0);
-        GridPoint2 maxPos = terrain.getMapBounds(0).sub(2, 2);
-        for (int i = 0; i < 1; i++) {
-            GridPoint2 randomPos = RandomUtils.random(minPos, maxPos);
-            Entity divider2 = DividerEnemyFactory.createDividerEnemy(player, this);
-            spawnEntityAt(divider2, randomPos, true, true);
-        }
+    private void spawnSingleBoss() {
+        //NUM_ENEMIES_TOTAL++;
+        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
+        spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-    public static void checkEnemyCount() {
-        if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-            MainGameScreen.ui.getComponent(MainGameWin.class).addActors();
-
-        }
+    private void spawnSingleDivider() {
+        //NUM_ENEMIES_TOTAL += 4; // Dividers count as 4 enemies
+        Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
+        spawnEntityAt(divider, new GridPoint2(0, 10), true, true);
+        logger.debug("Spawned divider. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
+
+  public static void checkEnemyCount() {
+      if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+          // Only try to access UI if we're in a real game environment
+          if (MainGameScreen.ui != null) {
+              MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+              if (winComponent != null) {
+                  winComponent.addActors();
+              }
+          }
+      }
+  }
 
     private void spawnHeroAt(GridPoint2 cell) {
+
         HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
         if (heroCfg == null) {
             logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
@@ -377,7 +482,6 @@ public class ForestGameArea extends GameArea {
             heroCfg3 = new HeroConfig3();
         }
 
-        // ✅ 在创建 hero 前预加载资源
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
@@ -387,20 +491,35 @@ public class ForestGameArea extends GameArea {
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity hero = HeroFactory.createHero(heroCfg, cam);
 
-        // attachPlayer 等逻辑照旧
         var up = hero.getComponent(HeroUpgradeComponent.class);
         if (up != null) {
             up.attachPlayer(player);
         }
 
+        hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
         spawnEntityAt(hero, cell, true, true);
+
+        // 放置完成后的一次性提示窗口
+        if (!heroHintShown) {
+            com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
+            heroHintShown = true;
+        }
     }
 
     private void playMusic() {
-        Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-        music.setLooping(true);
-        music.setVolume(0.3f);
-        music.play();
+        // Route all music through AudioService to avoid overlaps across screens
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
+            ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+            ServiceLocator.getAudioService().setMusicVolume(0.3f);
+        } else {
+            Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+            music.setLooping(true);
+            music.setVolume(0.3f);
+            music.play();
+        }
     }
 
     private void loadAssets() {
@@ -429,7 +548,11 @@ public class ForestGameArea extends GameArea {
         if (mapEditor != null) {
             mapEditor.cleanup();
         }
-        ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().stopMusic();
+        } else {
+            ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        }
         this.unloadAssets();
     }
 }

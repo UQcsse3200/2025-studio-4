@@ -21,6 +21,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   private final DebugRenderer debugRenderer;
   private final RaycastHit hit = new RaycastHit();
   private MovementTask movementTask;
+  public boolean finished = false;
 
   /**
    * @param target The entity to chase.
@@ -38,6 +39,10 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     debugRenderer = ServiceLocator.getRenderService().getDebug();
   }
 
+  public boolean isFinished() {
+    return finished;
+  }
+
   @Override
   public void start() {
     super.start();
@@ -53,7 +58,10 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     movementTask.setTarget(target.getPosition());
     movementTask.update();
     if (movementTask.getStatus() != Status.ACTIVE) {
-      movementTask.start();
+      finished = true;
+      this.owner.getEntity().getEvents().trigger("chaseTaskFinished");
+      stop();
+      //movementTask.start();
     }
   }
 
@@ -94,15 +102,17 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   }
 
   private boolean isTargetVisible() {
-    Vector2 from = owner.getEntity().getCenterPosition();
-    Vector2 to = target.getCenterPosition();
+    return true;
+
+    //Vector2 from = owner.getEntity().getCenterPosition();
+    //Vector2 to = target.getCenterPosition();
 
     // If there is an obstacle in the path to the player, not visible.
-    if (physics.raycast(from, to, PhysicsLayer.OBSTACLE, hit)) {
-      debugRenderer.drawLine(from, hit.point);
-      return false;
-    }
-    debugRenderer.drawLine(from, to);
-    return true;
+    //if (physics.raycast(from, to, PhysicsLayer.OBSTACLE, hit)) {
+      //debugRenderer.drawLine(from, hit.point);
+      //return false;
+    //}
+    //debugRenderer.drawLine(from, to);
+    //return true;
   }
 }

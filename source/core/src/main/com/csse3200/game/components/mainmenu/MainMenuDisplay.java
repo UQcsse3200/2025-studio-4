@@ -30,6 +30,7 @@ public class MainMenuDisplay extends UIComponent {
     super.create();
     addActors();
     ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
+    ForestGameArea.NUM_ENEMIES_TOTAL = 0;
   }
 
   private void addActors() {

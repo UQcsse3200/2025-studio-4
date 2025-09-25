@@ -1,0 +1,29 @@
+images {
+  image: "images/towers/projectile animations/fireball.png"
+}
+images {
+  image: "images/towers/projectile animations/fireball2.png"
+}
+images {
+  image: "images/towers/projectile animations/fireball3.png"
+}
+images {
+  image: "images/towers/projectile animations/fireball4.png"
+}
+animations {
+  id: "New Animation"
+  images {
+    image: "images/towers/projectile animations/fireball.png"
+  }
+  images {
+    image: "images/towers/projectile animations/fireball2.png"
+  }
+  images {
+    image: "images/towers/projectile animations/fireball3.png"
+  }
+  images {
+    image: "images/towers/projectile animations/fireball4.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+}
+extrude_borders: 2

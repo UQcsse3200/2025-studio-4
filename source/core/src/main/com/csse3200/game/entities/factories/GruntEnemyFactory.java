@@ -5,11 +5,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
-
+import com.csse3200.game.utils.Difficulty;
+import java.util.Map;
+import com.csse3200.game.components.PlayerScoreComponent;
 
 public class GruntEnemyFactory {
     // Default grunt configuration
@@ -19,10 +24,13 @@ public class GruntEnemyFactory {
     private static final int DEFAULT_DAMAGE = 12;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
+    private static final Vector2 DEFAULT_SPEED = new Vector2(0.8f, 0.8f);
     private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
+    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final int DEFAULT_POINTS = 150;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -34,28 +42,52 @@ public class GruntEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static Entity self;
-    private static Entity currentTarget;
-    private static int priorityTaskCount = 1;
-    
+    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
+    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static int points = DEFAULT_POINTS;
+
     /**
      * Creates a grunt enemy with current configuration.
      *
-     * @param target entity to chase
+     * @param waypoints List of waypoint entities for the grunt to follow
+     * @param player Reference to the player entity
      * @return entity
      */
-    public static Entity createGruntEnemy(Entity target) {
-        // 使用基础敌人（无动画）并添加静态纹理，避免测试对 atlas 的依赖
-        Entity grunt = EnemyFactory.createBaseEnemy(target, new Vector2(speed));
+
+    public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty) {
+        return createGruntEnemy(waypoints, player, difficulty, 0);
+    }
+
+    /** Overload: start from specific waypoint index (for save/load resume). */
+    public static Entity createGruntEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
+        int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
+        Entity grunt = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints,
+        "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
+
+        // Add waypoint component for independent waypoint tracking
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        waypointComponent.setCurrentWaypointIndex(idx);
+        waypointComponent.setCurrentTarget(waypoints.get(idx));
+        grunt.addComponent(waypointComponent);
+
         grunt
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-            .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
+            .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+            .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new clickable(clickRadius));
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
 
-        self = grunt;
-        currentTarget = target;
+        // Handle waypoint progression for this specific grunt
+        grunt.getEvents().addListener("chaseTaskFinished", () -> {
+            WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
+            if (wc != null && wc.hasMoreWaypoints()) {
+                Entity nextTarget = wc.getNextWaypoint();
+                if (nextTarget != null) {
+                    updateChaseTarget(grunt, nextTarget);
+                }
+            }
+        });
 
         return grunt;
     }
@@ -63,15 +95,48 @@ public class GruntEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
+
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        if (wc != null && wc.getPlayerRef() != null) {
+            Entity player = wc.getPlayerRef();
+
+            // Drop currency upon defeat
+            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            if (currencyManager != null) {
+                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
+                player.getEvents().trigger("dropCurrency", drops);
+            }
+
+            // Award points to player upon defeating enemy
+            PlayerScoreComponent totalScore = player.getComponent(PlayerScoreComponent.class);
+            if (totalScore != null) {
+                totalScore.addPoints(points);
+            }
+        }
+
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 
-    private static void updateSpeed(Vector2 speed) {
-        priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
+        WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setSpeed(newSpeed);
+            grunt.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(wc.getCurrentTarget(), wc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
     }
-        
+
+    private static void updateChaseTarget(Entity grunt, Entity newTarget) {
+        WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
+        if (wc != null) {
+            wc.incrementPriorityTaskCount();
+            wc.setCurrentTarget(newTarget);
+            grunt.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(newTarget, wc.getPriorityTaskCount(), 100f, 100f, wc.getSpeed()));
+        }
+    }
         
     // Getters    
     public static DamageTypeConfig getResistance() {
@@ -92,6 +157,10 @@ public class GruntEnemyFactory {
     
     public static String getDisplayName() {
         return displayName;
+    }
+
+    public static int getPoints() {
+        return points;
     }
     
     // Setters   
@@ -134,6 +203,7 @@ public class GruntEnemyFactory {
         speed.set(DEFAULT_SPEED);
         texturePath = DEFAULT_TEXTURE;
         displayName = DEFAULT_NAME;
+        points = DEFAULT_POINTS;
     }
 
     private GruntEnemyFactory() {

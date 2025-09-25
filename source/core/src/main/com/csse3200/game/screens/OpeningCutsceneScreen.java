@@ -184,7 +184,8 @@ public class OpeningCutsceneScreen implements Screen {
         
         updateAnimation(delta);
         
-        ScreenUtils.clear(0, 0, 0, 1);
+        // Keep background color consistent with main branch (light yellow)
+        ScreenUtils.clear(248f/255f, 249f/255f, 178f/255f, 1f);
         stage.act(delta);
         stage.draw();
         
@@ -236,6 +237,8 @@ public class OpeningCutsceneScreen implements Screen {
     
     private void transitionToMainMenu() {
         logger.info("Opening cutscene finished, transitioning to main menu");
+        // Reset global clear color to light yellow before switching screens to avoid leaking black bg
+        Gdx.gl.glClearColor(248f/255f, 249f/255f, 178f/255f, 1f);
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
     }
     

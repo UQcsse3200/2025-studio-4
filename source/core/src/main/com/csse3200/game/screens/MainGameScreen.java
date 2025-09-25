@@ -1,5 +1,4 @@
 package com.csse3200.game.screens;
-import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -29,7 +28,6 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
 import com.csse3200.game.ui.terminal.TerminalDisplay;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
-import com.csse3200.game.screens.GameOverScreen;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.gamearea.PerformanceDisplay;
 
@@ -84,7 +82,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.registerGameService(game);
     ServiceLocator.registerLeaderboardService(
-            new InMemoryLeaderboardService("player-001"));
+            new com.csse3200.game.services.leaderboard.PersistentLeaderboardService("player-001"));
 
     // Re-register GameStateService since it was cleared by previous screen disposal
     if (ServiceLocator.getGameStateService() == null) {

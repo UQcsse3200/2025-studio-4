@@ -15,16 +15,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.csse3200.game.components.PlayerScoreComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.services.SaveGameService;
-
-
-import java.util.List;
 
 /**
  * Displays a button to exit the Main Game screen to the Main Menu screen.
@@ -135,21 +132,21 @@ public class MainGameOver extends UIComponent {
             playerName = "Player";
         }
         
+        // Update the PlayerNameService with the entered name
+        PlayerNameService playerNameService = ServiceLocator.getPlayerNameService();
+        if (playerNameService != null) {
+            playerNameService.setPlayerName(playerName);
+        }
+        
         LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
-        SaveGameService saveGameService = ServiceLocator.getSaveGameService();
 
-        if (leaderboard != null && saveGameService != null) {
+        if (leaderboard != null) {
+            // Add entry to leaderboard (PersistentLeaderboardService will handle saving automatically)
             leaderboard.addEntry(playerName, finalScore);
-
-            LeaderboardService.LeaderboardQuery query = new LeaderboardService.LeaderboardQuery(0, 100, false);
-            List<LeaderboardService.LeaderboardEntry> entries = leaderboard.getEntries(query);
-
-            // 保存排行榜
-            saveGameService.save("leaderboard", entries);
 
             logger.info("Score {} submitted and saved for player '{}'", finalScore, playerName);
         } else {
-            logger.warn("Leaderboard or SaveGameService not available, score not saved.");
+            logger.warn("LeaderboardService not available, score not saved.");
         }
     }
 

@@ -14,11 +14,8 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /**
- * Hero selection UI styled to match MainMenuDisplay:
- * - Same background image
- * - Same NinePatch button look (up/over/down)
- * - Uses "segoe_ui" font from skin
- * - Two cards: image on top, button below, arranged horizontally
+ * Hero selection UI styled to match MainMenuDisplay.
+ * 三张卡片：Hero / Engineer / Samurai
  */
 public class HeroSelectDisplay extends UIComponent {
     private Table root;
@@ -27,6 +24,7 @@ public class HeroSelectDisplay extends UIComponent {
     private static final String BG_PATH = "images/main_menu_background.png";
     private static final String HERO_IMG = "images/hero/Heroshoot.png";
     private static final String ENG_IMG = "images/engineer/Engineer.png";
+    private static final String SAM_IMG = "images/samurai/Samurai.png"; // 新增：武士图片
     private static final String BTN_BG = "images/Main_Menu_Button_Background.png";
 
     @Override
@@ -51,9 +49,10 @@ public class HeroSelectDisplay extends UIComponent {
         Label title = new Label("Select Your Hero", titleStyle);
         title.setAlignment(Align.center);
 
+        float imgSize = 96f;
+
         // ===== hero card =====
         Image heroImg = new Image(ServiceLocator.getResourceService().getAsset(HERO_IMG, Texture.class));
-        float imgSize = 96f;
         heroImg.setSize(imgSize, imgSize);
 
         TextButton heroBtn = new TextButton("Hero", btnStyle);
@@ -86,11 +85,29 @@ public class HeroSelectDisplay extends UIComponent {
         engCol.add(new Label("Engineer", nameStyle)).padBottom(6f).row();
         engCol.add(engBtn).width(220f).height(56f);
 
+        // ===== samurai card（新增） =====
+        Image samImg = new Image(ServiceLocator.getResourceService().getAsset(SAM_IMG, Texture.class));
+        samImg.setSize(imgSize, imgSize);
+
+        TextButton samBtn = new TextButton("Samurai", btnStyle);
+        samBtn.addListener(e -> {
+            if (!samBtn.isPressed()) return false;
+            if (entity != null) entity.getEvents().trigger("pickSamurai"); // 对应 MainMenuActions.onPickSamurai
+            return true;
+        });
+
+        Table samCol = new Table();
+        samCol.defaults().pad(6f).center();
+        samCol.add(samImg).size(imgSize).padBottom(6f).row();
+        samCol.add(new Label("Samurai", nameStyle)).padBottom(6f).row();
+        samCol.add(samBtn).width(220f).height(56f);
+
         // ===== cards row (horizontal) =====
         Table cardsRow = new Table();
         cardsRow.defaults().pad(16f).top();
         cardsRow.add(heroCol).padRight(24f);
-        cardsRow.add(engCol).padLeft(24f);
+        cardsRow.add(engCol).padLeft(12f).padRight(12f);
+        cardsRow.add(samCol).padLeft(24f); // 新增 Samurai 列
 
         // ===== back =====
         TextButton backBtn = new TextButton("Back", btnStyle);
@@ -115,34 +132,23 @@ public class HeroSelectDisplay extends UIComponent {
      */
     private TextButtonStyle createCustomButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
-
-        // Same font as main menu
         style.font = skin.getFont("segoe_ui");
 
-        // Base button background taken from the same texture
-        Texture buttonTexture = ServiceLocator.getResourceService()
-                .getAsset(BTN_BG, Texture.class);
+        Texture buttonTexture = ServiceLocator.getResourceService().getAsset(BTN_BG, Texture.class);
         TextureRegion region = new TextureRegion(buttonTexture);
 
-        // NinePatch with sane splits (adjust if needed to fit your asset corners)
         NinePatch up = new NinePatch(region, 10, 10, 10, 10);
-
-        // Slightly darker for pressed
         NinePatch down = new NinePatch(region, 10, 10, 10, 10);
         down.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-
-        // Slightly brighter for hover
         NinePatch over = new NinePatch(region, 10, 10, 10, 10);
         over.setColor(new Color(1.08f, 1.08f, 1.08f, 1f));
 
         style.up = new NinePatchDrawable(up);
         style.down = new NinePatchDrawable(down);
         style.over = new NinePatchDrawable(over);
-
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
-
         return style;
     }
 
@@ -161,5 +167,6 @@ public class HeroSelectDisplay extends UIComponent {
         super.dispose();
     }
 }
+
 
 

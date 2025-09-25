@@ -13,12 +13,14 @@ import com.badlogic.gdx.Gdx;
 public class HeroSelectionComponent extends Component {
     private final Runnable installHeroPlacement;      // 选择 Hero 时执行
     private final Runnable installEngineerPlacement;  // 选择 Engineer 时执行
+    private final Runnable installSamuraiPlacement;
     private boolean applied = false;
 
     public HeroSelectionComponent(Runnable installHeroPlacement,
-                                  Runnable installEngineerPlacement) {
+                                  Runnable installEngineerPlacement,Runnable installSamuraiPlacement) {
         this.installHeroPlacement = installHeroPlacement;
         this.installEngineerPlacement = installEngineerPlacement;
+        this.installSamuraiPlacement=installSamuraiPlacement;
     }
 
     @Override
@@ -36,6 +38,10 @@ public class HeroSelectionComponent extends Component {
             case HERO -> {
                 installHeroPlacement.run();
                 Gdx.app.log("HeroSelection", "Applied selection from menu: HERO");
+            }
+            case SAMURAI-> {
+                installSamuraiPlacement.run();
+                Gdx.app.log("HeroSelection", "Applied selection from menu: SAMURAI");
             }
         }
 

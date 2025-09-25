@@ -19,6 +19,7 @@ public class HeroSelectActions extends Component {
     public void create() {
         entity.getEvents().addListener("pickHero", this::onPickHero);
         entity.getEvents().addListener("pickEngineer", this::onPickEngineer);
+        entity.getEvents().addListener("pickSamurai", this::onPickSamurai); // ✅ 新增监听
         entity.getEvents().addListener("goBackToMenu", this::onBackToMenu);
     }
 
@@ -31,6 +32,13 @@ public class HeroSelectActions extends Component {
     private void onPickEngineer() {
         ServiceLocator.getSelectedHeroService()
                 .setSelected(SelectedHeroService.HeroType.ENGINEER);
+        game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+    }
+
+    // ✅ 新增方法
+    private void onPickSamurai() {
+        ServiceLocator.getSelectedHeroService()
+                .setSelected(SelectedHeroService.HeroType.SAMURAI);
         game.setScreen(GdxGame.ScreenType.MAIN_GAME);
     }
 

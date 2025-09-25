@@ -1,4 +1,4 @@
-package com.csse3200.game.areas;
+package com.csse3200.game.areas2.MapTwo;
 
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
@@ -9,24 +9,21 @@ import org.slf4j.LoggerFactory;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.areas.terrain.TerrainFactory;
-import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
+import com.csse3200.game.areas2.terrainTwo.TerrainFactory2.TerrainType;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
-import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
 import com.badlogic.gdx.utils.Timer;
@@ -35,7 +32,6 @@ import java.util.List;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
@@ -43,8 +39,8 @@ import com.csse3200.game.components.CameraZoomDragComponent;
 /**
  * Forest area for the demo game with trees, a player, and some enemies.
  */
-public class ForestGameArea extends GameArea {
-    private static final Logger logger = LoggerFactory.getLogger(ForestGameArea.class);
+public class ForestGameArea2 extends GameArea2 {
+    private static final Logger logger = LoggerFactory.getLogger(ForestGameArea2.class);
 
     private static final int NUM_DRONES = 5;
     private static final int NUM_GRUNTS = 3;
@@ -64,7 +60,7 @@ public class ForestGameArea extends GameArea {
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
-    private static ForestGameArea currentGameArea;
+    private static ForestGameArea2 currentGameArea;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -81,10 +77,10 @@ public class ForestGameArea extends GameArea {
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
-    private final TerrainFactory terrainFactory;
+    private final TerrainFactory2 terrainFactory;
     private Entity player;
     private boolean hasExistingPlayer = false;
-    private MapEditor mapEditor;
+    private MapEditor2 mapEditor;
 
     // One-time prompt: Has this been displayed?
     private boolean heroHintShown = false;
@@ -105,12 +101,12 @@ public class ForestGameArea extends GameArea {
             {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
 
     /**
-     * Initialise this ForestGameArea to use the provided TerrainFactory.
+     * Initialise this ForestGameArea2 to use the provided TerrainFactory2.
      *
-     * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
+     * @param terrainFactory TerrainFactory2 used to create the terrain for the GameArea.
      * @requires terrainFactory != null
      */
-    public ForestGameArea(TerrainFactory terrainFactory) {
+    public ForestGameArea2(TerrainFactory2 terrainFactory) {
         super();
         this.terrainFactory = terrainFactory;
     }
@@ -222,7 +218,7 @@ public class ForestGameArea extends GameArea {
                 @Override
                 public void run() {
                     // Double-check we're still the active game area
-                    if (currentGameArea != ForestGameArea.this) {
+                    if (currentGameArea != ForestGameArea2.this) {
                         logger.info("Game area changed during spawn, stopping");
                         return;
                     }
@@ -298,9 +294,11 @@ public class ForestGameArea extends GameArea {
 
 
         // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
-        if (mapEditor != null) {
-            placementController.setMapEditor(mapEditor);
-        }
+        // Note: SimplePlacementController expects MapEditor, but we have MapEditor2
+        // We need to cast or create a wrapper - for now, comment out until we create compatible version
+        // if (mapEditor != null) {
+        //     placementController.setMapEditor(mapEditor);
+        // }
 
         registerBarrierAndSpawn(BARRIER_COORDS);
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
@@ -319,11 +317,13 @@ public class ForestGameArea extends GameArea {
         //mapEditor.generateBiomesAndRivers();
 
         // Tower placement highlighter
-        MapHighlighter mapHighlighter =
-                new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
-        Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+        // Note: MapHighlighter expects TerrainComponent, but we have TerrainComponent2
+        // We need to create a compatible version or cast - for now, comment out
+        // MapHighlighter mapHighlighter =
+        //         new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
+        // Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
 
-        spawnEntity(highlighterEntity);
+        // spawnEntity(highlighterEntity);
 
         //Tower Upgrade Menu
         TowerUpgradeMenu towerUpgradeMenu = new TowerUpgradeMenu();
@@ -331,13 +331,13 @@ public class ForestGameArea extends GameArea {
         spawnEntity(upgradeUI);
 
         //Link the upgrade menu to the map highlighter
-        mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
+        // mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         // Add hero placement system
-
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
-
-        spawnEntity(placement);
+        // Note: HeroPlacementComponent expects TerrainComponent and MapEditor, but we have TerrainComponent2 and MapEditor2
+        // We need to create a compatible version - for now, comment out
+        // Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
+        // spawnEntity(placement);
 
         playMusic();
 
@@ -353,7 +353,7 @@ public class ForestGameArea extends GameArea {
         cfg3.heroTexture = "images/hero3/Heroshoot.png";
         cfg3.bulletTexture = "images/hero3/Bullet.png";
 
-        // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
+        // 2) 挂载"一次性换肤"组件（不会改变你其它逻辑）
         Entity skinSwitcher = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
         );
@@ -363,7 +363,7 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnTerrain() {
-        terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
+        terrain = terrainFactory.createTerrain(TerrainType.MAP_TWO);
         spawnEntity(new Entity().addComponent(terrain));
         // Create boundary walls
         createBoundaryWalls();
@@ -397,7 +397,7 @@ public class ForestGameArea extends GameArea {
     }
 
 
-//Register to MapEditor’s invalidTiles and generate obstacles on the map.
+//Register to MapEditor's invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
         // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
@@ -433,8 +433,8 @@ public class ForestGameArea extends GameArea {
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
-        // Initialize MapEditor
-        mapEditor = new MapEditor(terrain, newPlayer);
+        // Initialize MapEditor2
+        mapEditor = new MapEditor2(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
         // Uncomment if crystal spawning is needed:
         // mapEditor.spawnCrystal(); // Generate crystal
@@ -488,9 +488,12 @@ public class ForestGameArea extends GameArea {
 
     private void spawnSingleDivider() {
         //NUM_ENEMIES_TOTAL += 4; // Dividers count as 4 enemies
-        Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
-        spawnEntityAt(divider, new GridPoint2(0, 10), true, true);
-        logger.debug("Spawned divider. Total enemies: {}", NUM_ENEMIES_TOTAL);
+        // Note: DividerEnemyFactory.createDividerEnemy expects GameArea, but we have ForestGameArea2 (extends GameArea2)
+        // These are incompatible types - we would need to create a DividerEnemyFactory2 or modify the factory
+        // For now, comment out to resolve compilation errors
+        // Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
+        // spawnEntityAt(divider, new GridPoint2(0, 10), true, true);
+        logger.debug("Divider spawn disabled - requires compatible factory. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
   public static void checkEnemyCount() {

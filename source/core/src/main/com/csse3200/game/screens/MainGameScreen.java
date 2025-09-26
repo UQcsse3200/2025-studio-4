@@ -81,8 +81,13 @@ public class MainGameScreen extends ScreenAdapter {
     this.startupArg = saveFileName; // mapId when new game, save name when continue
 
     ServiceLocator.registerGameService(game);
-    ServiceLocator.registerLeaderboardService(
-            new com.csse3200.game.services.leaderboard.PersistentLeaderboardService("player-001"));
+    com.csse3200.game.services.leaderboard.PersistentLeaderboardService leaderboardService = 
+            new com.csse3200.game.services.leaderboard.PersistentLeaderboardService("player-001");
+    ServiceLocator.registerLeaderboardService(leaderboardService);
+    
+    // Add test data to verify leaderboard is working
+    logger.debug("Adding test data to leaderboard for verification");
+    leaderboardService.addEntry("TestPlayer", 1500, 5, 25, 120000, 3);
 
     // Re-register GameStateService since it was cleared by previous screen disposal
     if (ServiceLocator.getGameStateService() == null) {
@@ -264,7 +269,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new SaveMenuDisplay(this.game))
             .addComponent(new PauseInputComponent())
             .addComponent(new MainGameExitDisplay())
-            .addComponent(new GameOverScreen())
+            .addComponent(new MainGameOver())
             .addComponent(new MainGameWin())
             .addComponent(new Terminal())
             .addComponent(inputComponent)

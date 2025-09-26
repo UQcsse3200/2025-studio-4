@@ -57,7 +57,7 @@ public class PlayerCombatStatsComponent extends Component {
       if (this.health == 0) {
         // Lose Condition
         ServiceLocator.getEntityService().unregister(entity);
-        MainGameScreen.ui.getComponent(GameOverScreen.class).addActors();
+        MainGameScreen.ui.getComponent(com.csse3200.game.screens.MainGameOver.class).addActors();
         }
       }
     }

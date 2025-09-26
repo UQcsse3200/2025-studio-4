@@ -76,7 +76,39 @@ public class MainGameExitDisplay extends UIComponent {
 
       rankingBtn.addListener(new ChangeListener() {
           @Override public void changed(ChangeEvent event, Actor actor) {
-              List<PlayerRank> players = MockRanks.make(30);     // Generate 30 entries
+              // Use the new LeaderboardService instead of mock data
+              com.csse3200.game.services.leaderboard.LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
+              logger.debug("MainGameExitDisplay - LeaderboardService available: {}", leaderboard != null);
+              
+              // Force use of real leaderboard system - always try it first
+              try {
+                  // Ensure leaderboard service is available
+                  if (leaderboard == null) {
+                      logger.warn("MainGameExitDisplay - LeaderboardService is null, creating new one");
+                      ServiceLocator.registerLeaderboardService(
+                          new com.csse3200.game.services.leaderboard.PersistentLeaderboardService("player-001"));
+                      leaderboard = ServiceLocator.getLeaderboardService();
+                  }
+                  
+                  if (leaderboard != null) {
+                      // Check if there are any entries
+                      var entries = leaderboard.getEntries(new com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardQuery(0, 10, false));
+                      logger.info("MainGameExitDisplay - Found {} leaderboard entries in real system", entries.size());
+                      
+                      var controller = new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboard);
+                      com.badlogic.gdx.scenes.scene2d.ui.Skin leaderboardSkin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
+                      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = new com.csse3200.game.ui.leaderboard.LeaderboardPopup(leaderboardSkin, controller);
+                      popup.showOn(stage);
+                      logger.info("MainGameExitDisplay - Successfully showing real leaderboard with {} entries", entries.size());
+                      return; // Success, don't show mock data
+                  }
+              } catch (Exception e) {
+                  logger.error("MainGameExitDisplay - Error creating leaderboard popup: {}", e.getMessage(), e);
+              }
+              
+              // Only show mock data if real leaderboard completely failed
+              logger.warn("MainGameExitDisplay - Falling back to mock data because real leaderboard failed");
+              List<PlayerRank> players = MockRanks.make(30);
               new RankingDialog("Leaderboard", players, 12).show(stage);
           }
       });

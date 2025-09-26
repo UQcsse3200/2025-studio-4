@@ -115,6 +115,7 @@ public class DividerEnemyFactory {
                 PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
                 if (psc != null) {
                     psc.addPoints(points);
+                    psc.addEnemyKill();
                 }
             }
         }

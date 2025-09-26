@@ -109,10 +109,11 @@ public class BossEnemyFactory {
                 player.getEvents().trigger("dropCurrency", drops);
             }
 
-            // Award points to player upon defeating enemy
+            // Award points and update kill count
             PlayerScoreComponent totalScore = wc.getPlayerRef().getComponent(PlayerScoreComponent.class);
             if (totalScore != null) {
                 totalScore.addPoints(points);
+                totalScore.addEnemyKill();
             }
         }
 

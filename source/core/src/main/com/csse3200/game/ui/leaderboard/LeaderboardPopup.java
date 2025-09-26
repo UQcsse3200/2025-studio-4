@@ -7,10 +7,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardEntry;
-import com.csse3200.game.services.ServiceLocator;
 import java.time.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LeaderboardPopup extends Window {
+    private static final Logger logger = LoggerFactory.getLogger(LeaderboardPopup.class);
     private final Skin skin;
     private final LeaderboardController controller;
     private final Table listTable = new Table();
@@ -34,14 +36,23 @@ public class LeaderboardPopup extends Window {
         nextBtn = new TextButton("Next >", skin);
 
         Table header = new Table();
-        header.add(new Label("Leaderboard", skin, "title")).expandX().left();
+        try {
+            header.add(new Label("Leaderboard", skin, "title")).expandX().left();
+        } catch (Exception e) {
+            // Fallback to default style if title style is not available
+            header.add(new Label("Leaderboard", skin)).expandX().left();
+        }
         header.add(friendsBtn).right();
 
         Table headerRow = new Table(skin);
         headerRow.add(new Label("#", skin)).width(40).left();
-        headerRow.add(new Label("Player", skin)).expandX().left().padLeft(8);
-        headerRow.add(new Label("Score", skin)).width(120).right();
-        headerRow.add(new Label("Time", skin)).width(160).right();
+        headerRow.add(new Label("Player", skin)).width(120).left().padLeft(8);
+        headerRow.add(new Label("Score", skin)).width(80).right();
+        headerRow.add(new Label("Level", skin)).width(60).right();
+        headerRow.add(new Label("Kills", skin)).width(60).right();
+        headerRow.add(new Label("Duration", skin)).width(80).right();
+        headerRow.add(new Label("Waves", skin)).width(60).right();
+        headerRow.add(new Label("Date", skin)).width(120).right();
 
         scroller = new ScrollPane(listTable, skin);
         scroller.setFadeScrollBars(false);
@@ -63,7 +74,7 @@ public class LeaderboardPopup extends Window {
         content.row();
         content.add(footer).growX();
 
-        add(content).grow().minSize(720, 540);
+        add(content).grow().minSize(900, 540);
 
         // 事件
         closeBtn.addListener(new ChangeListener() {
@@ -83,7 +94,11 @@ public class LeaderboardPopup extends Window {
             }
         });
 
-        refreshList();
+        try {
+            refreshList();
+        } catch (Exception e) {
+            logger.error("Error refreshing leaderboard list: {}", e.getMessage(), e);
+        }
 
         // 入场动画
         getColor().a = 0f;
@@ -116,7 +131,11 @@ public class LeaderboardPopup extends Window {
         Label rank = new Label(String.valueOf(e.rank), skin);
         Label name = new Label(e.displayName + (isMe ? " (You)" : ""), skin);
         Label score = new Label(String.valueOf(e.score), skin);
-        Label time = new Label(formatTime(e.achievedAtMs), skin);
+        Label level = new Label(String.valueOf(e.level), skin);
+        Label kills = new Label(String.valueOf(e.enemiesKilled), skin);
+        Label duration = new Label(e.getFormattedGameDuration(), skin);
+        Label waves = new Label(String.valueOf(e.wavesSurvived), skin);
+        Label date = new Label(formatDate(e.achievedAtMs), skin);
 
         if (e.rank == 1) rank.setText("🥇 " + e.rank);
         else if (e.rank == 2) rank.setText("🥈 " + e.rank);
@@ -125,16 +144,23 @@ public class LeaderboardPopup extends Window {
         if (isMe) row.setBackground("selection"); // 需要在 skin 里有 selection
 
         row.add(rank).width(40).left();
-        row.add(name).expandX().left().padLeft(8);
-        row.add(score).width(120).right();
-        row.add(time).width(160).right();
+        row.add(name).width(120).left().padLeft(8);
+        row.add(score).width(80).right();
+        row.add(level).width(60).right();
+        row.add(kills).width(60).right();
+        row.add(duration).width(80).right();
+        row.add(waves).width(60).right();
+        row.add(date).width(120).right();
 
         return row;
     }
 
-    private String formatTime(long ms) {
+
+    private String formatDate(long ms) {
         var dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(ms), ZoneId.systemDefault());
-        return dt.toString().replace('T', ' ');
+        return String.format("%02d/%02d %02d:%02d", 
+                           dt.getMonthValue(), dt.getDayOfMonth(), 
+                           dt.getHour(), dt.getMinute());
     }
 
     /**

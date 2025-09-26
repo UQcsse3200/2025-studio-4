@@ -37,6 +37,18 @@ public class PersistentLeaderboardService extends InMemoryLeaderboardService {
         logger.info("Added leaderboard entry: {} with score {}", playerName, finalScore);
     }
 
+    @Override
+    public void addEntry(String playerName, int finalScore, int level, int enemiesKilled, long gameDuration, int wavesSurvived) {
+        // Add entry to memory with extended data
+        super.addEntry(playerName, finalScore, level, enemiesKilled, gameDuration, wavesSurvived);
+        
+        // Save to file
+        saveToFile();
+        
+        logger.info("Added leaderboard entry: {} with score {}, level {}, kills {}, duration {}ms, waves {}", 
+                   playerName, finalScore, level, enemiesKilled, gameDuration, wavesSurvived);
+    }
+
     /**
      * Save leaderboard entries to file
      */
@@ -126,6 +138,10 @@ public class PersistentLeaderboardService extends InMemoryLeaderboardService {
         public String displayName;
         public long score;
         public long achievedAtMs;
+        public int level;
+        public int enemiesKilled;
+        public long gameDuration;
+        public int wavesSurvived;
 
         public SerializableLeaderboardEntry() {
             // Default constructor for JSON deserialization
@@ -137,10 +153,15 @@ public class PersistentLeaderboardService extends InMemoryLeaderboardService {
             this.displayName = entry.displayName;
             this.score = entry.score;
             this.achievedAtMs = entry.achievedAtMs;
+            this.level = entry.level;
+            this.enemiesKilled = entry.enemiesKilled;
+            this.gameDuration = entry.gameDuration;
+            this.wavesSurvived = entry.wavesSurvived;
         }
 
         public LeaderboardEntry toLeaderboardEntry() {
-            return new LeaderboardEntry(rank, playerId, displayName, score, achievedAtMs);
+            return new LeaderboardEntry(rank, playerId, displayName, score, achievedAtMs, 
+                                       level, enemiesKilled, gameDuration, wavesSurvived);
         }
     }
 }

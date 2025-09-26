@@ -97,11 +97,12 @@ public class DividerChildEnemyFactory {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
-        // Award points to player upon defeating enemy
+        // Award points and update kill count
         if (currentTarget != null) {
             PlayerScoreComponent totalScore = currentTarget.getComponent(PlayerScoreComponent.class);
             if (totalScore != null) {
                 totalScore.addPoints(points);
+                totalScore.addEnemyKill();
             }
         }
 

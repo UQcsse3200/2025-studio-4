@@ -50,8 +50,8 @@ class MainGameOverTest {
         // Act
         mainGameOver.saveScore("Vincent", 100);
 
-        // Assert
-        verify(mockLeaderboard).addEntry("Vincent", 100);
+        // Assert - now expects the new signature with extended parameters
+        verify(mockLeaderboard).addEntry("Vincent", 100, 1, 0, 0, 0);
         // SaveGameService.save() is not called because PersistentLeaderboardService handles saving automatically
     }
 
@@ -60,8 +60,8 @@ class MainGameOverTest {
         // Act
         mainGameOver.saveScore("", 200);
 
-        // Assert
-        verify(mockLeaderboard).addEntry("Player", 200);
+        // Assert - now expects the new signature with extended parameters
+        verify(mockLeaderboard).addEntry("Player", 200, 1, 0, 0, 0);
         // SaveGameService.save() is not called because PersistentLeaderboardService handles saving automatically
     }
 

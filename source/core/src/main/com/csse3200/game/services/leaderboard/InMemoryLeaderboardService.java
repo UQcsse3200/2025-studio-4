@@ -1,13 +1,11 @@
 package com.csse3200.game.services.leaderboard;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import static com.csse3200.game.services.leaderboard.LeaderboardService.*;
 
 public class InMemoryLeaderboardService implements LeaderboardService {
-    private final List<LeaderboardEntry> all = new ArrayList<>();
+    private final List<LeaderboardService.LeaderboardEntry> all = new ArrayList<>();
     private final String myId;
 
     public InMemoryLeaderboardService(String myId) {
@@ -15,7 +13,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public List<LeaderboardEntry> getEntries(LeaderboardQuery q) {
+    public List<LeaderboardService.LeaderboardEntry> getEntries(LeaderboardService.LeaderboardQuery q) {
         // Sort entries by score in descending order
         sortEntriesByScore();
         
@@ -25,10 +23,10 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     }
 
     @Override
-    public LeaderboardEntry getMyBest() {
+    public LeaderboardService.LeaderboardEntry getMyBest() {
         // Find the best score for the current player
-        LeaderboardEntry myBest = null;
-        for (LeaderboardEntry entry : all) {
+        LeaderboardService.LeaderboardEntry myBest = null;
+        for (LeaderboardService.LeaderboardEntry entry : all) {
             if (entry.playerId.equals(myId)) {
                 if (myBest == null || entry.score > myBest.score) {
                     myBest = entry;
@@ -40,7 +38,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
             return myBest;
         } else {
             // Return default entry if no scores found
-            return new LeaderboardEntry(0, myId, "You", 0, System.currentTimeMillis());
+            return new LeaderboardService.LeaderboardEntry(0, myId, "You", 0, System.currentTimeMillis());
         }
     }
 
@@ -52,20 +50,29 @@ public class InMemoryLeaderboardService implements LeaderboardService {
 
     @Override
     public void addEntry(String playerName, int finalScore) {
+        addEntry(playerName, finalScore, 1, 0, 0, 0);
+    }
+
+    @Override
+    public void addEntry(String playerName, int finalScore, int level, int enemiesKilled, long gameDuration, int wavesSurvived) {
         // Validate input
         if (playerName == null || playerName.trim().isEmpty()) {
             playerName = "Player";
         }
         playerName = playerName.trim();
         
-        // Create new entry
+        // Create new entry with extended data
         long currentTime = System.currentTimeMillis();
-        LeaderboardEntry newEntry = new LeaderboardEntry(
+        LeaderboardService.LeaderboardEntry newEntry = new LeaderboardService.LeaderboardEntry(
             0, // rank will be calculated when sorting
             myId, // use current player ID
             playerName,
             finalScore,
-            currentTime
+            currentTime,
+            level,
+            enemiesKilled,
+            gameDuration,
+            wavesSurvived
         );
         
         // Add to list
@@ -80,9 +87,9 @@ public class InMemoryLeaderboardService implements LeaderboardService {
      * Sort entries by score in descending order
      */
     private void sortEntriesByScore() {
-        all.sort(new Comparator<LeaderboardEntry>() {
+        all.sort(new Comparator<LeaderboardService.LeaderboardEntry>() {
             @Override
-            public int compare(LeaderboardEntry a, LeaderboardEntry b) {
+            public int compare(LeaderboardService.LeaderboardEntry a, LeaderboardService.LeaderboardEntry b) {
                 // Sort by score descending, then by time ascending (earlier is better)
                 int scoreCompare = Long.compare(b.score, a.score);
                 if (scoreCompare != 0) {
@@ -98,13 +105,17 @@ public class InMemoryLeaderboardService implements LeaderboardService {
      */
     private void updateRanks() {
         for (int i = 0; i < all.size(); i++) {
-            LeaderboardEntry oldEntry = all.get(i);
-            LeaderboardEntry newEntry = new LeaderboardEntry(
+            LeaderboardService.LeaderboardEntry oldEntry = all.get(i);
+            LeaderboardService.LeaderboardEntry newEntry = new LeaderboardService.LeaderboardEntry(
                 i + 1, // rank starts from 1
                 oldEntry.playerId,
                 oldEntry.displayName,
                 oldEntry.score,
-                oldEntry.achievedAtMs
+                oldEntry.achievedAtMs,
+                oldEntry.level,
+                oldEntry.enemiesKilled,
+                oldEntry.gameDuration,
+                oldEntry.wavesSurvived
             );
             all.set(i, newEntry);
         }
@@ -113,7 +124,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     /**
      * Get all entries (for saving to file)
      */
-    public List<LeaderboardEntry> getAllEntries() {
+    public List<LeaderboardService.LeaderboardEntry> getAllEntries() {
         sortEntriesByScore();
         updateRanks();
         return new ArrayList<>(all);
@@ -122,7 +133,7 @@ public class InMemoryLeaderboardService implements LeaderboardService {
     /**
      * Load entries from external source
      */
-    public void loadEntries(List<LeaderboardEntry> entries) {
+    public void loadEntries(List<LeaderboardService.LeaderboardEntry> entries) {
         all.clear();
         if (entries != null) {
             all.addAll(entries);

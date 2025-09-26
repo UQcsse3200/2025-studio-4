@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
@@ -44,12 +45,30 @@ public class MainGameOver extends UIComponent {
             }
 
             int finalScore = 0;
-            for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
-                PlayerScoreComponent scoreComponent = entity.getComponent(PlayerScoreComponent.class);
-                if (scoreComponent != null) {
-                    finalScore = scoreComponent.getTotalScore();
-                    break;
+            int level = 1;
+            int enemiesKilled = 0;
+            long gameDuration = 0;
+            int wavesSurvived = 0;
+            
+            try {
+                // Safely access entities to avoid iterator conflicts
+                com.badlogic.gdx.utils.Array<Entity> entityArray = ServiceLocator.getEntityService().getEntities();
+                for (int i = 0; i < entityArray.size; i++) {
+                    Entity entityItem = entityArray.get(i);
+                    PlayerScoreComponent scoreComponent = entityItem.getComponent(PlayerScoreComponent.class);
+                    if (scoreComponent != null) {
+                        finalScore = scoreComponent.getTotalScore();
+                        level = scoreComponent.getLevel();
+                        enemiesKilled = scoreComponent.getEnemiesKilled();
+                        gameDuration = scoreComponent.getGameDuration();
+                        wavesSurvived = scoreComponent.getWavesSurvived();
+                        scoreComponent.updateGameDuration(); // Update final duration
+                        break;
+                    }
                 }
+            } catch (Exception e) {
+                logger.warn("Could not collect player score data: {}", e.getMessage());
+                // Use default values if data collection fails
             }
 
             // Add background image to stage
@@ -66,12 +85,24 @@ public class MainGameOver extends UIComponent {
             Table buttonTable = new Table();
             buttonTable.center();
 
-            // Create text field for name entry
-            TextField nameField = new TextField("", skin);
-            nameField.setMessageText("Enter your name");
-            nameField.setMaxLength(12);
-            nameField.setWidth(250f);
-            buttonTable.add(nameField).size(250f, 60f).pad(10f);
+            // Get player name from service (already entered at game start)
+            String currentPlayerName = "Player";
+            if (ServiceLocator.getPlayerNameService() != null) {
+                String serviceName = ServiceLocator.getPlayerNameService().getPlayerName();
+                if (serviceName != null && !serviceName.trim().isEmpty()) {
+                    currentPlayerName = serviceName.trim();
+                }
+            }
+
+            // Display player name and final score
+            Label playerNameLabel = new Label("Player: " + currentPlayerName, skin, "large");
+            playerNameLabel.setColor(Color.GOLD);
+            buttonTable.add(playerNameLabel).pad(10f);
+            buttonTable.row();
+            
+            Label finalScoreLabel = new Label("Final Score: " + finalScore, skin, "large");
+            finalScoreLabel.setColor(Color.WHITE);
+            buttonTable.add(finalScoreLabel).pad(10f);
             buttonTable.row();
 
             // Create custom button style
@@ -79,13 +110,18 @@ public class MainGameOver extends UIComponent {
 
             // Restart button
             TextButton restartBtn = new TextButton("Restart Game", customButtonStyle);
+            final String playerName = currentPlayerName;
             int finalScore1 = finalScore;
+            int finalLevel1 = level;
+            int finalEnemiesKilled1 = enemiesKilled;
+            long finalGameDuration1 = gameDuration;
+            int finalWavesSurvived1 = wavesSurvived;
             restartBtn.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
                     logger.debug("Restart button clicked");
-                    String playerName = nameField.getText().isEmpty() ? "Player" : nameField.getText();
-                    saveScore(playerName, finalScore1);
+                    // Automatically save with the player name from game start
+                    saveScore(playerName, finalScore1, finalLevel1, finalEnemiesKilled1, finalGameDuration1, finalWavesSurvived1);
                     entity.getEvents().trigger("restart");
                 }
             });
@@ -93,12 +129,16 @@ public class MainGameOver extends UIComponent {
             // Main menu button
             TextButton mainMenuBtn = new TextButton("Main Menu", customButtonStyle);
             int finalScore2 = finalScore;
+            int finalLevel2 = level;
+            int finalEnemiesKilled2 = enemiesKilled;
+            long finalGameDuration2 = gameDuration;
+            int finalWavesSurvived2 = wavesSurvived;
             mainMenuBtn.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
                     logger.debug("Main Menu button clicked");
-                    String playerName = nameField.getText().isEmpty() ? "Player" : nameField.getText();
-                    saveScore(playerName, finalScore2);
+                    // Automatically save with the player name from game start
+                    saveScore(playerName, finalScore2, finalLevel2, finalEnemiesKilled2, finalGameDuration2, finalWavesSurvived2);
                     entity.getEvents().trigger("gameover");
                 }
             });
@@ -126,7 +166,7 @@ public class MainGameOver extends UIComponent {
         }
     }
 
-    public void saveScore(String playerName, int finalScore) {
+    public void saveScore(String playerName, int finalScore, int level, int enemiesKilled, long gameDuration, int wavesSurvived) {
         // Handle empty or null player name
         if (playerName == null || playerName.trim().isEmpty()) {
             playerName = "Player";
@@ -141,13 +181,19 @@ public class MainGameOver extends UIComponent {
         LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
 
         if (leaderboard != null) {
-            // Add entry to leaderboard (PersistentLeaderboardService will handle saving automatically)
-            leaderboard.addEntry(playerName, finalScore);
+            // Add entry to leaderboard with extended game data
+            leaderboard.addEntry(playerName, finalScore, level, enemiesKilled, gameDuration, wavesSurvived);
 
-            logger.info("Score {} submitted and saved for player '{}'", finalScore, playerName);
+            logger.info("Game data submitted and saved for player '{}': Score={}, Level={}, Kills={}, Duration={}ms, Waves={}", 
+                       playerName, finalScore, level, enemiesKilled, gameDuration, wavesSurvived);
         } else {
             logger.warn("LeaderboardService not available, score not saved.");
         }
+    }
+
+    // Keep backward compatibility method
+    public void saveScore(String playerName, int finalScore) {
+        saveScore(playerName, finalScore, 1, 0, 0, 0);
     }
 
 

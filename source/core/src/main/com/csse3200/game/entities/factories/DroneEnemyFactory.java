@@ -113,10 +113,11 @@ public class DroneEnemyFactory {
                 Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
                 player.getEvents().trigger("dropCurrency", drops);
             }
-            // Add points to score
+            // Add points to score and update kill count
             PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
             if (psc != null) {
                 psc.addPoints(points);
+                psc.addEnemyKill();
             }
         }
 

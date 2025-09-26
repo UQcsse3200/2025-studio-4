@@ -81,10 +81,39 @@ public class MainGameActions extends Component {
     try {
       Stage stage = ServiceLocator.getRenderService().getStage();
       
-      // Generate mock ranking data
-      List<PlayerRank> players = MockRanks.make(30);
+      // Use the new LeaderboardService instead of mock data
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
+      logger.debug("LeaderboardService available: {}", leaderboard != null);
       
-      // Create and show RankingDialog
+      // Force use of real leaderboard system - always try it first
+      try {
+          // Ensure leaderboard service is available
+          if (leaderboard == null) {
+              logger.warn("LeaderboardService is null, creating new one");
+              ServiceLocator.registerLeaderboardService(
+                  new com.csse3200.game.services.leaderboard.PersistentLeaderboardService("player-001"));
+              leaderboard = ServiceLocator.getLeaderboardService();
+          }
+          
+          if (leaderboard != null) {
+              // Check if there are any entries
+              var entries = leaderboard.getEntries(new com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardQuery(0, 10, false));
+              logger.info("Found {} leaderboard entries in real system", entries.size());
+              
+              var controller = new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboard);
+              com.badlogic.gdx.scenes.scene2d.ui.Skin leaderboardSkin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
+              com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = new com.csse3200.game.ui.leaderboard.LeaderboardPopup(leaderboardSkin, controller);
+              popup.showOn(stage);
+              logger.info("Successfully showing real leaderboard with {} entries", entries.size());
+              return; // Success, don't show mock data
+          }
+      } catch (Exception e) {
+          logger.error("Error creating leaderboard popup: {}", e.getMessage(), e);
+      }
+      
+      // Only show mock data if real leaderboard completely failed
+      logger.warn("Falling back to mock data because real leaderboard failed");
+      List<PlayerRank> players = MockRanks.make(30);
       RankingDialog rankingDialog = new RankingDialog("Leaderboard", players, 12);
       rankingDialog.show(stage);
       
@@ -112,11 +141,12 @@ public class MainGameActions extends Component {
   }
   
   /**
-   * Swaps to the Victory screen.
+   * Shows the victory screen using MainGameWin component.
    */
   private void onVictory() {
     logger.info("Game won, showing victory screen");
-    game.setScreen(GdxGame.ScreenType.VICTORY);
+    // Use the MainGameWin component instead of switching to a separate screen
+    com.csse3200.game.screens.MainGameScreen.ui.getComponent(com.csse3200.game.components.maingame.MainGameWin.class).addActors();
   }
   
   private void onSave() {

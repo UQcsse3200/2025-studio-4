@@ -9,10 +9,15 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.entities.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,42 +35,126 @@ public class MainGameWin extends UIComponent {
   }
 
   public void addActors() {
-    // Ensure stage is initialized
-    if (stage == null) {
-      stage = ServiceLocator.getRenderService().getStage();
+    try {
+      // Ensure stage is initialized
       if (stage == null) {
-        logger.warn("Stage not available, cannot add actors");
-        return;
-      }
-    }
-    
-    // Remove existing UI if present
-    if (table != null && table.getStage() != null) {
-      table.remove();
-    }
-    
-    table = new Table();
-    table.top().center();
-    table.setFillParent(true);
-
-    // Create custom button style
-    TextButtonStyle customButtonStyle = createCustomButtonStyle();
-
-    TextButton mainMenuBtn = new TextButton("You Won!", customButtonStyle);
-
-    // Triggers an event when the button is pressed.
-    mainMenuBtn.addListener(
-      new ChangeListener() {
-        @Override
-        public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Win button clicked");
-          entity.getEvents().trigger("awardStars", 1);
-          entity.getEvents().trigger("gamewin");
+        stage = ServiceLocator.getRenderService().getStage();
+        if (stage == null) {
+          logger.warn("Stage not available, cannot add actors");
+          return;
         }
-      });
-    table.add(mainMenuBtn);
+      }
+      
+      // Remove existing UI if present
+      if (table != null && table.getStage() != null) {
+        table.remove();
+      }
 
-    stage.addActor(table);
+      // Collect player game data safely
+      int finalScore = 0;
+      int level = 1;
+      int enemiesKilled = 0;
+      long gameDuration = 0;
+      int wavesSurvived = 0;
+      
+      try {
+        // Safely access entities to avoid iterator conflicts
+        com.badlogic.gdx.utils.Array<Entity> entityArray = ServiceLocator.getEntityService().getEntities();
+        for (int i = 0; i < entityArray.size; i++) {
+          Entity entityItem = entityArray.get(i);
+          PlayerScoreComponent scoreComponent = entityItem.getComponent(PlayerScoreComponent.class);
+          if (scoreComponent != null) {
+            finalScore = scoreComponent.getTotalScore();
+            level = scoreComponent.getLevel();
+            enemiesKilled = scoreComponent.getEnemiesKilled();
+            gameDuration = scoreComponent.getGameDuration();
+            wavesSurvived = scoreComponent.getWavesSurvived();
+            scoreComponent.updateGameDuration(); // Update final duration
+            break;
+          }
+        }
+      } catch (Exception e) {
+        logger.warn("Could not collect player score data: {}", e.getMessage());
+        // Use default values if data collection fails
+      }
+
+      // Add victory background image
+      Image victoryBackground = new Image(ServiceLocator.getResourceService()
+              .getAsset("images/Game_Victory.png", Texture.class));
+      victoryBackground.setFillParent(true);
+      stage.addActor(victoryBackground);
+      
+      table = new Table();
+      table.setFillParent(true);
+
+      // Create content container
+      Table contentTable = new Table();
+      contentTable.center();
+
+      // Get player name from service
+      String currentPlayerName = "Player";
+      if (ServiceLocator.getPlayerNameService() != null) {
+        String serviceName = ServiceLocator.getPlayerNameService().getPlayerName();
+        if (serviceName != null && !serviceName.trim().isEmpty()) {
+          currentPlayerName = serviceName.trim();
+        }
+      }
+
+      // Display victory message
+      Label victoryLabel = new Label("VICTORY!", skin, "large");
+      victoryLabel.setColor(Color.GOLD);
+      contentTable.add(victoryLabel).padBottom(20f);
+      contentTable.row();
+
+      // Display player name and final score
+      Label playerNameLabel = new Label("Player: " + currentPlayerName, skin, "large");
+      playerNameLabel.setColor(Color.GOLD);
+      contentTable.add(playerNameLabel).padBottom(10f);
+      contentTable.row();
+      
+      Label finalScoreLabel = new Label("Final Score: " + finalScore, skin, "large");
+      finalScoreLabel.setColor(Color.WHITE);
+      contentTable.add(finalScoreLabel).padBottom(20f);
+      contentTable.row();
+
+      // Create custom button style
+      TextButtonStyle customButtonStyle = createCustomButtonStyle();
+
+      // Continue to main menu button
+      TextButton mainMenuBtn = new TextButton("Continue to Main Menu", customButtonStyle);
+      final String playerName = currentPlayerName;
+      final int finalScore1 = finalScore;
+      final int finalLevel1 = level;
+      final int finalEnemiesKilled1 = enemiesKilled;
+      final long finalGameDuration1 = gameDuration;
+      final int finalWavesSurvived1 = wavesSurvived;
+
+      // Triggers an event when the button is pressed.
+      mainMenuBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Victory button clicked");
+            
+            // Save victory data to leaderboard
+            saveScore(playerName, finalScore1, finalLevel1, finalEnemiesKilled1, finalGameDuration1, finalWavesSurvived1);
+            
+            entity.getEvents().trigger("awardStars", 1);
+            // Directly trigger exit to main menu instead of gamewin
+            entity.getEvents().trigger("exit");
+          }
+        });
+
+      mainMenuBtn.getLabel().setColor(Color.BLUE);
+      contentTable.add(mainMenuBtn).size(300f, 60f);
+
+      table.add(contentTable);
+      stage.addActor(table);
+      
+      logger.info("Victory screen displayed successfully");
+    } catch (Exception e) {
+      logger.error("Error displaying Victory screen: {}", e.getMessage());
+    }
   }
 
   @Override
@@ -76,6 +165,25 @@ public class MainGameWin extends UIComponent {
   @Override
   public float getZIndex() {
     return Z_INDEX;
+  }
+
+  public void saveScore(String playerName, int finalScore, int level, int enemiesKilled, long gameDuration, int wavesSurvived) {
+    // Handle empty or null player name
+    if (playerName == null || playerName.trim().isEmpty()) {
+      playerName = "Player";
+    }
+    
+    LeaderboardService leaderboard = ServiceLocator.getLeaderboardService();
+
+    if (leaderboard != null) {
+      // Add entry to leaderboard with extended game data
+      leaderboard.addEntry(playerName, finalScore, level, enemiesKilled, gameDuration, wavesSurvived);
+
+      logger.info("Victory data submitted and saved for player '{}': Score={}, Level={}, Kills={}, Duration={}ms, Waves={}", 
+                 playerName, finalScore, level, enemiesKilled, gameDuration, wavesSurvived);
+    } else {
+      logger.warn("LeaderboardService not available, victory data not saved.");
+    }
   }
 
   /**

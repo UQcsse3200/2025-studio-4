@@ -98,14 +98,16 @@ public class TankEnemyFactory {
         ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
         ForestGameArea.checkEnemyCount();
 
+        // Update player kill count and award points
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
             Entity player = wc.getPlayerRef();
 
-            // Award points to player upon defeating enemy
+            // Award points and update kill count
             PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
             if (psc != null) {
                 psc.addPoints(points);
+                psc.addEnemyKill();
             }
 
             // Drop currency upon defeating enemy

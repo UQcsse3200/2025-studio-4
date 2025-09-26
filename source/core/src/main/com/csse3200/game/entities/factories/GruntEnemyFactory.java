@@ -107,10 +107,11 @@ public class GruntEnemyFactory {
                 player.getEvents().trigger("dropCurrency", drops);
             }
 
-            // Award points to player upon defeating enemy
+            // Award points and update kill count
             PlayerScoreComponent totalScore = player.getComponent(PlayerScoreComponent.class);
             if (totalScore != null) {
                 totalScore.addPoints(points);
+                totalScore.addEnemyKill();
             }
         }
 

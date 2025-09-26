@@ -85,12 +85,6 @@ public final class SimpleUI {
         return new Label.LabelStyle(font(), Color.valueOf("d7e3ff"));
     }
 
-    public static Label.LabelStyle largeTitle() {
-        BitmapFont largeFont = new BitmapFont();
-        largeFont.getData().setScale(1.5f); // 1.5倍大小
-        return new Label.LabelStyle(largeFont, Color.BLACK);
-    }
-
     /* ---------------------------
      * Button style
      * --------------------------- */

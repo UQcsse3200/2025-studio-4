@@ -49,15 +49,11 @@ public class MapSelectionDisplay extends UIComponent {
     }
 
     private void buildEntries() {
+        // Add built-in maps first
+        addBuiltInMaps();
+        
+        // Then add TMX files from maps directory
         List<FileHandle> maps = findMaps();
-        if (maps.isEmpty()) {
-            MapEntry placeholder = new MapEntry();
-            placeholder.mapId = null;                 // will pass null -> game uses default
-            placeholder.displayName = "Default";
-            placeholder.thumbTex = THUMB_TEX;
-            entries.add(placeholder);
-            return;
-        }
         for (FileHandle fh : maps) {
             MapEntry e = new MapEntry();
             e.mapId = fh.nameWithoutExtension();
@@ -65,6 +61,34 @@ public class MapSelectionDisplay extends UIComponent {
             e.thumbTex = THUMB_TEX;                   // reuse placeholder thumbnail
             entries.add(e);
         }
+        
+        // If no maps at all, add default
+        if (entries.isEmpty()) {
+            MapEntry placeholder = new MapEntry();
+            placeholder.mapId = null;                 // will pass null -> game uses default
+            placeholder.displayName = "Default";
+            placeholder.thumbTex = THUMB_TEX;
+            entries.add(placeholder);
+        }
+    }
+
+    /**
+     * Add built-in maps that don't rely on TMX files.
+     */
+    private void addBuiltInMaps() {
+        // Default Forest map
+        MapEntry defaultMap = new MapEntry();
+        defaultMap.mapId = null;                     // null means default ForestGameArea
+        defaultMap.displayName = "Forest Demo";
+        defaultMap.thumbTex = THUMB_TEX;
+        entries.add(defaultMap);
+        
+        // MapTwo
+        MapEntry mapTwo = new MapEntry();
+        mapTwo.mapId = "MapTwo";                     // This will trigger ForestGameArea2
+        mapTwo.displayName = "Map Two";
+        mapTwo.thumbTex = THUMB_TEX;
+        entries.add(mapTwo);
     }
 
     private void addActors() {

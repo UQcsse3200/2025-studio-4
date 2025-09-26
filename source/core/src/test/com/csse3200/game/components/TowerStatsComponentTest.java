@@ -1,15 +1,16 @@
 package com.csse3200.game.components;
 
 import org.junit.jupiter.api.Test;
-import com.csse3200.game.components.TowerStatsComponent;
-import com.csse3200.game.components.TowerComponent;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TowerStatsComponentTest {
 
     @Test
     void testGettersAndSetters() {
-        TowerStatsComponent stats = new TowerStatsComponent(100, 15, 7f, 2f);
+        TowerStatsComponent stats = new TowerStatsComponent(
+                100, 15f, 7f, 2f,
+                50f, 1f, "projectiles/bullet.png"
+        );
 
         assertEquals(100, stats.getHealth());
         stats.setHealth(80);
@@ -17,7 +18,7 @@ public class TowerStatsComponentTest {
         stats.setHealth(-10);
         assertEquals(0, stats.getHealth());
 
-        assertEquals(15, stats.getDamage());
+        assertEquals(15f, stats.getDamage());
         assertEquals(7f, stats.getRange());
         assertEquals(2f, stats.getAttackCooldown());
 
@@ -27,7 +28,10 @@ public class TowerStatsComponentTest {
 
     @Test
     void testAttackTimer() {
-        TowerStatsComponent stats = new TowerStatsComponent(100, 10, 5f, 1f);
+        TowerStatsComponent stats = new TowerStatsComponent(
+                100, 10f, 5f, 1f,
+                50f, 1f, "projectiles/bullet.png"
+        );
 
         assertEquals(0f, stats.getAttackTimer());
         assertFalse(stats.canAttack());

@@ -166,10 +166,9 @@ public class HomebaseDamageEffectComponent extends Component {
             }
             textureComponent.setColor(DAMAGE_COLOR);
         }
-        
         // 显示伤害数字
         showDamageNumber(damageAmount);
-        
+
         // 播放受击音效
         if (hitSound != null) {
             hitSound.play();

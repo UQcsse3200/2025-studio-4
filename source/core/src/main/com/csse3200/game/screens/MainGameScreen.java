@@ -10,6 +10,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
+import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -22,8 +24,6 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.GameTime;
-import com.csse3200.game.services.GameStateService;
-import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.terminal.Terminal;
@@ -53,7 +53,6 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Main_Game_Button.png",
           "images/scrap.png",
           "images/Game_Over.png",
-          "images/score_trophy.png",
           "images/Game_Victory.png"
   };
 
@@ -86,22 +85,6 @@ public class MainGameScreen extends ScreenAdapter {
     ServiceLocator.registerLeaderboardService(
             new InMemoryLeaderboardService("player-001"));
 
-    // Re-register GameStateService since it was cleared by previous screen disposal
-    if (ServiceLocator.getGameStateService() == null) {
-      ServiceLocator.registerGameStateService(new GameStateService());
-    }
-    
-    // Re-register PlayerNameService, but preserve any existing name from the game instance
-    if (ServiceLocator.getPlayerNameService() == null) {
-      // Try to get the player name from the game instance if it was stored there
-      String playerName = (game instanceof GdxGame) ? ((GdxGame) game).getStoredPlayerName() : null;
-      if (playerName != null && !playerName.isEmpty()) {
-        ServiceLocator.registerPlayerNameService(new PlayerNameService(playerName));
-      } else {
-        ServiceLocator.registerPlayerNameService(new PlayerNameService());
-      }
-    }
-
     logger.debug("Initialising main game screen services (Continue: {}, Save/Arg: {})", isContinue, saveFileName);
 
     ServiceLocator.registerTimeSource(new GameTime());
@@ -122,8 +105,6 @@ public class MainGameScreen extends ScreenAdapter {
     renderer = RenderFactory.createRenderer();
     renderer.getCamera().getEntity().setPosition(CAMERA_POSITION);
     renderer.getDebug().renderPhysicsWorld(physicsEngine.getWorld());
-    // Display collision volume
-    //renderer.getDebug().setActive(true);
     // renderer.getDebug().setActive(true); // collision debug
 
     loadAssets();
@@ -153,18 +134,22 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     // Create game area after loading save (or for new game)
-    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-
-    // Pass information about existing player to game area
-    forestGameArea.setHasExistingPlayer(hasExistingPlayer);
+    // NEW: Support different game areas based on mapId
+    Object gameArea = createGameAreaBasedOnMap();
+    
+    // Pass information about existing player to game area (both types support this method)
+    if (gameArea instanceof ForestGameArea) {
+      ((ForestGameArea) gameArea).setHasExistingPlayer(hasExistingPlayer);
+    } else if (gameArea instanceof com.csse3200.game.areas2.MapTwo.ForestGameArea2) {
+      ((com.csse3200.game.areas2.MapTwo.ForestGameArea2) gameArea).setHasExistingPlayer(hasExistingPlayer);
+    }
 
     // NEW: If this is a NEW game and we have a selected map id, try to forward it to the area.
     // We support either setMapPath(String) or setMapId(String) if your area exposes them.
     if (!isContinue) {
       String chosenMapPath = resolveNewGameMapPath();
       if (chosenMapPath != null) {
-        boolean applied = tryApplyMapToArea(forestGameArea, chosenMapPath);
+        boolean applied = tryApplyMapToArea(gameArea, chosenMapPath);
         if (applied) {
           logger.info("Starting NEW game on map: {}", chosenMapPath);
         } else {
@@ -174,13 +159,23 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     // If continuing from a save, avoid auto-starting waves to prevent duplicate enemies.
-    forestGameArea.setAutoStartWaves(!hasExistingPlayer);
-    forestGameArea.create();
+    if (gameArea instanceof ForestGameArea) {
+      ((ForestGameArea) gameArea).setAutoStartWaves(!hasExistingPlayer);
+      ((ForestGameArea) gameArea).create();
+    } else if (gameArea instanceof ForestGameArea2) {
+      ((ForestGameArea2) gameArea).setAutoStartWaves(!hasExistingPlayer);
+      ((ForestGameArea2) gameArea).create();
+    }
 
     // After game area and assets are ready, apply pending save restoration if any
     if (hasExistingPlayer) {
       // Use area waypoints when restoring to avoid any initial drift
-      java.util.List<com.csse3200.game.entities.Entity> canonical = forestGameArea.getWaypointList();
+      java.util.List<com.csse3200.game.entities.Entity> canonical = null;
+      if (gameArea instanceof ForestGameArea) {
+        canonical = ((ForestGameArea) gameArea).getWaypointList();
+      } else if (gameArea instanceof ForestGameArea2) {
+        canonical = ((ForestGameArea2) gameArea).getWaypointList();
+      }
       boolean applied = (canonical != null && !canonical.isEmpty())
               ? simpleSave.applyPendingRestoreWithWaypoints(canonical)
               : simpleSave.applyPendingRestore();
@@ -273,6 +268,7 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new TerminalDisplay());
 
     ServiceLocator.getEntityService().register(ui);
+    ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());
     return ui;
   }
 
@@ -336,6 +332,23 @@ public class MainGameScreen extends ScreenAdapter {
       } catch (ReflectiveOperationException ignoredToo) {
         return false;
       }
+    }
+  }
+
+  /**
+   * Create the appropriate game area based on the selected mapId.
+   * Returns ForestGameArea2 for "MapTwo", otherwise ForestGameArea.
+   */
+  private Object createGameAreaBasedOnMap() {
+    // Check if MapTwo is selected
+    if (startupArg != null && "MapTwo".equalsIgnoreCase(startupArg)) {
+      logger.info("Creating ForestGameArea2 for MapTwo");
+      TerrainFactory2 terrainFactory2 = new TerrainFactory2(renderer.getCamera());
+      return new ForestGameArea2(terrainFactory2);
+    } else {
+      logger.info("Creating default ForestGameArea");
+      TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
+      return new ForestGameArea(terrainFactory);
     }
   }
 }

@@ -1,4 +1,4 @@
-package com.csse3200.game.data;
+package com.csse3200.game.components.maingame;
 
 import java.util.HashMap;
 import java.util.Map;

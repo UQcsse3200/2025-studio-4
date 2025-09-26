@@ -23,8 +23,7 @@ import com.csse3200.game.components.TowerCostComponent;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
-import com.csse3200.game.data.TowerUpgradeData;
-import com.csse3200.game.data.TowerUpgradeData.UpgradeStats;
+import com.csse3200.game.components.maingame.TowerUpgradeData.UpgradeStats;
 
 import java.util.Map;
 import java.util.EnumMap;

@@ -89,6 +89,18 @@ public class TowerComponent extends Component {
     }
 
     /**
+     * Changes the texture of the tower's head at runtime.
+     *
+     * @param texturePath The new texture file path.
+     */
+    public void changeHeadTexture(String texturePath) {
+        if (headRenderer != null) {
+            headRenderer.setTexture(texturePath);
+            System.out.println("[Tower] Head texture changed for " + type + " tower to " + texturePath);
+        }
+    }
+
+    /**
      * Gets the type of the tower.
      *
      * @return The tower type.

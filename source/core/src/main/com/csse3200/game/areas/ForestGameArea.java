@@ -292,6 +292,10 @@ public class ForestGameArea extends GameArea {
                 if (player.getComponent(CurrencyManagerComponent.class) == null) {
                     player.addComponent(new CurrencyManagerComponent());
                 }
+
+                if (player.getComponent(com.csse3200.game.components.PlayerScoreComponent.class) == null) {
+                    player.addComponent(new com.csse3200.game.components.PlayerScoreComponent());
+                }
             }
         }
 
@@ -428,6 +432,10 @@ public class ForestGameArea extends GameArea {
         // Ensure new player has currency component
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent());
+        }
+
+        if (newPlayer.getComponent(com.csse3200.game.components.PlayerScoreComponent.class) == null) {
+            newPlayer.addComponent(new com.csse3200.game.components.PlayerScoreComponent());
         }
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);

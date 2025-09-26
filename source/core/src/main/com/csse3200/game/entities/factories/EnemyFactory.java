@@ -64,13 +64,18 @@ public static Entity createBaseEnemyAnimated(
       int waypointIndex
   ) {
     Entity e = createBaseEnemy(target, speed, waypoints, waypointIndex);
+
     //Loading the asset manager directly from the disk
     com.badlogic.gdx.files.FileHandle fh = com.badlogic.gdx.Gdx.files.internal(atlasPath);
     if (!fh.exists()) {
     throw new com.badlogic.gdx.utils.GdxRuntimeException("Atlas file not found at: " + fh.path());
     }
 
-    com.badlogic.gdx.graphics.g2d.TextureAtlas atlas = new com.badlogic.gdx.graphics.g2d.TextureAtlas(fh);
+    //com.badlogic.gdx.graphics.g2d.TextureAtlas atlas = new com.badlogic.gdx.graphics.g2d.TextureAtlas(fh);
+
+    com.csse3200.game.services.ResourceService rs = 
+        com.csse3200.game.services.ServiceLocator.getResourceService();
+    com.badlogic.gdx.graphics.g2d.TextureAtlas atlas = rs.getAsset(atlasPath, com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
     AnimationRenderComponent anim = new AnimationRenderComponent(atlas);
 

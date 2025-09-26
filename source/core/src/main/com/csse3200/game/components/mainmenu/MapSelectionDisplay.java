@@ -135,7 +135,17 @@ public class MapSelectionDisplay extends UIComponent {
         carouselRow.add(leftArrow).padRight(24f);
         carouselRow.add(card).pad(4f);
         carouselRow.add(rightArrow).padLeft(24f);
-        root.add(carouselRow).expand().center();
+        root.add(carouselRow).expand().center().row();
+
+        TextButton upgradeButton = new TextButton("Upgrades", skin);
+        upgradeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                entity.getEvents().trigger("toUpgradeMenu");
+            }
+        });
+
+        root.add(upgradeButton).expand().center();
 
         stage.addActor(root);
 

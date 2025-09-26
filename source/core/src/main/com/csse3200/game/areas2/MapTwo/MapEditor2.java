@@ -35,6 +35,7 @@ public class MapEditor2 extends InputAdapter {
     private TiledMapTile pathTile;
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
+    private java.util.List<GridPoint2> keyWaypoints2 = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
     public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
@@ -138,16 +139,27 @@ public class MapEditor2 extends InputAdapter {
         // Clear existing paths清空现有路径
         pathTiles.clear();
         keyWaypoints.clear();
+        keyWaypoints2.clear();
 
         // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
         keyWaypoints.add(new GridPoint2(5, 0));     // Start
         keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
-        keyWaypoints.add(new GridPoint2(14, 14));   // Third waypoint
-        keyWaypoints.add(new GridPoint2(14, 25));   // Fifth waypoint
-        keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
+        keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
+        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
         keyWaypoints.add(new GridPoint2(6, 36));    // End
+        
+        // 新增的5个关键点
+        keyWaypoints2.add(new GridPoint2(27, 5));    // 新坐标5
+        keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
+        keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
+        keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
+        keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
+        keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
+        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
+        keyWaypoints2.add(new GridPoint2(6, 36));    // End
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
@@ -157,11 +169,27 @@ public class MapEditor2 extends InputAdapter {
             waypointList.add(waypoint);
         }
 
+        // Mark keyWaypoints2 points标记第二组关键路径点
+        for (GridPoint2 wp : keyWaypoints2) {
+            markKeypoint(wp);
+            Entity waypoint = new Entity();
+            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypointList.add(waypoint);
+        }
+
         // Connect waypoints with path tiles连接关键点之间的路径
         connectWaypointsWithPath();
         
+        // Connect keyWaypoints2 with path tiles连接第二组关键点之间的路径
+        connectWaypoints2WithPath();
+        
         // 重新标记关键点，确保它们不被路径瓦片覆盖
         for (GridPoint2 wp : keyWaypoints) {
+            markKeypoint(wp);
+        }
+        
+        // 重新标记第二组关键点，确保它们不被路径瓦片覆盖
+        for (GridPoint2 wp : keyWaypoints2) {
             markKeypoint(wp);
         }
         int[][] redCircledArea = {
@@ -232,6 +260,26 @@ public class MapEditor2 extends InputAdapter {
         }
         
         System.out.println("✅ Path connection completed. Total path tiles: " + pathTiles.size());
+    }
+
+    /** Connect keyWaypoints2 with path tiles and mark them as invalid for placement连接第二组关键点之间的路径并标记为不可放置 */
+    private void connectWaypoints2WithPath() {
+        if (keyWaypoints2.size() < 2) return;
+        
+        System.out.println("🛤️ Connecting keyWaypoints2 with path tiles...");
+        
+        // 连接相邻的关键点
+        for (int i = 0; i < keyWaypoints2.size() - 1; i++) {
+            GridPoint2 start = keyWaypoints2.get(i);
+            GridPoint2 end = keyWaypoints2.get(i + 1);
+            
+            System.out.println("🔗 Connecting keyWaypoints2 " + i + " (" + start.x + "," + start.y + ") to keyWaypoints2 " + (i+1) + " (" + end.x + "," + end.y + ")");
+            
+            // 生成两点之间的直线路径
+            generatePathBetweenPoints(start, end);
+        }
+        
+        System.out.println("✅ keyWaypoints2 Path connection completed. Total path tiles: " + pathTiles.size());
     }
 
     /** Generate path tiles between two points生成两点之间的路径瓦片 */
@@ -315,6 +363,7 @@ public class MapEditor2 extends InputAdapter {
         snowTreeTiles.clear();
         occupiedTiles.clear();
         keyWaypoints.clear();
+        keyWaypoints2.clear();
         snowCoords.clear();
         System.out.println("🧹 MapEditor cleaned up");
     }

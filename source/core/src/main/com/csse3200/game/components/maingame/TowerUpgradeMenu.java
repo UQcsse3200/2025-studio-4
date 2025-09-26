@@ -1,107 +1,199 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.csse3200.game.entities.Entity;
-import com.csse3200.game.components.TowerStatsComponent;
-import com.csse3200.game.ui.UIComponent;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.scenes.scene2d.ui.Container;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.InputAdapter;
+
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.components.TowerComponent;
+import com.csse3200.game.components.TowerStatsComponent;
+import com.csse3200.game.components.TowerCostComponent;
+import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.data.TowerUpgradeData;
+import com.csse3200.game.data.TowerUpgradeData.UpgradeStats;
 
 import java.util.Map;
 import java.util.EnumMap;
 
-
-import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
-
 /**
- * A UI component that displays a menu for upgrading tower attributes.
- *
- * This menu provides buttons to upgrade damage, range, and attack speed
- * for a selected tower. The menu is positioned in the bottom-right corner
- * and is only visible when a tower is selected. Upgrades cost in-game
- * currency, and the component checks if the player has sufficient resources
- * before applying them.
- *
- * Towers and player currency are retrieved from the entity system.
+ * UI component for displaying and upgrading towers.
+ * Shows separate upgrade paths for each tower type.
  */
 public class TowerUpgradeMenu extends UIComponent {
-    private Table table;
-    private Entity selectedTower = null;
 
-    // Upgrade costs
-    private static final int DAMAGE_UPGRADE_COST = 50;
-    private static final int RANGE_UPGRADE_COST = 40;
-    private static final int SPEED_UPGRADE_COST = 60;
+    private Table rootTable;
+    private Entity selectedTower = null;
+    private String currentTowerType;
+
+    private Label pathALevelLabel;
+    private Label pathBLevelLabel;
+    private TextButton pathAButton;
+    private TextButton pathBButton;
+
     private static final CurrencyType UPGRADE_CURRENCY = CurrencyType.METAL_SCRAP;
 
+    private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
+    private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
+
     /**
-     * Initializes the tower upgrade menu by creating buttons for each
-     * upgrade type and setting up the stage input processor.
+     * Creates the UI for the tower upgrade menu and sets up listeners.
      */
     @Override
     public void create() {
         super.create();
-        table = new Table();
-        table.center().right();   // Position menu in bottom-right corner
-        table.setVisible(false);  // Hide initially
-        table.setFillParent(true);
 
-        // Buttons for upgrades
-        TextButton damageBtn = new TextButton("Upgrade Damage 50", skin);
-        Container<TextButton> damageContainer = new Container<>(damageBtn);
-        damageContainer.setTouchable(Touchable.enabled);
-        table.add(damageContainer).pad(3).row();
+        rootTable = new Table();
+        rootTable.setFillParent(true);
+        rootTable.bottom().right().pad(20);
+        rootTable.setVisible(false);
 
-        TextButton rangeBtn = new TextButton("Upgrade Range 40", skin);
-        Container<TextButton> rangeContainer = new Container<>(rangeBtn);
-        rangeContainer.setTouchable(Touchable.enabled);
-        table.add(rangeContainer).pad(5).row();
+        // Background
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
+        pixmap.fill();
+        Texture backgroundTexture = new Texture(pixmap);
+        pixmap.dispose();
+        Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(backgroundTexture));
 
-        TextButton speedBtn = new TextButton("Upgrade Speed 60", skin);
-        Container<TextButton> speedContainer = new Container<>(speedBtn);
-        speedContainer.setTouchable(Touchable.enabled);
-        table.add(speedContainer).pad(5).row();
+        Container<Table> container = new Container<>();
+        container.setBackground(backgroundDrawable);
+        container.pad(15);
 
-        // Add listeners for upgrades
-        damageBtn.addListener(new ClickListener() {
+        Label title = new Label("Tower Upgrades", skin, "title");
+        title.setColor(Color.GOLD);
+
+        // Path A
+        Table pathATable = new Table(skin);
+        pathATable.defaults().pad(5);
+        Label pathALabel = new Label("Damage & Range", skin);
+        pathALabel.setColor(Color.ORANGE);
+        pathALevelLabel = new Label("Level: 1", skin);
+        pathAButton = new TextButton("", skin);
+        pathATable.add(pathALabel).row();
+        pathATable.add(pathALevelLabel).row();
+        pathATable.add(pathAButton).width(180).row();
+
+        // Path B
+        Table pathBTable = new Table(skin);
+        pathBTable.defaults().pad(5);
+        Label pathBLabel = new Label("Cooldown & Speed", skin);
+        pathBLabel.setColor(Color.SKY);
+        pathBLevelLabel = new Label("Level: 1", skin);
+        pathBButton = new TextButton("", skin);
+        pathBTable.add(pathBLabel).row();
+        pathBTable.add(pathBLevelLabel).row();
+        pathBTable.add(pathBButton).width(180).row();
+
+        // Combine sections
+        Table content = new Table(skin);
+        content.defaults().pad(10);
+        content.add(pathATable).padRight(20);
+        content.add(pathBTable);
+
+        Table containerContent = new Table(skin);
+        containerContent.add(title).colspan(2).center().padBottom(15).row();
+        containerContent.add(content);
+        container.setActor(containerContent);
+
+        // --- Sell button ---
+        TextButton sellButton = new TextButton("Sell", skin);
+        sellButton.setColor(Color.RED);  // optional: make it stand out
+        containerContent.row().padTop(15);
+        containerContent.add(sellButton).colspan(2).width(180).center();
+
+        // --- Sell button listener ---
+        sellButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                attemptUpgrade(DAMAGE_UPGRADE_COST, stats -> stats.setDamage(stats.getDamage() + 1));
+                if (selectedTower == null) return;
+                TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
+                TowerCostComponent costComp = selectedTower.getComponent(TowerCostComponent.class);
+                TowerStatsComponent statsComp = selectedTower.getComponent(TowerStatsComponent.class);
+                if (towerComp == null || costComp == null || statsComp == null) return;
+                Entity player = findPlayerEntity();
+                if (player == null) return;
+                CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                if (currencyManager == null) return;
+
+                // --- Calculate total spent ---
+                int totalSpent = 0;
+                CurrencyType refundCurrencyType = CurrencyType.METAL_SCRAP; // Only refund METAL_SCRAP
+
+                // Base cost
+                totalSpent += costComp.getCostForCurrency(refundCurrencyType);
+
+                // Path A upgrades
+                Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerComp.getType().toLowerCase());
+                int levelA = statsComp.getLevel_A();
+                for (int lvl = 2; lvl <= levelA; lvl++) {
+                    if (upgradesA != null && upgradesA.containsKey(lvl)) {
+                        totalSpent += upgradesA.get(lvl).cost;
+                    }
+                }
+
+                // Path B upgrades
+                Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerComp.getType().toLowerCase());
+                int levelB = statsComp.getLevel_B();
+                for (int lvl = 2; lvl <= levelB; lvl++) {
+                    if (upgradesB != null && upgradesB.containsKey(lvl)) {
+                        totalSpent += upgradesB.get(lvl).cost;
+                    }
+                }
+
+                // Refund 75% of total spent
+                currencyManager.refundCurrency(
+                    Map.of(refundCurrencyType, totalSpent), 0.75f
+                );
+
+                // Remove the tower's head entity if present
+                if (towerComp.hasHead()) {
+                    Entity head = towerComp.getHeadEntity();
+                    if (head != null) {
+                        head.dispose();
+                        com.csse3200.game.services.ServiceLocator.getEntityService().unregister(head);
+                    }
+                }
+                // Remove the tower entity
+                selectedTower.dispose();
+                com.csse3200.game.services.ServiceLocator.getEntityService().unregister(selectedTower);
+                selectedTower = null;
+                rootTable.setVisible(false);
             }
         });
 
-        rangeBtn.addListener(new ClickListener() {
+        rootTable.add(container);
+        stage.addActor(rootTable);
+
+        // Button listeners
+        pathAButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                attemptUpgrade(RANGE_UPGRADE_COST, stats -> stats.setRange(stats.getRange() + 1));
+                attemptUpgrade(true);
             }
         });
-
-        speedBtn.addListener(new ClickListener() {
+        pathBButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                attemptUpgrade(SPEED_UPGRADE_COST,
-                        stats -> stats.setAttackCooldown(Math.max(0.1f, stats.getAttackCooldown() - 0.1f)));
+                attemptUpgrade(false);
             }
         });
-
-        stage.addActor(table);
 
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
-        // 保留原有的输入处理器（包括InputService）
         if (Gdx.input.getInputProcessor() != null) {
             multiplexer.addProcessor(Gdx.input.getInputProcessor());
         }
@@ -110,82 +202,136 @@ public class TowerUpgradeMenu extends UIComponent {
     }
 
     /**
-     * Draw method required by UIComponent, unused for this menu.
+     * Draws the UI component. (No custom drawing needed here.)
+     *
+     * @param batch The SpriteBatch used for rendering.
      */
     @Override
-    protected void draw(SpriteBatch batch) {
-        // No custom drawing needed
-    }
+    protected void draw(SpriteBatch batch) { }
 
     /**
-     * Sets the selected tower to be upgraded.
-     * The menu becomes visible if a tower is selected, or hides if null.
+     * Sets the currently selected tower for upgrades.
      *
-     * @param tower the tower entity to select, or null to deselect
+     * @param tower The tower entity.
+     * @param towerType Tower type string.
      */
-    public void setSelectedTower(Entity tower) {
+    public void setSelectedTower(Entity tower, String towerType) {
         this.selectedTower = tower;
-        table.setVisible(tower != null);
+        this.currentTowerType = towerType.toLowerCase(); // normalize
+        rootTable.setVisible(tower != null);
+        updateLabels();
     }
 
     /**
-     * Checks if the menu is being touched at the given screen coordinates.
+     * Returns true if the upgrade menu is touched at the given screen coordinates.
      *
-     * @param screenX the x-coordinate of the touch
-     * @param screenY the y-coordinate of the touch
-     * @return true if the menu table was hit, false otherwise
+     * @param screenX The X coordinate on the screen.
+     * @param screenY The Y coordinate on the screen.
+     * @return True if the menu is touched, false otherwise.
      */
     public boolean isTouched(int screenX, int screenY) {
         Vector2 stageCoords = stage.screenToStageCoordinates(new Vector2(screenX, screenY));
-        return table.hit(stageCoords.x, stageCoords.y, true) != null;
-    }
-
-    // --- Private helper methods ---
-
-    /**
-     * Functional interface representing an action to apply to a tower's stats.
-     */
-    private interface UpgradeAction {
-        void apply(TowerStatsComponent stats);
+        return rootTable.hit(stageCoords.x, stageCoords.y, true) != null;
     }
 
     /**
-     * Attempts to apply an upgrade to the selected tower if the player
-     * can afford it. Uses the CurrencyManagerComponent's cost map system.
+     * Sets up the content of an upgrade button with the cost and icon.
      *
-     * @param cost  the cost of the upgrade
-     * @param action the upgrade action to apply
+     * @param button The button to set up.
+     * @param cost   The cost to display.
      */
-    private void attemptUpgrade(int cost, UpgradeAction action) {
-        if (selectedTower == null) return;
+    private void setupButtonContent(TextButton button, int cost) {
+        Table content = new Table(skin);
+        Image scrapIcon = new Image(new TextureRegionDrawable(
+                new TextureRegion(new Texture("images/metal_scrap_currency.png"))));
+        Label costLabel = new Label(String.valueOf(cost), skin);
+        content.add(scrapIcon).size(24, 24).padRight(5);
+        content.add(costLabel);
+        button.clearChildren();
+        button.add(content).expand().fill();
+    }
+
+    /**
+     * Attempts to upgrade the selected tower along the specified path.
+     *
+     * @param isLevelA True for Path A, false for Path B.
+     */
+    private void attemptUpgrade(boolean isLevelA) {
+        if (selectedTower == null || currentTowerType == null) return;
+
+        TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
+        if (stats == null) return;
+
+        int currentLevel = isLevelA ? stats.getLevel_A() : stats.getLevel_B();
+        if (currentLevel >= 5) return;
+        int nextLevel = currentLevel + 1;
+
+        Map<Integer, UpgradeStats> upgrades = isLevelA
+                ? pathAUpgradesPerTower.get(currentTowerType)
+                : pathBUpgradesPerTower.get(currentTowerType);
+        if (upgrades == null) return;
+
+        UpgradeStats upgrade = upgrades.get(nextLevel);
+        if (upgrade == null) return;
 
         Entity player = findPlayerEntity();
         if (player == null) return;
-
         CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
         if (currencyManager == null) return;
 
-        // Build a cost map for the upgrade
         Map<CurrencyType, Integer> costMap = new EnumMap<>(CurrencyType.class);
-        costMap.put(UPGRADE_CURRENCY, cost);
+        costMap.put(UPGRADE_CURRENCY, upgrade.cost);
 
         if (!currencyManager.canAffordAndSpendCurrency(costMap)) {
             System.out.println("Not enough " + UPGRADE_CURRENCY + " for upgrade!");
             return;
         }
 
-        TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
-        action.apply(stats);
+        // 🔹 Apply stat upgrades
+        if (isLevelA) {
+            stats.incrementLevel_A();
+            stats.setDamage(upgrade.damage);
+            stats.setRange(upgrade.range);
+        } else {
+            stats.incrementLevel_B();
+            stats.setAttackCooldown(upgrade.cooldown);
+            stats.setProjectileSpeed(upgrade.speed);
+        }
 
-        System.out.println("Upgrade successful! Remaining " + UPGRADE_CURRENCY + ": " +
-                currencyManager.getCurrencyAmount(UPGRADE_CURRENCY));
+        // 🔹 Determine the higher level between A and B
+        int levelA = stats.getLevel_A();
+        int levelB = stats.getLevel_B();
+        int highestLevel = Math.max(levelA, levelB);
+
+        // 🔹 Decide which upgrade path to pull the image from
+        Map<Integer, UpgradeStats> highestUpgrades =
+                (levelA >= levelB) ? pathAUpgradesPerTower.get(currentTowerType)
+                        : pathBUpgradesPerTower.get(currentTowerType);
+
+        if (highestUpgrades != null) {
+            UpgradeStats levelData = highestUpgrades.get(highestLevel);
+            if (levelData != null && levelData.imagePath != null) {
+                TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
+                if (towerComp != null) {
+                    towerComp.changeHeadTexture(levelData.imagePath);
+                    System.out.println("Tower texture set from path " +
+                            (levelA >= levelB ? "A" : "B") +
+                            " at level " + highestLevel +
+                            ": " + levelData.imagePath);
+                }
+            }
+        }
+
+        updateLabels();
+        System.out.println("Upgrade successful!");
     }
 
 
+
     /**
-     * Finds the player entity that holds the currency manager component.
+     * Finds and returns the player entity that has a CurrencyManagerComponent.
      *
-     * @return the player entity, or null if not found
+     * @return The player entity, or null if not found.
      */
     private Entity findPlayerEntity() {
         Array<Entity> entities = safeEntities();
@@ -197,9 +343,9 @@ public class TowerUpgradeMenu extends UIComponent {
     }
 
     /**
-     * Safely retrieves a copy of all entities from the EntityService.
+     * Safely retrieves a copy of all entities from the entity service.
      *
-     * @return an Array of entities, or null if an exception occurs
+     * @return An array of entities, or null if retrieval fails.
      */
     private Array<Entity> safeEntities() {
         try {
@@ -208,4 +354,50 @@ public class TowerUpgradeMenu extends UIComponent {
             return null;
         }
     }
+
+    /**
+     * Updates the labels and button states for the upgrade menu based on the selected tower's levels.
+     */
+    private void updateLabels() {
+        if (selectedTower == null || currentTowerType == null) return;
+
+        TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
+        int levelA = stats.getLevel_A();
+        int levelB = stats.getLevel_B();
+
+        pathALevelLabel.setText("Level: " + (levelA >= 5 ? "MAX" : levelA));
+        pathBLevelLabel.setText("Level: " + (levelB >= 5 ? "MAX" : levelB));
+
+        int nextLevelA = levelA + 1;
+        int nextLevelB = levelB + 1;
+
+        Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(currentTowerType);
+        Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(currentTowerType);
+
+        // --- Path A button ---
+        pathAButton.clearChildren();
+        if (levelA >= 5) {
+            Label maxLabel = new Label("MAX", skin);
+            pathAButton.add(maxLabel).expand().fill().center();
+            pathAButton.setDisabled(true);
+        } else {
+            int costA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
+            setupButtonContent(pathAButton, costA);
+            pathAButton.setDisabled(false);
+        }
+
+        // --- Path B button ---
+        pathBButton.clearChildren();
+        if (levelB >= 5) {
+            Label maxLabel = new Label("MAX", skin);
+            pathBButton.add(maxLabel).expand().fill().center();
+            pathBButton.setDisabled(true);
+        } else {
+            int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
+            setupButtonContent(pathBButton, costB);
+            pathBButton.setDisabled(false);
+        }
+
+    }
+
 }

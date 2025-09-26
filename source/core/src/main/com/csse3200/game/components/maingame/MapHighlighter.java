@@ -55,12 +55,20 @@ public class MapHighlighter extends UIComponent {
     @Override
     public void update() {
         if (Gdx.input.justTouched()) {
-            // if the ui is touched, ignore for tower selection
+            Vector2 clickWorld = getWorldClickPosition();
+
+            // If clicking on tower upgrade menu itself, ignore
             if (towerUpgradeMenu != null && towerUpgradeMenu.isTouched(Gdx.input.getX(), Gdx.input.getY())) {
                 return;
             }
 
-            Vector2 clickWorld = getWorldClickPosition();
+            // If placement is active, don't open upgrade menu
+            if (placementController != null && placementController.isPlacementActive()) {
+                // Only show placement preview / range if click is on map
+                return;
+            }
+
+            // Normal tower selection when not placing
             boolean towerFound = false;
             if (clickWorld != null) {
                 Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
@@ -71,32 +79,29 @@ public class MapHighlighter extends UIComponent {
                     Vector2 pos = e.getPosition();
                     float tileSize = terrain.getTileSize();
 
-                    // Check if click lands inside this tower's footprint
                     if (clickWorld.x >= pos.x && clickWorld.x <= pos.x + tower.getWidth() * tileSize &&
                             clickWorld.y >= pos.y && clickWorld.y <= pos.y + tower.getHeight() * tileSize) {
-                        selectedTower = e;
 
+                        selectedTower = e;
                         if (towerUpgradeMenu != null) {
-                            TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
-                            String towerType = towerComp != null ? towerComp.getType() : "";
+                            String towerType = tower.getType();
                             towerUpgradeMenu.setSelectedTower(selectedTower, towerType);
                         }
-
                         towerFound = true;
                         break;
                     }
                 }
             }
 
-            //if no tower was found at click location, deselect the current one
             if (!towerFound) {
                 selectedTower = null;
-                if  (towerUpgradeMenu != null) {
+                if (towerUpgradeMenu != null) {
                     towerUpgradeMenu.setSelectedTower(null, "");
                 }
             }
         }
     }
+
 
 
     /**

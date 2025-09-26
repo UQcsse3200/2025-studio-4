@@ -365,7 +365,6 @@ public class ForestGameArea extends GameArea {
     private void spawnTerrain() {
         terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
         spawnEntity(new Entity().addComponent(terrain));
-
         // Create boundary walls
         createBoundaryWalls();
     }

@@ -70,6 +70,7 @@ public class MainGameActions extends Component {
   }
 
   private void onQuitToMenu() {
+    ForestGameArea.cleanupAllWaves();
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
 

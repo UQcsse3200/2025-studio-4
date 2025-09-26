@@ -101,6 +101,10 @@ public class TowerUpgradeMenu extends UIComponent {
 
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
+        // 保留原有的输入处理器（包括InputService）
+        if (Gdx.input.getInputProcessor() != null) {
+            multiplexer.addProcessor(Gdx.input.getInputProcessor());
+        }
         multiplexer.addProcessor(new InputAdapter() {});
         Gdx.input.setInputProcessor(multiplexer);
     }

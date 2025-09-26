@@ -45,6 +45,7 @@ public class OpeningCutsceneScreen implements Screen {
     // UI Elements
     private Image backgroundImage;
     private Image logoImage;
+    
     private Table mainTable;
     
     // Animation timing
@@ -69,6 +70,7 @@ public class OpeningCutsceneScreen implements Screen {
     private float lastClickTime = 0f;
     private float clickTimeout = 1f; // 1 second timeout between clicks
     private Label skipLabel;
+    private boolean skipPressed = false;
     
     // Fonts for cleanup
     private BitmapFont scrollFont;
@@ -320,6 +322,20 @@ public class OpeningCutsceneScreen implements Screen {
         }
     }
     
+    private void skipCutscene() {
+        if (skipPressed) {
+            return; // Prevent multiple skip calls
+        }
+        skipPressed = true;
+        logger.info("Opening cutscene skipped by user");
+        
+        // Immediately fade out and transition
+        stage.addAction(Actions.sequence(
+            Actions.fadeOut(0.5f),
+            Actions.run(() -> cutsceneFinished = true)
+        ));
+    }
+    
     private void transitionToMainMenu() {
         logger.info("Opening cutscene finished, transitioning to main menu");
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
@@ -343,6 +359,11 @@ public class OpeningCutsceneScreen implements Screen {
     @Override
     public void hide() {
         logger.info("Opening cutscene hidden");
+        // 恢复InputService作为输入处理器
+        if (ServiceLocator.getInputService() != null) {
+            Gdx.input.setInputProcessor(ServiceLocator.getInputService());
+            logger.info("Restored InputService as input processor");
+        }
     }
     
     @Override

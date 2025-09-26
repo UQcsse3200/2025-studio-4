@@ -62,7 +62,7 @@ public class ForestGameArea2 extends GameArea2 {
 
     private static ForestGameArea2 currentGameArea;
 
-    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(6, 36);
     private static final float WALL_WIDTH = 0.1f;
 
 
@@ -88,17 +88,12 @@ public class ForestGameArea2 extends GameArea2 {
     // Obstacle Coordinate Single Fact Source: Defined by the GameArea
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
-            {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
-            {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
-             {5, 24}, {8, 20},
-             // 在x<31且y>13且x<13范围内随机添加的坐标点
-             {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
-             {7, 25}, {2, 15},  {6, 29}, 
+            {27, 9}
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
+            {15, 9}   };
 
     /**
      * Initialise this ForestGameArea2 to use the provided TerrainFactory2.

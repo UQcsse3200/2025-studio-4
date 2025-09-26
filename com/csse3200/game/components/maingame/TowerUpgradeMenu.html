@@ -101,15 +101,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TowerUpgradeMenu</span>
 <span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
-<div class="block">A UI component that displays a menu for upgrading tower attributes.
-
- This menu provides buttons to upgrade damage, range, and attack speed
- for a selected tower. The menu is positioned in the bottom-right corner
- and is only visible when a tower is selected. Upgrades cost in-game
- currency, and the component checks if the player has sufficient resources
- before applying them.
-
- Towers and player currency are retrieved from the entity system.</div>
+<div class="block">UI component for displaying and upgrading towers.
+ Shows separate upgrade paths for each tower type.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -152,24 +145,24 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Initializes the tower upgrade menu by creating buttons for each
- upgrade type and setting up the stage input processor.</div>
+<div class="block">Creates the UI for the tower upgrade menu and sets up listeners.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Draw method required by UIComponent, unused for this menu.</div>
+<div class="block">Draws the UI component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isTouched(int,int)" class="member-name-link">isTouched</a><wbr>(int&nbsp;screenX,
  int&nbsp;screenY)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Checks if the menu is being touched at the given screen coordinates.</div>
+<div class="block">Returns true if the upgrade menu is touched at the given screen coordinates.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelectedTower(com.csse3200.game.entities.Entity)" class="member-name-link">setSelectedTower</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;tower)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelectedTower(com.csse3200.game.entities.Entity,java.lang.String)" class="member-name-link">setSelectedTower</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;tower,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;towerType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the selected tower to be upgraded.</div>
+<div class="block">Sets the currently selected tower for upgrades.</div>
 </div>
 </div>
 </div>
@@ -221,8 +214,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block">Initializes the tower upgrade menu by creating buttons for each
- upgrade type and setting up the stage input processor.</div>
+<div class="block">Creates the UI for the tower upgrade menu and sets up listeners.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
@@ -233,24 +225,25 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
 <h3>draw</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
-<div class="block">Draw method required by UIComponent, unused for this menu.</div>
+<div class="block">Draws the UI component. (No custom drawing needed here.)</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a></code>&nbsp;in class&nbsp;<code><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>batch</code> - Batch to render to.</dd>
+<dd><code>batch</code> - The SpriteBatch used for rendering.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="setSelectedTower(com.csse3200.game.entities.Entity)">
+<section class="detail" id="setSelectedTower(com.csse3200.game.entities.Entity,java.lang.String)">
 <h3>setSelectedTower</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSelectedTower</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;tower)</span></div>
-<div class="block">Sets the selected tower to be upgraded.
- The menu becomes visible if a tower is selected, or hides if null.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSelectedTower</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;tower,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;towerType)</span></div>
+<div class="block">Sets the currently selected tower for upgrades.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>tower</code> - the tower entity to select, or null to deselect</dd>
+<dd><code>tower</code> - The tower entity.</dd>
+<dd><code>towerType</code> - Tower type string.</dd>
 </dl>
 </section>
 </li>
@@ -259,13 +252,13 @@ loadScripts(document, 'script');</script>
 <h3>isTouched</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isTouched</span><wbr><span class="parameters">(int&nbsp;screenX,
  int&nbsp;screenY)</span></div>
-<div class="block">Checks if the menu is being touched at the given screen coordinates.</div>
+<div class="block">Returns true if the upgrade menu is touched at the given screen coordinates.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>screenX</code> - the x-coordinate of the touch</dd>
-<dd><code>screenY</code> - the y-coordinate of the touch</dd>
+<dd><code>screenX</code> - The X coordinate on the screen.</dd>
+<dd><code>screenY</code> - The Y coordinate on the screen.</dd>
 <dt>Returns:</dt>
-<dd>true if the menu table was hit, false otherwise</dd>
+<dd>True if the menu is touched, false otherwise.</dd>
 </dl>
 </section>
 </li>

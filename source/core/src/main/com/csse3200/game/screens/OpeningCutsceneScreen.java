@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -18,7 +19,6 @@ import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.rendering.RenderService;
-import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,29 +45,36 @@ public class OpeningCutsceneScreen implements Screen {
     // UI Elements
     private Image backgroundImage;
     private Image logoImage;
-    private Label titleLabel;
-    private Label subtitleLabel;
-    private Label storyLabel;
-    private Label instructionLabel;
-    private Label versionLabel;
-    private Label skipLabel;
+    
     private Table mainTable;
-    private Table textTable;
     
     // Animation timing
-    private float totalDuration = 12f; // 12 seconds total
     private float logoDuration = 3f;
-    private float titleDuration = 2f;
-    private float storyDuration = 4f;
+    private float blackScreenDelay = 1f; // 1 second after logo
     private float fadeDuration = 2f;
     
     // Animation states
     private boolean logoShown = false;
-    private boolean titleShown = false;
-    private boolean storyShown = false;
-    private boolean instructionShown = false;
-    private boolean fadeStarted = false;
+    private boolean backgroundFaded = false;
+    private boolean scrollTextStarted = false;
+    private boolean scrollTextFinished = false;
+    
+    // Scrolling text
+    private Label scrollLabel;
+    private float scrollSpeed = 30f; // pixels per second - slower for better reading
+    private float scrollStartY;
+    private float scrollEndY;
+    
+    // Skip functionality
+    private int clickCount = 0;
+    private float lastClickTime = 0f;
+    private float clickTimeout = 1f; // 1 second timeout between clicks
+    private Label skipLabel;
     private boolean skipPressed = false;
+    
+    // Fonts for cleanup
+    private BitmapFont scrollFont;
+    private BitmapFont skipFont;
     
     public OpeningCutsceneScreen(GdxGame game) {
         this(game, BACKGROUND_OPTIONS[0]);
@@ -151,70 +158,65 @@ public class OpeningCutsceneScreen implements Screen {
         mainTable.add(logoImage).center().padBottom(50f);
         mainTable.row();
         
-        // Text table
-        textTable = new Table();
-        textTable.setFillParent(true);
-        textTable.top().padTop(300f);
-        stage.addActor(textTable);
+        // Scrolling text setup
+        setupScrollingText();
+    }
+    
+    private void setupScrollingText() {
+        // Create scrolling text label
+        String scrollText = "In a distant future, Earth has been conquered by a mechanical army...\n\n" +
+                           "As the last resistance commander, you must establish the final defense line\n" +
+                           "in the Box Forest against the invasion of the mechanical forces.\n\n" +
+                           "Face the aerial threats of drone swarms, the frontal assault of grunts,\n" +
+                           "the crushing force of heavy tanks, and mysterious dividers...\n\n" +
+                           "Build defensive towers, deploy hero units, and use strategy and wisdom\n" +
+                           "to protect your base and fight for humanity's future!";
         
-        // Title
-        titleLabel = new Label("Box Forest Defense", MinimalSkinFactory.create(), "title");
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setColor(Color.WHITE);
-        titleLabel.setFontScale(3.0f);
-        titleLabel.addAction(Actions.alpha(0f));
-        textTable.add(titleLabel).expandX().center().padBottom(20f);
-        textTable.row();
+        // Create a custom font for better rendering
+        scrollFont = new BitmapFont();
+        scrollFont.getData().setScale(1.8f);
         
-        // Subtitle
-        subtitleLabel = new Label("A Tower Defense Adventure", MinimalSkinFactory.create(), "default");
-        subtitleLabel.setAlignment(Align.center);
-        subtitleLabel.setColor(Color.LIGHT_GRAY);
-        subtitleLabel.setFontScale(1.5f);
-        subtitleLabel.addAction(Actions.alpha(0f));
-        textTable.add(subtitleLabel).expandX().center().padBottom(40f);
-        textTable.row();
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = scrollFont;
+        labelStyle.fontColor = Color.WHITE;
         
-        // Story
-        storyLabel = new Label("In the mystical Box Forest, ancient enemies are awakening...\n" +
-                              "As the last defender, you must build towers and protect your base\n" +
-                              "from waves of dangerous creatures.\n\n" +
-                              "Use strategy, timing, and courage to survive!",
-                              MinimalSkinFactory.create(), "default");
-        storyLabel.setAlignment(Align.center);
-        storyLabel.setColor(Color.WHITE);
-        storyLabel.setFontScale(1.3f);
-        storyLabel.addAction(Actions.alpha(0f));
-        textTable.add(storyLabel).expandX().center().padBottom(30f);
-        textTable.row();
+        scrollLabel = new Label(scrollText, labelStyle);
+        scrollLabel.setAlignment(Align.center);
+        scrollLabel.setWrap(true);
+        scrollLabel.setWidth(Gdx.graphics.getWidth() * 0.7f);
         
-        // Instructions
-        instructionLabel = new Label("Click 'New Game' to begin your adventure!\n" +
-                                   "Use WASD to move, mouse to place towers, and survive as long as possible!",
-                                   MinimalSkinFactory.create(), "default");
-        instructionLabel.setAlignment(Align.center);
-        instructionLabel.setColor(Color.YELLOW);
-        instructionLabel.setFontScale(1.4f);
-        instructionLabel.addAction(Actions.alpha(0f));
-        textTable.add(instructionLabel).expandX().center().padBottom(20f);
-        textTable.row();
+        // Position off-screen at the bottom initially
+        scrollStartY = -scrollLabel.getPrefHeight() - 100f;
+        scrollEndY = Gdx.graphics.getHeight() - 50f; // Stop at top of screen
+        scrollLabel.setPosition(
+            (Gdx.graphics.getWidth() - scrollLabel.getWidth()) / 2f,
+            scrollStartY
+        );
+        scrollLabel.addAction(Actions.alpha(0f)); // Start invisible
         
-        // Version
-        versionLabel = new Label("Version 1.0 | Made with LibGDX", MinimalSkinFactory.create(), "default");
-        versionLabel.setAlignment(Align.center);
-        versionLabel.setColor(Color.GRAY);
-        versionLabel.setFontScale(1.0f);
-        versionLabel.addAction(Actions.alpha(0f));
-        textTable.add(versionLabel).expandX().center();
-        textTable.row();
+        stage.addActor(scrollLabel);
         
-        // Skip instruction
-        skipLabel = new Label("按 左 键跳过开场动画", MinimalSkinFactory.create(), "default");
+        // Setup skip hint
+        setupSkipHint();
+    }
+    
+    private void setupSkipHint() {
+        // Create a custom font for skip hint
+        skipFont = new BitmapFont();
+        skipFont.getData().setScale(1.2f);
+        
+        Label.LabelStyle skipStyle = new Label.LabelStyle();
+        skipStyle.font = skipFont;
+        skipStyle.fontColor = Color.GRAY;
+        
+        skipLabel = new Label("Double Click to Skip", skipStyle);
         skipLabel.setAlignment(Align.center);
-        skipLabel.setColor(Color.CYAN);
-        skipLabel.setFontScale(1.2f);
-        skipLabel.addAction(Actions.alpha(0f));
-        textTable.add(skipLabel).expandX().center().padTop(20f);
+        skipLabel.setPosition(
+            (Gdx.graphics.getWidth() - skipLabel.getPrefWidth()) / 2f,
+            20f
+        );
+        skipLabel.addAction(Actions.alpha(0f)); // Start invisible
+        stage.addActor(skipLabel);
     }
     
     @Override
@@ -227,21 +229,49 @@ public class OpeningCutsceneScreen implements Screen {
     public void render(float delta) {
         timeElapsed += delta;
         
-        // Check for skip input (mouse left click)
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
-            skipCutscene();
-            return;
-        }
+        // Handle skip input BEFORE stage processing
+        handleSkipInput(delta);
         
         updateAnimation(delta);
         
-        // Keep background color consistent with main branch (light yellow)
-        ScreenUtils.clear(248f/255f, 249f/255f, 178f/255f, 1f);
-        stage.act(delta);
-        stage.draw();
+        ScreenUtils.clear(0, 0, 0, 1);
+        
+        // Only process stage if not skipping
+        if (!cutsceneFinished) {
+            stage.act(delta);
+            stage.draw();
+        }
         
         if (cutsceneFinished) {
             transitionToMainMenu();
+        }
+    }
+    
+    private void handleSkipInput(float delta) {
+        // Check for left mouse button click
+        boolean leftClick = Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+        
+        if (leftClick) {
+            float currentTime = timeElapsed;
+            
+            // Check if this is the second click within timeout
+            if (clickCount == 1 && (currentTime - lastClickTime) <= clickTimeout) {
+                // Second click within timeout - skip!
+                cutsceneFinished = true;
+                logger.info("Cutscene skipped by double click");
+                return;
+            } else if (clickCount == 0 || (currentTime - lastClickTime) > clickTimeout) {
+                // First click or timeout expired - start counting
+                clickCount = 1;
+                lastClickTime = currentTime;
+                logger.info("First click detected, waiting for second click...");
+            }
+        }
+        
+        // Reset click count if timeout exceeded
+        if (clickCount > 0 && (timeElapsed - lastClickTime) > clickTimeout) {
+            clickCount = 0;
+            logger.info("Click timeout, resetting click count");
         }
     }
     
@@ -252,34 +282,43 @@ public class OpeningCutsceneScreen implements Screen {
             logoShown = true;
         }
         
-        // Title fade in
-        if (timeElapsed >= logoDuration + 1f && !titleShown) {
-            titleLabel.addAction(Actions.fadeIn(1f));
-            subtitleLabel.addAction(Actions.fadeIn(1f));
-            titleShown = true;
+        // Fade background and logo to black after logo is shown
+        if (timeElapsed >= logoDuration + blackScreenDelay && !backgroundFaded) {
+            backgroundImage.addAction(Actions.fadeOut(1f));
+            logoImage.addAction(Actions.fadeOut(1f));
+            backgroundFaded = true;
         }
         
-        // Story fade in
-        if (timeElapsed >= logoDuration + titleDuration + 1f && !storyShown) {
-            storyLabel.addAction(Actions.fadeIn(1.5f));
-            storyShown = true;
-        }
-        
-        // Instructions fade in
-        if (timeElapsed >= logoDuration + titleDuration + storyDuration + 1f && !instructionShown) {
-            instructionLabel.addAction(Actions.fadeIn(1f));
-            versionLabel.addAction(Actions.fadeIn(1f));
+        // Start scrolling text after background fades
+        if (timeElapsed >= logoDuration + blackScreenDelay + 1f && !scrollTextStarted) {
+            scrollLabel.addAction(Actions.fadeIn(1f));
+            scrollTextStarted = true;
+            // Show skip hint when text starts
             skipLabel.addAction(Actions.fadeIn(1f));
-            instructionShown = true;
         }
         
-        // Start fade out after all content is shown
-        if (timeElapsed >= totalDuration && !fadeStarted) {
-            fadeStarted = true;
-            stage.addAction(Actions.sequence(
-                Actions.fadeOut(fadeDuration),
-                Actions.run(() -> cutsceneFinished = true)
-            ));
+        // Update scrolling text position
+        if (scrollTextStarted && !scrollTextFinished) {
+            float currentY = scrollLabel.getY();
+            float newY = currentY + scrollSpeed * delta;
+            
+            if (newY >= scrollEndY) {
+                scrollTextFinished = true;
+                // Fade out the scrolling text when it reaches the top
+                scrollLabel.addAction(Actions.sequence(
+                    Actions.fadeOut(1f), // Fade out the text
+                    Actions.run(() -> {
+                        // After text fades out, fade out the entire screen
+                        stage.addAction(Actions.sequence(
+                            Actions.delay(0.5f), // Brief pause
+                            Actions.fadeOut(fadeDuration),
+                            Actions.run(() -> cutsceneFinished = true)
+                        ));
+                    })
+                ));
+            } else {
+                scrollLabel.setY(newY);
+            }
         }
     }
     
@@ -299,8 +338,6 @@ public class OpeningCutsceneScreen implements Screen {
     
     private void transitionToMainMenu() {
         logger.info("Opening cutscene finished, transitioning to main menu");
-        // Reset global clear color to light yellow before switching screens to avoid leaking black bg
-        Gdx.gl.glClearColor(248f/255f, 249f/255f, 178f/255f, 1f);
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
     }
     
@@ -337,6 +374,12 @@ public class OpeningCutsceneScreen implements Screen {
         }
         if (batch != null) {
             batch.dispose();
+        }
+        if (scrollFont != null) {
+            scrollFont.dispose();
+        }
+        if (skipFont != null) {
+            skipFont.dispose();
         }
     }
 }

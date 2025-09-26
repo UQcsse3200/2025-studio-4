@@ -120,6 +120,7 @@ public class BossEnemyFactory {
         //Eventually add point/score logic here maybe?
     }
 
+    @SuppressWarnings("unused")
     private static void updateSpeed(Entity boss, Vector2 newSpeed) {
         WaypointComponent wc = boss.getComponent(WaypointComponent.class);
         if (wc != null) {

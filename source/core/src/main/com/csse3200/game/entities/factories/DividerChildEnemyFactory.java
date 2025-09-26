@@ -120,6 +120,7 @@ public class DividerChildEnemyFactory {
         //Eventually add point/score logic here maybe?
     }
 
+    @SuppressWarnings("unused")
     private static void updateSpeed(Vector2 speed) {
         priorityTaskCount += 1;
         self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));

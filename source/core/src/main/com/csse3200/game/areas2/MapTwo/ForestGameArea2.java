@@ -1,5 +1,6 @@
 package com.csse3200.game.areas2.MapTwo;
 
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.utils.Difficulty;
@@ -144,6 +145,10 @@ public class ForestGameArea2 extends GameArea2 {
         private void buildSpawnQueue() {
             NUM_ENEMIES_TOTAL = (NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_BOSSES + (NUM_DIVIDERS * 4));
             NUM_ENEMIES_DEFEATED = 0;
+
+            // Keep legacy ForestGameArea counters in sync so existing factories behave correctly
+            ForestGameArea.NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL;
+            ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
             // Add drones to spawn queue
             for (int i = 0; i < NUM_DRONES; i++) {
                 enemySpawnQueue.add(this::spawnSingleDrone);

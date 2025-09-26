@@ -409,31 +409,6 @@ public class TowerComponent extends Component {
 
         }
 
-        // --- SELL / SELECTION LOGIC ---
-        java.util.List<Entity> entities = new java.util.ArrayList<>();
-        for (Entity e : ServiceLocator.getEntityService().getEntitiesCopy())
-        {
-            entities.add(e);
-        }
-
-        if (isSelected())
-        {
-            if (!showSellButton)
-            {
-                showSellButton = true;
-                System.out.println("[Tower] Sell button shown for " + type + " tower at " + entity.getPosition());
-            }
-            if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT))
-            {
-                sellTower(entities);
-                showSellButton = false;
-            }
-        }
-        else if (showSellButton)
-        {
-            showSellButton = false;
-            System.out.println("[Tower] Sell button hidden for " + type + " tower at " + entity.getPosition());
-        }
 
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
         {

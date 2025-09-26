@@ -272,6 +272,15 @@ public class ForestGameArea2 extends GameArea2 {
         Entity cameraControl = new Entity();
         cameraControl.addComponent(new CameraZoomDragComponent());
         spawnEntity(cameraControl);
+        
+        // 设置areas2的默认缩放为1.8f
+        setCameraZoom(1.69f);
+        
+        // 模拟向上移动三格
+        moveUpThreeSteps();
+        
+        // 模拟向右移动三格
+        moveRightThreeSteps();
 
         spawnTerrain();
 
@@ -615,6 +624,63 @@ public class ForestGameArea2 extends GameArea2 {
     } catch (Exception e) {
         logger.error("Error during force stop: {}", e.getMessage());
     }
+    }
+    
+    /**
+     * 设置相机缩放
+     * @param zoom 缩放倍数
+     */
+    private void setCameraZoom(float zoom) {
+        com.csse3200.game.rendering.Renderer renderer = com.csse3200.game.rendering.Renderer.getCurrentRenderer();
+        if (renderer != null && renderer.getCamera() != null) {
+            com.badlogic.gdx.graphics.Camera camera = renderer.getCamera().getCamera();
+            if (camera instanceof com.badlogic.gdx.graphics.OrthographicCamera) {
+                ((com.badlogic.gdx.graphics.OrthographicCamera) camera).zoom = zoom;
+                camera.update();
+            }
+        }
+    }
+    
+    /**
+     * 模拟向上移动三格
+     * 用于游戏开始时的初始相机位置调整
+     */
+    private void moveUpThreeSteps() {
+        com.csse3200.game.rendering.Renderer renderer = com.csse3200.game.rendering.Renderer.getCurrentRenderer();
+        if (renderer == null || renderer.getCamera() == null) return;
+        
+        float moveDistance = 5.0f * 0.1f * 3; // 移动三格的距离
+        
+        if (renderer.getCamera().getEntity() != null) {
+            com.badlogic.gdx.math.Vector2 currentPos = renderer.getCamera().getEntity().getPosition();
+            com.badlogic.gdx.math.Vector2 newPos = new com.badlogic.gdx.math.Vector2(currentPos.x, currentPos.y + moveDistance);
+            renderer.getCamera().getEntity().setPosition(newPos);
+        } else {
+            com.badlogic.gdx.graphics.Camera camera = renderer.getCamera().getCamera();
+            camera.position.add(0, moveDistance, 0);
+            camera.update();
+        }
+    }
+    
+    /**
+     * 模拟向右移动三格
+     * 用于游戏开始时的初始相机位置调整
+     */
+    private void moveRightThreeSteps() {
+        com.csse3200.game.rendering.Renderer renderer = com.csse3200.game.rendering.Renderer.getCurrentRenderer();
+        if (renderer == null || renderer.getCamera() == null) return;
+        
+        float moveDistance = 5.0f * 0.1f * 3; // 移动三格的距离
+        
+        if (renderer.getCamera().getEntity() != null) {
+            com.badlogic.gdx.math.Vector2 currentPos = renderer.getCamera().getEntity().getPosition();
+            com.badlogic.gdx.math.Vector2 newPos = new com.badlogic.gdx.math.Vector2(currentPos.x + moveDistance, currentPos.y);
+            renderer.getCamera().getEntity().setPosition(newPos);
+        } else {
+            com.badlogic.gdx.graphics.Camera camera = renderer.getCamera().getCamera();
+            camera.position.add(moveDistance, 0, 0);
+            camera.update();
+        }
     }
 
     @Override

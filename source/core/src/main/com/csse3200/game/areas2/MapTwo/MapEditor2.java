@@ -130,7 +130,7 @@ public class MapEditor2 extends InputAdapter {
         pathTiles.put(key, new GridPoint2(tx, ty));
     }
 
-    /** Get or create path layer for path, always append to the end, ensuring it is above the base layer and mmap获取或创建用于路径的图层，始终追加到末尾，保证在基础层与mmap之上 */
+    /** Get or create path layer for path, always append to the end, ensuring it is above the base layer and mmap2获取或创建用于路径的图层，始终追加到末尾，保证在基础层与mmap2之上 */
     private TiledMapTileLayer getOrCreatePathLayer(TiledMapTileLayer baseLayer) {
         int count = terrain.getMap().getLayers().getCount();
         if (count > 1 && terrain.getMap().getLayers().get(count - 1) instanceof TiledMapTileLayer) {

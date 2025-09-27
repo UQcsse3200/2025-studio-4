@@ -1,5 +1,6 @@
 package com.csse3200.game.components.deck;
 
+import com.csse3200.game.components.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  * It stores the entity type and its relevant statistics to be rendered
  * in the deck UI.
  */
-public class DeckComponent {
+public class DeckComponent extends Component {
     public enum StatType {
         NAME("NAME", ""),
         MAX_HEALTH("MAX HEALTH", "images/deck/heart.png"),

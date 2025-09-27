@@ -22,13 +22,14 @@ public class DeckDisplay extends UIComponent {
     private Table table;
     // Set initial value to test
     // private DeckComponent deck = new DeckComponent.TowerDeckComponent("<Tower Name>", 999, 999.0, 999.0, "images/dino.png");
-    private DeckComponent deck = new DeckComponent.EnemyDeckComponent("<Enemy Name>", 999, 999, "images/boss_enemy.png");
-
+//    private DeckComponent deck = new DeckComponent.EnemyDeckComponent("<Enemy Name>", 999, 999, "images/boss_enemy.png");
+    private DeckComponent deck;
     @Override
     public void create() {
         super.create();
         addActors();
         entity.getEvents().addListener("displayDeck", this::displayDeck);
+        entity.getEvents().addListener("clearDeck", this::hide);
     }
 
     private void addActors() {

@@ -2,6 +2,8 @@ package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.deck.DeckComponent;
+import com.csse3200.game.components.deck.DeckDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.TowerComponent;
@@ -38,7 +40,9 @@ public class TowerFactory {
                 .addComponent(new TowerCostComponent(costMap))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
-                .addComponent(new TextureRenderComponent("images/towers/rock1.png"));
+                .addComponent(new TextureRenderComponent("images/towers/rock1.png"))
+                .addComponent(new DeckComponent.TowerDeckComponent("Bone Tower",stats.damage, stats.range,
+                        stats.cooldown, "images/bone.png"));
 
         base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);
 
@@ -68,7 +72,9 @@ public class TowerFactory {
                 .addComponent(new TowerCostComponent(costMap))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
-                .addComponent(new TextureRenderComponent("images/towers/rock2.png"));
+                .addComponent(new TextureRenderComponent("images/towers/rock2.png"))
+                .addComponent(new DeckComponent.TowerDeckComponent("Dino Tower",stats.damage, stats.range,
+                        stats.cooldown, "images/dino.png"));
 
         base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);
 
@@ -98,7 +104,9 @@ public class TowerFactory {
                 .addComponent(new TowerCostComponent(costMap))
                 .addComponent(new TowerStatsComponent(1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife, stats.projectileTexture))
-                .addComponent(new TextureRenderComponent("images/towers/rock4.png"));
+                .addComponent(new TextureRenderComponent("images/towers/rock4.png"))
+                .addComponent(new DeckComponent.TowerDeckComponent("Cavemen Tower",stats.damage, stats.range,
+                        stats.cooldown, "images/cavemen.png"));
 
         base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);
 

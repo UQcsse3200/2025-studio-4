@@ -7,6 +7,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -73,6 +74,7 @@ public class BossEnemyFactory {
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
+                .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));

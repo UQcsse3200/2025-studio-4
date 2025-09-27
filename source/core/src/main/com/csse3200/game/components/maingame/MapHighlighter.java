@@ -17,6 +17,7 @@ import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
+import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -64,6 +65,7 @@ public class MapHighlighter extends UIComponent {
 
             Vector2 clickWorld = getWorldClickPosition();
             boolean towerFound = false;
+            boolean enemyFound = false;
             Entity player = findPlayerEntity();
             if (player == null) return;
             if (clickWorld != null) {
@@ -71,6 +73,7 @@ public class MapHighlighter extends UIComponent {
                 for (Entity e : entities) {
                     TowerComponent tower = e.getComponent(TowerComponent.class);
                     DeckComponent deck = e.getComponent(DeckComponent.TowerDeckComponent.class);
+                    clickable enemy = e.getComponent(clickable.class);
                     if (tower == null) continue;
 
                     Vector2 pos = e.getPosition();
@@ -90,8 +93,20 @@ public class MapHighlighter extends UIComponent {
                         towerFound = true;
                         break;
                     }
+
+                    if (enemy == null) {
+                        continue;
+                    }
+
+                    Vector2 enemyPos = enemy.getEntity().getPosition();
+                    float clickRadius = enemy.getClickRadius();
+
+                    if ((Math.abs(clickWorld.x - (enemyPos.x + clickRadius/2)) < clickRadius &&
+                            Math.abs(clickWorld.y - (enemyPos.y + clickRadius)) < clickRadius)) {
+                        enemyFound = true;
+                    }
                 }
-                if (!towerFound) {
+                if (!towerFound && !enemyFound) {
                     player.getEvents().trigger("clearDeck");
                 }
             }

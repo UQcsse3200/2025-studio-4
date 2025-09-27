@@ -74,54 +74,6 @@ public class MainMenuDisplay extends UIComponent {
     float buttonWidth = 200f;
     float buttonHeight = 50f;
 
-    /* Book icon */
-    // circle size
-    int diameter = 32;
-
-    // create a Pixmap (a drawable image in memory)
-    Pixmap pixmap = new Pixmap(diameter, diameter, Pixmap.Format.RGBA8888);
-    pixmap.setColor(Color.WHITE);   // circle color
-    pixmap.fillCircle(diameter/2, diameter/2, diameter/2);
-
-    // create texture from pixmap
-    Texture circleTexture = new Texture(pixmap);
-    pixmap.dispose(); // free memory
-
-    TextureRegionDrawable circleDrawable = new TextureRegionDrawable(circleTexture);
-
-    pixmap = new Pixmap(diameter, diameter, Pixmap.Format.RGBA8888);
-    pixmap.setColor(new Color(0.8f, 0.8f, 0.8f, 1f)); // 50% opacity
-    pixmap.fillCircle(diameter/2, diameter/2, diameter/2);
-    Texture downTexture = new Texture(pixmap);
-    pixmap.dispose();
-    TextureRegionDrawable downDrawable = new TextureRegionDrawable(downTexture);
-
-    TextureRegionDrawable iconDrawable = new TextureRegionDrawable(ServiceLocator.getResourceService()
-            .getAsset("images/deck/book.png", Texture.class));
-
-    // create style
-
-
-    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-    style.up = circleDrawable;    // background circle
-    style.imageUp = iconDrawable; // icon on top
-    style.down = downDrawable;
-
-    float offset = 20.0f;
-    ImageButton bookButton = new ImageButton(style);
-    bookButton.setSize(64, 64);      // size of the button (circle)
-    // position on stage
-    bookButton.setPosition(stage.getWidth() - bookButton.getWidth() - offset,
-            stage.getHeight() - bookButton.getHeight() - offset);
-    stage.addActor(bookButton);
-
-    Table bookTable = new Table();
-    bookTable.setFillParent(true);    // table matches stage size
-    bookTable.top().right();          // top-right corner
-    bookTable.add(bookButton).size(stage.getHeight() * 0.08f).pad(10);
-    stage.addActor(bookTable);
-
-
     startBtn.getLabel().setColor(Color.WHITE);
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);

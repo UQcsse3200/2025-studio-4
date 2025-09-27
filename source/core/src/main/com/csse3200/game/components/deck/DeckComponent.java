@@ -1,6 +1,8 @@
 package com.csse3200.game.components.deck;
 
 import com.csse3200.game.components.Component;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -22,6 +24,8 @@ public class DeckComponent extends Component {
         RANGE("RANGE", "images/deck/bullseye_target.png"),
         SPEED("SPEED", "images/deck/shoe.png"),
         COOLDOWN("COOLDOWN", "images/deck/hourglass.png"),
+        WEAKNESS("WEAKNESS", "images/deck/cracked_skull.png"),
+        RESISTANCE("RESISTANCE", "images/deck/shield.png"),
         TEXTURE_PATH("", "");
 
         private final String texturePath;
@@ -114,17 +118,19 @@ public class DeckComponent extends Component {
      *      playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));
      */
     public static class EnemyDeckComponent extends DeckComponent {
-        public EnemyDeckComponent(String name, int maxHealth, int damage, String texturePath) {
+        public EnemyDeckComponent(String name, int maxHealth, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
             super(
-                    createOrderedStats(name, maxHealth, damage, texturePath)
+                    createOrderedStats(name, maxHealth, damage, resistance, weakness, texturePath)
             );
         }
 
-        private static Map<StatType, String> createOrderedStats(String name, int maxHealth, int damage, String texturePath) {
+        private static Map<StatType, String> createOrderedStats(String name, int maxHealth, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
             stats.put(StatType.MAX_HEALTH, String.valueOf(maxHealth));
             stats.put(StatType.DAMAGE, String.valueOf(damage));
+            stats.put(StatType.RESISTANCE, resistance.name().toUpperCase());
+            stats.put(StatType.WEAKNESS, weakness.name().toUpperCase());
             stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;
         }

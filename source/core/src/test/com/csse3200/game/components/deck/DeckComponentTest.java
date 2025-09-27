@@ -1,5 +1,6 @@
 package com.csse3200.game.components.deck;
 
+import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.extensions.GameExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +15,7 @@ class DeckComponentTest {
 
     @BeforeEach
     void setUp() {
-        deck = new DeckComponent.EnemyDeckComponent("Drone", 100, 100, "image/drone.png");
+        deck = new DeckComponent.EnemyDeckComponent("Drone", 100, 100, DamageTypeConfig.None, DamageTypeConfig.Electricity,"image/drone.png");
     }
 
     @AfterEach
@@ -28,6 +29,8 @@ class DeckComponentTest {
         assertEquals("DRONE", stats.get(DeckComponent.StatType.NAME));
         assertEquals("100", stats.get(DeckComponent.StatType.MAX_HEALTH));
         assertEquals("100", stats.get(DeckComponent.StatType.DAMAGE));
+        assertEquals("NONE", stats.get(DeckComponent.StatType.RESISTANCE));
+        assertEquals("ELECTRICITY", stats.get(DeckComponent.StatType.WEAKNESS));
         assertEquals("image/drone.png", stats.get(DeckComponent.StatType.TEXTURE_PATH));
     }
 }

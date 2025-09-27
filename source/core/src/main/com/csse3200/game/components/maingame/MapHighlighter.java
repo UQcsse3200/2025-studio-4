@@ -82,8 +82,11 @@ public class MapHighlighter extends UIComponent {
                         selectedTower = e;
                         player.getEvents().trigger("displayDeck", deck);
                         if (towerUpgradeMenu != null) {
-                            towerUpgradeMenu.setSelectedTower(selectedTower);
+                            TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
+                            String towerType = towerComp != null ? towerComp.getType() : "";
+                            towerUpgradeMenu.setSelectedTower(selectedTower, towerType);
                         }
+
                         towerFound = true;
                         break;
                     }
@@ -97,7 +100,7 @@ public class MapHighlighter extends UIComponent {
             if (!towerFound) {
                 selectedTower = null;
                 if  (towerUpgradeMenu != null) {
-                    towerUpgradeMenu.setSelectedTower(null);
+                    towerUpgradeMenu.setSelectedTower(null, "");
                 }
             }
         }

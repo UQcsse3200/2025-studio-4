@@ -357,12 +357,12 @@ class CurrencyManagerComponentTest {
 
         manager.create();
 
-        assertEquals(1000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
+        assertEquals(10000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
         assertEquals(300, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
         assertEquals(50, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
 
         // Assert: updateCurrencyUI was triggered for each type with correct amounts
-        assertTrue(triggeredEvents.contains("METAL_SCRAP:1000"));
+        assertTrue(triggeredEvents.contains("METAL_SCRAP:10000"));
         assertTrue(triggeredEvents.contains("TITANIUM_CORE:300"));
         assertTrue(triggeredEvents.contains("NEUROCHIP:50"));
     }

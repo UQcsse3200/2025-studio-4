@@ -4,6 +4,9 @@ import com.csse3200.game.components.Component;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static java.lang.Math.round;
+
+
 /**
  * The {@code DeckComponent} class represents a data container for displaying
  * information about an entity in the game, such as a tower or an enemy.
@@ -87,7 +90,7 @@ public class DeckComponent extends Component {
     public static class TowerDeckComponent extends DeckComponent {
         public TowerDeckComponent(String name, int damage, double range, double cooldown, String texturePath) {
             super(
-                    createOrderedStats(name, damage, range, cooldown, texturePath)
+                    createOrderedStats(name + " tower", damage, range, Math.floor(cooldown * 100) / 100, texturePath)
             );
         }
 

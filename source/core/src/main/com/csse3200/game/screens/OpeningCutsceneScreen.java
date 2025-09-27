@@ -243,6 +243,7 @@ public class OpeningCutsceneScreen implements Screen {
         }
         
         if (cutsceneFinished) {
+            ScreenUtils.clear(248f/255f, 249f/255f, 178f/255f, 1f);
             transitionToMainMenu();
         }
     }

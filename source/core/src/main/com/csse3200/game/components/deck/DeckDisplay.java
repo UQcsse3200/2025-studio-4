@@ -34,9 +34,10 @@ public class DeckDisplay extends UIComponent {
 
     private void addActors() {
         table = new Table();
-        table.top().right();  // bottom-right corner
+        table.top().right();
         table.setFillParent(true);
-        table.pad(150f); // small margin
+        table.pad(10f);
+        table.padTop(150f);
 
         displayDeck(deck);
 

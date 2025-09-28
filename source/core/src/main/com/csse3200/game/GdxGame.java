@@ -4,14 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.csse3200.game.files.UserSettings;
-import com.csse3200.game.screens.MainGameScreen;
-import com.csse3200.game.screens.MainMenuScreen;
-import com.csse3200.game.screens.SettingsScreen;
-import com.csse3200.game.screens.SaveSelectionScreen;
-import com.csse3200.game.screens.OpeningCutsceneScreen;
-import com.csse3200.game.screens.VictoryScreen;
+import com.csse3200.game.screens.*;
 // NEW: Map selection screen
-import com.csse3200.game.screens.MapSelectionScreen;
 
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
@@ -126,6 +120,8 @@ public class GdxGame extends Game {
         return new VictoryScreen(this);
       case MAP_SELECTION: // NEW
         return new MapSelectionScreen(this);
+      case BOOK:
+        return new BookScreen(this);
       default:
         return null;
     }

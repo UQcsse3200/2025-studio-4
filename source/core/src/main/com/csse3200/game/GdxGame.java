@@ -133,7 +133,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
-    MAP_SELECTION
+    MAP_SELECTION, BOOK
   }
 
   /**

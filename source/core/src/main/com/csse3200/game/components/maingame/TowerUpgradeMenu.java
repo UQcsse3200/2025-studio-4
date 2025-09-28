@@ -74,7 +74,7 @@ public class TowerUpgradeMenu extends UIComponent {
         container.pad(15);
 
         Label title = new Label("Tower Upgrades", skin, "title");
-        title.setColor(Color.GOLD);
+        title.setColor(Color.WHITE);
 
         // Path A
         Table pathATable = new Table(skin);

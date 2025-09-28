@@ -122,6 +122,8 @@ public class GdxGame extends Game {
         return new MapSelectionScreen(this);
       case BOOK:
         return new MainBookScreen(this);
+      case CURRENCY_BOOK:
+        return new BookScreen(this, "currencyBook");
       default:
         return null;
     }
@@ -129,7 +131,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
-    MAP_SELECTION, BOOK
+    MAP_SELECTION, BOOK, CURRENCY_BOOK
   }
 
   /**

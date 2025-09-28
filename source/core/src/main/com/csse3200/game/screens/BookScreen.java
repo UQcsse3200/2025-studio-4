@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.book.BookDisplay;
+import com.csse3200.game.components.book.BookDisplayActions;
 import com.csse3200.game.components.book.MainBookDisplay;
 import com.csse3200.game.components.book.MainBookDisplayActions;
 import com.csse3200.game.entities.Entity;
@@ -21,9 +23,16 @@ public class BookScreen extends ScreenAdapter {
 
     private final GdxGame game;
     private Stage stage;
+    private String bookPage;
 
     public BookScreen(GdxGame game) {
         this.game = game;
+        this.bookPage = "home";
+    }
+
+    public BookScreen(GdxGame game, String bookPage) {
+        this.game = game;
+        this.bookPage = bookPage;
     }
 
     @Override
@@ -37,7 +46,7 @@ public class BookScreen extends ScreenAdapter {
         ServiceLocator.registerResourceService(new ResourceService());
 
         // PRELOAD shared background (same as other menu screens)
-        String[] textures = {"images/book/encyclopedia_theme.png"};
+        String[] textures = {"images/book/open_book_theme.png"};
         ServiceLocator.getResourceService().loadTextures(textures);
         ServiceLocator.getResourceService().loadAll();
 
@@ -46,9 +55,12 @@ public class BookScreen extends ScreenAdapter {
         ServiceLocator.getRenderService().setStage(stage);
 
         // UI entity (display + actions)
-        Entity ui = new Entity()
-                .addComponent(new MainBookDisplay(game))
-                .addComponent(new MainBookDisplayActions(game));
+        Entity ui = new Entity();
+        if (this.bookPage.equals("home")) {
+            ui.addComponent(new MainBookDisplay(game)).addComponent(new MainBookDisplayActions(game));
+        } else {
+            ui.addComponent(new BookDisplay(game)).addComponent(new BookDisplayActions(game));
+        }
         ServiceLocator.getEntityService().register(ui);
 
         // Route input to Stage via InputService (matches your project pattern)

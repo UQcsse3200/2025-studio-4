@@ -48,7 +48,7 @@ public class BookDisplay extends UIComponent {
         Image backgroundImage =
                 new Image(
                         ServiceLocator.getResourceService()
-                                .getAsset("images/book/encyclopedia_theme.png", Texture.class));
+                                .getAsset("images/book/open_book_theme.png", Texture.class));
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
 
@@ -131,7 +131,6 @@ public class BookDisplay extends UIComponent {
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
 
-        // 设置字体颜色
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;

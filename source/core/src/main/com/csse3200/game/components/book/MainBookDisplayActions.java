@@ -16,10 +16,16 @@ public class MainBookDisplayActions extends Component {
     @Override
     public void create() {
         entity.getEvents().addListener("backToMain", this::backToMain);
+        entity.getEvents().addListener("goToCurrency", this::goToCurrency);
     }
 
     private void backToMain() {
         logger.info("Returning to main menu");
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    }
+
+    private void goToCurrency() {
+        logger.info("Go to currency");
+        game.setScreen(GdxGame.ScreenType.CURRENCY_BOOK);
     }
 }

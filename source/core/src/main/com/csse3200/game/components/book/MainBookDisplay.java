@@ -65,7 +65,7 @@ public class MainBookDisplay extends UIComponent {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("New save button clicked");
+                        logger.debug("Go to enemy clicked");
                         entity.getEvents().trigger("newSave");
                     }
                 });
@@ -76,8 +76,8 @@ public class MainBookDisplay extends UIComponent {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        entity.getEvents().trigger("backToMain");
+                        logger.debug("Go to currency clicked");
+                        entity.getEvents().trigger("goToCurrency");
                     }
                 });
 
@@ -87,7 +87,7 @@ public class MainBookDisplay extends UIComponent {
                 new ChangeListener() {
                     @Override
                     public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
+                        logger.debug("Go to tower clicked");
                         entity.getEvents().trigger("backToMain");
                     }
                 });

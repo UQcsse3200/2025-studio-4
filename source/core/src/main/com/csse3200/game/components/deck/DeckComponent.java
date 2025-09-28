@@ -1,6 +1,13 @@
 package com.csse3200.game.components.deck;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.TowerStatsComponent;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
 import java.util.LinkedHashMap;
@@ -85,6 +92,20 @@ public class DeckComponent extends Component {
     }
 
     /**
+     * Update specific stat type in stats
+     * @param type the type to update
+     * @param value new value of stat type
+     */
+    public void updateStat(StatType type, String value) {
+        stats.put(type, value);
+    }
+
+    /**
+     * Update stats when needed
+     */
+    public void updateStats() {}
+
+    /**
      * Specialized deck component for towers.
      *
      * Usage:
@@ -107,6 +128,16 @@ public class DeckComponent extends Component {
             stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;
         }
+
+        @Override
+        public void updateStats() {
+            TowerStatsComponent towerStatsComponent = entity.getComponent(TowerStatsComponent.class);
+            this.updateStat(StatType.DAMAGE, String.valueOf(towerStatsComponent.getDamage()));
+            this.updateStat(StatType.RANGE, String.valueOf(towerStatsComponent.getRange()));
+            this.updateStat(StatType.COOLDOWN, String.valueOf(
+                    Math.floor(towerStatsComponent.getAttackCooldown() * 100) / 100)
+            );
+        }
     }
 
 
@@ -118,22 +149,27 @@ public class DeckComponent extends Component {
      *      playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));
      */
     public static class EnemyDeckComponent extends DeckComponent {
-        public EnemyDeckComponent(String name, int maxHealth, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
+        public EnemyDeckComponent(String name, int health, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
             super(
-                    createOrderedStats(name, maxHealth, damage, resistance, weakness, texturePath)
+                    createOrderedStats(name, health, damage, resistance, weakness, texturePath)
             );
         }
 
-        private static Map<StatType, String> createOrderedStats(String name, int maxHealth, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
+        private static Map<StatType, String> createOrderedStats(String name, int health, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
-            stats.put(StatType.MAX_HEALTH, String.valueOf(maxHealth));
+            stats.put(StatType.HEALTH, String.valueOf(health));
             stats.put(StatType.DAMAGE, String.valueOf(damage));
             stats.put(StatType.RESISTANCE, resistance.name().toUpperCase());
             stats.put(StatType.WEAKNESS, weakness.name().toUpperCase());
             stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;
         }
-    }
 
+        @Override
+        public void updateStats() {
+            CombatStatsComponent combatStatsComponent = entity.getComponent(CombatStatsComponent.class);
+            this.updateStat(StatType.HEALTH, String.valueOf(combatStatsComponent.getHealth()));
+        }
+    }
 }

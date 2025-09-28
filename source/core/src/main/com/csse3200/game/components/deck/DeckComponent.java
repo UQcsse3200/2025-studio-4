@@ -98,7 +98,9 @@ public class DeckComponent extends Component {
     /**
      * Update stats when needed
      */
-    public void updateStats() {}
+    public void updateStats() {
+        // Override method handles this
+    }
 
     /**
      * Specialized deck component for towers.

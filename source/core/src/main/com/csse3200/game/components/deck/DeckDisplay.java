@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -21,10 +21,8 @@ import java.util.Map;
  */
 public class DeckDisplay extends UIComponent {
     private Table table;
-    // Set initial value to test
-    // private DeckComponent deck = new DeckComponent.TowerDeckComponent("<Tower Name>", 999, 999.0, 999.0, "images/dino.png");
-    // private DeckComponent deck = new DeckComponent.EnemyDeckComponent("<Enemy Name>", 999, 999, "images/boss_enemy.png");
     private DeckComponent deck;
+
     @Override
     public void create() {
         super.create();
@@ -36,7 +34,7 @@ public class DeckDisplay extends UIComponent {
     @Override
     public void update() {
         if (deck != null) {
-            Map<DeckComponent.StatType, String> lastStats = new HashMap<>(deck.getStats());
+            Map<DeckComponent.StatType, String> lastStats = new EnumMap<>(deck.getStats());
             deck.updateStats();
             if (!deck.getStats().equals(lastStats)) {
                 displayDeck(deck);

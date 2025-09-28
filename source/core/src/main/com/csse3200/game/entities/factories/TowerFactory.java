@@ -3,7 +3,6 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.deck.DeckComponent;
-import com.csse3200.game.components.deck.DeckDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.TowerComponent;

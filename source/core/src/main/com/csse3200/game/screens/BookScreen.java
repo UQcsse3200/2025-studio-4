@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.book.BookDisplay;
+import com.csse3200.game.components.book.BookDisplayActions;
 import com.csse3200.game.components.mainmenu.MapSelectionActions;
 import com.csse3200.game.components.mainmenu.MapSelectionDisplay;
 import com.csse3200.game.components.settingsmenu.SettingsMenuDisplay;
@@ -56,7 +57,8 @@ public class BookScreen extends ScreenAdapter {
 
         // UI entity (display + actions)
         Entity ui = new Entity()
-                .addComponent(new BookDisplay(game));
+                .addComponent(new BookDisplay(game))
+                .addComponent(new BookDisplayActions(game));
         ServiceLocator.getEntityService().register(ui);
 
         // Route input to Stage via InputService (matches your project pattern)

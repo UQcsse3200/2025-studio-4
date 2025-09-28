@@ -23,6 +23,7 @@ public class BookDisplayActions extends Component {
     @Override
     public void create() {
         entity.getEvents().addListener("changeCurrencyData", this::changeCurrencyData);
+        entity.getEvents().addListener("backToMain", this::onExit);
     }
 
     private void changeCurrencyData(int index) {
@@ -36,5 +37,9 @@ public class BookDisplayActions extends Component {
 
         // Update right label text
         rightLabel.setText(this.bookComponent.getCurrencyData()[index]);
+    }
+
+    private void onExit() {
+        game.setScreen(GdxGame.ScreenType.BOOK);
     }
 }

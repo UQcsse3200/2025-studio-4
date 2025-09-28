@@ -138,9 +138,9 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
-    table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
-    table.row();
     table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();
+    table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add().expandY(); 
 

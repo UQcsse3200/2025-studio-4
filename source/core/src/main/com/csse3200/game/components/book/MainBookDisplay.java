@@ -146,4 +146,6 @@ public class MainBookDisplay extends UIComponent {
     protected void draw(SpriteBatch batch) {
 
     }
+
+
 }

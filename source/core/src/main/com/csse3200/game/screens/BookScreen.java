@@ -59,7 +59,7 @@ public class BookScreen extends ScreenAdapter {
         if (this.bookPage.equals("home")) {
             ui.addComponent(new MainBookDisplay(game)).addComponent(new MainBookDisplayActions(game));
         } else {
-            ui.addComponent(new BookDisplay(game)).addComponent(new BookDisplayActions(game));
+            ui.addComponent(new BookDisplay(game, "currencyPage")).addComponent(new BookDisplayActions(game));
         }
         ServiceLocator.getEntityService().register(ui);
 

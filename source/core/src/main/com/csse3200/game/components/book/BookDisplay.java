@@ -7,10 +7,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -19,20 +21,24 @@ import org.slf4j.LoggerFactory;
 
 public class BookDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
-    private static final float Z_INDEX = 2f;
+    private String bookPage;
     private Table table;
-    private String[] buttonBackGround = {
-            "images/book/enemies_book.png",
-            "images/book/currencies_book.png",
-            "images/book/towers_book.png",
-            "images/Main_Menu_Button_Background.png"
-    };
-    private final float buttonWidth = 500f;
-    private final float buttonHeight = 500f;
-
+    private Image rightImage;
+    private Label rightLabel;
+    private final float buttonWidth = 170f;
+    private final float buttonHeight = 170f;
+    private final float displayWidth = 300f;
+    private final float displayHeight = 300f;
+    private BookComponent bookComponent = new BookComponent();
 
     public BookDisplay(GdxGame game) {
         super();
+        this.bookPage = "currencyPage";
+    }
+
+    public BookDisplay(GdxGame game, String bookPage) {
+        super();
+        this.bookPage = bookPage;
     }
 
     @Override
@@ -52,63 +58,65 @@ public class BookDisplay extends UIComponent {
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
 
-        TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
-        TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
-        TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
+        String[] buttonList = new String[0];
+        String[] buttonTitle = new String[0];
+        if (this.bookPage.equals("currencyPage")) {
+            buttonList = this.bookComponent.getCurrencyBackGround();
+            buttonTitle = this.bookComponent.getCurrencyTitle();
+        } else if (this.bookPage.equals("towerPage")) {
+            buttonList = this.bookComponent.getCurrencyBackGround();
+            buttonTitle = this.bookComponent.getCurrencyTitle();
+        }
 
-        TextButton enemyButton = new TextButton("", enemyButtonStyle);
-        enemyButton.getLabel().setColor(Color.WHITE);
-        enemyButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("New save button clicked");
-                        entity.getEvents().trigger("newSave");
-                    }
-                });
+        table.top().left().padLeft(450).padTop(150);
+        for (int i = 0; i < buttonList.length; i++) {
+            // start a new row
+            table.row().padTop(0.5f).padLeft(10f);
+            final int index = i;
 
-        TextButton currencyButton = new TextButton("", currencyButtonStyle);
-        currencyButton.getLabel().setColor(Color.WHITE);
-        currencyButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        entity.getEvents().trigger("backToMain");
-                    }
-                });
+            TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(buttonList[i]);
+            TextButton button = new TextButton("", buttonStyle);
+            button.getLabel().setColor(Color.WHITE);
+            button.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
+                    logger.debug("Button inside bookPage clicked");
+                    entity.getEvents().trigger("changeCurrencyData", index);
+                }
+            });
 
-        TextButton towerButton = new TextButton("", towerButtonStyle);
-        towerButton.getLabel().setColor(Color.WHITE);
-        towerButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        entity.getEvents().trigger("backToMain");
-                    }
-                });
+            Label label = new Label(buttonTitle[i], skin, "large");
+            table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
+            table.add(label);
+        }
 
-        TextButton exitButton = new TextButton("Back to Main Menu", exitButtonStyle);
-        exitButton.getLabel().setColor(Color.WHITE);
-        exitButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        entity.getEvents().trigger("backToMain");
-                    }
-                });
+        Table rightTable = new Table();
+        rightTable.setFillParent(true);
+        rightTable.top().right().padRight(380).padTop(150); // anchor top-right with padding
+        Texture tex = ServiceLocator.getResourceService()
+                .getAsset(buttonList[0], Texture.class);
+        this.rightImage = new Image(tex);
+        rightTable.add(rightImage).size(this.displayWidth, this.displayHeight);
+        this.rightLabel = new Label(this.bookComponent.getCurrencyData()[0], skin);
+        this.rightLabel.setWrap(true);
+        rightTable.row().width(500f);
+        rightTable.add(this.rightLabel);
 
-        table.row().padTop(20f);
-        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(5f);
-        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(5f);
-        table.add(towerButton).size(buttonWidth, buttonHeight);
-        table.row().padTop(10f);
-        table.row().padBottom(30f);
         stage.addActor(table);
+        stage.addActor(rightTable);
     }
+
+//    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor, int index) {
+//        logger.debug("Button {} clicked", index);
+//
+//        // Update right image
+//        Texture tex = ServiceLocator.getResourceService()
+//                .getAsset(currencyBackGround[index], Texture.class);
+//        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+//
+//        // Update right label text
+//        rightLabel.setText(currencyData[index]);
+//    }
 
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
@@ -142,4 +150,13 @@ public class BookDisplay extends UIComponent {
     protected void draw(SpriteBatch batch) {
 
     }
+
+    public Label getRightLabel() {
+        return rightLabel;
+    }
+
+    public Image getRightImage() {
+        return rightImage;
+    }
+
 }

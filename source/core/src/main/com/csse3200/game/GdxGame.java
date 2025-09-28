@@ -123,7 +123,7 @@ public class GdxGame extends Game {
       case BOOK:
         return new MainBookScreen(this);
       case CURRENCY_BOOK:
-        return new BookScreen(this, "currencyBook");
+        return new BookScreen(this, "currencyPage");
       default:
         return null;
     }

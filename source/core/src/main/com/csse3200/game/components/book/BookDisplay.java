@@ -50,15 +50,23 @@ public class BookDisplay extends UIComponent {
     }
 
     void addActors() {
-        table = new Table();
-        table.setFillParent(true);
+       this.renderBackGround();
+       this.renderContentList();
+       this.renderExitButton();
+    }
 
+    private void renderBackGround() {
         Image backgroundImage =
                 new Image(
                         ServiceLocator.getResourceService()
                                 .getAsset("images/book/open_book_theme.png", Texture.class));
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
+    }
+
+    private void renderContentList() {
+        table = new Table();
+        table.setFillParent(true);
 
         String[] buttonList;
         String[] buttonTitle;
@@ -80,10 +88,6 @@ public class BookDisplay extends UIComponent {
             buttonTitle = this.bookComponent.getTowerTitle();
             tmpData = this.bookComponent.getTowerData()[0];
         }
-
-        System.out.println(this.bookPage);
-        System.out.println(buttonList.length);
-        System.out.println(buttonList[0]);
 
         table.top().left().padLeft(450).padTop(150);
         for (int i = 0; i < buttonList.length; i++) {
@@ -122,6 +126,9 @@ public class BookDisplay extends UIComponent {
 
         stage.addActor(table);
         stage.addActor(rightTable);
+    }
+
+    private void renderExitButton() {
 
         // Exit Icon on Top Right Corner
         TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/stamp.png");
@@ -136,17 +143,16 @@ public class BookDisplay extends UIComponent {
                     }
                 });
 
-
         // Create a table
-        Table table = new Table();
-        table.top().right();       // Aligns everything in this table to top-right of the stage
-        table.setFillParent(true); // Table covers the whole stage
+        Table exitTable = new Table();
+        exitTable.top().right();       // Aligns everything in this table to top-right of the stage
+        exitTable.setFillParent(true); // Table covers the whole stage
 
         // Add the button
-        table.add(exitButton).size(exitIconWidth,exitIconHeight).pad(10f); // 10px padding from edges
+        exitTable.add(exitButton).size(exitIconWidth,exitIconHeight).pad(10f); // 10px padding from edges
 
         // Add table to stage
-        stage.addActor(table);
+        stage.addActor(exitTable);
     }
 
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {

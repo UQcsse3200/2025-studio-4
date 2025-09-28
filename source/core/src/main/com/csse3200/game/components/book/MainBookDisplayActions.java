@@ -5,11 +5,11 @@ import com.csse3200.game.components.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BookDisplayActions extends Component {
-    private static final Logger logger = LoggerFactory.getLogger(BookDisplayActions.class);
+public class MainBookDisplayActions extends Component {
+    private static final Logger logger = LoggerFactory.getLogger(MainBookDisplayActions.class);
     private GdxGame game;
 
-    public BookDisplayActions(GdxGame game) {
+    public MainBookDisplayActions(GdxGame game) {
         this.game = game;
     }
 

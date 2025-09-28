@@ -17,7 +17,7 @@ import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BookDisplay extends UIComponent {
+public class MainBookDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
     private static final float Z_INDEX = 2f;
     private Table table;
@@ -29,9 +29,11 @@ public class BookDisplay extends UIComponent {
     };
     private final float buttonWidth = 500f;
     private final float buttonHeight = 500f;
+    private final float exitButtonWidth = 250f;
+    private final float exitButtonHeight = 50f;
 
 
-    public BookDisplay(GdxGame game) {
+    public MainBookDisplay(GdxGame game) {
         super();
     }
 
@@ -106,6 +108,7 @@ public class BookDisplay extends UIComponent {
         table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(5f);
         table.add(towerButton).size(buttonWidth, buttonHeight);
         table.row().padTop(10f);
+        table.add(exitButton).size(exitButtonWidth, exitButtonHeight).colspan(3).center();
         table.row().padBottom(30f);
         stage.addActor(table);
     }

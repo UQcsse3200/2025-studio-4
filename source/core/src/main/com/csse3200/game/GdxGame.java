@@ -121,7 +121,7 @@ public class GdxGame extends Game {
       case MAP_SELECTION: // NEW
         return new MapSelectionScreen(this);
       case BOOK:
-        return new BookScreen(this);
+        return new MainBookScreen(this);
       default:
         return null;
     }

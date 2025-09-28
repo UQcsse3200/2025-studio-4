@@ -16,13 +16,14 @@ import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BookScreen extends ScreenAdapter {
-    private static final Logger logger = LoggerFactory.getLogger(BookScreen.class);
+public class MainBookScreen extends ScreenAdapter {
+
+    private static final Logger logger = LoggerFactory.getLogger(MainBookScreen.class);
 
     private final GdxGame game;
     private Stage stage;
 
-    public BookScreen(GdxGame game) {
+    public MainBookScreen(GdxGame game) {
         this.game = game;
     }
 

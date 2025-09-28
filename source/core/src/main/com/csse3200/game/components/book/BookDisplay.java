@@ -89,7 +89,7 @@ public class BookDisplay extends UIComponent {
             tmpData = this.bookComponent.getTowerData()[0];
         }
 
-        table.top().left().padLeft(450).padTop(150);
+        table.top().left().padLeft(450).padTop(120);
         for (int i = 0; i < buttonList.length; i++) {
             // start a new row
             table.row().padTop(0.5f).padLeft(10f);
@@ -113,7 +113,7 @@ public class BookDisplay extends UIComponent {
 
         Table rightTable = new Table();
         rightTable.setFillParent(true);
-        rightTable.top().right().padRight(380).padTop(150); // anchor top-right with padding
+        rightTable.top().right().padRight(380).padTop(120); // anchor top-right with padding
         Texture tex = ServiceLocator.getResourceService()
                 .getAsset(buttonList[0], Texture.class);
         this.rightImage = new Image(tex);

@@ -1,19 +1,13 @@
 package com.csse3200.game.components.deck;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.TowerStatsComponent;
-import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import static java.lang.Math.round;
 
 
 /**
@@ -30,6 +24,7 @@ public class DeckComponent extends Component {
         DAMAGE("DAMAGE", "images/deck/sword.png"),
         RANGE("RANGE", "images/deck/bullseye_target.png"),
         SPEED("SPEED", "images/deck/shoe.png"),
+        PROJECTILE_SPEED("PROJECTILE SPEED", "images/deck/arrow.png"),
         COOLDOWN("COOLDOWN", "images/deck/hourglass.png"),
         WEAKNESS("WEAKNESS", "images/deck/cracked_skull.png"),
         RESISTANCE("RESISTANCE", "images/deck/shield.png"),
@@ -113,18 +108,26 @@ public class DeckComponent extends Component {
      *      playerEntity.getEvents().trigger("displayDeck", towerEntity.getComponent(DeckComponent.class));
      */
     public static class TowerDeckComponent extends DeckComponent {
-        public TowerDeckComponent(String name, int damage, double range, double cooldown, String texturePath) {
+        public TowerDeckComponent(String name, int damage, double range, double cooldown, double projectileSpeed, String texturePath) {
             super(
-                    createOrderedStats(name + " tower", damage, range, Math.floor(cooldown * 100) / 100, texturePath)
+                    createOrderedStats(
+                            name + " tower",
+                            damage,
+                            range,
+                            Math.floor(cooldown * 100) / 100,
+                            Math.floor(projectileSpeed * 100) / 100,
+                            texturePath
+                    )
             );
         }
 
-        private static Map<StatType, String> createOrderedStats(String name, int damage, double range, double cooldown, String texturePath) {
+        private static Map<StatType, String> createOrderedStats(String name, int damage, double range, double cooldown, double projectileSpeed, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
             stats.put(StatType.DAMAGE, String.valueOf(damage));
             stats.put(StatType.RANGE, String.valueOf(range));
             stats.put(StatType.COOLDOWN, String.valueOf(cooldown));
+            stats.put(StatType.PROJECTILE_SPEED, String.valueOf(projectileSpeed));
             stats.put(StatType.TEXTURE_PATH, texturePath);
             return stats;
         }
@@ -135,8 +138,11 @@ public class DeckComponent extends Component {
             this.updateStat(StatType.DAMAGE, String.valueOf(towerStatsComponent.getDamage()));
             this.updateStat(StatType.RANGE, String.valueOf(towerStatsComponent.getRange()));
             this.updateStat(StatType.COOLDOWN, String.valueOf(
-                    Math.floor(towerStatsComponent.getAttackCooldown() * 100) / 100)
-            );
+                    Math.floor(towerStatsComponent.getAttackCooldown() * 100) / 100
+            ));
+            this.updateStat(StatType.PROJECTILE_SPEED, String.valueOf(
+                Math.floor(towerStatsComponent.getProjectileSpeed() * 100) / 100
+            ));
         }
     }
 

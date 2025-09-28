@@ -62,7 +62,7 @@ public class TowerFactory {
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
                         stats.projectileTexture, stats.level_A, stats.level_B))
-                .addComponent(new DeckComponent.TowerDeckComponent(type, stats.damage, stats.range, stats.cooldown, texturePath))
+                .addComponent(new DeckComponent.TowerDeckComponent(type, stats.damage, stats.range, stats.cooldown, stats.projectileSpeed, texturePath))
                 .addComponent(new TextureRenderComponent(texturePath));
 
         base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);

@@ -31,7 +31,7 @@ public class BookDisplay extends UIComponent {
     private final float displayHeight = 300f;
     private final float exitIconWidth = 100f;
     private final float exitIconHeight = 100f;
-    private BookComponent bookComponent = new BookComponent();
+//    private BookComponent bookComponent = new BookComponent();
 
     public BookDisplay(GdxGame game) {
         super();
@@ -74,49 +74,49 @@ public class BookDisplay extends UIComponent {
         final String eventName;
         if (this.bookPage.equals("currencyPage")) {
             eventName = "changeCurrencyData";
-            buttonList = this.bookComponent.getCurrencyBackGround();
-            buttonTitle = this.bookComponent.getCurrencyTitle();
-            tmpData = this.bookComponent.getCurrencyData()[0];
+//            buttonList = this.bookComponent.getCurrencyBackGround();
+//            buttonTitle = this.bookComponent.getCurrencyTitle();
+//            tmpData = this.bookComponent.getCurrencyData()[0];
         } else if (this.bookPage.equals("enemyPage")) {
             eventName = "changeEnemyData";
-            buttonList = this.bookComponent.getEnemyBackGround();
-            buttonTitle = this.bookComponent.getEnemyTitle();
-            tmpData = this.bookComponent.getEnemyData()[0];
+//            buttonList = this.bookComponent.getEnemyBackGround();
+//            buttonTitle = this.bookComponent.getEnemyTitle();
+//            tmpData = this.bookComponent.getEnemyData()[0];
         } else {
             eventName = "changeTowerData";
-            buttonList = this.bookComponent.getTowerBackGround();
-            buttonTitle = this.bookComponent.getTowerTitle();
-            tmpData = this.bookComponent.getTowerData()[0];
+//            buttonList = this.bookComponent.getTowerBackGround();
+//            buttonTitle = this.bookComponent.getTowerTitle();
+//            tmpData = this.bookComponent.getTowerData()[0];
         }
 
         table.top().left().padLeft(450).padTop(120);
-        for (int i = 0; i < buttonList.length; i++) {
-            // start a new row
-            table.row().padTop(0.5f).padLeft(10f);
-            final int index = i;
-
-            TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(buttonList[i]);
-            TextButton button = new TextButton("", buttonStyle);
-            button.getLabel().setColor(Color.WHITE);
-            button.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                    logger.debug("Button inside bookPage clicked");
-                    entity.getEvents().trigger(eventName, index);
-                }
-            });
-
-            Label label = new Label(buttonTitle[i], skin, "large");
-            table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
-            table.add(label);
-        }
+//        for (int i = 0; i < buttonList.length; i++) {
+//            // start a new row
+//            table.row().padTop(0.5f).padLeft(10f);
+//            final int index = i;
+//
+//            TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(buttonList[i]);
+//            TextButton button = new TextButton("", buttonStyle);
+//            button.getLabel().setColor(Color.WHITE);
+//            button.addListener(new ChangeListener() {
+//                @Override
+//                public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
+//                    logger.debug("Button inside bookPage clicked");
+//                    entity.getEvents().trigger(eventName, index);
+//                }
+//            });
+//
+//            Label label = new Label(buttonTitle[i], skin, "large");
+//            table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
+//            table.add(label);
+//        }
 
         Table rightTable = new Table();
         rightTable.setFillParent(true);
         rightTable.top().right().padRight(380).padTop(120); // anchor top-right with padding
-        Texture tex = ServiceLocator.getResourceService()
-                .getAsset(buttonList[0], Texture.class);
-        this.rightImage = new Image(tex);
+//        Texture tex = ServiceLocator.getResourceService()
+//                .getAsset(buttonList[0], Texture.class);
+//        this.rightImage = new Image(tex);
         rightTable.add(rightImage).size(this.displayWidth, this.displayHeight);
 
         this.rightLabel = new Label(tmpData, skin);

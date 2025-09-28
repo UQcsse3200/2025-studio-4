@@ -28,6 +28,7 @@ public class DeckComponent extends Component {
         COOLDOWN("COOLDOWN", "images/deck/hourglass.png"),
         WEAKNESS("WEAKNESS", "images/deck/cracked_skull.png"),
         RESISTANCE("RESISTANCE", "images/deck/shield.png"),
+        LORE("", ""),
         TEXTURE_PATH("", "");
 
         private final String texturePath;

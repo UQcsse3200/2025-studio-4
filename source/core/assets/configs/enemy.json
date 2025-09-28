@@ -1,0 +1,88 @@
+{
+  "enemies": {
+    "bossEnemy": {
+      "name": "Boss Enemy",
+      "health": "Very High",
+      "damage": "Very High",
+      "speed": "Very Slow",
+      "traits": "Weak to armour-piercing or explosive weapons. Splits into three grunt enemies when defeated.",
+      "role": "Primary target unit, designed to soak fire and allow weaker enemies to slip through.",
+      "currency": "Very High",
+      "lore": "Designed by the US Department of Defence, the boss bot once fought alongside humans against the robot horde. But one decisive battle proved disastrous, with an AI virus infecting the robot's neural core. This beast is now corrupted and seeks only to annihilate humanity.",
+      "points": "Very High",
+      "weakness": "none",
+      "resistance": "none",
+      "image": "images/boss_enemy.png"
+    },
+    "dividerEnemy": {
+      "name": "Divider Enemy",
+      "health": "Very High",
+      "damage": "Very Low",
+      "speed": "Very Slow",
+      "traits": "Spawns Divider Children upon death.",
+      "role": "Surprise unit, catches players off guard by spawning stronger children on death.",
+      "currency": "Moderate",
+      "lore": "The works of a mad scientist gone crazy by AI, the concept of the Divider was initially made to be used in medicine as a way to target patient's illnesses at a microscopic level. At least that was until the military took over the project...",
+      "points": "Moderate",
+      "weakness": "none",
+      "resistance": "none",
+      "image": "images/divider_enemy.png"
+    },
+    "dividerChildEnemy": {
+      "name": "Divider Child Enemy",
+      "health": "Very Low",
+      "damage": "Very High",
+      "speed": "Very Fast",
+      "traits": "Spawned from Divider death.",
+      "role": "Finisher unit, meant to overwhelm distracted defences.",
+      "currency": "Very Low",
+      "lore": "When the Divider is destroyed, its unstable core splits apart into multiple smaller but faster offspring. These children are far deadlier than they appear.",
+      "points": "Very Low",
+      "weakness": "none",
+      "resistance": "none",
+      "image": "images/divider_enemy.png"
+    },
+    "droneEnemy": {
+      "name": "Drone Enemy",
+      "health": "Low",
+      "damage": "Low to Medium",
+      "speed": "Very Fast",
+      "traits": "Flying unit, ignores ground traps and walls.",
+      "role": "Harassment unit, forces anti-air investment and splits defences.",
+      "currency": "Low",
+      "lore": "Drones are automated hunter-killers, originally designed for surveillance in neon-lit megacities. Their repurposed plasma cutters make them lethal in swarms, overwhelming unprepared defences.",
+      "points": "Low",
+      "weakness": "none",
+      "resistance": "none",
+      "image": "images/drone_enemy.png"
+    },
+    "gruntEnemy": {
+      "name": "Grunt Enemy",
+      "health": "Moderate",
+      "damage": "Low",
+      "speed": "Medium",
+      "traits": "None",
+      "role": "Fodder unit, designed to soak early firepower and overwhelm with numbers.",
+      "currency": "Low",
+      "lore": "Grunts are mass-produced cyber-soldiers, outfitted with low-cost exosuits and energy rifles. They are often deployed in waves by crime syndicates or rogue AI's to test your defences.",
+      "points": "Low",
+      "weakness": "none",
+      "resistance": "none",
+      "image": "images/grunt_enemy.png"
+    },
+    "tankEnemy": {
+      "name": "Tank Enemy",
+      "health": "Very High",
+      "damage": "High",
+      "speed": "Very Slow",
+      "traits": "Armoured; resistant to small-arms fire; weak to armour-piercing or explosive weapons.",
+      "role": "Siege unit, designed to break strongholds and soak tower fire.",
+      "currency": "High",
+      "lore": "Built from salvaged military hardware, tanks are often repurposed by warlords or hacked AI systems. Their glowing energy cores hint at unstable but devastating power supplies.",
+      "points": "High",
+      "weakness": "none",
+      "resistance": "none",
+      "image": "images/tank_enemy.png"
+    }
+  }
+}

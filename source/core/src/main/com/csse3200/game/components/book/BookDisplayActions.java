@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 public class BookDisplayActions extends Component {
     private static final Logger logger = LoggerFactory.getLogger(BookDisplayActions.class);
     private GdxGame game;
-    private BookComponent bookComponent = new BookComponent();
+//    private BookComponent bookComponent = new BookComponent();
 
     public BookDisplayActions(GdxGame game) {
         this.game = game;
@@ -35,39 +35,39 @@ public class BookDisplayActions extends Component {
         Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
         Label rightLabel = entity.getComponent(BookDisplay.class).getRightLabel();
 
-        // Update right image
-        Texture tex = ServiceLocator.getResourceService()
-                .getAsset(this.bookComponent.getCurrencyBackGround()[index], Texture.class);
-        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
-
-        // Update right label text
-        rightLabel.setText(this.bookComponent.getCurrencyData()[index]);
+//        // Update right image
+//        Texture tex = ServiceLocator.getResourceService()
+//                .getAsset(this.bookComponent.getCurrencyBackGround()[index], Texture.class);
+//        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+//
+//        // Update right label text
+//        rightLabel.setText(this.bookComponent.getCurrencyData()[index]);
     }
 
     private void changeEnemyData(int index) {
         Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
         Label rightLabel = entity.getComponent(BookDisplay.class).getRightLabel();
 
-        // Update right image
-        Texture tex = ServiceLocator.getResourceService()
-                .getAsset(this.bookComponent.getEnemyBackGround()[index], Texture.class);
-        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
-
-        // Update right label text
-        rightLabel.setText(this.bookComponent.getEnemyData()[index]);
+//        // Update right image
+//        Texture tex = ServiceLocator.getResourceService()
+//                .getAsset(this.bookComponent.getEnemyBackGround()[index], Texture.class);
+//        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+//
+//        // Update right label text
+//        rightLabel.setText(this.bookComponent.getEnemyData()[index]);
     }
 
     private void changeTowerData(int index) {
         Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
         Label rightLabel = entity.getComponent(BookDisplay.class).getRightLabel();
 
-        // Update right image
-        Texture tex = ServiceLocator.getResourceService()
-                .getAsset(this.bookComponent.getTowerBackGround()[index], Texture.class);
-        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
-
-        // Update right label text
-        rightLabel.setText(this.bookComponent.getTowerData()[index]);
+//        // Update right image
+//        Texture tex = ServiceLocator.getResourceService()
+//                .getAsset(this.bookComponent.getTowerBackGround()[index], Texture.class);
+//        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+//
+//        // Update right label text
+//        rightLabel.setText(this.bookComponent.getTowerData()[index]);
     }
 
     private void onExit() {

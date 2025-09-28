@@ -16,7 +16,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.InputAdapter;
 
-import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.TowerComponent;
 import com.csse3200.game.components.TowerStatsComponent;

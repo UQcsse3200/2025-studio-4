@@ -17,7 +17,7 @@ import java.util.*;
  * Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value
  */
 public class CurrencyManagerComponent extends Component {
-    public static final String soundPath = "sounds/add_currency.ogg";
+    public static final String SOUND_PATH = "sounds/add_currency.ogg";
     private Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
     private List<Entity> currencyEntityList = new ArrayList<>();
 
@@ -151,7 +151,7 @@ public class CurrencyManagerComponent extends Component {
             this.addCurrencyAmount(type, value);
             this.updateCurrencyUI(type);
         });
-        playCurrencySound(soundPath);
+        playCurrencySound(SOUND_PATH);
     }
 
     /**

@@ -3,7 +3,6 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.deck.DeckComponent;
-import com.csse3200.game.components.deck.DeckDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.TowerComponent;
@@ -62,7 +61,7 @@ public class TowerFactory {
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
                         stats.projectileTexture, stats.level_A, stats.level_B))
-                .addComponent(new DeckComponent.TowerDeckComponent(type, stats.damage, stats.range, stats.cooldown, texturePath))
+                .addComponent(new DeckComponent.TowerDeckComponent(type, stats.damage, stats.range, stats.cooldown, stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent(texturePath));
 
         base.getComponent(TowerComponent.class).setSelectedPurchaseCurrency(currencyType);

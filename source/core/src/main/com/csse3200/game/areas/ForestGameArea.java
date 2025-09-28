@@ -16,7 +16,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
@@ -35,7 +34,6 @@ import java.util.List;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
@@ -76,7 +74,8 @@ public class ForestGameArea extends GameArea {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            CurrencyManagerComponent.SOUND_PATH
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};

@@ -25,12 +25,12 @@ public class MainBookDisplay extends UIComponent {
             "images/book/enemies_book.png",
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
-            "images/Main_Menu_Button_Background.png"
+            "images/book/hologram.png"
     };
     private final float buttonWidth = 500f;
     private final float buttonHeight = 500f;
     private final float exitButtonWidth = 250f;
-    private final float exitButtonHeight = 50f;
+    private final float exitButtonHeight = 250f;
 
 
     public MainBookDisplay(GdxGame game) {
@@ -92,7 +92,7 @@ public class MainBookDisplay extends UIComponent {
                     }
                 });
 
-        TextButton exitButton = new TextButton("Back to Main Menu", exitButtonStyle);
+        TextButton exitButton = new TextButton("", exitButtonStyle);
         exitButton.getLabel().setColor(Color.WHITE);
         exitButton.addListener(
                 new ChangeListener() {
@@ -103,13 +103,20 @@ public class MainBookDisplay extends UIComponent {
                     }
                 });
 
+        Table exitTable = new Table();
+        exitTable.row();
+        exitTable.top().right().pad(10f);
+        exitTable.add(exitButton).size(exitButtonWidth, exitButtonHeight);
+        exitTable.setFillParent(true);
+
         table.row().padTop(20f);
         table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(5f);
         table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(5f);
         table.add(towerButton).size(buttonWidth, buttonHeight);
         table.row().padTop(10f);
-        table.add(exitButton).size(exitButtonWidth, exitButtonHeight).colspan(3).center();
         table.row().padBottom(30f);
+
+        stage.addActor(exitTable);
         stage.addActor(table);
     }
 

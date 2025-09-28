@@ -58,15 +58,30 @@ public class BookDisplay extends UIComponent {
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
 
-        String[] buttonList = new String[0];
-        String[] buttonTitle = new String[0];
+        String[] buttonList;
+        String[] buttonTitle;
+        String tmpData = "";
+        final String eventName;
         if (this.bookPage.equals("currencyPage")) {
+            eventName = "changeCurrencyData";
             buttonList = this.bookComponent.getCurrencyBackGround();
             buttonTitle = this.bookComponent.getCurrencyTitle();
-        } else if (this.bookPage.equals("towerPage")) {
-            buttonList = this.bookComponent.getCurrencyBackGround();
-            buttonTitle = this.bookComponent.getCurrencyTitle();
+            tmpData = this.bookComponent.getCurrencyData()[0];
+        } else if (this.bookPage.equals("enemyPage")) {
+            eventName = "changeEnemyData";
+            buttonList = this.bookComponent.getEnemyBackGround();
+            buttonTitle = this.bookComponent.getEnemyTitle();
+            tmpData = this.bookComponent.getEnemyData()[0];
+        } else {
+            eventName = "changeTowerData";
+            buttonList = this.bookComponent.getTowerBackGround();
+            buttonTitle = this.bookComponent.getTowerTitle();
+            tmpData = this.bookComponent.getTowerData()[0];
         }
+
+        System.out.println(this.bookPage);
+        System.out.println(buttonList.length);
+        System.out.println(buttonList[0]);
 
         table.top().left().padLeft(450).padTop(150);
         for (int i = 0; i < buttonList.length; i++) {
@@ -81,7 +96,7 @@ public class BookDisplay extends UIComponent {
                 @Override
                 public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
                     logger.debug("Button inside bookPage clicked");
-                    entity.getEvents().trigger("changeCurrencyData", index);
+                    entity.getEvents().trigger(eventName, index);
                 }
             });
 
@@ -97,7 +112,8 @@ public class BookDisplay extends UIComponent {
                 .getAsset(buttonList[0], Texture.class);
         this.rightImage = new Image(tex);
         rightTable.add(rightImage).size(this.displayWidth, this.displayHeight);
-        this.rightLabel = new Label(this.bookComponent.getCurrencyData()[0], skin);
+
+        this.rightLabel = new Label(tmpData, skin);
         this.rightLabel.setWrap(true);
         rightTable.row().width(500f);
         rightTable.add(this.rightLabel);
@@ -105,18 +121,6 @@ public class BookDisplay extends UIComponent {
         stage.addActor(table);
         stage.addActor(rightTable);
     }
-
-//    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor, int index) {
-//        logger.debug("Button {} clicked", index);
-//
-//        // Update right image
-//        Texture tex = ServiceLocator.getResourceService()
-//                .getAsset(currencyBackGround[index], Texture.class);
-//        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
-//
-//        // Update right label text
-//        rightLabel.setText(currencyData[index]);
-//    }
 
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();

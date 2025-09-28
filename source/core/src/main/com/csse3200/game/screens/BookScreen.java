@@ -56,10 +56,14 @@ public class BookScreen extends ScreenAdapter {
 
         // UI entity (display + actions)
         Entity ui = new Entity();
-        if (this.bookPage.equals("home")) {
-            ui.addComponent(new MainBookDisplay(game)).addComponent(new MainBookDisplayActions(game));
-        } else {
+        if (this.bookPage.equals("currencyPage")) {
             ui.addComponent(new BookDisplay(game, "currencyPage")).addComponent(new BookDisplayActions(game));
+        } else if (this.bookPage.equals("enemyPage")){
+            ui.addComponent(new BookDisplay(game, "enemyPage")).addComponent(new BookDisplayActions(game));
+        } else if (this.bookPage.equals("towerPage")) {
+            ui.addComponent(new BookDisplay(game, "towerPage")).addComponent(new BookDisplayActions(game));
+        } else {
+            ui.addComponent(new MainBookDisplay(game)).addComponent(new MainBookDisplayActions(game));
         }
         ServiceLocator.getEntityService().register(ui);
 

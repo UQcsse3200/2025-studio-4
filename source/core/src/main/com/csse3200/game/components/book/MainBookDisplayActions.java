@@ -17,6 +17,8 @@ public class MainBookDisplayActions extends Component {
     public void create() {
         entity.getEvents().addListener("backToMain", this::backToMain);
         entity.getEvents().addListener("goToCurrency", this::goToCurrency);
+        entity.getEvents().addListener("goToEnemy", this::goToEnemy);
+        entity.getEvents().addListener("goToTower", this::goToTower);
     }
 
     private void backToMain() {
@@ -25,7 +27,17 @@ public class MainBookDisplayActions extends Component {
     }
 
     private void goToCurrency() {
-        logger.info("Go to currency");
+        logger.info("Go to currency page");
         game.setScreen(GdxGame.ScreenType.CURRENCY_BOOK);
+    }
+
+    private void goToEnemy() {
+        logger.info("Go to enemy page");
+        game.setScreen(GdxGame.ScreenType.ENEMY_BOOK);
+    }
+
+    private void goToTower() {
+        logger.info("Go to tower page");
+        game.setScreen(GdxGame.ScreenType.TOWER_BOOK);
     }
 }

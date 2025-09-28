@@ -23,6 +23,8 @@ public class BookDisplayActions extends Component {
     @Override
     public void create() {
         entity.getEvents().addListener("changeCurrencyData", this::changeCurrencyData);
+        entity.getEvents().addListener("changeEnemyData", this::changeEnemyData);
+        entity.getEvents().addListener("changeTowerData", this::changeTowerData);
     }
 
     private void changeCurrencyData(int index) {
@@ -36,5 +38,31 @@ public class BookDisplayActions extends Component {
 
         // Update right label text
         rightLabel.setText(this.bookComponent.getCurrencyData()[index]);
+    }
+
+    private void changeEnemyData(int index) {
+        Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
+        Label rightLabel = entity.getComponent(BookDisplay.class).getRightLabel();
+
+        // Update right image
+        Texture tex = ServiceLocator.getResourceService()
+                .getAsset(this.bookComponent.getEnemyBackGround()[index], Texture.class);
+        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+
+        // Update right label text
+        rightLabel.setText(this.bookComponent.getEnemyData()[index]);
+    }
+
+    private void changeTowerData(int index) {
+        Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
+        Label rightLabel = entity.getComponent(BookDisplay.class).getRightLabel();
+
+        // Update right image
+        Texture tex = ServiceLocator.getResourceService()
+                .getAsset(this.bookComponent.getTowerBackGround()[index], Texture.class);
+        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+
+        // Update right label text
+        rightLabel.setText(this.bookComponent.getTowerData()[index]);
     }
 }

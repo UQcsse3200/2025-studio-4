@@ -66,7 +66,7 @@ public class MainBookDisplay extends UIComponent {
                     @Override
                     public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
                         logger.debug("Go to enemy clicked");
-                        entity.getEvents().trigger("newSave");
+                        entity.getEvents().trigger("goToEnemy");
                     }
                 });
 
@@ -88,7 +88,7 @@ public class MainBookDisplay extends UIComponent {
                     @Override
                     public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
                         logger.debug("Go to tower clicked");
-                        entity.getEvents().trigger("backToMain");
+                        entity.getEvents().trigger("goToTower");
                     }
                 });
 

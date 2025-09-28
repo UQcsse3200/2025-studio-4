@@ -31,7 +31,7 @@ public class BookComponent {
     }
 
     public static class TowerBookComponent extends BookComponent {
-        private static final TowerConfig towerConfig = FileLoader.readClass(TowerConfig.class, "../assets/configs/tower.json");
+        private static final TowerConfig towerConfig = FileLoader.readClass(TowerConfig.class, "configs/tower.json");
 
         public TowerBookComponent() {
             super("TOWER", createDecks());
@@ -70,7 +70,7 @@ public class BookComponent {
     }
 
     public static class EnemyBookComponent extends BookComponent {
-        private static final EnemyConfig enemyConfig = FileLoader.readClass(EnemyConfig.class, "../assets/configs/enemy.json");
+        private static final EnemyConfig enemyConfig = FileLoader.readClass(EnemyConfig.class, "configs/enemy.json");
 
         public EnemyBookComponent() {
             super("ENEMY", createDecks());
@@ -103,7 +103,7 @@ public class BookComponent {
     }
 
     public static class CurrencyBookComponent extends BookComponent {
-        private static final CurrencyConfig currencyConfig = FileLoader.readClass(CurrencyConfig.class, "../assets/configs/currency.json");
+        private static final CurrencyConfig currencyConfig = FileLoader.readClass(CurrencyConfig.class, "configs/currency.json");
 
         public CurrencyBookComponent() {
             super("CURRENCY", createDecks());

@@ -1,35 +1,39 @@
 package com.csse3200.game.entities.configs;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Config class to load currency stats from JSON.
  * Contains stats for each currency type.
  */
 public class CurrencyConfig {
-    public Map<String, CurrencyStats> currencies;
+    /** Wrapper for all currency types. Matches JSON top-level field. */
+    public CurrenciesWrapper currencies;
 
-    /**
-     * Inner class representing stats for a single currency type.
-     * All fields are strings to match JSON config values directly.
-     */
+    /** Wrapper class containing each currency as a separate field. */
+    public static class CurrenciesWrapper {
+        public CurrencyStats metalScrapCurrency;
+        public CurrencyStats titaniumCoreCurrency;
+        public CurrencyStats neurochipCurrency;
+
+        /** Returns all currencies as a list. */
+        public List<CurrencyStats> getAllCurrencies() {
+            return List.of(metalScrapCurrency, titaniumCoreCurrency, neurochipCurrency);
+        }
+    }
+
+    /** Inner class representing stats for a single currency type. */
     public static class CurrencyStats {
-        /** Display name of the currency. */
         public String name;
-        /** Background lore or description of the currency. */
         public String lore;
-        /** Path to currency image asset. */
         public String image;
-        /** Path to currency collection sound effect. */
         public String sound;
     }
 
-    /**
-     * Returns all currencies as a list.
-     */
+    /** Returns all currencies as a list. */
     public List<CurrencyStats> getAllCurrencies() {
-        return List.copyOf(currencies.values());
+        return currencies.getAllCurrencies();
     }
 }
+
 

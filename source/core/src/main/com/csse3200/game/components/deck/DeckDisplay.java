@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -20,10 +21,8 @@ import java.util.Map;
  */
 public class DeckDisplay extends UIComponent {
     private Table table;
-    // Set initial value to test
-    // private DeckComponent deck = new DeckComponent.TowerDeckComponent("<Tower Name>", 999, 999.0, 999.0, "images/dino.png");
-//    private DeckComponent deck = new DeckComponent.EnemyDeckComponent("<Enemy Name>", 999, 999, "images/boss_enemy.png");
     private DeckComponent deck;
+
     @Override
     public void create() {
         super.create();
@@ -32,15 +31,23 @@ public class DeckDisplay extends UIComponent {
         entity.getEvents().addListener("clearDeck", this::hide);
     }
 
+    @Override
+    public void update() {
+        if (deck != null) {
+            Map<DeckComponent.StatType, String> lastStats = new EnumMap<>(deck.getStats());
+            deck.updateStats();
+            if (!deck.getStats().equals(lastStats)) {
+                displayDeck(deck);
+            }
+        }
+    }
+
     private void addActors() {
         table = new Table();
         table.top().right();
         table.setFillParent(true);
         table.pad(10f);
         table.padTop(150f);
-
-        displayDeck(deck);
-
         stage.addActor(table);
     }
 
@@ -52,6 +59,9 @@ public class DeckDisplay extends UIComponent {
         if (deck == null) {
             return;
         }
+
+        this.deck = deck;
+        deck.updateStats();
 
         table.clear();
 
@@ -114,6 +124,7 @@ public class DeckDisplay extends UIComponent {
      */
     public void hide() {
         table.clear();
+        this.deck = null;
     }
 
     @Override

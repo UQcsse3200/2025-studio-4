@@ -27,7 +27,7 @@ class DeckComponentTest {
     void getStats() {
         Map<DeckComponent.StatType, String> stats = deck.getStats();
         assertEquals("DRONE", stats.get(DeckComponent.StatType.NAME));
-        assertEquals("100", stats.get(DeckComponent.StatType.MAX_HEALTH));
+        assertEquals("100", stats.get(DeckComponent.StatType.HEALTH));
         assertEquals("100", stats.get(DeckComponent.StatType.DAMAGE));
         assertEquals("NONE", stats.get(DeckComponent.StatType.RESISTANCE));
         assertEquals("ELECTRICITY", stats.get(DeckComponent.StatType.WEAKNESS));

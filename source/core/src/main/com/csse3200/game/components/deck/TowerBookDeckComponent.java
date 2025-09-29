@@ -68,14 +68,14 @@ public class TowerBookDeckComponent extends DeckComponent {
         stats.put(StatType.RANGE, String.valueOf(range));
         stats.put(StatType.COOLDOWN, String.valueOf(Math.floor(cooldown * 100) / 100));
         stats.put(StatType.PROJECTILE_SPEED, String.valueOf(projectileSpeed));
-        stats.put(StatType.PROJECTILE_LIFE, String.valueOf(Math.floor(projectileLife * 100) / 100));
+//        stats.put(StatType.PROJECTILE_LIFE, String.valueOf(Math.floor(projectileLife * 100) / 100));
         stats.put(StatType.LORE, lore);
         stats.put(StatType.TEXTURE_PATH, texturePath);
 
         // resource costs
-        stats.put(StatType.METAL_SCRAP_COST, String.valueOf(metalScrapCost));
-        stats.put(StatType.TITANIUM_CORE_COST, String.valueOf(titaniumCoreCost));
-        stats.put(StatType.NEUROCHIP_COST, String.valueOf(neurochipCost));
+//        stats.put(StatType.METAL_SCRAP_COST, String.valueOf(metalScrapCost));
+//        stats.put(StatType.TITANIUM_CORE_COST, String.valueOf(titaniumCoreCost));
+//        stats.put(StatType.NEUROCHIP_COST, String.valueOf(neurochipCost));
 
         return stats;
     }

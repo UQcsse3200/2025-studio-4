@@ -1,7 +1,7 @@
 {
   "enemies": {
     "bossEnemy": {
-      "name": "Boss Enemy",
+      "name": "Boss",
       "health": "Very High",
       "damage": "Very High",
       "speed": "Very Slow",
@@ -15,7 +15,7 @@
       "image": "images/boss_enemy.png"
     },
     "dividerEnemy": {
-      "name": "Divider Enemy",
+      "name": "Divider",
       "health": "Very High",
       "damage": "Very Low",
       "speed": "Very Slow",
@@ -29,7 +29,7 @@
       "image": "images/divider_enemy.png"
     },
     "dividerChildEnemy": {
-      "name": "Divider Child Enemy",
+      "name": "Divider Child",
       "health": "Very Low",
       "damage": "Very High",
       "speed": "Very Fast",
@@ -43,7 +43,7 @@
       "image": "images/divider_enemy.png"
     },
     "droneEnemy": {
-      "name": "Drone Enemy",
+      "name": "Drone",
       "health": "Low",
       "damage": "Low to Medium",
       "speed": "Very Fast",
@@ -57,7 +57,7 @@
       "image": "images/drone_enemy.png"
     },
     "gruntEnemy": {
-      "name": "Grunt Enemy",
+      "name": "Grunt",
       "health": "Moderate",
       "damage": "Low",
       "speed": "Medium",
@@ -71,7 +71,7 @@
       "image": "images/grunt_enemy.png"
     },
     "tankEnemy": {
-      "name": "Tank Enemy",
+      "name": "Tank",
       "health": "Very High",
       "damage": "High",
       "speed": "Very Slow",

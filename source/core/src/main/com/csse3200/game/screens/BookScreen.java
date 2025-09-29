@@ -22,11 +22,6 @@ public class BookScreen extends ScreenAdapter {
     private Stage stage;
     private BookPage bookPage;
 
-    public BookScreen(GdxGame game) {
-        this.game = game;
-        this.bookPage = BookPage.NONE;
-    }
-
     public BookScreen(GdxGame game, BookPage bookType) {
         this.game = game;
         this.bookPage = bookType;

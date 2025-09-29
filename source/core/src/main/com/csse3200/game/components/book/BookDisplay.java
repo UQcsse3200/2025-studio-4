@@ -1,19 +1,19 @@
 package com.csse3200.game.components.book;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -34,15 +34,19 @@ public class BookDisplay extends UIComponent {
     private final float exitButtonWidth = 100f;
     private final float exitButtonHeight = 100f;
     private final String eventName = "changeData";
+    private int maxWordsLore;
 
     public BookDisplay(GdxGame game, BookPage bookPage) {
         super();
         if (bookPage == BookPage.CURRENCY_PAGE) {
             this.book = new BookComponent.CurrencyBookComponent();
+            maxWordsLore = 30;
         } else if (bookPage == BookPage.ENEMY_PAGE) {
             this.book = new BookComponent.EnemyBookComponent();
+            maxWordsLore = 7;
         } else if (bookPage == BookPage.TOWER_PAGE) {
             this.book = new BookComponent.TowerBookComponent();
+            maxWordsLore = 18;
         }
         this.decks = book.getDecks();
     }
@@ -105,11 +109,17 @@ public class BookDisplay extends UIComponent {
         float buttonW = stageWidth * 0.12f;
         float buttonH = stageHeight * 0.12f;
 
+        int imagesPerRow = 2;
+        int count = 0;
+
         for (DeckComponent deck : decks) {
             Map<DeckComponent.StatType, String> stats = deck.getStats();
 
             // start a new row
-            table.row().padTop(stageHeight * 0.01f).padLeft(stageWidth * 0.01f);
+            if (count % imagesPerRow == 0) {
+                table.row().padTop(stageHeight * 0.01f).padLeft(stageWidth * 0.01f);
+            }
+            count++;
 
             TextButton.TextButtonStyle buttonStyle =
                     createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
@@ -144,15 +154,16 @@ public class BookDisplay extends UIComponent {
                 .getAsset(stats.get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
         Image rightImage = new Image(new TextureRegionDrawable(new TextureRegion(tex)));
 
-        float imageW = stageWidth * 0.25f;
-        float imageH = stageHeight * 0.35f;
+        float imageW = stageWidth * 0.15f;
+        float imageH = stageHeight * 0.25f;
         rightTable.add(rightImage).size(imageW, imageH).center();
-        rightTable.row().padTop(stageHeight * 0.02f);
+        rightTable.row().padTop(stageHeight * 0.01f);
 
         // --- NAME ---
         String name = stats.get(DeckComponent.StatType.NAME);
         if (name != null) {
             Label nameLabel = new Label(name, skin, "large");
+            nameLabel.setFontScale(stageWidth * 0.001f);
             rightTable.add(nameLabel).center();
             rightTable.row().padTop(stageHeight * 0.01f);
         }
@@ -160,8 +171,9 @@ public class BookDisplay extends UIComponent {
         // --- LORE ---
         String lore = stats.get(DeckComponent.StatType.LORE);
         if (lore != null && !lore.isEmpty()) {
-            String trimmedLore = trimWords(lore, 20);
+            String trimmedLore = trimWords(lore, maxWordsLore);
             Label loreLabel = new Label(trimmedLore, skin, "small"); // use a smaller style
+            loreLabel.setFontScale(stageWidth * 0.001f);
             loreLabel.setWrap(true);
             rightTable.add(loreLabel)
                     .width(stageWidth * 0.3f)
@@ -170,33 +182,57 @@ public class BookDisplay extends UIComponent {
         }
 
         // --- OTHER STATS ---
+        int statsPerRow = 2;
+        int statCount = 0;
+
+        Table rowTable = new Table(); // temporary row container
         for (Map.Entry<DeckComponent.StatType, String> entry : stats.entrySet()) {
             DeckComponent.StatType type = entry.getKey();
             String value = entry.getValue();
 
             if (type == DeckComponent.StatType.TEXTURE_PATH
                     || type == DeckComponent.StatType.NAME
-                    || type == DeckComponent.StatType.LORE) {
-                continue; // skip already handled
+                    || type == DeckComponent.StatType.LORE
+                    || type == DeckComponent.StatType.SOUND) {
+                continue;
             }
 
             if (!type.getTexturePath().isEmpty()) {
-                Table rowTable = new Table();
+                Table statCell = new Table();
 
                 Texture statTexture = ServiceLocator.getResourceService()
                         .getAsset(type.getTexturePath(), Texture.class);
 
                 if (statTexture != null) {
                     Image statIcon = new Image(statTexture);
-                    rowTable.add(statIcon).size(stageWidth * 0.06f).padRight(stageWidth * 0.01f);
+                    statCell.add(statIcon).size(stageWidth * 0.06f).padRight(stageWidth * 0.01f);
 
                     Label valueLabel = new Label(value, skin, "default");
+                    valueLabel.setFontScale(stageWidth * 0.001f);
                     valueLabel.setWrap(true);
-                    rowTable.add(valueLabel).width(stageWidth * 0.25f).left();
+                    statCell.add(valueLabel).width(stageWidth * 0.08f).left();
                 }
 
-                rightTable.add(rowTable).left().padTop(stageHeight * 0.01f).row();
+                // Add statCell to temporary row table
+                if (statCount % statsPerRow == 1) { // second cell in the row
+                    rowTable.add(statCell).padLeft(stageWidth * 0.01f);
+                } else {
+                    rowTable.add(statCell);
+                }
+
+                statCount++;
+
+                // After 2 stats, add the row to rightTable
+                if (statCount % statsPerRow == 0) {
+                    rightTable.add(rowTable).fillX().padTop(stageHeight * 0.01f).row();
+                    rowTable = new Table(); // start new row
+                }
             }
+        }
+
+        // Add leftover stats (if any) in the last row
+        if (statCount % statsPerRow != 0) {
+            rightTable.add(rowTable).fillX().padTop(stageHeight * 0.01f).row();
         }
     }
 
@@ -211,32 +247,33 @@ public class BookDisplay extends UIComponent {
         return String.join(" ", Arrays.copyOfRange(words, 0, maxWords)) + "...";
     }
 
-
     private void renderExitButton() {
-        // Exit Icon on Top Right Corner
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/hologram.png");
+        float stageWidth = stage.getViewport().getWorldWidth();
+        float stageHeight = stage.getViewport().getWorldHeight();
+
+        // Scale button size relative to stage size
+        float buttonWidth = stageWidth * 0.15f;
+        float buttonHeight = stageHeight * 0.24f;
+
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/bookmark.png");
         TextButton exitButton = new TextButton("", exitButtonStyle);
 
-        exitButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        entity.getEvents().trigger("backToMain");
-                    }
-                });
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("Back button clicked");
+                entity.getEvents().trigger("backToMain");
+            }
+        });
 
-        // Create a table
         Table exitTable = new Table();
-        exitTable.top().right();       // Aligns everything in this table to top-right of the stage
-        exitTable.setFillParent(true); // Table covers the whole stage
+        exitTable.top().right().padRight(stageWidth * 0.125f);
+        exitTable.setFillParent(true);
 
-        // Add the button
-        exitTable.add(exitButton).size(exitButtonWidth,exitButtonHeight).pad(20f); // 10px padding from edges
-
-        // Add table to stage
+        exitTable.add(exitButton).size(buttonWidth, buttonHeight).pad(stageWidth * 0.01f); // padding scaled too
         stage.addActor(exitTable);
     }
+
 
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();

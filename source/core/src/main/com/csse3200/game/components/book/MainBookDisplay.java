@@ -57,7 +57,15 @@ public class MainBookDisplay extends UIComponent {
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
     }
+
     private void renderContentList() {
+        float stageWidth = stage.getViewport().getWorldWidth();
+        float stageHeight = stage.getViewport().getWorldHeight();
+
+        // Scale buttons relative to stage size
+        float buttonWidth = stageWidth * 0.3f;   // 8% of stage width
+        float buttonHeight = stageHeight * 0.45f; // 12% of stage height
+
         table = new Table();
         table.setFillParent(true);
 
@@ -67,68 +75,72 @@ public class MainBookDisplay extends UIComponent {
 
         TextButton enemyButton = new TextButton("", enemyButtonStyle);
         enemyButton.getLabel().setColor(Color.WHITE);
-        enemyButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Go to enemy clicked");
-                        entity.getEvents().trigger("goToEnemy");
-                    }
-                });
+        enemyButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("Go to enemy clicked");
+                entity.getEvents().trigger("goToEnemy");
+            }
+        });
 
         TextButton currencyButton = new TextButton("", currencyButtonStyle);
         currencyButton.getLabel().setColor(Color.WHITE);
-        currencyButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Go to currency clicked");
-                        entity.getEvents().trigger("goToCurrency");
-                    }
-                });
+        currencyButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("Go to currency clicked");
+                entity.getEvents().trigger("goToCurrency");
+            }
+        });
 
         TextButton towerButton = new TextButton("", towerButtonStyle);
         towerButton.getLabel().setColor(Color.WHITE);
-        towerButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Go to tower clicked");
-                        entity.getEvents().trigger("goToTower");
-                    }
-                });
+        towerButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("Go to tower clicked");
+                entity.getEvents().trigger("goToTower");
+            }
+        });
 
-
-        table.row().padTop(20f);
-        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(5f);
-        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(5f);
+        table.row().padTop(stageHeight * 0.02f);
+        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
+        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
         table.add(towerButton).size(buttonWidth, buttonHeight);
-        table.row().padTop(10f);
-        table.row().padBottom(30f);
+
+        table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 
         stage.addActor(table);
     }
+
+
     private void renderExitButton() {
+        float stageWidth = stage.getViewport().getWorldWidth();
+        float stageHeight = stage.getViewport().getWorldHeight();
+
+        // Scale button size relative to stage size
+        float buttonWidth = stageWidth * 0.15f;   // 5% of stage width
+        float buttonHeight = stageHeight * 0.24f; // 8% of stage height
+
         TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
         TextButton exitButton = new TextButton("", exitButtonStyle);
         exitButton.getLabel().setColor(Color.WHITE);
-        exitButton.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        entity.getEvents().trigger("backToMain");
-                    }
-                });
-        // Create a table
+
+        exitButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                logger.debug("Back button clicked");
+                entity.getEvents().trigger("backToMain");
+            }
+        });
+
         Table exitTable = new Table();
-        exitTable.top().right();       // Aligns everything in this table to top-right of the stage
-        exitTable.setFillParent(true); // Table covers the whole stage
+        exitTable.top().right();
+        exitTable.setFillParent(true);
 
-        // Add the button
-        exitTable.add(exitButton).size(exitButtonWidth,exitButtonHeight).pad(20f); // 10px padding from edges
+        // Add button with scaled size and smaller padding
+        exitTable.add(exitButton).size(buttonWidth, buttonHeight).pad(stageWidth * 0.01f);
 
-        // Add table to stage
         stage.addActor(exitTable);
     }
 
@@ -153,7 +165,6 @@ public class MainBookDisplay extends UIComponent {
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
 
-        // 设置字体颜色
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;

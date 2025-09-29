@@ -55,19 +55,19 @@ class BookComponentTest {
     @Test
     void shouldGetTowerTitle() {
         towerBook = new BookComponent.TowerBookComponent();
-        assertEquals("TOWER", towerBook.getTitle());
+        assertEquals("TOWERS", towerBook.getTitle());
     }
 
     @Test
     void shouldGetEnemyTitle() {
         enemyBook = new BookComponent.EnemyBookComponent();
-        assertEquals("ENEMY", enemyBook.getTitle());
+        assertEquals("ENEMIES", enemyBook.getTitle());
     }
 
     @Test
     void shouldGetCurrencyTitle() {
         currencyBook = new BookComponent.CurrencyBookComponent();
-        assertEquals("CURRENCY", currencyBook.getTitle());
+        assertEquals("CURRENCIES", currencyBook.getTitle());
     }
 
     @Test

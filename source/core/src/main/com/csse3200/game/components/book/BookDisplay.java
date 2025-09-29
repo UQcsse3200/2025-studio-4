@@ -32,8 +32,9 @@ public class BookDisplay extends UIComponent {
     private Table table;
     private Image rightImage;
     private Label rightLabel;
-    private final float buttonWidth = 170f;
-    private final float buttonHeight = 170f;
+    private Table rightContent;
+    private final float buttonWidth = 130f;
+    private final float buttonHeight = 130f;
     private final float displayWidth = 300f;
     private final float displayHeight = 300f;
     private final float exitButtonWidth = 100f;
@@ -61,9 +62,11 @@ public class BookDisplay extends UIComponent {
     }
 
     void addActors() {
-       this.renderBackGround();
-       this.renderContentList();
-       this.renderExitButton();
+        this.rightContent = new Table();
+        this.rightImage = new Image();
+        this.renderBackGround();
+        this.renderContentList();
+        this.renderExitButton();
     }
 
     private void renderBackGround() {
@@ -79,14 +82,20 @@ public class BookDisplay extends UIComponent {
         table = new Table();
         table.setFillParent(true);
 
-        String tmpData = "";
+        table.top().left().padLeft(400).padTop(200);
 
-        table.top().left().padLeft(450).padTop(120);
+
+        Label labelTitle = new Label(this.book.getTitle() + " BOOK", skin, "large");
+        Table titleTable = new Table();
+        titleTable.setFillParent(true);
+        titleTable.top().left().padLeft(550).padTop(120);
+        titleTable.add(labelTitle);
+
         for (DeckComponent deck : decks) {
             Map<DeckComponent.StatType, String> stats = deck.getStats();
 
             // start a new row
-            table.row().padTop(0.5f).padLeft(10f);
+            table.row().padTop(0.2f).padLeft(10f);
 
             TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
             TextButton button = new TextButton("", buttonStyle);
@@ -98,24 +107,20 @@ public class BookDisplay extends UIComponent {
                 }
             });
 
-            Label label = new Label(stats.get(DeckComponent.StatType.NAME), skin, "large");
+            Label label = new Label(stats.get(DeckComponent.StatType.NAME), skin, "default");
             table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
             table.add(label);
         }
 
         Table rightTable = new Table();
         rightTable.setFillParent(true);
-        rightTable.top().right().padRight(380).padTop(120); // anchor top-right with padding
-        Texture tex = ServiceLocator.getResourceService()
-                .getAsset(decks.get(0).getStats().get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
-        this.rightImage = new Image(tex);
-        rightTable.add(rightImage).size(this.displayWidth, this.displayHeight);
-
-        this.rightLabel = new Label(tmpData, skin);
-        this.rightLabel.setWrap(true);
+        rightTable.top().right().padRight(380).padTop(120);
+        this.changeRightDeck(decks.get(0));
+        rightTable.add(this.rightImage).size(this.displayWidth, this.displayHeight);
         rightTable.row().width(500f);
-        rightTable.add(this.rightLabel);
+        rightTable.add(this.rightContent);
 
+        stage.addActor(titleTable);
         stage.addActor(table);
         stage.addActor(rightTable);
     }
@@ -126,10 +131,41 @@ public class BookDisplay extends UIComponent {
         // Update right image
         Texture tex = ServiceLocator.getResourceService()
                 .getAsset(stats.get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
-        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+        this.rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
 
-        // Update right label text
-        rightLabel.setText(stats.get(DeckComponent.StatType.NAME));
+        Table rightTable = new Table();
+
+        // Clear and rebuild the existing content table
+        this.rightContent.clear();
+
+        for (Map.Entry<DeckComponent.StatType, String> entry : stats.entrySet()) {
+            DeckComponent.StatType type = entry.getKey();
+            String value = entry.getValue();
+
+            if (type == DeckComponent.StatType.TEXTURE_PATH || type == DeckComponent.StatType.NAME) {
+                continue;
+            }
+
+
+            if (!type.getTexturePath().isEmpty()) {
+                Table rowTable = new Table();
+
+                Texture statTexture = ServiceLocator.getResourceService()
+                        .getAsset(type.getTexturePath(), Texture.class);
+
+                if (statTexture != null) {
+                    Image statIcon = new Image(statTexture);
+                    rowTable.add(statIcon).size(64f).padRight(10f);
+
+                    Label valueLabel = new Label(value, skin, "default");
+                    valueLabel.setWrap(true);
+                    rowTable.add(valueLabel).width(400f).left();
+                }
+
+                this.rightContent.add(rowTable).left().padTop(5f).row();
+            }
+
+        }
     }
 
     private void renderExitButton() {

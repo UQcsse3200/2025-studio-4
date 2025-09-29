@@ -36,8 +36,8 @@ public class BookDisplay extends UIComponent {
     private Table rightContent;
     private final float buttonWidth = 130f;
     private final float buttonHeight = 130f;
-    private final float displayWidth = 300f;
-    private final float displayHeight = 300f;
+    private final float displayWidth = 270f;
+    private final float displayHeight = 270f;
     private final float exitButtonWidth = 100f;
     private final float exitButtonHeight = 100f;
     private final String eventName = "changeData";
@@ -89,9 +89,9 @@ public class BookDisplay extends UIComponent {
         // table.top().left().padLeft(400).padTop(200);
 
 
-        Label labelTitle = new Label("THE COMPLETE BOOK OF " + this.book.getTitle(), skin, "large");
+        Label labelTitle = new Label("THE COMPLETE BOOK OF " + this.book.getTitle(), skin, "default");
         table.row();
-        table.add(labelTitle).colspan(2).center();
+        table.add(labelTitle).colspan(3).center();
 
         for (DeckComponent deck : decks) {
             Map<DeckComponent.StatType, String> stats = deck.getStats();
@@ -110,7 +110,7 @@ public class BookDisplay extends UIComponent {
             });
 
             Label label = new Label(stats.get(DeckComponent.StatType.NAME), skin, "default");
-            table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
+            table.add(button).size(buttonWidth, buttonHeight).padRight(5f);
             table.add(label);
         }
 
@@ -128,8 +128,8 @@ public class BookDisplay extends UIComponent {
         parent.setPosition(stage.getViewport().getWorldWidth() / 2f,
                 stage.getViewport().getWorldHeight() / 2f + 50f,
                 Align.center);
-        parent.add(table).padRight(160f).center();
-        parent.add(rightTable).center();
+        parent.add(table).center();
+        parent.add(rightTable).padLeft(250f).center();
 
 
         stage.addActor(parent);

@@ -69,7 +69,7 @@ public class MainMenuDisplay extends UIComponent {
     // 设置按钮大小
     float buttonWidth = 200f;
     float buttonHeight = 50f;
-    
+
     startBtn.getLabel().setColor(Color.WHITE);
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);

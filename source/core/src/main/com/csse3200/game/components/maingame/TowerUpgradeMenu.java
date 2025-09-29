@@ -23,8 +23,7 @@ import com.csse3200.game.components.TowerCostComponent;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
-import com.csse3200.game.data.TowerUpgradeData;
-import com.csse3200.game.data.TowerUpgradeData.UpgradeStats;
+import com.csse3200.game.components.maingame.TowerUpgradeData.UpgradeStats;
 
 import java.util.Map;
 import java.util.EnumMap;
@@ -243,7 +242,7 @@ public class TowerUpgradeMenu extends UIComponent {
     private void setupButtonContent(TextButton button, int cost) {
         Table content = new Table(skin);
         Image scrapIcon = new Image(new TextureRegionDrawable(
-                new TextureRegion(new Texture("images/metal_scrap_currency.png"))));
+                new TextureRegion(new Texture(CurrencyType.METAL_SCRAP.getTexturePath()))));
         Label costLabel = new Label(String.valueOf(cost), skin);
         content.add(scrapIcon).size(24, 24).padRight(5);
         content.add(costLabel);

@@ -10,6 +10,8 @@ import com.badlogic.gdx.files.FileHandle;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
+import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -132,18 +134,22 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     // Create game area after loading save (or for new game)
-    TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
-    ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-
-    // Pass information about existing player to game area
-    forestGameArea.setHasExistingPlayer(hasExistingPlayer);
+    // NEW: Support different game areas based on mapId
+    Object gameArea = createGameAreaBasedOnMap();
+    
+    // Pass information about existing player to game area (both types support this method)
+    if (gameArea instanceof ForestGameArea) {
+      ((ForestGameArea) gameArea).setHasExistingPlayer(hasExistingPlayer);
+    } else if (gameArea instanceof com.csse3200.game.areas2.MapTwo.ForestGameArea2) {
+      ((com.csse3200.game.areas2.MapTwo.ForestGameArea2) gameArea).setHasExistingPlayer(hasExistingPlayer);
+    }
 
     // NEW: If this is a NEW game and we have a selected map id, try to forward it to the area.
     // We support either setMapPath(String) or setMapId(String) if your area exposes them.
     if (!isContinue) {
       String chosenMapPath = resolveNewGameMapPath();
       if (chosenMapPath != null) {
-        boolean applied = tryApplyMapToArea(forestGameArea, chosenMapPath);
+        boolean applied = tryApplyMapToArea(gameArea, chosenMapPath);
         if (applied) {
           logger.info("Starting NEW game on map: {}", chosenMapPath);
         } else {
@@ -153,13 +159,23 @@ public class MainGameScreen extends ScreenAdapter {
     }
 
     // If continuing from a save, avoid auto-starting waves to prevent duplicate enemies.
-    forestGameArea.setAutoStartWaves(!hasExistingPlayer);
-    forestGameArea.create();
+    if (gameArea instanceof ForestGameArea) {
+      ((ForestGameArea) gameArea).setAutoStartWaves(!hasExistingPlayer);
+      ((ForestGameArea) gameArea).create();
+    } else if (gameArea instanceof ForestGameArea2) {
+      ((ForestGameArea2) gameArea).setAutoStartWaves(!hasExistingPlayer);
+      ((ForestGameArea2) gameArea).create();
+    }
 
     // After game area and assets are ready, apply pending save restoration if any
     if (hasExistingPlayer) {
       // Use area waypoints when restoring to avoid any initial drift
-      java.util.List<com.csse3200.game.entities.Entity> canonical = forestGameArea.getWaypointList();
+      java.util.List<com.csse3200.game.entities.Entity> canonical = null;
+      if (gameArea instanceof ForestGameArea) {
+        canonical = ((ForestGameArea) gameArea).getWaypointList();
+      } else if (gameArea instanceof ForestGameArea2) {
+        canonical = ((ForestGameArea2) gameArea).getWaypointList();
+      }
       boolean applied = (canonical != null && !canonical.isEmpty())
               ? simpleSave.applyPendingRestoreWithWaypoints(canonical)
               : simpleSave.applyPendingRestore();
@@ -316,6 +332,23 @@ public class MainGameScreen extends ScreenAdapter {
       } catch (ReflectiveOperationException ignoredToo) {
         return false;
       }
+    }
+  }
+
+  /**
+   * Create the appropriate game area based on the selected mapId.
+   * Returns ForestGameArea2 for "MapTwo", otherwise ForestGameArea.
+   */
+  private Object createGameAreaBasedOnMap() {
+    // Check if MapTwo is selected
+    if (startupArg != null && "MapTwo".equalsIgnoreCase(startupArg)) {
+      logger.info("Creating ForestGameArea2 for MapTwo");
+      TerrainFactory2 terrainFactory2 = new TerrainFactory2(renderer.getCamera());
+      return new ForestGameArea2(terrainFactory2);
+    } else {
+      logger.info("Creating default ForestGameArea");
+      TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
+      return new ForestGameArea(terrainFactory);
     }
   }
 }

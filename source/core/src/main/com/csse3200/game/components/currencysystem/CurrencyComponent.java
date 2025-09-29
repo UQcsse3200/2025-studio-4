@@ -15,17 +15,17 @@ public class CurrencyComponent extends Component {
     public enum CurrencyType {
         METAL_SCRAP(
                 "Metal Scrap",
-                "images/metal_scrap_currency.png",
+                "images/currency/metal_scrap.png",
                 "sounds/metal_scrap_currency_collect.ogg"
         ),
         TITANIUM_CORE(
                 "Titanium Core",
-                "images/titanium_core_currency.png",
+                "images/currency/titanium_core.png",
                 "sounds/titanium_core_currency_collect.ogg"
         ),
         NEUROCHIP(
                 "Neurochip",
-                "images/neurochip_currency.png",
+                "images/currency/neurochip.png",
                 "sounds/neurochip_currency_collect.ogg"
         );
 

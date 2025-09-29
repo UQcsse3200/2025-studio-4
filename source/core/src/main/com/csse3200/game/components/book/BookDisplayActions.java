@@ -24,23 +24,7 @@ public class BookDisplayActions extends Component {
 
     @Override
     public void create() {
-        entity.getEvents().addListener("changeData", this::changeData);
         entity.getEvents().addListener("backToMain", this::onExit);
-    }
-
-    private void changeData(DeckComponent deck) {
-        Map<DeckComponent.StatType, String> stats = deck.getStats();
-
-        Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
-        Label rightLabel = entity.getComponent(BookDisplay.class).getRightLabel();
-
-        // Update right image
-        Texture tex = ServiceLocator.getResourceService()
-                .getAsset(stats.get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
-        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
-
-        // Update right label text
-        rightLabel.setText(stats.get(DeckComponent.StatType.NAME));
     }
 
     private void onExit() {

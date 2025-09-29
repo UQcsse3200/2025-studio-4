@@ -38,6 +38,7 @@ public class BookDisplay extends UIComponent {
     private final float displayHeight = 300f;
     private final float exitButtonWidth = 100f;
     private final float exitButtonHeight = 100f;
+    private final String eventName = "changeData";
 
     public BookDisplay(GdxGame game, BookPage bookPage) {
         super();
@@ -56,6 +57,7 @@ public class BookDisplay extends UIComponent {
     public void create() {
         super.create();
         addActors();
+        this.entity.getEvents().addListener(eventName, this::changeRightDeck);
     }
 
     void addActors() {
@@ -78,7 +80,6 @@ public class BookDisplay extends UIComponent {
         table.setFillParent(true);
 
         String tmpData = "";
-        final String eventName = "changeData";
 
         table.top().left().padLeft(450).padTop(120);
         for (DeckComponent deck : decks) {
@@ -117,6 +118,18 @@ public class BookDisplay extends UIComponent {
 
         stage.addActor(table);
         stage.addActor(rightTable);
+    }
+
+    private void changeRightDeck(DeckComponent deck) {
+        Map<DeckComponent.StatType, String> stats = deck.getStats();
+
+        // Update right image
+        Texture tex = ServiceLocator.getResourceService()
+                .getAsset(stats.get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
+        rightImage.setDrawable(new TextureRegionDrawable(new TextureRegion(tex)));
+
+        // Update right label text
+        rightLabel.setText(stats.get(DeckComponent.StatType.NAME));
     }
 
     private void renderExitButton() {

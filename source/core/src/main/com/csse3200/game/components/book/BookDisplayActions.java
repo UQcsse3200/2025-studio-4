@@ -26,11 +26,9 @@ public class BookDisplayActions extends Component {
     public void create() {
         entity.getEvents().addListener("changeData", this::changeData);
         entity.getEvents().addListener("backToMain", this::onExit);
-
     }
 
-    private void changeData(BookComponent book, int index) {
-        DeckComponent deck = book.getDecks().get(index);
+    private void changeData(DeckComponent deck) {
         Map<DeckComponent.StatType, String> stats = deck.getStats();
 
         Image rightImage = entity.getComponent(BookDisplay.class).getRightImage();
@@ -47,6 +45,5 @@ public class BookDisplayActions extends Component {
 
     private void onExit() {
         game.setScreen(GdxGame.ScreenType.BOOK);
-
     }
 }

@@ -96,7 +96,7 @@ public class BookDisplay extends UIComponent {
                 @Override
                 public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
                     logger.debug("Button inside bookPage clicked");
-                    entity.getEvents().trigger(eventName, index);
+                    entity.getEvents().trigger(eventName, deck);
                 }
             });
 

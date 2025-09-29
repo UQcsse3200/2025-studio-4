@@ -81,13 +81,11 @@ public class BookDisplay extends UIComponent {
         final String eventName = "changeData";
 
         table.top().left().padLeft(450).padTop(120);
-        for (int i = 0; i < decks.size(); i++) {
-            DeckComponent deck = decks.get(i);
+        for (DeckComponent deck : decks) {
             Map<DeckComponent.StatType, String> stats = deck.getStats();
 
             // start a new row
             table.row().padTop(0.5f).padLeft(10f);
-            final int index = i;
 
             TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
             TextButton button = new TextButton("", buttonStyle);

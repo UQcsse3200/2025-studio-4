@@ -163,6 +163,15 @@ public class BookDisplay extends UIComponent {
                 }
 
                 this.rightContent.add(rowTable).left().padTop(5f).row();
+            } else if (this.book.getTitle().equals("CURRENCY")) {
+                Table rowTable = new Table();
+                Label statLabel = new Label(type.getDisplayName() + ": " + value, skin, "default");
+                statLabel.setWrap(true);
+                rowTable.add(statLabel)
+                        .width(550f)    // max width for text area
+                        .left()
+                        .top();
+                this.rightContent.add(rowTable).left().padTop(30f).row();
             }
 
         }

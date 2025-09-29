@@ -22,6 +22,7 @@ public class CurrencyBookDeckComponent extends DeckComponent {
         stats.put(StatType.NAME, name.toUpperCase());
         stats.put(StatType.LORE, lore);
         stats.put(StatType.TEXTURE_PATH, image);
+        stats.put(StatType.SOUND, sound);
         return stats;
     }
 }

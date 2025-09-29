@@ -25,11 +25,20 @@ public class DeckComponent extends Component {
         RANGE("RANGE", "images/deck/bullseye_target.png"),
         SPEED("SPEED", "images/deck/shoe.png"),
         PROJECTILE_SPEED("PROJECTILE SPEED", "images/deck/arrow.png"),
+        PROJECTILE_LIFE("PROJECTILE LIFE", ""),
         COOLDOWN("COOLDOWN", "images/deck/hourglass.png"),
         WEAKNESS("WEAKNESS", "images/deck/cracked_skull.png"),
         RESISTANCE("RESISTANCE", "images/deck/shield.png"),
-        LORE("", ""),
-        TEXTURE_PATH("", "");
+        LORE("LORE", ""),
+        TRAITS("TRAITS", ""),
+        ROLE("ROLE", ""),
+        CURRENCY("", ""),
+        POINTS("POINTS", ""),
+        SOUND("SOUND", ""),
+        METAL_SCRAP_COST("METAL SCRAP COST", "images/currency/metal_scrap.png"),
+        TITANIUM_CORE_COST("TITANIUM CORE COST", "images/currency/titanium_core.png"),
+        NEUROCHIP_COST("NEUROCHIP COST", "images/currency/neurochip.png"),
+        TEXTURE_PATH("IMAGE", "");
 
         private final String texturePath;
         private final String displayName;

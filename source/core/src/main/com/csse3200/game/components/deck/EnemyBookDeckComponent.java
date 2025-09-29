@@ -60,6 +60,10 @@ public class EnemyBookDeckComponent extends DeckComponent {
         stats.put(StatType.DAMAGE, damage);
         stats.put(StatType.SPEED, speed);
         stats.put(StatType.LORE, lore);
+        stats.put(StatType.TRAITS, traits);
+        stats.put(StatType.ROLE, role);
+        stats.put(StatType.CURRENCY, currency);
+        stats.put(StatType.POINTS, points);
         stats.put(StatType.WEAKNESS, weakness);
         stats.put(StatType.RESISTANCE, resistance);
         stats.put(StatType.TEXTURE_PATH, image); // Image

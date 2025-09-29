@@ -91,7 +91,6 @@ public class BookDisplay extends UIComponent {
 
             TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
             TextButton button = new TextButton("", buttonStyle);
-            button.getLabel().setColor(Color.WHITE);
             button.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {

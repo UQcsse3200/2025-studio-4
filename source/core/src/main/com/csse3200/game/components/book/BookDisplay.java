@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.services.ServiceLocator;
@@ -41,6 +42,8 @@ public class BookDisplay extends UIComponent {
     private final float exitButtonHeight = 100f;
     private final String eventName = "changeData";
 
+    Table parent;
+
     public BookDisplay(GdxGame game, BookPage bookPage) {
         super();
         this.bookPage = bookPage;
@@ -62,6 +65,7 @@ public class BookDisplay extends UIComponent {
     }
 
     void addActors() {
+        this.parent = new Table();
         this.rightContent = new Table();
         this.rightImage = new Image();
         this.renderBackGround();
@@ -80,22 +84,20 @@ public class BookDisplay extends UIComponent {
 
     private void renderContentList() {
         table = new Table();
-        table.setFillParent(true);
+        // table.setFillParent(true);
 
-        table.top().left().padLeft(400).padTop(200);
+        // table.top().left().padLeft(400).padTop(200);
 
 
-        Label labelTitle = new Label(this.book.getTitle() + " BOOK", skin, "large");
-        Table titleTable = new Table();
-        titleTable.setFillParent(true);
-        titleTable.top().left().padLeft(550).padTop(120);
-        titleTable.add(labelTitle);
+        Label labelTitle = new Label("THE COMPLETE BOOK OF " + this.book.getTitle(), skin, "large");
+        table.row();
+        table.add(labelTitle).colspan(2).center();
 
         for (DeckComponent deck : decks) {
             Map<DeckComponent.StatType, String> stats = deck.getStats();
 
             // start a new row
-            table.row().padTop(0.2f).padLeft(10f);
+            table.row().padTop(0.3f);
 
             TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
             TextButton button = new TextButton("", buttonStyle);
@@ -113,16 +115,24 @@ public class BookDisplay extends UIComponent {
         }
 
         Table rightTable = new Table();
-        rightTable.setFillParent(true);
-        rightTable.top().right().padRight(380).padTop(120);
+        // rightTable.setFillParent(true);
+        // rightTable.top().right().padRight(380).padTop(120);
         this.changeRightDeck(decks.get(0));
         rightTable.add(this.rightImage).size(this.displayWidth, this.displayHeight);
         rightTable.row().width(500f);
         rightTable.add(this.rightContent);
 
-        stage.addActor(titleTable);
-        stage.addActor(table);
-        stage.addActor(rightTable);
+
+
+        parent.pack();
+        parent.setPosition(stage.getViewport().getWorldWidth() / 2f,
+                stage.getViewport().getWorldHeight() / 2f + 50f,
+                Align.center);
+        parent.add(table).padRight(160f).center();
+        parent.add(rightTable).center();
+
+
+        stage.addActor(parent);
     }
 
     private void changeRightDeck(DeckComponent deck) {

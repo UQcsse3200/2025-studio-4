@@ -44,7 +44,7 @@ class BookComponentTest {
 
         // Check some fields of bossEnemy
         EnemyConfig.EnemyStats boss = enemyConfig.enemies.bossEnemy;
-        assertEquals("Boss Enemy", boss.name);
+        assertEquals("Boss", boss.name);
         assertEquals("Very High", boss.health);
         assertEquals("images/boss_enemy.png", boss.image);
 

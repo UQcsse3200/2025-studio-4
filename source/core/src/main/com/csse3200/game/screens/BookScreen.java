@@ -4,10 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.components.book.BookDisplay;
-import com.csse3200.game.components.book.BookDisplayActions;
-import com.csse3200.game.components.book.MainBookDisplay;
-import com.csse3200.game.components.book.MainBookDisplayActions;
+import com.csse3200.game.components.book.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.input.InputDecorator;
@@ -23,16 +20,16 @@ public class BookScreen extends ScreenAdapter {
 
     private final GdxGame game;
     private Stage stage;
-    private String bookPage;
+    private BookPage bookPage;
 
     public BookScreen(GdxGame game) {
         this.game = game;
-        this.bookPage = "home";
+        this.bookPage = BookPage.NONE;
     }
 
-    public BookScreen(GdxGame game, String bookPage) {
+    public BookScreen(GdxGame game, BookPage bookType) {
         this.game = game;
-        this.bookPage = bookPage;
+        this.bookPage = bookType;
     }
 
     @Override
@@ -56,14 +53,14 @@ public class BookScreen extends ScreenAdapter {
 
         // UI entity (display + actions)
         Entity ui = new Entity();
-        if (this.bookPage.equals("currencyPage")) {
-            ui.addComponent(new BookDisplay(game, "currencyPage")).addComponent(new BookDisplayActions(game));
-        } else if (this.bookPage.equals("enemyPage")){
-            ui.addComponent(new BookDisplay(game, "enemyPage")).addComponent(new BookDisplayActions(game));
-        } else if (this.bookPage.equals("towerPage")) {
-            ui.addComponent(new BookDisplay(game, "towerPage")).addComponent(new BookDisplayActions(game));
+        if (this.bookPage != BookPage.NONE) { // Tower/Enemy/Currency book page goes here
+            ui
+                    .addComponent(new BookDisplay(game, bookPage))
+                    .addComponent(new BookDisplayActions(game));
         } else {
-            ui.addComponent(new MainBookDisplay(game)).addComponent(new MainBookDisplayActions(game));
+            ui
+                    .addComponent(new MainBookDisplay(game))
+                    .addComponent(new MainBookDisplayActions(game));
         }
         ServiceLocator.getEntityService().register(ui);
 

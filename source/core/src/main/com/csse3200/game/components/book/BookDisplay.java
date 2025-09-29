@@ -14,16 +14,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.print.Book;
+import java.util.List;
+import java.util.Map;
 
 public class BookDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
-    private String bookPage;
+    private BookComponent book;
+    private List<DeckComponent> decks;
+    private BookPage bookPage;
     private Table table;
     private Image rightImage;
     private Label rightLabel;
@@ -33,18 +38,18 @@ public class BookDisplay extends UIComponent {
     private final float displayHeight = 300f;
     private final float exitIconWidth = 100f;
     private final float exitIconHeight = 100f;
-    private BookComponent towerBook = new BookComponent.TowerBookComponent();
-    private BookComponent enemyBook = new BookComponent.EnemyBookComponent();
-    private BookComponent currencyBook = new BookComponent.CurrencyBookComponent();
 
-    public BookDisplay(GdxGame game) {
-        super();
-        this.bookPage = "currencyPage";
-    }
-
-    public BookDisplay(GdxGame game, String bookPage) {
+    public BookDisplay(GdxGame game, BookPage bookPage) {
         super();
         this.bookPage = bookPage;
+        if (bookPage == BookPage.CURRENCY_PAGE) {
+            this.book = new BookComponent.CurrencyBookComponent();
+        } else if (bookPage == BookPage.ENEMY_PAGE) {
+            this.book = new BookComponent.EnemyBookComponent();
+        } else if (bookPage == BookPage.TOWER_PAGE) {
+            this.book = new BookComponent.TowerBookComponent();
+        }
+        this.decks = book.getDecks();
     }
 
     @Override
@@ -72,55 +77,40 @@ public class BookDisplay extends UIComponent {
         table = new Table();
         table.setFillParent(true);
 
-        String[] buttonList;
-        String[] buttonTitle;
         String tmpData = "";
-        final String eventName;
-        if (this.bookPage.equals("currencyPage")) {
-            eventName = "changeCurrencyData";
-//            buttonList = this.bookComponent.getCurrencyBackGround();
-//            buttonTitle = this.bookComponent.getCurrencyTitle();
-//            tmpData = this.bookComponent.getCurrencyData()[0];
-        } else if (this.bookPage.equals("enemyPage")) {
-            eventName = "changeEnemyData";
-//            buttonList = this.bookComponent.getEnemyBackGround();
-//            buttonTitle = this.bookComponent.getEnemyTitle();
-//            tmpData = this.bookComponent.getEnemyData()[0];
-        } else {
-            eventName = "changeTowerData";
-//            buttonList = this.bookComponent.getTowerBackGround();
-//            buttonTitle = this.bookComponent.getTowerTitle();
-//            tmpData = this.bookComponent.getTowerData()[0];
-        }
+        final String eventName = "changeData";
 
         table.top().left().padLeft(450).padTop(120);
-//        for (int i = 0; i < buttonList.length; i++) {
-//            // start a new row
-//            table.row().padTop(0.5f).padLeft(10f);
-//            final int index = i;
-//
-//            TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(buttonList[i]);
-//            TextButton button = new TextButton("", buttonStyle);
-//            button.getLabel().setColor(Color.WHITE);
-//            button.addListener(new ChangeListener() {
-//                @Override
-//                public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
-//                    logger.debug("Button inside bookPage clicked");
-//                    entity.getEvents().trigger(eventName, index);
-//                }
-//            });
-//
-//            Label label = new Label(buttonTitle[i], skin, "large");
-//            table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
-//            table.add(label);
-//        }
+        for (int i = 0; i < decks.size(); i++) {
+            DeckComponent deck = decks.get(i);
+            Map<DeckComponent.StatType, String> stats = deck.getStats();
+
+            // start a new row
+            table.row().padTop(0.5f).padLeft(10f);
+            final int index = i;
+
+            TextButton.TextButtonStyle buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
+            TextButton button = new TextButton("", buttonStyle);
+            button.getLabel().setColor(Color.WHITE);
+            button.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeListener.ChangeEvent changeEvent, Actor actor) {
+                    logger.debug("Button inside bookPage clicked");
+                    entity.getEvents().trigger(eventName, index);
+                }
+            });
+
+            Label label = new Label(stats.get(DeckComponent.StatType.NAME), skin, "large");
+            table.add(button).size(buttonWidth, buttonHeight).padRight(1f);
+            table.add(label);
+        }
 
         Table rightTable = new Table();
         rightTable.setFillParent(true);
         rightTable.top().right().padRight(380).padTop(120); // anchor top-right with padding
-//        Texture tex = ServiceLocator.getResourceService()
-//                .getAsset(buttonList[0], Texture.class);
-//        this.rightImage = new Image(tex);
+        Texture tex = ServiceLocator.getResourceService()
+                .getAsset(decks.get(0).getStats().get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
+        this.rightImage = new Image(tex);
         rightTable.add(rightImage).size(this.displayWidth, this.displayHeight);
 
         this.rightLabel = new Label(tmpData, skin);

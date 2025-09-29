@@ -3,6 +3,7 @@ package com.csse3200.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.components.book.BookPage;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.*;
 // NEW: Map selection screen
@@ -123,11 +124,11 @@ public class GdxGame extends Game {
       case BOOK:
         return new MainBookScreen(this);
       case CURRENCY_BOOK:
-        return new BookScreen(this, "currencyPage");
+        return new BookScreen(this, BookPage.CURRENCY_PAGE);
       case ENEMY_BOOK:
-        return new BookScreen(this, "enemyPage");
+        return new BookScreen(this, BookPage.ENEMY_PAGE);
       case TOWER_BOOK:
-        return new BookScreen(this, "towerPage");
+        return new BookScreen(this, BookPage.TOWER_PAGE);
       default:
         return null;
     }

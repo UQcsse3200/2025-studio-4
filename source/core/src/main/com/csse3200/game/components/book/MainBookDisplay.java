@@ -29,8 +29,8 @@ public class MainBookDisplay extends UIComponent {
     };
     private final float buttonWidth = 500f;
     private final float buttonHeight = 500f;
-    private final float exitButtonWidth = 250f;
-    private final float exitButtonHeight = 250f;
+    private final float exitButtonWidth = 100f;
+    private final float exitButtonHeight = 100f;
 
 
     public MainBookDisplay(GdxGame game) {
@@ -44,20 +44,26 @@ public class MainBookDisplay extends UIComponent {
     }
 
     void addActors() {
-        table = new Table();
-        table.setFillParent(true);
+        this.renderBackGround();
+        this.renderContentList();
+        this.renderExitButton();
+    }
 
+    private void renderBackGround() {
         Image backgroundImage =
                 new Image(
                         ServiceLocator.getResourceService()
                                 .getAsset("images/book/encyclopedia_theme.png", Texture.class));
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
+    }
+    private void renderContentList() {
+        table = new Table();
+        table.setFillParent(true);
 
         TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
         TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
         TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
 
         TextButton enemyButton = new TextButton("", enemyButtonStyle);
         enemyButton.getLabel().setColor(Color.WHITE);
@@ -92,6 +98,18 @@ public class MainBookDisplay extends UIComponent {
                     }
                 });
 
+
+        table.row().padTop(20f);
+        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(5f);
+        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(5f);
+        table.add(towerButton).size(buttonWidth, buttonHeight);
+        table.row().padTop(10f);
+        table.row().padBottom(30f);
+
+        stage.addActor(table);
+    }
+    private void renderExitButton() {
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
         TextButton exitButton = new TextButton("", exitButtonStyle);
         exitButton.getLabel().setColor(Color.WHITE);
         exitButton.addListener(
@@ -102,22 +120,16 @@ public class MainBookDisplay extends UIComponent {
                         entity.getEvents().trigger("backToMain");
                     }
                 });
-
+        // Create a table
         Table exitTable = new Table();
-        exitTable.row();
-        exitTable.top().right().pad(10f);
-        exitTable.add(exitButton).size(exitButtonWidth, exitButtonHeight);
-        exitTable.setFillParent(true);
+        exitTable.top().right();       // Aligns everything in this table to top-right of the stage
+        exitTable.setFillParent(true); // Table covers the whole stage
 
-        table.row().padTop(20f);
-        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(5f);
-        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(5f);
-        table.add(towerButton).size(buttonWidth, buttonHeight);
-        table.row().padTop(10f);
-        table.row().padBottom(30f);
+        // Add the button
+        exitTable.add(exitButton).size(exitButtonWidth,exitButtonHeight).pad(20f); // 10px padding from edges
 
+        // Add table to stage
         stage.addActor(exitTable);
-        stage.addActor(table);
     }
 
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {

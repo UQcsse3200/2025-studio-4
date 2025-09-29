@@ -36,8 +36,8 @@ public class BookDisplay extends UIComponent {
     private final float buttonHeight = 170f;
     private final float displayWidth = 300f;
     private final float displayHeight = 300f;
-    private final float exitIconWidth = 100f;
-    private final float exitIconHeight = 100f;
+    private final float exitButtonWidth = 100f;
+    private final float exitButtonHeight = 100f;
 
     public BookDisplay(GdxGame game, BookPage bookPage) {
         super();
@@ -125,7 +125,7 @@ public class BookDisplay extends UIComponent {
     private void renderExitButton() {
 
         // Exit Icon on Top Right Corner
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/stamp.png");
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/hologram.png");
         TextButton exitButton = new TextButton("", exitButtonStyle);
 
         exitButton.addListener(
@@ -143,7 +143,7 @@ public class BookDisplay extends UIComponent {
         exitTable.setFillParent(true); // Table covers the whole stage
 
         // Add the button
-        exitTable.add(exitButton).size(exitIconWidth,exitIconHeight).pad(10f); // 10px padding from edges
+        exitTable.add(exitButton).size(exitButtonWidth,exitButtonHeight).pad(20f); // 10px padding from edges
 
         // Add table to stage
         stage.addActor(exitTable);

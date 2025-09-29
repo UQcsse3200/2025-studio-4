@@ -34,7 +34,7 @@ public class BookComponent {
         private static final TowerConfig towerConfig = FileLoader.readClass(TowerConfig.class, "configs/tower.json");
 
         public TowerBookComponent() {
-            super("TOWER", createDecks());
+            super("TOWERS", createDecks());
         }
         private static List<DeckComponent> createDecks() {
             List<DeckComponent> decks = new ArrayList<>();
@@ -73,7 +73,7 @@ public class BookComponent {
         private static final EnemyConfig enemyConfig = FileLoader.readClass(EnemyConfig.class, "configs/enemy.json");
 
         public EnemyBookComponent() {
-            super("ENEMY", createDecks());
+            super("ENEMIES", createDecks());
         }
 
         private static List<DeckComponent> createDecks() {
@@ -106,7 +106,7 @@ public class BookComponent {
         private static final CurrencyConfig currencyConfig = FileLoader.readClass(CurrencyConfig.class, "configs/currency.json");
 
         public CurrencyBookComponent() {
-            super("CURRENCY", createDecks());
+            super("CURRENCIES", createDecks());
         }
 
         private static List<DeckComponent> createDecks() {

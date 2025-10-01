@@ -51,6 +51,7 @@ public class MainMenuDisplay extends UIComponent {
     TextButton startBtn = new TextButton("New Game", customButtonStyle);
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
+    TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
 
     // stars display
@@ -73,6 +74,7 @@ public class MainMenuDisplay extends UIComponent {
     startBtn.getLabel().setColor(Color.WHITE);
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);
+    rankingBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
 
     // Triggers an event when the button is pressed
@@ -104,6 +106,15 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
+    rankingBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Ranking button clicked");
+            entity.getEvents().trigger("ranking");
+          }
+        });
+
     exitBtn.addListener(
         new ChangeListener() {
           @Override
@@ -127,6 +138,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();
+    table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();

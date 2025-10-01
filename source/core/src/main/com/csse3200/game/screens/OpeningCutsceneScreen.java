@@ -18,7 +18,9 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.ui.NameInputDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +77,10 @@ public class OpeningCutsceneScreen implements Screen {
     // Fonts for cleanup
     private BitmapFont scrollFont;
     private BitmapFont skipFont;
+    
+    // Name input dialog
+    private NameInputDialog nameDialog;
+    private boolean nameDialogShown = false;
     
     public OpeningCutsceneScreen(GdxGame game) {
         this(game, BACKGROUND_OPTIONS[0]);
@@ -242,9 +248,15 @@ public class OpeningCutsceneScreen implements Screen {
             stage.draw();
         }
         
-        if (cutsceneFinished) {
+        if (cutsceneFinished && !nameDialogShown) {
             ScreenUtils.clear(248f/255f, 249f/255f, 178f/255f, 1f);
             transitionToMainMenu();
+        }
+        
+        // Continue processing stage if name dialog is shown
+        if (nameDialogShown) {
+            stage.act(delta);
+            stage.draw();
         }
     }
     
@@ -338,7 +350,50 @@ public class OpeningCutsceneScreen implements Screen {
     }
     
     private void transitionToMainMenu() {
-        logger.info("Opening cutscene finished, transitioning to main menu");
+        logger.info("Opening cutscene finished, showing name input dialog");
+        showNameInputDialog();
+    }
+    
+    private void showNameInputDialog() {
+        if (nameDialogShown) {
+            return;
+        }
+        
+        nameDialogShown = true;
+        logger.info("Showing name input dialog");
+        
+        // Register PlayerNameService if not already registered
+        if (ServiceLocator.getPlayerNameService() == null) {
+            ServiceLocator.registerPlayerNameService(new PlayerNameService());
+        }
+        
+        // Create and show name input dialog with callback
+        nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(), 
+            new NameInputDialog.NameInputCallback() {
+                @Override
+                public void onNameConfirmed(String name) {
+                    handleNameConfirmed(name);
+                }
+                
+                @Override
+                public void onNameCancelled() {
+                    handleNameCancelled();
+                }
+            });
+        
+        stage.addActor(nameDialog);
+        nameDialog.show(stage);
+    }
+    
+    private void handleNameConfirmed(String name) {
+        logger.info("Player name confirmed: {}", name);
+        // Proceed to main menu
+        game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    }
+    
+    private void handleNameCancelled() {
+        logger.info("Name input cancelled, proceeding to main menu with default name");
+        // Proceed to main menu with default name
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
     }
     

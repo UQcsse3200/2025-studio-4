@@ -33,6 +33,9 @@ public class ServiceLocator {
 
   // Leaderboard
   private static com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService;
+  
+  // Player Name Service
+  private static PlayerNameService playerNameService;
 
   // --- Getters ---
   public static EntityService getEntityService() {
@@ -74,6 +77,10 @@ public class ServiceLocator {
 
   public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
     return leaderboardService;
+  }
+
+  public static PlayerNameService getPlayerNameService() {
+    return playerNameService;
   }
 
   // --- Registrations ---
@@ -129,6 +136,11 @@ public class ServiceLocator {
     leaderboardService = service;
   }
 
+  public static void registerPlayerNameService(PlayerNameService service) {
+    logger.debug("Registering player name service {}", service);
+    playerNameService = service;
+  }
+
   // --- Teardown ---
   public static void clear() {
     entityService = null;
@@ -141,6 +153,7 @@ public class ServiceLocator {
     gameStateService = null; // ensure state service is cleared
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
+    playerNameService = null;
   }
 
   private ServiceLocator() {

@@ -41,6 +41,9 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
+    
+    // Register player name service
+    ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }

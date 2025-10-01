@@ -2,6 +2,8 @@ package com.csse3200.game.services.leaderboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.PlayerNameService;
 import static com.csse3200.game.services.leaderboard.LeaderboardService.*;
 
 public class InMemoryLeaderboardService implements LeaderboardService {
@@ -23,7 +25,11 @@ public class InMemoryLeaderboardService implements LeaderboardService {
 
     @Override
     public LeaderboardEntry getMyBest() {
-        return new LeaderboardEntry(42, myId, "You", 8888, System.currentTimeMillis());
+        String playerName = "Player";
+        if (ServiceLocator.getPlayerNameService() != null) {
+            playerName = ServiceLocator.getPlayerNameService().getPlayerName();
+        }
+        return new LeaderboardEntry(42, myId, playerName, 8888, System.currentTimeMillis());
     }
 
     @Override

@@ -44,20 +44,28 @@ public class EngineerSummonComponent extends Component {
         qAdapter = new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
-                if (keycode != Input.Keys.Q) return false;
+                if (cd > 0f) return true;
+                if (alive >= maxSummons) return true;
 
-                if (cd > 0f) return true;             // 冷却中
-                if (alive >= maxSummons) return true; // 达上限
+                var ctrl = findPlacementController();
+                if (ctrl == null) return false;
 
-                var ctrl = findPlacementController(); // 你已有的方法
-                if (ctrl != null) {
-                    ctrl.armSummon(new SimplePlacementController.SummonSpec("images/engineer/Sentry.png"));
+                if (keycode == Input.Keys.NUM_1) {
+                    ctrl.armSummon(new SimplePlacementController.SummonSpec(
+                            "images/engineer/Sentry.png", "melee"
+                    ));
+                    return true;
+                } else if (keycode == Input.Keys.NUM_2) {
+                    ctrl.armSummon(new SimplePlacementController.SummonSpec(
+                            "images/engineer/Turret.png", "turret"
+                    ));
                     return true;
                 }
 
                 return false;
             }
         };
+
 
         // 3) 把 qAdapter 插到全局 Multiplexer 的最前面（index=0）
         attachToMultiplexer(qAdapter);

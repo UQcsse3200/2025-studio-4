@@ -419,33 +419,39 @@ public class SimplePlacementController extends Component {
     // 贴图传递的规格（保持可扩展，只要 texture）
     public static class SummonSpec {
         public final String texture;
+        public final String type; // "melee" / "turret"
 
-        public SummonSpec(String texture) {
+        public SummonSpec(String texture, String type) {
             this.texture = texture;
+            this.type = type;
         }
     }
 
+
     public void armSummon(SummonSpec spec) {
-        // 先清理任何已有放置
         cancelPlacement();
 
-        // 进入召唤物模式
         this.mode = Mode.SUMMON;
         this.placementActive = true;
         this.needRelease = true;
-        this.pendingType = "summon";
-        this.pendingSummonTexture = (spec != null && spec.texture != null && !spec.texture.isEmpty())
+        this.pendingType = spec.type; // 保存类型
+        this.pendingSummonTexture = (spec.texture != null && !spec.texture.isEmpty())
                 ? spec.texture : "images/engineer/Sentry.png";
 
-        // 1) 造“幽灵召唤物”：只显示，不攻击/不阻挡（工厂里你已实现 createMeleeSummonGhost）
-        this.ghostSummon = SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
+        if ("turret".equals(spec.type)) {
+            // 炮台幽灵（这里可以直接用路障的幽灵代替，也可以做单独的 createTurretGhost）
+            this.ghostSummon = SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
+        } else {
+            // 默认路障幽灵
+            this.ghostSummon = SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
+        }
 
-        // 2) 注册并初始化
         ServiceLocator.getEntityService().register(this.ghostSummon);
         this.ghostSummon.create();
 
-        System.out.println(">>> placement ON (summon)");
+        System.out.println(">>> placement ON (summon: " + spec.type + ")");
     }
+
     private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
         if (ghostSummon == null) return;
 
@@ -474,29 +480,37 @@ public class SimplePlacementController extends Component {
     }
 
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
-        // 清理幽灵
         if (ghostSummon != null) {
             ghostSummon.dispose();
             ghostSummon = null;
         }
 
-        // 造真实召唤物（可挡路/能攻击）
-        Entity summon = SummonFactory.createMeleeSummon(
-                (pendingSummonTexture != null && !pendingSummonTexture.isEmpty())
-                        ? pendingSummonTexture : "images/engineer/Sentry.png",
-                /*colliderSensor=*/false,
-                /*scale=*/1f
-        );
+        Entity summon;
+        if ("turret".equals(pendingType)) {
+            summon = SummonFactory.createDirectionalTurret(
+                    pendingSummonTexture,
+                    1f,          // 缩放
+                    1.0f,        // 攻击间隔
+                    new Vector2(-1, 0) // 固定朝右
+            );
+        } else {
+            summon = SummonFactory.createMeleeSummon(
+                    pendingSummonTexture,
+                    false,
+                    1f
+            );
+        }
+
         summon.setPosition(snapPos);
         ServiceLocator.getEntityService().register(summon);
         summon.create();
 
-        // 退出模式并复位标志
         placementActive = false;
         mode = Mode.NONE;
-        pendingType = "bone"; // 可选：恢复默认塔类型
-        System.out.println(">>> SUMMON placed at " + tile);
+        pendingType = "bone";
+        System.out.println(">>> " + pendingType + " SUMMON placed at " + tile);
     }
+
 
 
 }

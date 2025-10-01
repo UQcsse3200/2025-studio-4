@@ -3,6 +3,8 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+
+import com.csse3200.game.components.hero.engineer.TurretAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -13,8 +15,10 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
 
+
 public final class SummonFactory {
-    private SummonFactory() {}
+    private SummonFactory() {
+    }
 
     /**
      * 近战型召唤物（静止版）：
@@ -22,9 +26,9 @@ public final class SummonFactory {
      * - 敌人碰到命中盒即触发 TouchAttackComponent；
      * - 身体/命中盒均在 PLAYER 层，仅攻击 NPC 层目标。
      *
-     * @param texturePath 召唤物贴图
+     * @param texturePath    召唤物贴图
      * @param colliderSensor 是否把实体碰撞体设为传感器（true=不阻挡，仅用于触发）
-     * @param scale 视觉缩放（与碰撞体按比例设置）
+     * @param scale          视觉缩放（与碰撞体按比例设置）
      * @return 静止的近战召唤物实体
      */
     // 静止近战召唤物（会造成伤害）
@@ -33,7 +37,7 @@ public final class SummonFactory {
                                            float scale) {
 
         var resistance = DamageTypeConfig.None;
-        var weakness   = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
 
         Entity s = new Entity()
                 .addComponent(new PhysicsComponent())
@@ -61,7 +65,51 @@ public final class SummonFactory {
 
     }
 
-    /** 幽灵版近战召唤物：仅显示用于放置预览；不攻击、不阻挡 */
+    public static Entity createDirectionalTurret(String texturePath,
+                                                 float scale,
+                                                 float attackCooldown,
+                                                 Vector2 fireDirection) {
+
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        Entity turret = new Entity()
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent()
+                        .setSensor(false)
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new HitboxComponent()
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new TextureRenderComponent(texturePath))
+                .addComponent(new CombatStatsComponent(5, 15, resistance, weakness));
+        // 生命值=5，攻击力=15（作为基础伤害来源）
+
+        // 设置为静止炮台
+        var phys = turret.getComponent(PhysicsComponent.class);
+        if (phys != null) {
+            phys.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.StaticBody);
+        }
+
+        // 设置大小
+        PhysicsUtils.setScaledCollider(turret, 0.8f * scale, 0.8f * scale);
+        turret.setScale(scale, scale);
+
+        // 给炮台添加定时发射子弹的组件
+        turret.addComponent(new TurretAttackComponent(
+                fireDirection.nor(),             // 固定发射方向
+                attackCooldown,                  // 冷却时间 (秒)
+                6f,                              // 子弹速度
+                3f,                              // 子弹寿命 (秒)
+                "images/hero/Bullet.png"      // 子弹贴图路径
+        ));
+
+        return turret;
+    }
+
+
+    /**
+     * 幽灵版近战召唤物：仅显示用于放置预览；不攻击、不阻挡
+     */
     public static Entity createMeleeSummonGhost(String texturePath, float scale) {
         Entity ghost = new Entity()
                 .addComponent(new PhysicsComponent())

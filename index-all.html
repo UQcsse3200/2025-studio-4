@@ -304,6 +304,11 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:C">C</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/services/GameScoreService.html#calculateFinalScore(boolean)" class="member-name-link">calculateFinalScore(boolean)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>
+<div class="block">计算最终得分（游戏结束时调用）
+ 结合PlayerScoreComponent和PlayerRankingComponent的数据</div>
+</dd>
 <dt><a href="com/csse3200/game/rendering/Renderer.html#camera" class="member-name-link">camera</a> - Variable in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/CameraComponent.html" class="type-name-link" title="class in com.csse3200.game.components">CameraComponent</a> - Class in <a href="com/csse3200/game/components/package-summary.html">com.csse3200.game.components</a></dt>
@@ -381,6 +386,16 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/services/ResourceService.html#clearAllAssets()" class="member-name-link">clearAllAssets()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
 <div class="block">Clears all loaded assets and assets in the preloading queue.</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameService.html#clearPlayerName()" class="member-name-link">clearPlayerName()</a> - Method in interface com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameService.html" title="interface in com.csse3200.game.services">PlayerNameService</a></dt>
+<dd>
+<div class="block">清除玩家姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameServiceImpl.html#clearPlayerName()" class="member-name-link">clearPlayerName()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameServiceImpl.html" title="class in com.csse3200.game.services">PlayerNameServiceImpl</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#clearSession()" class="member-name-link">clearSession()</a> - Method in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>
+<div class="block">清除当前会话的所有记录</div>
 </dd>
 <dt><a href="com/csse3200/game/components/enemy/clickable.html" class="type-name-link" title="class in com.csse3200.game.components.enemy">clickable</a> - Class in <a href="com/csse3200/game/components/enemy/package-summary.html">com.csse3200.game.components.enemy</a></dt>
 <dd>&nbsp;</dd>
@@ -590,6 +605,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseMenuDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseMenuDisplay.html" title="class in com.csse3200.game.components.maingame">PauseMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html" title="class in com.csse3200.game.components.maingame">SaveMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
@@ -601,9 +618,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Creates the hotbar UI with tower selection buttons.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/TowerUpgradeMenu.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerUpgradeMenu.html" title="class in com.csse3200.game.components.maingame">TowerUpgradeMenu</a></dt>
-<dd>
-<div class="block">Creates the UI for the tower upgrade menu and sets up listeners.</div>
-</dd>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MainMenuActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MainMenuActions.html" title="class in com.csse3200.game.components.mainmenu">MainMenuActions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MainMenuDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MainMenuDisplay.html" title="class in com.csse3200.game.components.mainmenu">MainMenuDisplay</a></dt>
@@ -611,6 +626,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/mainmenu/MapSelectionActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MapSelectionActions.html" title="class in com.csse3200.game.components.mainmenu">MapSelectionActions</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MapSelectionDisplay.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MapSelectionDisplay.html" title="class in com.csse3200.game.components.mainmenu">MapSelectionDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/SaveSelectionActions.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/SaveSelectionActions.html" title="class in com.csse3200.game.components.mainmenu">SaveSelectionActions</a></dt>
 <dd>&nbsp;</dd>
@@ -920,10 +937,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/ai/tasks/DefaultTask.html#%3Cinit%3E()" class="member-name-link">DefaultTask()</a> - Constructor for class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#delta" class="member-name-link">delta</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>
-<div class="block">Ranking change: Negative=Rising; Positive number=decrease; 0=Unchanged</div>
-</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#destroyBody(com.badlogic.gdx.physics.box2d.Body)" class="member-name-link">destroyBody(Body)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#destroyJoint(com.badlogic.gdx.physics.box2d.Joint)" class="member-name-link">destroyJoint(Joint)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
@@ -1018,6 +1031,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MapSelectionDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MapSelectionDisplay.html" title="class in com.csse3200.game.components.mainmenu">MapSelectionDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/SaveSelectionDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/SaveSelectionDisplay.html" title="class in com.csse3200.game.components.mainmenu">SaveSelectionDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
@@ -1072,6 +1087,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>
+<div class="block">手动清理方法（可在游戏退出时调用）</div>
+</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/DamagePopupComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/DamagePopupComponent.html" title="class in com.csse3200.game.ui">DamagePopupComponent</a></dt>
@@ -1120,6 +1139,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseMenuDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseMenuDisplay.html" title="class in com.csse3200.game.components.maingame">PauseMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html" title="class in com.csse3200.game.components.maingame">SaveMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">TowerHotbarDisplay</a></dt>
@@ -1138,6 +1159,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Find .tmx maps under assets/maps/ (internal).</div>
 </dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/SaveSelectionDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/SaveSelectionDisplay.html" title="class in com.csse3200.game.components.mainmenu">SaveSelectionDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw(SpriteBatch)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
@@ -1203,6 +1226,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsContactListener.html#endContact(com.badlogic.gdx.physics.box2d.Contact)" class="member-name-link">endContact(Contact)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsContactListener.html" title="class in com.csse3200.game.physics">PhysicsContactListener</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html#endGame()" class="member-name-link">endGame()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>
+<div class="block">结束当前游戏</div>
+</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.html#enemies" class="member-name-link">enemies</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html#enemiesKilled" class="member-name-link">enemiesKilled</a> - Variable in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerRankingComponent.html" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a></dt>
@@ -1243,6 +1270,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Provides a global access point for entities to register themselves.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/EntityService.html#%3Cinit%3E()" class="member-name-link">EntityService()</a> - Constructor for class com.csse3200.game.entities.<a href="com/csse3200/game/entities/EntityService.html" title="class in com.csse3200.game.entities">EntityService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html#entries" class="member-name-link">entries</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService.SessionData</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>&nbsp;</dd>
@@ -1387,6 +1416,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/screens/GameOverScreen.html#%3Cinit%3E()" class="member-name-link">GameOverScreen()</a> - Constructor for class com.csse3200.game.screens.<a href="com/csse3200/game/screens/GameOverScreen.html" title="class in com.csse3200.game.screens">GameOverScreen</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html" class="type-name-link" title="class in com.csse3200.game.services">GameScoreService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>
+<div class="block">游戏得分服务，负责跟踪和管理当前游戏的得分</div>
+</dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html#%3Cinit%3E()" class="member-name-link">GameScoreService()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/GameSessionManager.html" class="type-name-link" title="class in com.csse3200.game.services">GameSessionManager</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>
+<div class="block">游戏会话管理器，确保每次游戏只记录一次得分</div>
+</dd>
+<dt><a href="com/csse3200/game/services/GameSessionManager.html#%3Cinit%3E()" class="member-name-link">GameSessionManager()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/GameSessionManager.html" title="class in com.csse3200.game.services">GameSessionManager</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameStateService.html" class="type-name-link" title="class in com.csse3200.game.services">GameStateService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>
 <div class="block">Service that handles persistent state within the game runtime
@@ -1496,6 +1537,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the name of the animation currently being played.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html#getCurrentGameScore()" class="member-name-link">getCurrentGameScore()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>
+<div class="block">获取当前游戏的实时得分
+ 这个方法会尝试从多个来源获取最准确的得分</div>
+</dd>
 <dt><a href="com/csse3200/game/components/audio/BackgroundMusicComponent.html#getCurrentMusicName()" class="member-name-link">getCurrentMusicName()</a> - Method in class com.csse3200.game.components.audio.<a href="com/csse3200/game/components/audio/BackgroundMusicComponent.html" title="class in com.csse3200.game.components.audio">BackgroundMusicComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/Renderer.html#getCurrentRenderer()" class="member-name-link">getCurrentRenderer()</a> - Static method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/Renderer.html" title="class in com.csse3200.game.rendering">Renderer</a></dt>
@@ -1572,6 +1618,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.html#getEntries(com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardQuery)" class="member-name-link">getEntries(LeaderboardService.LeaderboardQuery)</a> - Method in interface com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#getEntries(com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardQuery)" class="member-name-link">getEntries(LeaderboardService.LeaderboardQuery)</a> - Method in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#getEvents()" class="member-name-link">getEvents()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Get the event handler attached to this entity.</div>
@@ -1584,7 +1632,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/ComponentType.html#getFrom(java.lang.Class)" class="member-name-link">getFrom(Class&lt;? extends Component&gt;)</a> - Static method in class com.csse3200.game.components.<a href="com/csse3200/game/components/ComponentType.html" title="class in com.csse3200.game.components">ComponentType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#getGameScoreService()" class="member-name-link">getGameScoreService()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#getGameService()" class="member-name-link">getGameService()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#getGameSessionManager()" class="member-name-link">getGameSessionManager()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#getGameStateService()" class="member-name-link">getGameStateService()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
@@ -1674,6 +1726,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.html#getMyBest()" class="member-name-link">getMyBest()</a> - Method in interface com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#getMyBest()" class="member-name-link">getMyBest()</a> - Method in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/LeaderboardController.html#getMyBest()" class="member-name-link">getMyBest()</a> - Method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardController.html" title="class in com.csse3200.game.ui.leaderboard">LeaderboardController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/rewards/Reward.html#getName()" class="member-name-link">getName()</a> - Method in class com.csse3200.game.components.rewards.<a href="com/csse3200/game/components/rewards/Reward.html" title="class in com.csse3200.game.components.rewards">Reward</a></dt>
@@ -1718,6 +1772,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns player entity reference (optional, if needed).</div>
 </dd>
+<dt><a href="com/csse3200/game/services/PlayerNameService.html#getPlayerName()" class="member-name-link">getPlayerName()</a> - Method in interface com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameService.html" title="interface in com.csse3200.game.services">PlayerNameService</a></dt>
+<dd>
+<div class="block">获取玩家姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameServiceImpl.html#getPlayerName()" class="member-name-link">getPlayerName()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameServiceImpl.html" title="class in com.csse3200.game.services">PlayerNameServiceImpl</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#getPlayerNameService()" class="member-name-link">getPlayerNameService()</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#getPlayerRef()" class="member-name-link">getPlayerRef()</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
 <dd>
 <div class="block">Gets the player entity reference.</div>
@@ -1814,6 +1876,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Gets the selected purchase currency for this tower.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/GameSessionManager.html#getSessionStartTime()" class="member-name-link">getSessionStartTime()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameSessionManager.html" title="class in com.csse3200.game.services">GameSessionManager</a></dt>
+<dd>
+<div class="block">获取会话开始时间</div>
+</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#getSoundVolume()" class="member-name-link">getSoundVolume()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#getSpeed()" class="member-name-link">getSpeed()</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
@@ -1898,6 +1964,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/PlayerRankingComponent.html#getTimeTakenInSeconds()" class="member-name-link">getTimeTakenInSeconds()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerRankingComponent.html" title="class in com.csse3200.game.components">PlayerRankingComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#getTotalEntries()" class="member-name-link">getTotalEntries()</a> - Method in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>
+<div class="block">获取当前会话的所有记录数量</div>
+</dd>
 <dt><a href="com/csse3200/game/components/PlayerScoreComponent.html#getTotalScore()" class="member-name-link">getTotalScore()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerScoreComponent.html" title="class in com.csse3200.game.components">PlayerScoreComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/PlayerRankingComponent.html#getTowersRemaining()" class="member-name-link">getTowersRemaining()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerRankingComponent.html" title="class in com.csse3200.game.components">PlayerRankingComponent</a></dt>
@@ -1964,9 +2034,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseMenuDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseMenuDisplay.html" title="class in com.csse3200.game.components.maingame">PauseMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SaveMenuDisplay.html" title="class in com.csse3200.game.components.maingame">SaveMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MainMenuDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MainMenuDisplay.html" title="class in com.csse3200.game.components.mainmenu">MainMenuDisplay</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/SaveSelectionDisplay.html#getZIndex()" class="member-name-link">getZIndex()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/SaveSelectionDisplay.html" title="class in com.csse3200.game.components.mainmenu">SaveSelectionDisplay</a></dt>
 <dd>&nbsp;</dd>
@@ -2050,6 +2124,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Checks if there are more waypoints available.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/PlayerNameService.html#hasPlayerName()" class="member-name-link">hasPlayerName()</a> - Method in interface com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameService.html" title="interface in com.csse3200.game.services">PlayerNameService</a></dt>
+<dd>
+<div class="block">检查是否已设置玩家姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameServiceImpl.html#hasPlayerName()" class="member-name-link">hasPlayerName()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameServiceImpl.html" title="class in com.csse3200.game.services">PlayerNameServiceImpl</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/Theme.html#HEADER_FG" class="member-name-link">HEADER_FG</a> - Static variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/Theme.html" title="class in com.csse3200.game.ui">Theme</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/BaseEntityConfig.html#health" class="member-name-link">health</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/BaseEntityConfig.html" title="class in com.csse3200.game.entities.configs">BaseEntityConfig</a></dt>
@@ -2169,13 +2249,15 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Hide the deck UI</div>
 </dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#hide()" class="member-name-link">hide()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
+<dd>
+<div class="block">隐藏姓名输入界面</div>
+</dd>
 <dt><a href="com/csse3200/game/screens/MapSelectionScreen.html#hide()" class="member-name-link">hide()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/MapSelectionScreen.html" title="class in com.csse3200.game.screens">MapSelectionScreen</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/OpeningCutsceneScreen.html#hide()" class="member-name-link">hide()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/OpeningCutsceneScreen.html" title="class in com.csse3200.game.screens">OpeningCutsceneScreen</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/VictoryScreen.html#hide()" class="member-name-link">hide()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/VictoryScreen.html" title="class in com.csse3200.game.screens">VictoryScreen</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/RankingDialog.html#hide()" class="member-name-link">hide()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/RankingDialog.html" title="class in com.csse3200.game.ui">RankingDialog</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/HintToast.html" class="type-name-link" title="class in com.csse3200.game.ui">HintToast</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>
@@ -2312,6 +2394,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/LeaderboardController.html#isFriendsOnly()" class="member-name-link">isFriendsOnly()</a> - Method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardController.html" title="class in com.csse3200.game.ui.leaderboard">LeaderboardController</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html#isGameInProgress()" class="member-name-link">isGameInProgress()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>
+<div class="block">检查游戏是否正在进行</div>
+</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#isMusicEnabled()" class="member-name-link">isMusicEnabled()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/PlayerRankingComponent.html#isNoDamageClear()" class="member-name-link">isNoDamageClear()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerRankingComponent.html" title="class in com.csse3200.game.components">PlayerRankingComponent</a></dt>
@@ -2325,6 +2411,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#isPlacementActive()" class="member-name-link">isPlacementActive()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>
 <div class="block">Checks if placement mode is currently active.</div>
+</dd>
+<dt><a href="com/csse3200/game/services/GameSessionManager.html#isScoreSubmitted()" class="member-name-link">isScoreSubmitted()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameSessionManager.html" title="class in com.csse3200.game.services">GameSessionManager</a></dt>
+<dd>
+<div class="block">检查本次会话是否已经提交过得分</div>
 </dd>
 <dt><a href="com/csse3200/game/components/TowerComponent.html#isSelected()" class="member-name-link">isSelected()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/TowerComponent.html" title="class in com.csse3200.game.components">TowerComponent</a></dt>
 <dd>
@@ -2468,6 +2558,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.Settings.html#language" class="member-name-link">language</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" title="class in com.csse3200.game.files">UserSettings.Settings</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html#lastUpdated" class="member-name-link">lastUpdated</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService.SessionData</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/concurrency/JobSystem.html#launch(java.util.function.Supplier)" class="member-name-link">launch(Supplier&lt;T&gt;)</a> - Static method in class com.csse3200.game.concurrency.<a href="com/csse3200/game/concurrency/JobSystem.html" title="class in com.csse3200.game.concurrency">JobSystem</a></dt>
 <dd>
 <div class="block">Launch an asynchronous job which may be run on a separate thread.</div>
@@ -2610,10 +2702,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/screens/MainMenuScreen.html#%3Cinit%3E(com.csse3200.game.GdxGame)" class="member-name-link">MainMenuScreen(GdxGame)</a> - Constructor for class com.csse3200.game.screens.<a href="com/csse3200/game/screens/MainMenuScreen.html" title="class in com.csse3200.game.screens">MainMenuScreen</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/MockRanks.html#make(int)" class="member-name-link">make(int)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/MockRanks.html" title="class in com.csse3200.game.ui">MockRanks</a></dt>
-<dd>
-<div class="block">Generate a count of fake data, with scores starting from high to low and ranks starting from 1.</div>
-</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#MAP_SELECTION" class="member-name-link">MAP_SELECTION</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/areas2/terrainTwo/TerrainFactory2.TerrainType.html#MAP_TWO" class="member-name-link">MAP_TWO</a> - Enum constant in enum class com.csse3200.game.areas2.terrainTwo.<a href="com/csse3200/game/areas2/terrainTwo/TerrainFactory2.TerrainType.html" title="enum class in com.csse3200.game.areas2.terrainTwo">TerrainFactory2.TerrainType</a></dt>
@@ -2671,14 +2759,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">纯代码生成一个最小可用的 Skin，不依赖 uiskin.json/atlas。</div>
 </dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#mock()" class="member-name-link">mock()</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>
-<div class="block">Provide a piece of fake data for demonstration purposes</div>
-</dd>
-<dt><a href="com/csse3200/game/ui/MockRanks.html" class="type-name-link" title="class in com.csse3200.game.ui">MockRanks</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#mode" class="member-name-link">mode</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseInputComponent.html#mouseMoved(int,int)" class="member-name-link">mouseMoved(int, int)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseInputComponent.html" title="class in com.csse3200.game.components.maingame">PauseInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#mouseMoved(int,int)" class="member-name-link">mouseMoved(int, int)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
@@ -2740,9 +2820,17 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:N">N</h2>
 <dl class="index">
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#name" class="member-name-link">name</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/deck/DeckComponent.StatType.html#NAME" class="member-name-link">NAME</a> - Enum constant in enum class com.csse3200.game.components.deck.<a href="com/csse3200/game/components/deck/DeckComponent.StatType.html" title="enum class in com.csse3200.game.components.deck">DeckComponent.StatType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">NameInputDialog</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
+<dd>
+<div class="block">A dialog for entering the player's name.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.html#%3Cinit%3E(java.lang.String,com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle)" class="member-name-link">NameInputDialog(String, Window.WindowStyle)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/NameInputDialog.html" title="class in com.csse3200.game.ui">NameInputDialog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.html#%3Cinit%3E(java.lang.String,com.badlogic.gdx.scenes.scene2d.ui.Window.WindowStyle,com.csse3200.game.ui.NameInputDialog.NameInputCallback)" class="member-name-link">NameInputDialog(String, Window.WindowStyle, NameInputDialog.NameInputCallback)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/NameInputDialog.html" title="class in com.csse3200.game.ui">NameInputDialog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html" class="type-name-link" title="interface in com.csse3200.game.ui">NameInputDialog.NameInputCallback</a> - Interface in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html#NEUROCHIP" class="member-name-link">NEUROCHIP</a> - Enum constant in enum class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></dt>
 <dd>&nbsp;</dd>
@@ -2794,6 +2882,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardQuery.html#offset" class="member-name-link">offset</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardQuery.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/utils/math/Vector2Utils.html#ONE" class="member-name-link">ONE</a> - Static variable in class com.csse3200.game.utils.math.<a href="com/csse3200/game/utils/math/Vector2Utils.html" title="class in com.csse3200.game.utils.math">Vector2Utils</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html#onNameCancelled()" class="member-name-link">onNameCancelled()</a> - Method in interface com.csse3200.game.ui.<a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html" title="interface in com.csse3200.game.ui">NameInputDialog.NameInputCallback</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html#onNameConfirmed(java.lang.String)" class="member-name-link">onNameConfirmed(String)</a> - Method in interface com.csse3200.game.ui.<a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html" title="interface in com.csse3200.game.ui">NameInputDialog.NameInputCallback</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#OPENING_CUTSCENE" class="member-name-link">OPENING_CUTSCENE</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
 <dd>&nbsp;</dd>
@@ -2958,11 +3050,30 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#playerId" class="member-name-link">playerId</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#playerId" class="member-name-link">playerId</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
+<dt><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
+<dd>
+<div class="block">UI component that displays the player's name in the top-left corner of the game screen.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html#%3Cinit%3E()" class="member-name-link">PlayerNameDisplay()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html" class="type-name-link" title="class in com.csse3200.game.ui">PlayerRank</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" class="type-name-link" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a> - Class in <a href="com/csse3200/game/components/mainmenu/package-summary.html">com.csse3200.game.components.mainmenu</a></dt>
+<dd>
+<div class="block">玩家姓名输入组件
+ 在游戏开始前让玩家输入姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#%3Cinit%3E()" class="member-name-link">PlayerNameInputComponent()</a> - Constructor for class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#%3Cinit%3E(java.lang.String,java.lang.String,int,int,int,java.lang.String)" class="member-name-link">PlayerRank(String, String, int, int, int, String)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
+<dt><a href="com/csse3200/game/services/PlayerNameService.html" class="type-name-link" title="interface in com.csse3200.game.services">PlayerNameService</a> - Interface in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>
+<div class="block">玩家姓名服务接口
+ 用于管理玩家输入的姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameServiceImpl.html" class="type-name-link" title="class in com.csse3200.game.services">PlayerNameServiceImpl</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>
+<div class="block">玩家姓名服务的实现类
+ 在内存中存储玩家姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameServiceImpl.html#%3Cinit%3E()" class="member-name-link">PlayerNameServiceImpl()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameServiceImpl.html" title="class in com.csse3200.game.services">PlayerNameServiceImpl</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerRankingComponent.html" class="type-name-link" title="class in com.csse3200.game.components.player">PlayerRankingComponent</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>&nbsp;</dd>
@@ -3075,12 +3186,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#rank" class="member-name-link">rank</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#rank" class="member-name-link">rank</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/RankingDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">RankingDialog</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/RankingDialog.html#%3Cinit%3E(java.lang.String,java.util.List,int)" class="member-name-link">RankingDialog(String, List&lt;PlayerRank&gt;, int)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/RankingDialog.html" title="class in com.csse3200.game.ui">RankingDialog</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsEngine.html#raycast(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,short,com.csse3200.game.physics.raycast.RaycastHit)" class="member-name-link">raycast(Vector2, Vector2, short, RaycastHit)</a> - Method in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsEngine.html" title="class in com.csse3200.game.physics">PhysicsEngine</a></dt>
 <dd>
 <div class="block">Cast a ray in a straight line from one point to another, checking for a collision against
@@ -3160,7 +3265,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerEntityService(com.csse3200.game.entities.EntityService)" class="member-name-link">registerEntityService(EntityService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#registerGameScoreService(com.csse3200.game.services.GameScoreService)" class="member-name-link">registerGameScoreService(GameScoreService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerGameService(com.csse3200.game.GdxGame)" class="member-name-link">registerGameService(GdxGame)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#registerGameSessionManager(com.csse3200.game.services.GameSessionManager)" class="member-name-link">registerGameSessionManager(GameSessionManager)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerGameStateService(com.csse3200.game.services.GameStateService)" class="member-name-link">registerGameStateService(GameStateService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
@@ -3171,6 +3280,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/services/AudioService.html#registerMusic(java.lang.String,java.lang.String)" class="member-name-link">registerMusic(String, String)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerPhysicsService(com.csse3200.game.physics.PhysicsService)" class="member-name-link">registerPhysicsService(PhysicsService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/ServiceLocator.html#registerPlayerNameService(com.csse3200.game.services.PlayerNameService)" class="member-name-link">registerPlayerNameService(PlayerNameService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html#registerRenderService(com.csse3200.game.rendering.RenderService)" class="member-name-link">registerRenderService(RenderService)</a> - Static method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" title="class in com.csse3200.game.services">ServiceLocator</a></dt>
 <dd>&nbsp;</dd>
@@ -3438,8 +3549,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#score" class="member-name-link">score</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/PlayerRank.html#score" class="member-name-link">score</a> - Variable in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/PlayerRank.html" title="class in com.csse3200.game.ui">PlayerRank</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/PauseInputComponent.html#scrolled(float,float)" class="member-name-link">scrolled(float, float)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PauseInputComponent.html" title="class in com.csse3200.game.components.maingame">PauseInputComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/input/InputComponent.html#scrolled(float,float)" class="member-name-link">scrolled(float, float)</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></dt>
@@ -3461,6 +3570,19 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">A simplified implementation of the Service Locator pattern:
  https://martinfowler.com/articles/injection.html#UsingAServiceLocator</div>
+</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html#%3Cinit%3E()" class="member-name-link">SessionData()</a> - Constructor for class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService.SessionData</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" class="type-name-link" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a> - Class in <a href="com/csse3200/game/services/leaderboard/package-summary.html">com.csse3200.game.services.leaderboard</a></dt>
+<dd>
+<div class="block">会话期间的排行榜服务
+ 在游戏运行期间保存数据到临时文件，程序关闭后自动清除</div>
+</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#%3Cinit%3E(java.lang.String)" class="member-name-link">SessionLeaderboardService(String)</a> - Constructor for class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html" class="type-name-link" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService.SessionData</a> - Class in <a href="com/csse3200/game/services/leaderboard/package-summary.html">com.csse3200.game.services.leaderboard</a></dt>
+<dd>
+<div class="block">会话数据存储类</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.html#set(com.csse3200.game.files.UserSettings.Settings,boolean)" class="member-name-link">set(UserSettings.Settings, boolean)</a> - Static method in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.html" title="class in com.csse3200.game.files">UserSettings</a></dt>
 <dd>
@@ -3542,6 +3664,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Sets the amount of a currency type directly and updates UI.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html#setCurrentScore(long)" class="member-name-link">setCurrentScore(long)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>
+<div class="block">手动设置当前得分（用于测试或特殊情况）</div>
+</dd>
 <dt><a href="com/csse3200/game/components/enemy/WaypointComponent.html#setCurrentTarget(com.csse3200.game.entities.Entity)" class="member-name-link">setCurrentTarget(Entity)</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/WaypointComponent.html" title="class in com.csse3200.game.components.enemy">WaypointComponent</a></dt>
 <dd>
 <div class="block">Sets the current target entity.</div>
@@ -3550,10 +3676,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/TowerStatsComponent.html#setDamage(float)" class="member-name-link">setDamage(float)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/TowerStatsComponent.html" title="class in com.csse3200.game.components">TowerStatsComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/MyRankCard.html#setData(com.csse3200.game.ui.PlayerRank)" class="member-name-link">setData(PlayerRank)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/MyRankCard.html" title="class in com.csse3200.game.ui">MyRankCard</a></dt>
-<dd>
-<div class="block">Refresh data with complete PlayerRank</div>
-</dd>
 <dt><a href="com/csse3200/game/ui/MyRankCard.html#setData(java.lang.String,int,int)" class="member-name-link">setData(String, int, int)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/MyRankCard.html" title="class in com.csse3200.game.ui">MyRankCard</a></dt>
 <dd>
 <div class="block">Refresh data using only name/rank/score (more convenient)</div>
@@ -3670,6 +3792,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">设置带有指定背景的开场动画</div>
 </dd>
+<dt><a href="com/csse3200/game/services/PlayerNameService.html#setPlayerName(java.lang.String)" class="member-name-link">setPlayerName(String)</a> - Method in interface com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameService.html" title="interface in com.csse3200.game.services">PlayerNameService</a></dt>
+<dd>
+<div class="block">设置玩家姓名</div>
+</dd>
+<dt><a href="com/csse3200/game/services/PlayerNameServiceImpl.html#setPlayerName(java.lang.String)" class="member-name-link">setPlayerName(String)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerNameServiceImpl.html" title="class in com.csse3200.game.services">PlayerNameServiceImpl</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/Entity.html#setPosition(float,float)" class="member-name-link">setPosition(float, float)</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Set the entity's game position.</div>
@@ -3902,6 +4030,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">设置相机缩放级别</div>
 </dd>
+<dt><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html#show()" class="member-name-link">show()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></dt>
+<dd>
+<div class="block">显示姓名输入界面</div>
+</dd>
 <dt><a href="com/csse3200/game/screens/MapSelectionScreen.html#show()" class="member-name-link">show()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/MapSelectionScreen.html" title="class in com.csse3200.game.screens">MapSelectionScreen</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/MyRankDemoScreen.html#show()" class="member-name-link">show()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/MyRankDemoScreen.html" title="class in com.csse3200.game.screens">MyRankDemoScreen</a></dt>
@@ -3910,7 +4042,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/screens/VictoryScreen.html#show()" class="member-name-link">show()</a> - Method in class com.csse3200.game.screens.<a href="com/csse3200/game/screens/VictoryScreen.html" title="class in com.csse3200.game.screens">VictoryScreen</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/ui/RankingDialog.html#show(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">show(Stage)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/RankingDialog.html" title="class in com.csse3200.game.ui">RankingDialog</a></dt>
+<dt><a href="com/csse3200/game/ui/NameInputDialog.html#show(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">show(Stage)</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/NameInputDialog.html" title="class in com.csse3200.game.ui">NameInputDialog</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/HintToast.html#show(com.badlogic.gdx.scenes.scene2d.Stage,java.lang.String,float)" class="member-name-link">show(Stage, String, float)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HintToast.html" title="class in com.csse3200.game.ui">HintToast</a></dt>
 <dd>&nbsp;</dd>
@@ -4016,6 +4148,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Start playback of an animation.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/GameScoreService.html#startNewGame()" class="member-name-link">startNewGame()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameScoreService.html" title="class in com.csse3200.game.services">GameScoreService</a></dt>
+<dd>
+<div class="block">开始新游戏，重置得分</div>
+</dd>
+<dt><a href="com/csse3200/game/services/GameSessionManager.html#startNewSession()" class="member-name-link">startNewSession()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameSessionManager.html" title="class in com.csse3200.game.services">GameSessionManager</a></dt>
+<dd>
+<div class="block">开始新的游戏会话</div>
+</dd>
 <dt><a href="com/csse3200/game/ai/tasks/DefaultTask.html#status" class="member-name-link">status</a> - Variable in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/DefaultTask.html#stop()" class="member-name-link">stop()</a> - Method in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></dt>
@@ -4048,6 +4188,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.html#submitScore(long)" class="member-name-link">submitScore(long)</a> - Method in interface com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html#submitScore(long)" class="member-name-link">submitScore(long)</a> - Method in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/GameSessionManager.html#submitScoreIfNotSubmitted(boolean)" class="member-name-link">submitScoreIfNotSubmitted(boolean)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameSessionManager.html" title="class in com.csse3200.game.services">GameSessionManager</a></dt>
+<dd>
+<div class="block">提交得分（如果本次会话还未提交）
+ 使用GameScoreService获取真实的游戏得分</div>
+</dd>
 <dt><a href="com/csse3200/game/rendering/SwitchableTextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">SwitchableTextureRenderComponent</a> - Class in <a href="com/csse3200/game/rendering/package-summary.html">com.csse3200.game.rendering</a></dt>
 <dd>
 <div class="block">A render component that can switch between different textures.</div>
@@ -4381,7 +4528,9 @@ loadScripts(document, 'script');</script>
 <div class="block">UI component for displaying and upgrading towers.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/TowerUpgradeMenu.html#%3Cinit%3E()" class="member-name-link">TowerUpgradeMenu()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerUpgradeMenu.html" title="class in com.csse3200.game.components.maingame">TowerUpgradeMenu</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates the UI for the tower upgrade menu and sets up listeners.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/configs/TowerConfig.TowerWrapper.html#%3Cinit%3E()" class="member-name-link">TowerWrapper()</a> - Constructor for class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/TowerConfig.TowerWrapper.html" title="class in com.csse3200.game.entities.configs">TowerConfig.TowerWrapper</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/events/EventHandler.html#trigger(java.lang.String)" class="member-name-link">trigger(String)</a> - Method in class com.csse3200.game.events.<a href="com/csse3200/game/events/EventHandler.html" title="class in com.csse3200.game.events">EventHandler</a></dt>
@@ -4541,6 +4690,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/player/PlayerStatsDisplay.html#updatePlayerHealthUI(int)" class="member-name-link">updatePlayerHealthUI(int)</a> - Method in class com.csse3200.game.components.player.<a href="com/csse3200/game/components/player/PlayerStatsDisplay.html" title="class in com.csse3200.game.components.player">PlayerStatsDisplay</a></dt>
 <dd>
 <div class="block">Updates the player's health on the ui.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html#updatePlayerName()" class="member-name-link">updatePlayerName()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a></dt>
+<dd>
+<div class="block">Updates the displayed player name</div>
 </dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#updateSettings()" class="member-name-link">updateSettings()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
 <dd>&nbsp;</dd>

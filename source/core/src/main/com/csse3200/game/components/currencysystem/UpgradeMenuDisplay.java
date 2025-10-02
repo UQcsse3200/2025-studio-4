@@ -17,18 +17,26 @@ import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class UpgradeMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(UpgradeMenuDisplay.class);
     private final GdxGame game;
 
-    private Table rootTable;
-
     private Label starsLabel;
+    private Map<GameStateService.HeroType, TextButton> heroButtons;
+
+    private GameStateService gameState;
+    private Map<GameStateService.HeroType, Boolean> heroUnlocks;
+
+    private TextButton.TextButtonStyle btnStyle;
+    private Label.LabelStyle nameStyle;
 
     private static final String HERO_IMG = "images/hero/Heroshoot.png";
     private static final String ENG_IMG = "images/engineer/Engineer.png";
+
+    private final float IMG_SIZE = 96f;
 
     private static final int ENGINEER_COST = 3;
 
@@ -41,6 +49,16 @@ public class UpgradeMenuDisplay extends UIComponent {
     @Override
     public void create() {
         super.create();
+
+        gameState = ServiceLocator.getGameStateService();
+        heroUnlocks = gameState.getHeroUnlocks();
+
+        // ===== styles (match main menu) =====
+        btnStyle = createCustomButtonStyle();
+        nameStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
+
+        heroButtons = new HashMap<>();
+
         addActors();
     }
 
@@ -76,7 +94,7 @@ public class UpgradeMenuDisplay extends UIComponent {
         panel.add(upgradeTable).row();
         panel.add(menuBtns).fillX();
 
-        rootTable = new Table();
+        Table rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.add(title).expandX().top().padTop(20f).row();
         HorizontalGroup group = new HorizontalGroup();
@@ -91,66 +109,88 @@ public class UpgradeMenuDisplay extends UIComponent {
         stage.addActor(rootTable);
     }
 
-    private Table makeUpgradeTable() {
-        GameStateService gameState = ServiceLocator.getGameStateService();
-        Map<String, Boolean> heroUnlocks = gameState.getHeroUnlocks();
+    private Table makeHeroCard(GameStateService.HeroType heroType, String heroName, Image heroImage, Integer heroCost) {
+        String heroBtnText = "Unlock";
+        if (heroUnlocks.get(heroType)) {
+            if (gameState.getSelectedHero() == heroType) {
+                heroBtnText = "Selected";
+            } else {
+                heroBtnText = "Select";
+            }
+        }
 
-        Image starImage = new Image(
-                ServiceLocator.getResourceService().getAsset(
-                        "images/star.png",
-                        Texture.class
-                )
-        );
-
-        // ===== styles (match main menu) =====
-        TextButton.TextButtonStyle btnStyle = createCustomButtonStyle();
-        Label.LabelStyle nameStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
-
-        // ===== hero card =====
-        Image heroImg = new Image(ServiceLocator.getResourceService().getAsset(HERO_IMG, Texture.class));
-        float imgSize = 96f;
-        heroImg.setSize(imgSize, imgSize);
-
-        TextButton heroBtn = new TextButton(heroUnlocks.get("hero") ? "Select" : "Unlock", btnStyle);
+        TextButton heroBtn = new TextButton(heroBtnText, btnStyle);
         heroBtn.addListener(e -> {
             if (!heroBtn.isPressed()) return false;
-            return true;
-        });
+            if (heroUnlocks.get(heroType)) {
+                gameState.setSelectedHero(heroType);
 
-        Table heroCol = new Table();
-        heroCol.defaults().pad(6f).center();
-        heroCol.add(heroImg).size(imgSize).padBottom(6f).row();
-        heroCol.add(new Label("Hero", nameStyle)).padBottom(6f).row();
-        heroCol.add(heroBtn).width(220f).height(56f);
-
-        // ===== engineer card =====
-        Image engImg = new Image(ServiceLocator.getResourceService().getAsset(ENG_IMG, Texture.class));
-        engImg.setSize(imgSize, imgSize);
-
-        TextButton engBtn = new TextButton(heroUnlocks.get("engineer") ? "Select" : "Unlock", btnStyle);
-        engBtn.addListener(e -> {
-            if (!engBtn.isPressed()) return false;
-            if (gameState.spendStars(ENGINEER_COST)) {
-                gameState.setHeroUnlocked("engineer");
-                engBtn.setText("Select");
-                starsLabel.setText(gameState.getStars());
+                for (GameStateService.HeroType btnHeroType : heroButtons.keySet()) {
+                    TextButton button = heroButtons.get(btnHeroType);
+                    if (heroUnlocks.get(btnHeroType)) {
+                        if (btnHeroType == heroType) {
+                            button.setText("Selected");
+                        } else {
+                            button.setText("Select");
+                        }
+                    }
+                }
+            } else {
+                if (gameState.spendStars(heroCost)) {
+                    gameState.setHeroUnlocked(heroType);
+                    heroBtn.setText("Select");
+                    starsLabel.setText(gameState.getStars());
+                }
             }
             return true;
         });
 
-        Table engCol = new Table();
-        engCol.defaults().pad(6f).center();
-        engCol.add(engImg).size(imgSize).padBottom(6f).row();
-        engCol.add(new Label("Engineer", nameStyle)).padBottom(6f).row();
+        heroButtons.put(heroType, heroBtn);
+
+        Table heroCol = new Table();
+        heroCol.defaults().pad(6f).center();
+        heroCol.add(heroImage).size(IMG_SIZE).padBottom(6f).row();
+        heroCol.add(new Label(heroName, nameStyle)).padBottom(6f).row();
 
         // star cost
-        HorizontalGroup engStarCost = new HorizontalGroup();
-        engStarCost.space(5);
-        engStarCost.addActor(starImage);
-        engStarCost.addActor(new Label(Integer.toString(ENGINEER_COST), nameStyle));
+        HorizontalGroup heroStarCost = new HorizontalGroup();
+        heroStarCost.space(5);
+        heroStarCost.addActor(new Image(
+                ServiceLocator.getResourceService().getAsset(
+                        "images/star.png",
+                        Texture.class
+                )
+        ));
+        heroStarCost.addActor(new Label(Integer.toString(heroCost), nameStyle));
 
-        engCol.add(engStarCost).padBottom(6f).row();
-        engCol.add(engBtn).width(220f).height(56f);
+        heroCol.add(heroStarCost).padBottom(6f).row();
+        heroCol.add(heroBtn).width(220f).height(56f);
+
+        return heroCol;
+    }
+
+    private Table makeUpgradeTable() {
+        // ===== hero card =====
+        Image heroImg = new Image(ServiceLocator.getResourceService().getAsset(HERO_IMG, Texture.class));
+        heroImg.setSize(IMG_SIZE, IMG_SIZE);
+
+        Table heroCol = makeHeroCard(
+                GameStateService.HeroType.HERO,
+                "Hero",
+                heroImg,
+                0
+        );
+
+        // ===== engineer card =====
+        Image engImg = new Image(ServiceLocator.getResourceService().getAsset(ENG_IMG, Texture.class));
+        engImg.setSize(IMG_SIZE, IMG_SIZE);
+
+        Table engCol = makeHeroCard(
+                GameStateService.HeroType.ENGINEER,
+                "Engineer",
+                engImg,
+                ENGINEER_COST
+        );
 
         // ===== cards row (horizontal) =====
         Table cardsRow = new Table();
@@ -183,7 +223,7 @@ public class UpgradeMenuDisplay extends UIComponent {
                 });
 
         Table table = new Table();
-        table.add(backBtn).size(buttonWidth, buttonHeight).expandX().left().pad(0f, 15f, 15f, 0f);
+        table.add(backBtn).size(buttonWidth, buttonHeight).expandX().center().pad(0f, 15f, 15f, 0f);
         return table;
     }
 

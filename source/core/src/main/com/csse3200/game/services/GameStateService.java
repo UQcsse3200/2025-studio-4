@@ -10,13 +10,20 @@ import java.util.Map;
 
 /**
  * Service that handles persistent state within the game runtime
- * Stores persistent data such as stars, unlocks, and level progress
+ * Stores persistent data such as stars, unlocks, selected hero, and level progress
  */
 public class GameStateService {
     private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
+
+    public enum HeroType {
+        HERO,       // 普通英雄
+        ENGINEER    // 工程师
+    }
+
     private Entity base;
     private int stars;
-    private Map<String, Boolean> heroUnlocks;
+    private Map<HeroType, Boolean> heroUnlocks;
+    private HeroType selectedHero = HeroType.HERO;
 
     public GameStateService() {
         // should load from save file later
@@ -24,8 +31,8 @@ public class GameStateService {
         stars = 0;
         heroUnlocks = new HashMap<>();
 
-        heroUnlocks.put("hero", true);
-        heroUnlocks.put("engineer", false);
+        heroUnlocks.put(HeroType.HERO, true);
+        heroUnlocks.put(HeroType.ENGINEER, false);
     }
 
     public void setBase (Entity player) {
@@ -78,23 +85,6 @@ public class GameStateService {
     }
 
     /**
-     * Gets the current unlock flags for the heroes
-     *
-     * @return map of the current hero unlocks
-     */
-    public Map<String, Boolean> getHeroUnlocks() {
-        return heroUnlocks;
-    }
-
-    /**
-     * Marks the given hero as unlocked
-     *
-     * @param hero hero to unlock
-     */
-    public void setHeroUnlocked(String hero) {
-        heroUnlocks.put(hero, true);
-    }
-    /**
      * Rewards stars at the end of a stage based on the player's remaining health.
      * Uses the player/base entity that was set in GameStateService.
      */
@@ -122,6 +112,42 @@ public class GameStateService {
         updateStars(starsAwarded);
         logger.info("Awarded {} stars for health {}%. Total: {}",
                 starsAwarded, Math.round(healthPercent * 100), getStars());
+    }
+
+    /**
+     * Gets the current unlock flags for the heroes
+     *
+     * @return map of the current hero unlocks
+     */
+    public Map<HeroType, Boolean> getHeroUnlocks() {
+        return heroUnlocks;
+    }
+
+    /**
+     * Marks the given hero as unlocked
+     *
+     * @param hero hero to unlock
+     */
+    public void setHeroUnlocked(HeroType hero) {
+        heroUnlocks.put(hero, true);
+    }
+
+    /**
+     * Sets the current selected hero
+     * @param type the HeroType of the selected hero
+     */
+    public void setSelectedHero(HeroType type) {
+        if (type == null) return;
+        selectedHero = type;
+        logger.info("Set hero to {}", type);
+    }
+
+    /**
+     * Gets the current selected hero
+     * @return the HeroType of the selected hero
+     */
+    public HeroType getSelectedHero() {
+        return selectedHero;
     }
 
 }

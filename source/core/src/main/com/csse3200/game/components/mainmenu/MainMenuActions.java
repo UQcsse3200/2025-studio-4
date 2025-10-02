@@ -26,7 +26,6 @@ public class MainMenuActions extends Component {
         entity.getEvents().addListener("continue", this::onContinue);
         entity.getEvents().addListener("exit", this::onExit);
         entity.getEvents().addListener("settings", this::onSettings);
-        entity.getEvents().addListener("openHeroSelect", this::onOpenHeroSelect);
         entity.getEvents().addListener("ranking", this::onRanking);
     }
 
@@ -114,10 +113,6 @@ public class MainMenuActions extends Component {
     private void onSettings() {
         logger.info("Launching settings screen");
         game.setScreen(GdxGame.ScreenType.SETTINGS);
-    }
-
-    private void onOpenHeroSelect() {
-        game.setScreen(GdxGame.ScreenType.HERO_SELECT);
     }
 
   /**

@@ -14,7 +14,6 @@ import com.csse3200.game.input.InputService;
 import com.csse3200.game.rendering.RenderService;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ResourceService;
-import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.AudioService;
 import org.slf4j.Logger;
@@ -49,14 +48,6 @@ public class MainMenuScreen extends ScreenAdapter {
     
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());
-    }
-
-    // GdxGame 构造或启动初始化处
-    if (ServiceLocator.getSelectedHeroService() == null) {
-      ServiceLocator.registerSelectedHeroService(new SelectedHeroService());
-      Gdx.app.log("MainMenu", "Registered SelectedHeroService at menu");
-    } else {
-      Gdx.app.log("MainMenu", "SelectedHeroService already present");
     }
 
 

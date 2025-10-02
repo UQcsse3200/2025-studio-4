@@ -26,7 +26,7 @@ public class ServiceLocator {
   private static InputService inputService;
   private static ResourceService resourceService;
   private static GdxGame gameService;
-  private static GameStateService gameStateService;private static SelectedHeroService selectedHeroService;
+  private static GameStateService gameStateService;
 
     // NEW: centralised audio service
   private static AudioService audioService;
@@ -180,15 +180,6 @@ public class ServiceLocator {
     gameSessionManager = null;
     gameScoreService = null;
   }
-    // === NEW: 注册和获取 SelectedHeroService ===
-    public static void registerSelectedHeroService(SelectedHeroService service) {
-        logger.debug("Registering SelectedHeroService {}", service);
-        selectedHeroService = service;
-    }
-
-    public static SelectedHeroService getSelectedHeroService() {
-        return selectedHeroService;
-    }
 
     private ServiceLocator() {
         throw new IllegalStateException("Instantiating static util class");

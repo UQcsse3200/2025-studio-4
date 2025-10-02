@@ -49,8 +49,6 @@ public class MainMenuDisplay extends UIComponent {
 
         TextButton startBtn = new TextButton("New Game", customButtonStyle);
         TextButton loadBtn = new TextButton("Continue", customButtonStyle);
-        //TextButton heroSelectBtn = new TextButton("选择英雄", customButtonStyle);   // MERGED
-        TextButton heroSelectBtn = new TextButton("Select Hero", customButtonStyle);   // unified
         TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
         TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
@@ -61,7 +59,6 @@ public class MainMenuDisplay extends UIComponent {
 
         startBtn.getLabel().setColor(Color.WHITE);
         loadBtn.getLabel().setColor(Color.WHITE);
-        heroSelectBtn.getLabel().setColor(Color.WHITE);
         settingsBtn.getLabel().setColor(Color.WHITE);
         rankingBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
@@ -83,30 +80,6 @@ public class MainMenuDisplay extends UIComponent {
                 entity.getEvents().trigger("continue");
             }
         });
-
-        heroSelectBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                                logger.debug("Select Hero button clicked");
-                                entity.getEvents().trigger("openHeroSelect");
-                            }
-        });
-
-        //heroSelectBtn.addListener(new ChangeListener() {   // NEW
-        //    @Override
-         //   public void changed(ChangeEvent event, Actor actor) {
-         //       logger.debug("Select Hero button clicked");
-         //       entity.getEvents().trigger("heroSelect");
-         //   }
-       // });
-
-       // engineerBtn.addListener(new ChangeListener() {     // NEW
-        //    @Override
-        //    public void changed(ChangeEvent event, Actor actor) {
-        //        logger.debug("Pick Engineer button clicked");
-         //       entity.getEvents().trigger("pickEngineer");
-         //   }
-      //  });
 
         settingsBtn.addListener(new ChangeListener() {
             @Override
@@ -140,8 +113,6 @@ public class MainMenuDisplay extends UIComponent {
         table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
         table.row();
         table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);
-        table.row();
-        table.add(heroSelectBtn).size(buttonWidth, buttonHeight).padTop(20f);   // MERGED
         table.row();
         table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
         table.row();

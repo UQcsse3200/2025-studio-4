@@ -9,7 +9,6 @@ import com.csse3200.game.screens.*;
 
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.SelectedHeroService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +48,6 @@ public class GdxGame extends Game {
 
     // Register game score service to track real-time scores
     ServiceLocator.registerGameScoreService(new com.csse3200.game.services.GameScoreService());
-      // register selected-hero service (only once during boot)
-      ServiceLocator.registerSelectedHeroService(new SelectedHeroService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }
@@ -147,8 +144,6 @@ public class GdxGame extends Game {
         return new MapSelectionScreen(this);
       case UPGRADES:
         return new UpgradeScreen(this);
-     case HERO_SELECT:
-        return new HeroSelectScreen(this);
       default:
         return null;
     }
@@ -156,7 +151,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
-    MAP_SELECTION, UPGRADES, HERO_SELECT
+    MAP_SELECTION, UPGRADES
   }
 
   /**

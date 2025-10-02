@@ -1,10 +1,9 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.Gdx;
-import com.csse3200.game.components.hero.HeroSelectionComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
-import com.csse3200.game.services.SelectedHeroService;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -344,16 +343,16 @@ public class ForestGameArea extends GameArea {
         //Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnEngineerAt));
 
         //spawnEntity(placement);
-        var svc = ServiceLocator.getSelectedHeroService();
-        if (svc == null) {
-            throw new IllegalStateException("SelectedHeroService not registered before MAIN_GAME!");
+        var gameState = ServiceLocator.getGameStateService();
+        if (gameState == null) {
+            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
         }
-        SelectedHeroService.HeroType chosen = svc.getSelected();
+        GameStateService.HeroType chosen = gameState.getSelectedHero();
         Gdx.app.log("ForestGameArea", "chosen=" + chosen);
 
 // 根据选择安装一个只放“指定英雄”的放置器
         java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
-                (chosen == SelectedHeroService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
+                (chosen == GameStateService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
 
         Entity placementEntity = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)

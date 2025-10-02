@@ -1,9 +1,8 @@
 package com.csse3200.game.components.hero;
 
 import com.csse3200.game.components.Component;
-import com.csse3200.game.services.SelectedHeroService;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
-import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.Gdx;
 
 /**
@@ -24,9 +23,9 @@ public class HeroSelectionComponent extends Component {
     @Override
     public void create() {
         // 读取主菜单写入的选择
-        var svc = ServiceLocator.getSelectedHeroService();
-        SelectedHeroService.HeroType chosen =
-                (svc != null) ? svc.getSelected() : SelectedHeroService.HeroType.HERO;
+        var gameState = ServiceLocator.getGameStateService();
+        GameStateService.HeroType chosen =
+                (gameState != null) ? gameState.getSelectedHero() : GameStateService.HeroType.HERO;
 
         switch (chosen) {
             case ENGINEER -> {

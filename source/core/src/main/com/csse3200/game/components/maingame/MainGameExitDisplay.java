@@ -79,12 +79,13 @@ public class MainGameExitDisplay extends UIComponent {
           @Override public void changed(ChangeEvent event, Actor actor) {
               logger.debug("Ranking button clicked");
               try {
-                  // Ensure leaderboard service is available
-                  if (ServiceLocator.getLeaderboardService() == null) {
-                      ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
-                  }
-                  
+                  // Use the global leaderboard service (already registered in GdxGame)
                   LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
+                  
+                  if (leaderboardService == null) {
+                      logger.error("Leaderboard service not available");
+                      return;
+                  }
                   LeaderboardController controller = new LeaderboardController(leaderboardService);
                   LeaderboardPopup popup = new LeaderboardPopup(MinimalSkinFactory.create(), controller);
                   popup.showOn(stage);

@@ -3,7 +3,7 @@ package com.csse3200.game.components.mainmenu;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.PlayerNameService;
+import com.csse3200.game.services.PlayerNameServiceImpl;
 import com.csse3200.game.ui.NameInputDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class MainMenuActions extends Component {
   private void showNameInputDialog() {
     // Register PlayerNameService if not already registered
     if (ServiceLocator.getPlayerNameService() == null) {
-      ServiceLocator.registerPlayerNameService(new PlayerNameService());
+      ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
     
     // Create and show name input dialog with callback
@@ -130,16 +130,18 @@ public class MainMenuActions extends Component {
    */
   private void showLeaderboard() {
     try {
-      // Register leaderboard service if not already registered
-      if (ServiceLocator.getLeaderboardService() == null) {
-        ServiceLocator.registerLeaderboardService(
-          new com.csse3200.game.services.leaderboard.InMemoryLeaderboardService("player-001"));
+      // Use the global leaderboard service (already registered in GdxGame)
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
+        ServiceLocator.getLeaderboardService();
+      
+      if (leaderboardService == null) {
+        logger.error("Leaderboard service not available");
+        return;
       }
       
       // Create and show leaderboard popup
       com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
-        new com.csse3200.game.ui.leaderboard.LeaderboardController(
-          ServiceLocator.getLeaderboardService());
+        new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboardService);
       
       com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = 
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(

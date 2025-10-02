@@ -36,6 +36,12 @@ public class ServiceLocator {
   
   // Player Name Service
   private static PlayerNameService playerNameService;
+  
+  // Game Session Manager
+  private static GameSessionManager gameSessionManager;
+  
+  // Game Score Service
+  private static GameScoreService gameScoreService;
 
   // --- Getters ---
   public static EntityService getEntityService() {
@@ -81,6 +87,14 @@ public class ServiceLocator {
 
   public static PlayerNameService getPlayerNameService() {
     return playerNameService;
+  }
+  
+  public static GameSessionManager getGameSessionManager() {
+    return gameSessionManager;
+  }
+  
+  public static GameScoreService getGameScoreService() {
+    return gameScoreService;
   }
 
   // --- Registrations ---
@@ -140,6 +154,16 @@ public class ServiceLocator {
     logger.debug("Registering player name service {}", service);
     playerNameService = service;
   }
+  
+  public static void registerGameSessionManager(GameSessionManager service) {
+    logger.debug("Registering game session manager {}", service);
+    gameSessionManager = service;
+  }
+  
+  public static void registerGameScoreService(GameScoreService service) {
+    logger.debug("Registering game score service {}", service);
+    gameScoreService = service;
+  }
 
   // --- Teardown ---
   public static void clear() {
@@ -154,6 +178,8 @@ public class ServiceLocator {
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
     playerNameService = null;
+    gameSessionManager = null;
+    gameScoreService = null;
   }
 
   private ServiceLocator() {

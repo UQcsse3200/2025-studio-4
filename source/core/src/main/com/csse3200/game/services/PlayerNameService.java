@@ -1,58 +1,31 @@
 package com.csse3200.game.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * Service for managing player name throughout the game.
- * Stores and retrieves the player's name for use in leaderboards and other game features.
+ * 玩家姓名服务接口
+ * 用于管理玩家输入的姓名
  */
-public class PlayerNameService {
-    private static final Logger logger = LoggerFactory.getLogger(PlayerNameService.class);
-    private static final String DEFAULT_PLAYER_NAME = "Player";
-    
-    private String playerName;
-    
-    public PlayerNameService() {
-        this.playerName = DEFAULT_PLAYER_NAME;
-        logger.debug("PlayerNameService initialized with default name: {}", playerName);
-    }
+public interface PlayerNameService {
     
     /**
-     * Sets the player's name
-     * @param name the player's name
+     * 设置玩家姓名
+     * @param playerName 玩家姓名
      */
-    public void setPlayerName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            logger.warn("Attempted to set empty or null player name, using default");
-            this.playerName = DEFAULT_PLAYER_NAME;
-        } else {
-            this.playerName = name.trim();
-            logger.info("Player name set to: {}", this.playerName);
-        }
-    }
+    void setPlayerName(String playerName);
     
     /**
-     * Gets the current player's name
-     * @return the player's name
+     * 获取玩家姓名
+     * @return 玩家姓名，如果未设置则返回默认值
      */
-    public String getPlayerName() {
-        return playerName;
-    }
+    String getPlayerName();
     
     /**
-     * Checks if the player name is the default name
-     * @return true if using default name
+     * 检查是否已设置玩家姓名
+     * @return 如果已设置姓名返回true，否则返回false
      */
-    public boolean isDefaultName() {
-        return DEFAULT_PLAYER_NAME.equals(playerName);
-    }
+    boolean hasPlayerName();
     
     /**
-     * Resets the player name to default
+     * 清除玩家姓名
      */
-    public void resetToDefault() {
-        this.playerName = DEFAULT_PLAYER_NAME;
-        logger.debug("Player name reset to default: {}", playerName);
-    }
+    void clearPlayerName();
 }

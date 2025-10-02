@@ -114,6 +114,12 @@ public class GruntEnemyFactory {
             if (totalScore != null) {
                 totalScore.addPoints(points);
             }
+
+            // Track kill for ranking component
+            com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+            if (prc != null) {
+                prc.addKill();
+            }
         }
 
         Gdx.app.postRunnable(entity::dispose);

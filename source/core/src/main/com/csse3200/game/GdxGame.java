@@ -45,6 +45,9 @@ public class GdxGame extends Game {
     // Register player name service
     ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameServiceImpl());
     
+    // Register player avatar service
+    ServiceLocator.registerPlayerAvatarService(new com.csse3200.game.services.PlayerAvatarServiceImpl());
+    
     // Register global leaderboard service - ensures consistency across all screens
     ServiceLocator.registerLeaderboardService(
       new com.csse3200.game.services.leaderboard.SessionLeaderboardService("player-001"));

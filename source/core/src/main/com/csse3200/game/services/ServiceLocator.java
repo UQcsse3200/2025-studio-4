@@ -37,6 +37,9 @@ public class ServiceLocator {
   // Player Name Service
   private static PlayerNameService playerNameService;
   
+  // Player Avatar Service
+  private static PlayerAvatarService playerAvatarService;
+  
   // Game Session Manager
   private static GameSessionManager gameSessionManager;
   
@@ -87,6 +90,10 @@ public class ServiceLocator {
 
   public static PlayerNameService getPlayerNameService() {
     return playerNameService;
+  }
+  
+  public static PlayerAvatarService getPlayerAvatarService() {
+    return playerAvatarService;
   }
   
   public static GameSessionManager getGameSessionManager() {
@@ -155,6 +162,11 @@ public class ServiceLocator {
     playerNameService = service;
   }
   
+  public static void registerPlayerAvatarService(PlayerAvatarService service) {
+    logger.debug("Registering player avatar service {}", service);
+    playerAvatarService = service;
+  }
+  
   public static void registerGameSessionManager(GameSessionManager service) {
     logger.debug("Registering game session manager {}", service);
     gameSessionManager = service;
@@ -178,6 +190,7 @@ public class ServiceLocator {
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
     playerNameService = null;
+    playerAvatarService = null;
     gameSessionManager = null;
     gameScoreService = null;
   }

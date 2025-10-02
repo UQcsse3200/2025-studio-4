@@ -50,8 +50,8 @@ public class MainMenuActions extends Component {
     NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(), 
         new NameInputDialog.NameInputCallback() {
           @Override
-          public void onNameConfirmed(String name) {
-            handleNameConfirmed(name);
+          public void onNameConfirmed(String name, String avatarId) {
+            handleNameConfirmed(name, avatarId);
           }
           
           @Override
@@ -72,10 +72,16 @@ public class MainMenuActions extends Component {
   }
   
   /**
-   * Handles when player confirms their name.
+   * Handles when player confirms their name and avatar.
    */
-  private void handleNameConfirmed(String name) {
-    logger.info("Player name confirmed: {}", name);
+  private void handleNameConfirmed(String name, String avatarId) {
+    logger.info("Player name confirmed: {}, avatar: {}", name, avatarId);
+    
+    // Save avatar selection to service
+    if (ServiceLocator.getPlayerAvatarService() != null) {
+      ServiceLocator.getPlayerAvatarService().setPlayerAvatar(avatarId);
+    }
+    
     // Proceed to map selection
     game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }

@@ -61,6 +61,7 @@ public class PlayerFactory {
     basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);
     PhysicsUtils.setScaledCollider(basement, 0.6f, 0.3f);
     basement.getComponent(ColliderComponent.class).setDensity(1.5f);
+    ServiceLocator.getGameStateService().setBase(basement);
     return basement;
   }
 

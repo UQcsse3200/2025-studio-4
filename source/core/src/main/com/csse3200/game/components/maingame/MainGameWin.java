@@ -59,7 +59,7 @@ public class MainGameWin extends UIComponent {
         @Override
         public void changed(ChangeEvent changeEvent, Actor actor) {
           logger.debug("Win button clicked");
-          ServiceLocator.getGameStateService().updateStars(1);
+          ServiceLocator.getGameStateService().rewardStarsOnWin();
           entity.getEvents().trigger("gamewin");
         }
       });

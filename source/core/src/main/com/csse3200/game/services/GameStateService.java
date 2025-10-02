@@ -1,5 +1,7 @@
 package com.csse3200.game.services;
 
+import com.csse3200.game.components.PlayerCombatStatsComponent;
+import com.csse3200.game.entities.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +14,7 @@ import java.util.Map;
  */
 public class GameStateService {
     private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
-
+    private Entity base;
     private int stars;
     private Map<String, Boolean> heroUnlocks;
 
@@ -24,6 +26,10 @@ public class GameStateService {
 
         heroUnlocks.put("hero", true);
         heroUnlocks.put("engineer", false);
+    }
+
+    public void setBase (Entity player) {
+        this.base = player;
     }
 
     /**
@@ -88,4 +94,34 @@ public class GameStateService {
     public void setHeroUnlocked(String hero) {
         heroUnlocks.put(hero, true);
     }
+    /**
+     * Rewards stars at the end of a stage based on the player's remaining health.
+     * Uses the player/base entity that was set in GameStateService.
+     */
+    public void rewardStarsOnWin() {
+        PlayerCombatStatsComponent stats = base.getComponent(PlayerCombatStatsComponent.class);
+        double hpPercent = (double) stats.getHealth()/stats.getMaxHealth();
+        rewardStarsByHealth(hpPercent);
+    }
+
+    /**
+     * Rewards stars based on remaining health percentage.
+     * 80–100% -> 3★, 50–79% -> 2★, 1–49% -> 1★, 0% -> 0★
+     *
+     * @param healthPercent a value from 0.0 (dead) to 1.0 (full health)
+     */
+    public void rewardStarsByHealth(double healthPercent) {
+        if (healthPercent < 0) healthPercent = 0;
+        if (healthPercent > 1) healthPercent = 1;
+
+        int starsAwarded =
+                (healthPercent >= 0.80) ? 3 :
+                        (healthPercent >= 0.50) ? 2 :
+                                (healthPercent >  0.00) ? 1 : 0;
+
+        updateStars(starsAwarded);
+        logger.info("Awarded {} stars for health {}%. Total: {}",
+                starsAwarded, Math.round(healthPercent * 100), getStars());
+    }
+
 }

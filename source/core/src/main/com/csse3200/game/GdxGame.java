@@ -36,6 +36,19 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
+
+    // Register player name service
+    ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameServiceImpl());
+
+    // Register global leaderboard service - ensures consistency across all screens
+    ServiceLocator.registerLeaderboardService(
+      new com.csse3200.game.services.leaderboard.SessionLeaderboardService("player-001"));
+
+    // Register game session manager to prevent duplicate score submissions
+    ServiceLocator.registerGameSessionManager(new com.csse3200.game.services.GameSessionManager());
+
+    // Register game score service to track real-time scores
+    ServiceLocator.registerGameScoreService(new com.csse3200.game.services.GameScoreService());
       // register selected-hero service (only once during boot)
       ServiceLocator.registerSelectedHeroService(new SelectedHeroService());
 
@@ -112,6 +125,15 @@ public class GdxGame extends Game {
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case MAIN_GAME:
+        // Start new game session when entering main game
+        if (ServiceLocator.getGameSessionManager() != null) {
+          ServiceLocator.getGameSessionManager().startNewSession();
+        }
+
+        // Start score tracking for new game
+        if (ServiceLocator.getGameScoreService() != null) {
+          ServiceLocator.getGameScoreService().startNewGame();
+        }
         return new MainGameScreen(this, isContinue, saveFileName);
       case SETTINGS:
         return new SettingsScreen(this);

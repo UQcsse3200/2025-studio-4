@@ -178,7 +178,7 @@ public class MapSelectionDisplay extends UIComponent {
         carouselRow.add(rightArrow).padLeft(24f);
         root.add(carouselRow).expand().center().row();
 
-        TextButton upgradeButton = new TextButton("Upgrades", skin);
+        TextButton upgradeButton = new TextButton("Unlocks", skin);
         upgradeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {

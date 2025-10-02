@@ -10,20 +10,21 @@ import org.slf4j.LoggerFactory;
  * events is triggered.
  */
 public class MainMenuActions extends Component {
-  private static final Logger logger = LoggerFactory.getLogger(MainMenuActions.class);
-  private GdxGame game;
+    private static final Logger logger = LoggerFactory.getLogger(MainMenuActions.class);
+    private GdxGame game;
 
-  public MainMenuActions(GdxGame game) {
-    this.game = game;
-  }
+    public MainMenuActions(GdxGame game) {
+        this.game = game;
+    }
 
-  @Override
-  public void create() {
-    entity.getEvents().addListener("start", this::onStart);
-    entity.getEvents().addListener("continue", this::onContinue);
-    entity.getEvents().addListener("exit", this::onExit);
-    entity.getEvents().addListener("settings", this::onSettings);
-  }
+    @Override
+    public void create() {
+        entity.getEvents().addListener("start", this::onStart);
+        entity.getEvents().addListener("continue", this::onContinue);
+        entity.getEvents().addListener("exit", this::onExit);
+        entity.getEvents().addListener("settings", this::onSettings);
+        entity.getEvents().addListener("openHeroSelect", this::onOpenHeroSelect);
+    }
 
   /**
    * Swaps to the Main Game screen.
@@ -34,28 +35,33 @@ public class MainMenuActions extends Component {
   }
 
 
-  /**
-   * Opens the save selection interface.
-   * Users can choose which save file to load or delete.
-   */
-  private void onContinue() {
-    logger.info("Opening save selection interface");
-    game.setScreen(GdxGame.ScreenType.SAVE_SELECTION);
-  }
+    /**
+     * Opens the save selection interface.
+     * Users can choose which save file to load or delete.
+     */
+    private void onContinue() {
+        logger.info("Opening save selection interface");
+        game.setScreen(GdxGame.ScreenType.SAVE_SELECTION);
+    }
 
-  /**
-   * Exits the game.
-   */
-  private void onExit() {
-    logger.info("Exit game");
-    game.exit();
-  }
+    /**
+     * Exits the game.
+     */
+    private void onExit() {
+        logger.info("Exit game");
+        game.exit();
+    }
 
-  /**
-   * Swaps to the Settings screen.
-   */
-  private void onSettings() {
-    logger.info("Launching settings screen");
-    game.setScreen(GdxGame.ScreenType.SETTINGS);
-  }
+    /**
+     * Swaps to the Settings screen.
+     */
+    private void onSettings() {
+        logger.info("Launching settings screen");
+        game.setScreen(GdxGame.ScreenType.SETTINGS);
+    }
+
+    private void onOpenHeroSelect() {
+        game.setScreen(GdxGame.ScreenType.HERO_SELECT);
+    }
+
 }

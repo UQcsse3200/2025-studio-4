@@ -3,6 +3,9 @@ package com.csse3200.game.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Service that handles persistent state within the game runtime
  * Stores persistent data such as stars, unlocks, and level progress
@@ -11,11 +14,16 @@ public class GameStateService {
     private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
 
     private int stars;
+    private Map<String, Boolean> heroUnlocks;
 
     public GameStateService() {
         // should load from save file later
         logger.info("Loading GameStateService");
         stars = 0;
+        heroUnlocks = new HashMap<>();
+
+        heroUnlocks.put("hero", true);
+        heroUnlocks.put("engineer", false);
     }
 
     /**
@@ -63,4 +71,21 @@ public class GameStateService {
         }
     }
 
+    /**
+     * Gets the current unlock flags for the heroes
+     *
+     * @return map of the current hero unlocks
+     */
+    public Map<String, Boolean> getHeroUnlocks() {
+        return heroUnlocks;
+    }
+
+    /**
+     * Marks the given hero as unlocked
+     *
+     * @param hero hero to unlock
+     */
+    public void setHeroUnlocked(String hero) {
+        heroUnlocks.put(hero, true);
+    }
 }

@@ -130,7 +130,7 @@ public class DividerEnemyFactory {
             if (area != null && savedWaypoints != null) {
                 for (Vector2 offset : offsets) {
                     int targetWaypointIndex = Math.max(0, wc.getCurrentWaypointIndex() - 1);
-                    Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(
+                    Entity child = DividerChildEnemyFactory.createDividerChildEnemy(
                             target, savedWaypoints, targetWaypointIndex, difficulty
                     );
                     if (child != null) {

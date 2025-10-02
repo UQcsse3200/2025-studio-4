@@ -26,7 +26,7 @@ public class DividerChildEnemyFactory {
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(2f, 2f);
-    private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
+    private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
@@ -57,7 +57,7 @@ public class DividerChildEnemyFactory {
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
+    public static Entity createDividerChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
         Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
         "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
 

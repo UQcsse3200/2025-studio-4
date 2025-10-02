@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.csse3200.game.ui.MyRankCard;
-import com.csse3200.game.ui.PlayerRank;
 
 public class MyRankDemoScreen extends ScreenAdapter {
     private Stage stage;
@@ -18,7 +17,7 @@ public class MyRankDemoScreen extends ScreenAdapter {
 
         MyRankCard card = new MyRankCard();
         card.setPosition(50, Gdx.graphics.getHeight() - 150);
-        card.setData(PlayerRank.mock()); // Using local fake data
+        card.setData("Demo Player", 1, 10000); // Using local fake data
         stage.addActor(card);
     }
 

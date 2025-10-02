@@ -59,7 +59,7 @@ public class DividerChildEnemyFactory {
      */
     public static Entity createDividerChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
         Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
-        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
+        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, target, speed);
         waypointComponent.setCurrentWaypointIndex(waypointIndex);

@@ -72,7 +72,7 @@ public class PlayerAvatarServiceImpl implements PlayerAvatarService {
                 return AVATAR_DISPLAY_NAMES[i];
             }
         }
-        return "Unknown";
+        return AVATAR_DISPLAY_NAMES[0]; // 返回默认头像的显示名称
     }
     
     @Override

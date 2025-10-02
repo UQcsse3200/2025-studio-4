@@ -53,6 +53,7 @@ public class TerrainFactory {
         return createForestDemoTerrain(0.5f);
       default:
         return null;
+        
     }
   }
 
@@ -95,6 +96,6 @@ public class TerrainFactory {
 
   /** Only keep the simplified version (mmap)只保留简化版（mmap） */
   public enum TerrainType {
-    FOREST_DEMO  // Only mmap layers仅 mmap 图层
+    FOREST_DEMO,  // Only mmap layers仅 mmap 图层
   }
 }

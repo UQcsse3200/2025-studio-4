@@ -8,6 +8,7 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -71,6 +72,7 @@ public class DividerEnemyFactory {
 
         divider
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+                .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态

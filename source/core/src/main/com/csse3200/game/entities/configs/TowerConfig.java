@@ -11,6 +11,8 @@ public class TowerConfig {
     public TowerWrapper dinoTower;
     /** Stats for the cavemen tower. */
     public TowerWrapper cavemenTower;
+    /** Stats for the pteradactyl tower. */
+    public TowerWrapper pterodactylTower;
 
     /** Stats for the advanced tower. */
     public static class TowerWrapper {
@@ -42,4 +44,5 @@ public class TowerConfig {
         public int level_A;
         public int level_B;
     }
+
 }

@@ -305,14 +305,14 @@ public class ForestGameArea extends GameArea {
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
 
-        if (autoStartWaves) {
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
-        }
+//        if (autoStartWaves) {
+//            Timer.schedule(new Timer.Task() {
+//                @Override
+//                public void run() {
+//                    startEnemyWave();
+//                }
+//            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
+//        }
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();

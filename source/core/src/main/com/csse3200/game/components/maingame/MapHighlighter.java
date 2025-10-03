@@ -185,11 +185,11 @@ public class MapHighlighter extends UIComponent {
         Entity pendingEntity;
         String pendingType = placementController.getPendingType();
         if ("Dino".equalsIgnoreCase(pendingType)) {
-            pendingEntity = towerFactory.createDinoTower(CurrencyType.METAL_SCRAP);
+            pendingEntity = towerFactory.createDinoTower();
         } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
-            pendingEntity = towerFactory.createCavemenTower(CurrencyType.METAL_SCRAP);
+            pendingEntity = towerFactory.createCavemenTower();
         } else {
-            pendingEntity = towerFactory.createBoneTower(CurrencyType.METAL_SCRAP);
+            pendingEntity = towerFactory.createBoneTower();
         }
         TowerComponent placingTower = pendingEntity.getComponent(TowerComponent.class);
         int towerWidth = placingTower != null ? placingTower.getWidth() : 2;

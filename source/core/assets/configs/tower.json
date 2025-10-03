@@ -3,13 +3,13 @@
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 10,
+      "damage": 5,
       "range": 3.0,
       "cooldown": 1.0,
       "metalScrapCost": 500,
       "titaniumCoreCost": 0,
       "neurochipCost": 0,
-      "projectileSpeed": 2.0,
+      "projectileSpeed": 4.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/bone_projectile.png",
       "image": "images/bone.png"
@@ -19,9 +19,9 @@
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 20,
+      "damage": 15,
       "range": 2.0,
-      "cooldown": 0.8,
+      "cooldown": 2,
       "metalScrapCost": 1000,
       "titaniumCoreCost": 0,
       "neurochipCost": 0,
@@ -35,16 +35,32 @@
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 15,
+      "damage": 30,
       "range": 5.0,
-      "cooldown": 0.8,
+      "cooldown": 5,
       "metalScrapCost": 750,
       "titaniumCoreCost": 0,
       "neurochipCost": 0,
-      "projectileSpeed": 2.0,
+      "projectileSpeed": 6.0,
       "projectileLife": 4,
       "projectileTexture": "images/towers/projectile animations/zap.png",
       "image": "images/cavemen.png"
+    }
+  },
+  "pterodactylTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 5,
+      "range": 3.0,
+      "cooldown": 1.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 50,
+      "neurochipCost": 0,
+      "projectileSpeed": 10.0,
+      "projectileLife": 1,
+      "projectileTexture": "images/towers/spike.png",
+      "image": "images/pteradactyl.png"
     }
   }
 }

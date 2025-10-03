@@ -264,6 +264,7 @@ public class ForestGameArea2 extends GameArea2 {
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
         ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
+
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);

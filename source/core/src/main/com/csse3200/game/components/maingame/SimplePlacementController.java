@@ -12,57 +12,76 @@ import com.csse3200.game.areas.MapEditor;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.TowerComponent;
-import com.csse3200.game.components.TowerCostComponent;
-import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.TowerCostComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.entities.configs.TowerConfig;
+
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Controller for managing tower placement within the game world.
- * Handles ghost preview, snapping, currency checks, path restrictions, and tower placement.
+ * <p>
+ * Features:
+ * <ul>
+ *   <li>Ghost preview of tower before placement</li>
+ *   <li>Snaps towers to grid tiles</li>
+ *   <li>Prevents placement on fixed paths or overlapping towers</li>
+ *   <li>Supports Bone, Dino, Cavemen, and Pterodactyl towers</li>
+ *   <li>Pterodactyl heads orbit nests using OrbitComponent</li>
+ * </ul>
  */
-public class SimplePlacementController extends Component
-{
+public class SimplePlacementController extends Component {
+
+    /** Whether tower placement mode is active. */
     private boolean placementActive = false;
+
+    /** Ensures left-click is released before placing tower. */
     private boolean needRelease = false;
+
+    /** Pending tower type for placement (bone/dino/cavemen/pterodactyl). */
     private String pendingType = "bone";
+
+    /** Reference to the world camera. */
     private OrthographicCamera camera;
+
+    /** Minimum spacing between towers (world units). */
     private final float minSpacing = 1.0f;
+
+    /** Ghost tower entity used for preview during placement. */
     private Entity ghostTower = null;
+
+    /** Reference to the map editor for checking invalid tiles. */
     private MapEditor mapEditor;
+
+    /** Static 2D array storing fixed path tiles to prevent tower placement. */
     private static int[][] FIXED_PATH = {};
 
-    private CurrencyType selectedCurrencyType = CurrencyType.METAL_SCRAP; // Default
-
     /**
-     * Sets the map editor and refreshes invalid tiles.
+     * Sets the map editor instance used to check invalid tiles.
      *
-     * @param mapEditor the map editor to set
+     * @param mapEditor the MapEditor instance
      */
-    public void setMapEditor(MapEditor mapEditor)
-    {
+    public void setMapEditor(MapEditor mapEditor) {
         this.mapEditor = mapEditor;
         refreshInvalidTiles();
     }
 
     /**
-     * Refreshes the list of invalid tiles for placement.
+     * Refreshes the list of invalid tiles for tower placement from the MapEditor.
      */
-    public void refreshInvalidTiles()
-    {
+    public void refreshInvalidTiles() {
         if (mapEditor == null) return;
         List<GridPoint2> tiles = new ArrayList<>(mapEditor.getInvalidTiles().values());
         if (tiles.isEmpty()) return;
 
         int[][] newPath = new int[tiles.size()][2];
-        for (int i = 0; i < tiles.size(); i++)
-        {
+        for (int i = 0; i < tiles.size(); i++) {
             GridPoint2 t = tiles.get(i);
             newPath[i][0] = t.x;
             newPath[i][1] = t.y;
@@ -71,99 +90,90 @@ public class SimplePlacementController extends Component
     }
 
     /**
-     * Gets the fixed path as a 2D array of tile coordinates.
+     * Returns the fixed path as a 2D array of tile coordinates.
      *
-     * @return the fixed path
+     * @return fixed path array
      */
-    public int[][] getFixedPath()
-    {
+    public int[][] getFixedPath() {
         return FIXED_PATH;
     }
 
     /**
-     * Registers placement event listeners.
+     * Registers listeners for tower placement events.
      */
     @Override
-    public void create()
-    {
+    public void create() {
         entity.getEvents().addListener("startPlacementBone", this::armBone);
         entity.getEvents().addListener("startPlacementDino", this::armDino);
         entity.getEvents().addListener("startPlacementCavemen", this::armCavemen);
+        entity.getEvents().addListener("startPlacementPterodactyl", this::armPterodactyl);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
-    /**
-     * Arms the controller for bone tower placement.
-     */
-    private void armBone()
-    {
+    /** Arms the controller to start placing a Bone tower. */
+    private void armBone() {
         startPlacement("bone");
     }
 
-    /**
-     * Arms the controller for dino tower placement.
-     */
-    private void armDino()
-    {
+    /** Arms the controller to start placing a Dino tower. */
+    private void armDino() {
         startPlacement("dino");
     }
 
-    /**
-     * Arms the controller for cavemen tower placement.
-     */
-    private void armCavemen()
-    {
+    /** Arms the controller to start placing a Cavemen tower. */
+    private void armCavemen() {
         startPlacement("cavemen");
+    }
+
+    /** Arms the controller to start placing a Pterodactyl tower. */
+    private void armPterodactyl() {
+        startPlacement("pterodactyl");
     }
 
     /**
      * Starts placement mode for the specified tower type.
      *
-     * @param type the tower type to place
+     * @param type tower type ("bone", "dino", "cavemen", "pterodactyl")
      */
-    private void startPlacement(String type)
-    {
+    private void startPlacement(String type) {
         pendingType = type;
         placementActive = true;
         needRelease = true;
-        selectedCurrencyType = CurrencyType.METAL_SCRAP; // default or UI selection
 
-        if ("dino".equalsIgnoreCase(type))
-        {
-            ghostTower = TowerFactory.createDinoTower(selectedCurrencyType);
-        }
-        else if ("cavemen".equalsIgnoreCase(type))
-        {
-            ghostTower = TowerFactory.createCavemenTower(selectedCurrencyType);
-        }
-        else
-        {
-            ghostTower = TowerFactory.createBoneTower(selectedCurrencyType);
+        switch (type.toLowerCase()) {
+            case "dino" -> ghostTower = TowerFactory.createDinoTower();
+            case "cavemen" -> ghostTower = TowerFactory.createCavemenTower();
+            case "pterodactyl" -> ghostTower = TowerFactory.createPterodactylTower();
+            default -> ghostTower = TowerFactory.createBoneTower();
         }
 
         TowerComponent tc = ghostTower.getComponent(TowerComponent.class);
-        if (tc != null)
-        {
-            tc.setActive(false);
-        }
+        if (tc != null) tc.setActive(false);
 
         ServiceLocator.getEntityService().register(ghostTower);
         System.out.println(">>> placement ON (" + type + ")");
     }
 
     /**
-     * Updates the placement controller, handling ghost tower and placement logic.
+     * Updates placement controller each frame:
+     * <ul>
+     *   <li>Handles ghost tower movement</li>
+     *   <li>Snaps tower to grid</li>
+     *   <li>Places tower if valid</li>
+     * </ul>
      */
     @Override
     public void update() {
         if (camera == null) findWorldCamera();
         if (!placementActive || camera == null || ghostTower == null) return;
 
+        // Wait for left-click release
         if (needRelease) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) needRelease = false;
             return;
         }
 
+        // Get mouse world position
         Vector3 mousePos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
         camera.unproject(mousePos3D);
         Vector2 mouseWorld = new Vector2(mousePos3D.x, mousePos3D.y);
@@ -176,9 +186,10 @@ public class SimplePlacementController extends Component
         int towerHeight = ghostTC != null ? ghostTC.getHeight() : 1;
         float tileSize = terrain.getTileSize();
 
+        // Snap to grid
         GridPoint2 tile = new GridPoint2(
-                (int)(mouseWorld.x / tileSize),
-                (int)(mouseWorld.y / tileSize)
+                (int) (mouseWorld.x / tileSize),
+                (int) (mouseWorld.y / tileSize)
         );
 
         GridPoint2 mapBounds = terrain.getMapBounds(0);
@@ -189,112 +200,115 @@ public class SimplePlacementController extends Component
         Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
         ghostTower.setPosition(snapPos);
 
-        // Place tower on left click
+        // Handle placement on left-click
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && inBounds) {
             if (isTowerOnPath(tile, towerWidth, towerHeight) ||
                     !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
 
-            Entity player = findPlayerEntity();
-            if (player == null) return;
-            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+            // --- Begin: Cost logic ---
+            // Get player entity and currency manager
+            Entity player = findPlayer();
+            CurrencyManagerComponent cm = player != null ? player.getComponent(CurrencyManagerComponent.class) : null;
 
-            Entity newTower;
+            // Get cost from TowerConfig
+            TowerConfig.TowerStats stats = null;
             switch (pendingType.toLowerCase()) {
-                case "dino": newTower = TowerFactory.createDinoTower(selectedCurrencyType); break;
-                case "cavemen": newTower = TowerFactory.createCavemenTower(selectedCurrencyType); break;
-                default: newTower = TowerFactory.createBoneTower(selectedCurrencyType);
+                case "dino" -> stats = TowerFactory.getTowerConfig().dinoTower.base;
+                case "cavemen" -> stats = TowerFactory.getTowerConfig().cavemenTower.base;
+                case "pterodactyl" -> stats = TowerFactory.getTowerConfig().pterodactylTower.base;
+                default -> stats = TowerFactory.getTowerConfig().boneTower.base;
             }
 
-            TowerCostComponent costComponent = newTower.getComponent(TowerCostComponent.class);
-            int cost = costComponent != null ? costComponent.getCostForCurrency(selectedCurrencyType) : 0;
-            if (currencyManager == null || !currencyManager.canAffordAndSpendCurrency(Map.of(selectedCurrencyType, cost))) return;
+            // Build cost map
+            java.util.Map<CurrencyType, Integer> costMap = new java.util.HashMap<>();
+            if (stats != null) {
+                if (stats.metalScrapCost > 0) costMap.put(CurrencyType.METAL_SCRAP, stats.metalScrapCost);
+                if (stats.titaniumCoreCost > 0) costMap.put(CurrencyType.TITANIUM_CORE, stats.titaniumCoreCost);
+                if (stats.neurochipCost > 0) costMap.put(CurrencyType.NEUROCHIP, stats.neurochipCost);
+            }
 
-            // Dispose of ghost tower
+            // Check if player can afford
+            if (cm != null && !costMap.isEmpty() && !cm.canAffordAndSpendCurrency(costMap)) {
+                System.out.println(">>> Not enough currency to place " + pendingType + " tower.");
+                return;
+            }
+            // --- End: Cost logic ---
+
+            // Create new tower entity
+            Entity newTower;
+            switch (pendingType.toLowerCase()) {
+                case "dino" -> newTower = TowerFactory.createDinoTower();
+                case "cavemen" -> newTower = TowerFactory.createCavemenTower();
+                case "pterodactyl" -> newTower = TowerFactory.createPterodactylTower();
+                default -> newTower = TowerFactory.createBoneTower();
+            }
+
+            // Attach TowerCostComponent to the new tower
+            if (!costMap.isEmpty()) {
+                newTower.addComponent(new TowerCostComponent(costMap));
+            }
+
+            // Remove ghost tower
             ghostTower.dispose();
             ghostTower = null;
 
-            // Set tower position
+            // Place new tower
             newTower.setPosition(snapPos);
 
             TowerComponent newTC = newTower.getComponent(TowerComponent.class);
-            if (newTC != null && newTC.hasHead()) {
-                // Center the head on the tower
-                Vector2 headOffset = new Vector2(
-                        towerWidth * tileSize / 2f,
-                        towerHeight * tileSize / 2f
-                );
+            if (newTC != null && newTC.hasHead() && !pendingType.equalsIgnoreCase("pterodactyl")) {
+                Vector2 headOffset = new Vector2(towerWidth * tileSize / 2f, towerHeight * tileSize / 2f);
                 newTC.getHeadEntity().setPosition(snapPos.x + headOffset.x, snapPos.y + headOffset.y - 0.01f);
             }
 
-            // Register tower and head
             ServiceLocator.getEntityService().register(newTower);
-            if (newTC != null && newTC.hasHead()) {
-                ServiceLocator.getEntityService().register(newTC.getHeadEntity());
-            }
+            if (newTC != null && newTC.hasHead()) ServiceLocator.getEntityService().register(newTC.getHeadEntity());
 
             placementActive = false;
         }
     }
 
+    private Entity findPlayer() {
+        Array<Entity> all = safeEntities();
+        if (all == null) return null;
+        for (Entity e : all) {
+            if (e != null && e.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null) {
+                return e;
+            }
+        }
+        return null;
+    }
 
 
-    /**
-     * Checks if the tower would overlap the fixed path.
-     *
-     * @param tile the base tile
-     * @param towerWidth tower width in tiles
-     * @param towerHeight tower height in tiles
-     * @return true if tower would overlap path, false otherwise
-     */
-    private boolean isTowerOnPath(GridPoint2 tile, int towerWidth, int towerHeight)
-    {
-        for (int tx = 0; tx < towerWidth; tx++)
-        {
-            for (int ty = 0; ty < towerHeight; ty++)
-            {
+
+    /** Checks if tower overlaps the fixed path. */
+    private boolean isTowerOnPath(GridPoint2 tile, int towerWidth, int towerHeight) {
+        for (int tx = 0; tx < towerWidth; tx++) {
+            for (int ty = 0; ty < towerHeight; ty++) {
                 if (isOnPath(new GridPoint2(tile.x + tx, tile.y + ty))) return true;
             }
         }
         return false;
     }
 
-    /**
-     * Checks if a tile is on the fixed path.
-     *
-     * @param tile the tile to check
-     * @return true if on path, false otherwise
-     */
-    private boolean isOnPath(GridPoint2 tile)
-    {
-        for (int[] p : FIXED_PATH)
-        {
+    /** Checks if a single tile is on the fixed path. */
+    private boolean isOnPath(GridPoint2 tile) {
+        for (int[] p : FIXED_PATH) {
             if (p[0] == tile.x && p[1] == tile.y) return true;
         }
         return false;
     }
 
-    /**
-     * Checks if the given position is free for tower placement.
-     *
-     * @param candidate the world position
-     * @param towerWidth tower width in tiles
-     * @param towerHeight tower height in tiles
-     * @param terrain the terrain component
-     * @return true if position is free, false otherwise
-     */
-    private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain)
-    {
+    /** Checks if a given world position is free for tower placement. */
+    private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
         if (all == null || candidate == null) return true;
         float tileSize = terrain.getTileSize();
 
-        for (int tx = 0; tx < towerWidth; tx++)
-        {
-            for (int ty = 0; ty < towerHeight; ty++)
-            {
+        for (int tx = 0; tx < towerWidth; tx++) {
+            for (int ty = 0; ty < towerHeight; ty++) {
                 Vector2 tilePos = new Vector2(candidate.x + tx * tileSize, candidate.y + ty * tileSize);
-                for (Entity e : all)
-                {
+                for (Entity e : all) {
                     if (e == null || e == ghostTower) continue;
                     TowerComponent tower = e.getComponent(TowerComponent.class);
                     if (tower == null) continue;
@@ -311,17 +325,11 @@ public class SimplePlacementController extends Component
         return true;
     }
 
-    /**
-     * Finds the terrain component from entities.
-     *
-     * @return the terrain component, or null if not found
-     */
-    private TerrainComponent findTerrain()
-    {
+    /** Finds the terrain component from registered entities. */
+    private TerrainComponent findTerrain() {
         Array<Entity> all = safeEntities();
         if (all == null) return null;
-        for (Entity e : all)
-        {
+        for (Entity e : all) {
             if (e == null) continue;
             TerrainComponent t = e.getComponent(TerrainComponent.class);
             if (t != null) return t;
@@ -329,65 +337,32 @@ public class SimplePlacementController extends Component
         return null;
     }
 
-    /**
-     * Gets a safe copy of all entities.
-     *
-     * @return array of entities, or null if unavailable
-     */
-    private Array<Entity> safeEntities()
-    {
-        try
-        {
+    /** Gets a safe copy of all entities from the entity service. */
+    private Array<Entity> safeEntities() {
+        try {
             return ServiceLocator.getEntityService().getEntitiesCopy();
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }
 
-    /**
-     * Finds the world camera from entities.
-     */
-    private void findWorldCamera()
-    {
+    /** Finds the world camera from registered entities. */
+    private void findWorldCamera() {
         Array<Entity> all = safeEntities();
         if (all == null) return;
-        for (Entity e : all)
-        {
+        for (Entity e : all) {
             if (e == null) continue;
             CameraComponent cc = e.getComponent(CameraComponent.class);
-            if (cc != null && cc.getCamera() instanceof OrthographicCamera)
-            {
+            if (cc != null && cc.getCamera() instanceof OrthographicCamera) {
                 camera = (OrthographicCamera) cc.getCamera();
                 return;
             }
         }
     }
 
-    /**
-     * Finds the player entity (with a currency manager).
-     *
-     * @return the player entity, or null if not found
-     */
-    private Entity findPlayerEntity()
-    {
-        Array<Entity> entities = safeEntities();
-        if (entities == null) return null;
-        for (Entity e : entities)
-        {
-            if (e != null && e.getComponent(CurrencyManagerComponent.class) != null) return e;
-        }
-        return null;
-    }
-
-    /**
-     * Cancels the current placement and disposes of the ghost tower.
-     */
-    public void cancelPlacement()
-    {
-        if (ghostTower != null)
-        {
+    /** Cancels current placement and disposes of the ghost tower. */
+    public void cancelPlacement() {
+        if (ghostTower != null) {
             ghostTower.dispose();
             ghostTower = null;
         }
@@ -396,33 +371,13 @@ public class SimplePlacementController extends Component
         System.out.println(">>> placement OFF");
     }
 
-    /**
-     * Checks if placement mode is currently active.
-     *
-     * @return true if placement is active, false otherwise
-     */
-    public boolean isPlacementActive()
-    {
+    /** Returns true if tower placement mode is currently active. */
+    public boolean isPlacementActive() {
         return placementActive;
     }
 
-    /**
-     * Gets the pending tower type for placement.
-     *
-     * @return the pending tower type
-     */
-    public String getPendingType()
-    {
+    /** Returns the pending tower type for placement. */
+    public String getPendingType() {
         return pendingType;
-    }
-
-    /**
-     * Sets the selected currency type for tower placement.
-     *
-     * @param currencyType the currency type to set
-     */
-    public void setSelectedCurrencyType(CurrencyType currencyType)
-    {
-        this.selectedCurrencyType = currencyType;
     }
 }

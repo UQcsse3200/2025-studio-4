@@ -288,134 +288,98 @@ public class TowerComponent extends Component {
         return null;
     }
 
-    /**
-     * Sells this tower, refunding a portion of its cost to the player.
-     *
-     * @param entities The list of entities to search for the player.
-     */
-    private void sellTower(java.util.List<Entity> entities)
-    {
-        TowerCostComponent costComponent = entity.getComponent(TowerCostComponent.class);
-        if (costComponent == null)
-        {
-            return;
-        }
-        float refundRate = 0.75f;
-        Entity player = findPlayerEntity(entities);
-        if (player == null)
-        {
-            return;
-        }
-        CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-        if (currencyManager == null)
-        {
-            return;
-        }
-        int cost = costComponent.getCostForCurrency(selectedPurchaseCurrency);
-        if (cost > 0)
-        {
-            currencyManager.refundCurrency(Map.of(selectedPurchaseCurrency, cost), refundRate);
-        }
-        entity.dispose();
-    }
 
     /**
      * Updates the tower logic, including attacking and selection/sell logic.
      */
     @Override
-    public void update()
-    {
-        if (!active)
-        {
-            return;
-        }
+    public void update() {
+        if (!active) return;
 
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
-        if (stats == null)
-        {
-            return;
-        }
+        if (stats == null) return;
 
-        // Update attack timer
         float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
         stats.updateAttackTimer(dt);
 
-        // Rotate head toward target and shoot projectile if available
-        if (headEntity != null)
-        {
-            headEntity.setPosition(
-                entity.getPosition().x + headOffset.x, entity.getPosition().y + headOffset.y - zNudge
-            );
+        // Update head position
+        if (headEntity != null) {
+            // Do not update head position here if OrbitComponent is present; OrbitComponent handles it
+            if (headEntity.getComponent(core.src.main.com.csse3200.game.components.OrbitComponent.class) == null) {
+                headEntity.setPosition(
+                        entity.getPosition().x + headOffset.x,
+                        entity.getPosition().y + headOffset.y - zNudge
+                );
+            }
         }
 
-        if (stats.canAttack())
-        {
+        if (stats.canAttack()) {
             Vector2 myCenter = entity.getCenterPosition();
-            Entity target = null;
-            float range = stats.getRange();
 
-            for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy())
-            {
-                if (other == entity || !isEnemyTarget(other))
-                {
-                    continue;
-                }
+            if ("pterodactyl".equalsIgnoreCase(type) && headEntity != null) {
+                // Shoot 6 projectiles from the head (orbiting pterodactyl)
+                int projectileCount = 6;
+                float angleStep = 360f / projectileCount;
+                float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+                float life = stats.getRange() / speed;
+                String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/spike.png";
+                int damage = (int) stats.getDamage();
 
-                CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
-                if (targetStats == null)
-                {
-                    continue;
-                }
+                // Use the head entity's center position for projectile origin
+                Vector2 headCenter = headEntity.getCenterPosition();
 
-                Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
-                if (toOther.len() <= range)
-                {
-                    target = other;
-                    break;
-                }
-            }
+                for (int i = 0; i < projectileCount; i++) {
+                    float angleDeg = i * angleStep;
+                    double angleRad = Math.toRadians(angleDeg);
+                    float vx = (float) Math.cos(angleRad) * speed;
+                    float vy = (float) Math.sin(angleRad) * speed;
 
-            if (target != null) {
-                Vector2 dir = target.getCenterPosition().cpy().sub(myCenter);
-                if (!dir.isZero(0.0001f)) {
-                    dir.nor(); // Normalize direction
-
-                    if (headRenderer != null) {
-                        headRenderer.setRotation(dir.angleDeg());
-                    }
-
-                    // --- Adjust projectile speed and life to match tower range ---
-                    float towerRange = stats.getRange();
-                    float baseProjectileSpeed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
-
-                    // Set speed proportional to default base (optional) or just use base speed
-                    float speed = baseProjectileSpeed;
-
-                    // Set projectile life so it dies at max range: life = range / speed
-                    float life = towerRange / speed;
-
-                    String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
-                    int damage = (int) stats.getDamage();
-
-                    Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
+                    Entity bullet = ProjectileFactory.createBullet(tex, headCenter, vx, vy, life, damage);
                     var es = ServiceLocator.getEntityService();
                     if (es != null) {
                         Gdx.app.postRunnable(() -> es.register(bullet));
                     }
                 }
+            } else {
+                // Normal tower targeting logic
+                Entity target = null;
+                float range = stats.getRange();
 
-                stats.resetAttackTimer();
+                for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
+                    if (other == entity || !isEnemyTarget(other)) continue;
+                    CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
+                    if (targetStats == null) continue;
+
+                    Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
+                    if (toOther.len() <= range) {
+                        target = other;
+                        break;
+                    }
+                }
+
+                if (target != null) {
+                    Vector2 dir = target.getCenterPosition().cpy().sub(myCenter).nor();
+                    if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
+
+                    float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
+                    float life = stats.getRange() / speed;
+                    String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
+                    int damage = (int) stats.getDamage();
+
+                    Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
+                    var es = ServiceLocator.getEntityService();
+                    if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
+                }
             }
 
+            stats.resetAttackTimer();
         }
 
-
-        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT))
-        {
+        // Handle tower selection by click
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 worldClickPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             com.badlogic.gdx.graphics.Camera camera = getCamera();
-            if (camera != null)
-            {
+            if (camera != null) {
                 camera.unproject(worldClickPos);
                 Vector2 towerPos = entity.getPosition();
                 float clickRadius = 1.0f;
@@ -424,4 +388,5 @@ public class TowerComponent extends Component {
             }
         }
     }
+
 }

@@ -137,7 +137,7 @@ public class TowerFactory {
         RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
         Entity head = new Entity()
                 .addComponent(headRender)
-                .addComponent(new OrbitComponent(nest, 2.0f, 1.5f)); // radius and speed can be tuned
+                .addComponent(new OrbitComponent(nest, stats.range, 0.5f)); // radius and speed can be tuned
 
         // Attach the head to the nest via TowerComponent
         nest.getComponent(TowerComponent.class)

@@ -71,6 +71,14 @@ public class TowerUpgradeData {
         cavemenA.put(5, new UpgradeStats(65, 10.0f, 0.8f, 6.0f, 1450, "images/cavemen.png"));
         pathA.put("cavemen", cavemenA);
 
+        // Pteradactyl tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> pteroA = new HashMap<>();
+        pteroA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 4.0f, 60, "images/pteradactyl.png"));
+        pteroA.put(3, new UpgradeStats(10, 4.2f, 1.0f, 4.0f, 70, "images/pteradactyl.png"));
+        pteroA.put(4, new UpgradeStats(14, 5.1f, 1.0f, 4.0f, 110, "images/pteradactyl.png"));
+        pteroA.put(5, new UpgradeStats(20, 6.2f, 1.0f, 4.0f, 190, "images/pteradactyl.png"));
+        pathA.put("pteradactyl", pteroA);
+
         return pathA;
     }
 
@@ -105,6 +113,14 @@ public class TowerUpgradeData {
         cavemenB.put(4, new UpgradeStats(15, 5.0f, 4.25f, 7.5f, 1300, "images/cavemen.png"));
         cavemenB.put(5, new UpgradeStats(15, 5.0f, 4.0f, 8.0f, 1500, "images/cavemen.png"));
         pathB.put("cavemen", cavemenB);
+
+        // Pteradactyl tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> pteroB = new HashMap<>();
+        pteroB.put(2, new UpgradeStats(10, 2.5f, 0.9f, 17.0f, 60, "images/pteradactyl.png"));
+        pteroB.put(3, new UpgradeStats(10, 2.5f, 0.8f, 19.0f, 80, "images/pteradactyl.png"));
+        pteroB.put(4, new UpgradeStats(10, 2.5f, 0.7f, 22.0f, 120, "images/pteradactyl.png"));
+        pteroB.put(5, new UpgradeStats(10, 2.5f, 0.6f, 25.0f, 200, "images/pteradactyl.png"));
+        pathB.put("pteradactyl", pteroB);
 
         return pathB;
     }

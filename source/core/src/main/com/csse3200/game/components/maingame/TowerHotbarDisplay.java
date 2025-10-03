@@ -4,9 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -16,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputAdapter;
-
 import com.csse3200.game.ui.UIComponent;
 
 /**
@@ -42,15 +40,15 @@ public class TowerHotbarDisplay extends UIComponent {
         super.create();
         placementController = entity.getComponent(SimplePlacementController.class);
 
-        // Create hotbar skin for the title
-        hotbarSkin = createHotbarSkin();
+        // use shared skin
+        hotbarSkin = skin;
 
-        // Root container table
+        // Root table anchored bottom-left
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.bottom().left();
 
-        // Brown background
+        // Brown background for container
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
         pixmap.fill();
@@ -58,13 +56,12 @@ public class TowerHotbarDisplay extends UIComponent {
         pixmap.dispose();
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
-        // Container
         Container<Table> container = new Container<>();
         container.setBackground(backgroundDrawable);
-        container.pad(0);
+        container.pad(6f);
 
-        // Title
-        Label title = new Label("TOWERS", hotbarSkin);
+        // Title label using shared "title" style if present
+        Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
 
         // Images
@@ -73,56 +70,61 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/campfireicon.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
 
-        // Create 4 buttons
+        // Create 12 buttons (3x4 grid). First 4 are functional, rest use placeholder.
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
-        ImageButton placeholderBtn = new ImageButton(placeholderImage);
+        ImageButton pteroBtn = new ImageButton(placeholderImage); // pterodactyl slot
+        ImageButton[] allButtons = new ImageButton[12];
+        allButtons[0] = boneBtn;
+        allButtons[1] = dinoBtn;
+        allButtons[2] = cavemenBtn;
+        allButtons[3] = pteroBtn;
+        for (int i = 4; i < allButtons.length; i++) {
+            allButtons[i] = new ImageButton(placeholderImage);
+        }
 
-        // Assign listeners
+        // Assign listeners for the first four
         boneBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 handlePlacement("startPlacementBone");
             }
         });
-
         dinoBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 handlePlacement("startPlacementDino");
             }
         });
-
         cavemenBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 handlePlacement("startPlacementCavemen");
             }
         });
-
-        placeholderBtn.addListener(new ChangeListener() {
+        pteroBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                handlePlacement("startPlacementPterodactyl"); // placeholder action
+                handlePlacement("startPlacementPterodactyl");
             }
         });
 
-        // Button grid (3 columns)
+        // Button grid (3 columns x 4 rows) with modest padding so visuals aren't cramped
         Table buttonTable = new Table();
-        buttonTable.defaults().pad(0).center();
+        final float BUTTON_W = 132.5f;
+        final float BUTTON_H = 140f;
+        final float BUTTON_PAD = 6f;
+        buttonTable.defaults().pad(BUTTON_PAD).center();
 
-        ImageButton[] buttons = {boneBtn, dinoBtn, cavemenBtn, placeholderBtn};
-        for (int i = 0; i < buttons.length; i++) {
-            buttonTable.add(buttons[i]).size(148, 150);
-            if ((i + 1) % 3 == 0) {
-                buttonTable.row();
-            }
+        for (int i = 0; i < allButtons.length; i++) {
+            buttonTable.add(allButtons[i]).size(BUTTON_W, BUTTON_H);
+            if ((i + 1) % 3 == 0) buttonTable.row();
         }
 
-        // Combine title + buttons
+        // Content: title + button grid
         Table content = new Table();
-        content.add(title).colspan(3).center().padBottom(0).row();
+        content.add(title).colspan(3).center().padBottom(6f).row();
         content.add(buttonTable).colspan(3).center();
 
         container.setActor(content);
@@ -135,17 +137,6 @@ public class TowerHotbarDisplay extends UIComponent {
         if (Gdx.input.getInputProcessor() != null) multiplexer.addProcessor(Gdx.input.getInputProcessor());
         multiplexer.addProcessor(new InputAdapter() {});
         Gdx.input.setInputProcessor(multiplexer);
-    }
-
-    private Skin createHotbarSkin() {
-        Skin skin = new Skin();
-        BitmapFont font = new BitmapFont();
-        font.getData().setScale(2f);
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
-        skin.add("default", labelStyle);
-        return skin;
     }
 
     private void handlePlacement(String eventName) {

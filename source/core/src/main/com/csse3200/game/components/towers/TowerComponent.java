@@ -1,24 +1,22 @@
-package com.csse3200.game.components;
+package core.src.main.com.csse3200.game.components.towers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.TowerCostComponent;
-import com.csse3200.game.components.TowerStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.projectile.ProjectileComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.HashMap;
+import com.csse3200.game.components.Component;
+import com.csse3200.game.components.CombatStatsComponent;
+
 import java.util.Map;
 
 /**
@@ -302,10 +300,9 @@ public class TowerComponent extends Component {
         float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
         stats.updateAttackTimer(dt);
 
-        // Update head position
+        // Update head position only if it does NOT have an OrbitComponent
         if (headEntity != null) {
-            // Do not update head position here if OrbitComponent is present; OrbitComponent handles it
-            if (headEntity.getComponent(core.src.main.com.csse3200.game.components.OrbitComponent.class) == null) {
+            if (headEntity.getComponent(OrbitComponent.class) == null) {
                 headEntity.setPosition(
                         entity.getPosition().x + headOffset.x,
                         entity.getPosition().y + headOffset.y - zNudge
@@ -316,60 +313,48 @@ public class TowerComponent extends Component {
         if (stats.canAttack()) {
             Vector2 myCenter = entity.getCenterPosition();
 
-            if ("pterodactyl".equalsIgnoreCase(type) && headEntity != null) {
-                // Shoot 6 projectiles from the head (orbiting pterodactyl)
-                int projectileCount = 6;
-                float angleStep = 360f / projectileCount;
+            // unified spawn origin: use head center when available, otherwise tower center
+            Vector2 spawnOrigin = myCenter;
+            if (headEntity != null) {
+                Vector2 headCenter = headEntity.getCenterPosition();
+                if (headCenter != null) spawnOrigin = headCenter;
+            }
+
+            // Normal tower targeting logic (used for all tower types now)
+            Entity target = null;
+            float range = stats.getRange();
+
+            for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
+                if (other == entity || !isEnemyTarget(other)) continue;
+                CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
+                if (targetStats == null) continue;
+
+                Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
+                if (toOther.len() <= range) {
+                    target = other;
+                    break;
+                }
+            }
+
+            if (target != null) {
+                Vector2 dir = target.getCenterPosition().cpy().sub(spawnOrigin).nor();
+                if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
+
                 float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
-                float life = stats.getRange() / speed;
-                String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/spike.png";
+                // If this tower is a pteradactyl, give projectiles infinite life; otherwise use range/speed
+                float life;
+                if ("pterodactyl".equalsIgnoreCase(type)) {
+                    life = Float.POSITIVE_INFINITY;
+                } else {
+                    life = stats.getRange() / speed;
+                }
+
+                String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
                 int damage = (int) stats.getDamage();
 
-                // Use the head entity's center position for projectile origin
-                Vector2 headCenter = headEntity.getCenterPosition();
-
-                for (int i = 0; i < projectileCount; i++) {
-                    float angleDeg = i * angleStep;
-                    double angleRad = Math.toRadians(angleDeg);
-                    float vx = (float) Math.cos(angleRad) * speed;
-                    float vy = (float) Math.sin(angleRad) * speed;
-
-                    Entity bullet = ProjectileFactory.createBullet(tex, headCenter, vx, vy, life, damage);
-                    var es = ServiceLocator.getEntityService();
-                    if (es != null) {
-                        Gdx.app.postRunnable(() -> es.register(bullet));
-                    }
-                }
-            } else {
-                // Normal tower targeting logic
-                Entity target = null;
-                float range = stats.getRange();
-
-                for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
-                    if (other == entity || !isEnemyTarget(other)) continue;
-                    CombatStatsComponent targetStats = other.getComponent(CombatStatsComponent.class);
-                    if (targetStats == null) continue;
-
-                    Vector2 toOther = other.getCenterPosition().cpy().sub(myCenter);
-                    if (toOther.len() <= range) {
-                        target = other;
-                        break;
-                    }
-                }
-
-                if (target != null) {
-                    Vector2 dir = target.getCenterPosition().cpy().sub(myCenter).nor();
-                    if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
-
-                    float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
-                    float life = stats.getRange() / speed;
-                    String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
-                    int damage = (int) stats.getDamage();
-
-                    Entity bullet = ProjectileFactory.createBullet(tex, myCenter, dir.x * speed, dir.y * speed, life, damage);
-                    var es = ServiceLocator.getEntityService();
-                    if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
-                }
+                Entity bullet = ProjectileFactory.createBullet(tex, spawnOrigin, dir.x * speed, dir.y * speed, life, damage);
+                var es = ServiceLocator.getEntityService();
+                if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
             }
 
             stats.resetAttackTimer();
@@ -389,4 +374,8 @@ public class TowerComponent extends Component {
         }
     }
 
+    // helper
+    private static boolean isFinite(float v) {
+        return !(Float.isNaN(v) || Float.isInfinite(v));
+    }
 }

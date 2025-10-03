@@ -11,12 +11,12 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.areas.MapEditor;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.TowerComponent;
+import core.src.main.com.csse3200.game.components.towers.TowerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.TowerCostComponent;
+import core.src.main.com.csse3200.game.components.towers.TowerCostComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.configs.TowerConfig;
 

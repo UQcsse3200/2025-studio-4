@@ -57,7 +57,7 @@
       "metalScrapCost": 0,
       "titaniumCoreCost": 50,
       "neurochipCost": 0,
-      "projectileSpeed": 10.0,
+      "projectileSpeed": 15.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/spike.png",
       "image": "images/pteradactyl.png"

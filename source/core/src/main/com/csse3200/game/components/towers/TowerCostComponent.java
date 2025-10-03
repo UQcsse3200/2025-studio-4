@@ -1,7 +1,7 @@
-package com.csse3200.game.components;
+package core.src.main.com.csse3200.game.components.towers;
 
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
-
+import com.csse3200.game.components.Component;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

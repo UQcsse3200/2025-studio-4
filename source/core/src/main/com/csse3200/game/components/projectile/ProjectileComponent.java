@@ -3,6 +3,8 @@ package com.csse3200.game.components.projectile;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.services.ServiceLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Projectile component:
@@ -14,6 +16,7 @@ import com.csse3200.game.services.ServiceLocator;
  * </p>
  */
 public class ProjectileComponent extends Component {
+  private static final Logger logger = LoggerFactory.getLogger(ProjectileComponent.class);
   /** Flag to prevent double-destruction */
   private boolean dead = false;
 
@@ -47,7 +50,14 @@ public class ProjectileComponent extends Component {
     timer = life;
 
     if (physics != null && physics.getBody() != null) {
-      physics.getBody().setLinearVelocity(vx, vy);
+      float setVx = vx;
+      float setVy = vy;
+      if (!isFinite(setVx) || !isFinite(setVy)) {
+        logger.warn("ProjectileComponent.create(): invalid vx/vy {}, {}; clamping to 0.", vx, vy);
+        setVx = 0f;
+        setVy = 0f;
+      }
+      physics.getBody().setLinearVelocity(setVx, setVy);
     }
   }
 
@@ -77,7 +87,8 @@ public class ProjectileComponent extends Component {
       });
     }
   }
+
+  private static boolean isFinite(float v) {
+    return !Float.isNaN(v) && !Float.isInfinite(v);
+  }
 }
-
-
-

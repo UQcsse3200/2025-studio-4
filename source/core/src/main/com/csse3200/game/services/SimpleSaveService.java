@@ -7,6 +7,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import core.src.main.com.csse3200.game.components.towers.TowerComponent;
+import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,12 +108,12 @@ public class SimpleSaveService {
     }
 
     for (Entity e : entityService.getEntities()) {
-      if (e.getComponent(com.csse3200.game.components.TowerComponent.class) != null) {
+      if (e.getComponent(TowerComponent.class) != null) {
         SaveData.Tower t = new SaveData.Tower();
         t.pos = e.getPosition();
-        var tc = e.getComponent(com.csse3200.game.components.TowerComponent.class);
+        var tc = e.getComponent(TowerComponent.class);
         t.type = tc != null ? tc.getType() : "bone";
-        var ts = e.getComponent(com.csse3200.game.components.TowerStatsComponent.class);
+        var ts = e.getComponent(TowerStatsComponent.class);
         if (ts != null) {
           t.hp = ts.getHealth();
           t.cd = ts.getAttackCooldown();
@@ -167,7 +169,7 @@ public class SimpleSaveService {
     // clear current towers/enemies
     List<Entity> toRemove = new ArrayList<>();
     for (Entity e : entityService.getEntities()) {
-      if (e.getComponent(com.csse3200.game.components.TowerComponent.class) != null
+      if (e.getComponent(TowerComponent.class) != null
               || e.getComponent(com.csse3200.game.components.enemy.EnemyTypeComponent.class) != null) {
         toRemove.add(e);
       }
@@ -195,7 +197,7 @@ public class SimpleSaveService {
 
         if (tower != null) {
         tower.setPosition(t.pos);
-        var ts = tower.getComponent(com.csse3200.game.components.TowerStatsComponent.class);
+        var ts = tower.getComponent(TowerStatsComponent.class);
         if (ts != null) {
           ts.setHealth(t.hp);
           ts.setAttackCooldown(t.cd);

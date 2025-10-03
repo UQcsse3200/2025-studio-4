@@ -3,13 +3,13 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.components.TowerStatsComponent;
-import com.csse3200.game.components.TowerComponent;
+import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
+import core.src.main.com.csse3200.game.components.towers.TowerComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.entities.configs.TowerConfig;
-import core.src.main.com.csse3200.game.components.OrbitComponent;
+import core.src.main.com.csse3200.game.components.towers.OrbitComponent;
 
 /**
  * Factory class for creating different types of tower entities.

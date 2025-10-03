@@ -12,6 +12,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.components.projectile.DestroyOnHitComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory class for creating projectile (bullet) entities.
@@ -26,6 +28,8 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
  * </p>
  */
 public final class ProjectileFactory {
+    private static final Logger logger = LoggerFactory.getLogger(ProjectileFactory.class);
+
     private ProjectileFactory() {
         throw new IllegalStateException("Static factory class, do not instantiate");
     }
@@ -60,6 +64,17 @@ public final class ProjectileFactory {
             String texture, Vector2 startPos,
             float vx, float vy, float life, int damage
     ) {
+        // Defensive: sanitize spawn position to avoid NaN/infinite values reaching Box2D
+        if (startPos == null) {
+            logger.warn("createBullet called with null startPos; using (0,0).");
+            startPos = new Vector2(0f, 0f);
+        } else {
+            if (!isFinite(startPos.x) || !isFinite(startPos.y)) {
+                logger.warn("createBullet called with invalid startPos {}, clamping to (0,0).", startPos);
+                startPos = new Vector2(0f, 0f);
+            }
+        }
+
         PhysicsComponent physics = new PhysicsComponent();
         physics.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.KinematicBody);
 
@@ -102,9 +117,7 @@ public final class ProjectileFactory {
         return bullet;
     }
 
+    private static boolean isFinite(float v) {
+        return !Float.isNaN(v) && !Float.isInfinite(v);
+    }
 }
-
-
-
-
-

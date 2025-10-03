@@ -21,6 +21,7 @@ import com.csse3200.game.entities.Entity;
 import core.src.main.com.csse3200.game.components.towers.TowerComponent;
 import core.src.main.com.csse3200.game.components.towers.TowerCostComponent;
 import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
+import core.src.main.com.csse3200.game.components.towers.OrbitComponent;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -362,6 +363,19 @@ public class TowerUpgradeMenu extends UIComponent {
                             (levelA >= levelB ? "A" : "B") +
                             " at level " + highestLevel +
                             ": " + levelData.imagePath);
+                }
+            }
+        }
+
+        // If this tower has an orbiting head, update its orbit radius to match the new range
+        TowerComponent towerCompForOrbit = selectedTower.getComponent(TowerComponent.class);
+        if (towerCompForOrbit != null && towerCompForOrbit.hasHead()) {
+            Entity head = towerCompForOrbit.getHeadEntity();
+            if (head != null) {
+                OrbitComponent orbit = head.getComponent(OrbitComponent.class);
+                if (orbit != null) {
+                    // use the updated stats range so orbit follows upgrades
+                    orbit.setRadius(stats.getRange());
                 }
             }
         }

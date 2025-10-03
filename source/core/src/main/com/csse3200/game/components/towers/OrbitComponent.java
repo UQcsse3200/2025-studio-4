@@ -121,6 +121,24 @@ public class OrbitComponent extends Component {
         entity.setPosition(x - centerOffset.x, y - centerOffset.y);
     }
 
+    /**
+     * Update the orbit radius at runtime. Invalid values are ignored or clamped.
+     *
+     * @param r new radius to set (world units)
+     */
+    public void setRadius(float r) {
+        if (!isFinite(r) || r <= 0f) {
+            logger.warn("OrbitComponent.setRadius(): invalid radius {}, ignoring.", r);
+            return;
+        }
+        this.radius = r;
+    }
+
+    /** Returns the current orbit radius. */
+    public float getRadius() {
+        return this.radius;
+    }
+
     // small helper
     private static boolean isFinite(float v) {
         return !Float.isNaN(v) && !Float.isInfinite(v);

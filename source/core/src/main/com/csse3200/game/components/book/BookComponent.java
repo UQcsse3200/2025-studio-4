@@ -93,7 +93,8 @@ public class BookComponent {
                         enemy.points,
                         enemy.weakness,
                         enemy.resistance,
-                        enemy.image
+                        enemy.image,
+                        enemy.locked
                 );
                 decks.add(deck);
             }

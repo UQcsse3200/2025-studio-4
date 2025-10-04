@@ -121,17 +121,23 @@ public class BookDisplay extends UIComponent {
             }
             count++;
 
-            TextButton.TextButtonStyle buttonStyle =
-                    createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH));
-            TextButton button = new TextButton("", buttonStyle);
-            button.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent changeEvent, Actor actor) {
-                    logger.debug("Button inside bookPage clicked");
-                    entity.getEvents().trigger(eventName, deck);
-                }
-            });
-
+            TextButton.TextButtonStyle buttonStyle;
+            TextButton button;
+            String lockedValue = stats.get(DeckComponent.StatType.LOCKED);
+            if (lockedValue != null && lockedValue.equals("true")) {
+                buttonStyle = createCustomButtonStyle(DeckComponent.StatType.LOCKED.getTexturePath(), false);
+                button = new TextButton("", buttonStyle);
+            } else {
+                buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), true);
+                button = new TextButton("", buttonStyle);
+                button.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent changeEvent, Actor actor) {
+                        logger.debug("Button inside bookPage clicked");
+                        entity.getEvents().trigger(eventName, deck);
+                    }
+                });
+            }
             table.add(button).size(buttonW, buttonH).padRight(stageWidth * 0.01f);
         }
 
@@ -193,7 +199,8 @@ public class BookDisplay extends UIComponent {
             if (type == DeckComponent.StatType.TEXTURE_PATH
                     || type == DeckComponent.StatType.NAME
                     || type == DeckComponent.StatType.LORE
-                    || type == DeckComponent.StatType.SOUND) {
+                    || type == DeckComponent.StatType.SOUND
+                    || type == DeckComponent.StatType.LOCKED) {
                 continue;
             }
 
@@ -207,7 +214,7 @@ public class BookDisplay extends UIComponent {
                     Image statIcon = new Image(statTexture);
                     statCell.add(statIcon).size(stageWidth * 0.06f).padRight(stageWidth * 0.01f);
 
-                    Label valueLabel = new Label(value, skin, "default");
+                    Label valueLabel = new Label(value, skin, "small");
                     valueLabel.setFontScale(stageWidth * 0.001f);
                     valueLabel.setWrap(true);
                     statCell.add(valueLabel).width(stageWidth * 0.08f).left();
@@ -255,7 +262,7 @@ public class BookDisplay extends UIComponent {
         float buttonWidth = stageWidth * 0.15f;
         float buttonHeight = stageHeight * 0.24f;
 
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/bookmark.png");
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/bookmark.png", true);
         TextButton exitButton = new TextButton("", exitButtonStyle);
 
         exitButton.addListener(new ChangeListener() {
@@ -275,7 +282,7 @@ public class BookDisplay extends UIComponent {
     }
 
 
-    private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {
+    private TextButton.TextButtonStyle createCustomButtonStyle(String backGround, boolean canClick) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
 
         style.font = skin.getFont("segoe_ui");
@@ -293,12 +300,14 @@ public class BookDisplay extends UIComponent {
         hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
 
         style.up = new NinePatchDrawable(buttonPatch);
-        style.down = new NinePatchDrawable(pressedPatch);
-        style.over = new NinePatchDrawable(hoverPatch);
+        if (canClick == true) {
+            style.down = new NinePatchDrawable(pressedPatch);
+            style.over = new NinePatchDrawable(hoverPatch);
 
-        style.fontColor = Color.WHITE;
-        style.downFontColor = Color.LIGHT_GRAY;
-        style.overFontColor = Color.WHITE;
+            style.fontColor = Color.WHITE;
+            style.downFontColor = Color.LIGHT_GRAY;
+            style.overFontColor = Color.WHITE;
+        }
 
         return style;
     }

@@ -33,10 +33,11 @@ public class EnemyBookDeckComponent extends DeckComponent {
             String points,
             String weakness,
             String resistance,
-            String image
+            String image,
+            String locked
     ) {
         super(createOrderedStats(
-                name, health, damage, speed, traits, role, currency, lore, points, weakness, resistance, image
+                name, health, damage, speed, traits, role, currency, lore, points, weakness, resistance, image, locked
         ));
     }
 
@@ -52,7 +53,8 @@ public class EnemyBookDeckComponent extends DeckComponent {
             String points,
             String weakness,
             String resistance,
-            String image
+            String image,
+            String locked
     ) {
         Map<StatType, String> stats = new LinkedHashMap<>();
         stats.put(StatType.NAME, name.toUpperCase());
@@ -67,6 +69,7 @@ public class EnemyBookDeckComponent extends DeckComponent {
         stats.put(StatType.WEAKNESS, weakness);
         stats.put(StatType.RESISTANCE, resistance);
         stats.put(StatType.TEXTURE_PATH, image); // Image
+        stats.put(StatType.LOCKED, locked);
         return stats;
     }
 }

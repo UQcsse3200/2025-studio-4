@@ -38,6 +38,7 @@ public class DeckComponent extends Component {
         METAL_SCRAP_COST("METAL SCRAP COST", "images/currency/metal_scrap.png"),
         TITANIUM_CORE_COST("TITANIUM CORE COST", "images/currency/titanium_core.png"),
         NEUROCHIP_COST("NEUROCHIP COST", "images/currency/neurochip.png"),
+        LOCKED("", "images/book/question_mark.png"),
         TEXTURE_PATH("IMAGE", "");
 
         private final String texturePath;

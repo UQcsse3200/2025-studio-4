@@ -22,9 +22,24 @@ public class MainBookScreen extends ScreenAdapter {
 
     private final GdxGame game;
     private Stage stage;
+    private static boolean hasRegisteredMusic = false;
+    private static boolean isPlayingMusic = false;
 
     public MainBookScreen(GdxGame game) {
         this.game = game;
+        if (isPlayingMusic == false && hasRegisteredMusic == false) {
+            ServiceLocator.getAudioService().registerMusic("book_bgm", "sounds/book_theme.mp3");
+            ServiceLocator.getAudioService().playMusic("book_bgm", true);
+            isPlayingMusic = true;
+            hasRegisteredMusic = true;
+        } else if (isPlayingMusic == false && GdxGame.musicON == 0) {
+            ServiceLocator.getAudioService().resumeMusic();
+            isPlayingMusic = true;
+        } else if (isPlayingMusic == false && GdxGame.musicON == 1) {
+            ServiceLocator.getAudioService().playMusic("book_bgm", true);
+            isPlayingMusic = true;
+            GdxGame.musicON = 0;
+        }
     }
 
     @Override
@@ -86,6 +101,8 @@ public class MainBookScreen extends ScreenAdapter {
         }
         ServiceLocator.getRenderService().dispose();
         ServiceLocator.getEntityService().dispose();
+        GdxGame.musicON = 0;
+        isPlayingMusic = false;
         // NOTE: your InputService likely has no dispose(); do not call it
         //ServiceLocator.getResourceService().dispose();
         //ServiceLocator.clear();

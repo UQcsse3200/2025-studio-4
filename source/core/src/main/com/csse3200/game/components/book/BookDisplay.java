@@ -1,5 +1,6 @@
 package com.csse3200.game.components.book;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
@@ -45,6 +46,9 @@ public class BookDisplay extends UIComponent {
 
     /** Maximum number of words to display in lore before truncating. */
     private int maxWordsLore;
+
+    private DeckComponent deck;
+    private boolean hasJustOpenedBook = true;
 
     /**
      * Constructs a BookDisplay for a specific page type.
@@ -181,6 +185,19 @@ public class BookDisplay extends UIComponent {
      * @param deck the deck to display in detail
      */
     private void renderRightDeck(DeckComponent deck) {
+        if (this.deck == deck) {
+            return;
+        }
+
+        this.deck = deck;
+
+        if (hasJustOpenedBook == false) {
+            String PAGE_FLIP_SOUND_PATH = "sounds/page_flip.mp3";
+            playSound(PAGE_FLIP_SOUND_PATH);
+        } else {
+            hasJustOpenedBook = false;
+        }
+
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
 
@@ -360,6 +377,19 @@ public class BookDisplay extends UIComponent {
         return style;
     }
 
+    /**
+     * Plays the sound effect.
+     *
+     * @param soundPath the sound should be played
+     */
+    private void playSound(String soundPath) {
+        Sound sound = ServiceLocator.getResourceService().getAsset(soundPath, Sound.class);
+        if (sound != null) {
+            sound.play(1.0f);
+        } else {
+            System.out.println("Sound not found: " + soundPath);
+        }
+    }
 
     /**
      * Empty draw method. Stage handles rendering.

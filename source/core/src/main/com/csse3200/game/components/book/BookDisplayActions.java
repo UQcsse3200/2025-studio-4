@@ -45,15 +45,15 @@ public class BookDisplayActions extends Component {
         logger.debug("Exit book");
         game.setScreen(GdxGame.ScreenType.BOOK);
         String CLOSE_BOOK_SOUND_PATH = "sounds/book_closing.mp3";
-        playCurrencySound(CLOSE_BOOK_SOUND_PATH);
+        playSound(CLOSE_BOOK_SOUND_PATH);
     }
 
     /**
-     * Plays the collection sound associated with the given currency type.
+     * Plays the sound effect.
      *
      * @param soundPath the sound should be played
      */
-    private void playCurrencySound(String soundPath) {
+    private void playSound(String soundPath) {
         Sound sound = ServiceLocator.getResourceService().getAsset(soundPath, Sound.class);
         if (sound != null) {
             sound.play(1.0f);

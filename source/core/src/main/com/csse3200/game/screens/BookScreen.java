@@ -43,6 +43,7 @@ public class BookScreen extends ScreenAdapter {
     public BookScreen(GdxGame game, BookPage bookType) {
         this.game = game;
         this.bookPage = bookType;
+        ServiceLocator.getAudioService().resumeMusic();
     }
 
     /**

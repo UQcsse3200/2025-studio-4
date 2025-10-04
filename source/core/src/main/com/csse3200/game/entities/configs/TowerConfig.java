@@ -17,6 +17,7 @@ public class TowerConfig {
         public TowerStats base;
         public String name;
         public String lore;
+        public String locked;
     }
 
     /**

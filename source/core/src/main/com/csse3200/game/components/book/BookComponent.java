@@ -58,7 +58,8 @@ public class BookComponent {
                             baseStats.titaniumCoreCost,
                             baseStats.neurochipCost,
                             wrapper.lore,
-                            baseStats.image
+                            baseStats.image,
+                            wrapper.locked
                     ));
                 }
             } catch (IllegalAccessException e) {

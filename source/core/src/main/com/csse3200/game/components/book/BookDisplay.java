@@ -31,8 +31,6 @@ public class BookDisplay extends UIComponent {
     private BookComponent book;
     private List<DeckComponent> decks;
     private Table rightTable;
-    private final float exitButtonWidth = 100f;
-    private final float exitButtonHeight = 100f;
     private final String eventName = "changeData";
     private int maxWordsLore;
 
@@ -43,10 +41,10 @@ public class BookDisplay extends UIComponent {
             maxWordsLore = 30;
         } else if (bookPage == BookPage.ENEMY_PAGE) {
             this.book = new BookComponent.EnemyBookComponent();
-            maxWordsLore = 7;
+            maxWordsLore = 15;
         } else if (bookPage == BookPage.TOWER_PAGE) {
             this.book = new BookComponent.TowerBookComponent();
-            maxWordsLore = 18;
+            maxWordsLore = 25;
         }
         this.decks = book.getDecks();
     }
@@ -212,7 +210,7 @@ public class BookDisplay extends UIComponent {
 
                 if (statTexture != null) {
                     Image statIcon = new Image(statTexture);
-                    statCell.add(statIcon).size(stageWidth * 0.06f).padRight(stageWidth * 0.01f);
+                    statCell.add(statIcon).size(stageWidth * 0.04f).padRight(stageWidth * 0.01f);
 
                     Label valueLabel = new Label(value, skin, "small");
                     valueLabel.setFontScale(stageWidth * 0.001f);

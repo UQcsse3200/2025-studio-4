@@ -5,7 +5,6 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 import com.csse3200.game.ui.leaderboard.LeaderboardController;
 import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
 import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
@@ -29,7 +28,7 @@ public class MainGameActions extends Component {
   @Override
   public void create() {
     entity.getEvents().addListener("exit", this::onExit);
-    entity.getEvents().addListener("gameover", this::onExit);
+    entity.getEvents().addListener("gameover", this::onGameOver);
     entity.getEvents().addListener("gamewin", this::onVictory);
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
@@ -84,12 +83,13 @@ public class MainGameActions extends Component {
       Stage stage = ServiceLocator.getRenderService().getStage();
       Skin skin = MinimalSkinFactory.create();
       
-      // Ensure leaderboard service is available
-      if (ServiceLocator.getLeaderboardService() == null) {
-        ServiceLocator.registerLeaderboardService(new InMemoryLeaderboardService("player-001"));
-      }
-      
+      // Use the global leaderboard service (already registered in GdxGame)
       LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
+      
+      if (leaderboardService == null) {
+        logger.error("Leaderboard service not available");
+        return;
+      }
       LeaderboardController controller = new LeaderboardController(leaderboardService);
       LeaderboardPopup popup = new LeaderboardPopup(skin, controller);
       popup.showOn(stage);
@@ -118,10 +118,43 @@ public class MainGameActions extends Component {
   }
   
   /**
+   * Handles game over (defeat) scenario.
+   */
+  private void onGameOver() {
+    logger.info("Game over, submitting defeat score");
+    
+    // 在切换屏幕之前计算并保存最终得分
+    try {
+      var sessionManager = ServiceLocator.getGameSessionManager();
+      if (sessionManager != null) {
+        // 提交失败得分（这会在实体还存在时计算得分）
+        sessionManager.submitScoreIfNotSubmitted(false);
+      }
+    } catch (Exception e) {
+      logger.error("Error submitting defeat score", e);
+    }
+    
+    // 切换到游戏结束屏幕或主菜单
+    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+  }
+  
+  /**
    * Swaps to the Victory screen.
    */
   private void onVictory() {
     logger.info("Game won, showing victory screen");
+    
+    // 在切换屏幕之前计算并保存最终得分
+    try {
+      var sessionManager = ServiceLocator.getGameSessionManager();
+      if (sessionManager != null) {
+        // 提交胜利得分（这会在实体还存在时计算得分）
+        sessionManager.submitScoreIfNotSubmitted(true);
+      }
+    } catch (Exception e) {
+      logger.error("Error submitting victory score", e);
+    }
+    
     game.setScreen(GdxGame.ScreenType.VICTORY);
   }
   

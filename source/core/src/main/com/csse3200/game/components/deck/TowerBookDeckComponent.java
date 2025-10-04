@@ -3,21 +3,30 @@ package com.csse3200.game.components.deck;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * A deck component that represents a tower's stats in a "book deck" format.
+ * This includes both gameplay-related stats (damage, range, cooldown, etc.)
+ * and descriptive information (lore, texture path, lock status).
+ *
+ * <p>The stats are stored in an ordered map to preserve insertion order, ensuring
+ * a consistent display sequence in the UI.</p>
+ */
 public class TowerBookDeckComponent extends DeckComponent {
     /**
      * Constructs a book deck for a tower with extended stats.
      *
-     * @param name        tower name
-     * @param damage      base damage
-     * @param range       attack range
-     * @param cooldown    attack cooldown
-     * @param projectileSpeed  projectile speed
-     * @param projectileLife   projectile lifespan
-     * @param metalScrapCost   metal scrap cost
-     * @param titaniumCoreCost titanium core cost
-     * @param neurochipCost    neurochip cost
-     * @param lore             description / background
-     * @param texturePath      image path
+     * @param name             tower name
+     * @param damage           base damage dealt by the tower
+     * @param range            attack range of the tower
+     * @param cooldown         time delay between attacks (in seconds)
+     * @param projectileSpeed  speed of the projectile fired
+     * @param projectileLife   lifespan of the projectile before it disappears
+     * @param metalScrapCost   cost in metal scrap resources (currently unused)
+     * @param titaniumCoreCost cost in titanium core resources (currently unused)
+     * @param neurochipCost    cost in neurochip resources (currently unused)
+     * @param lore             description or background information about the tower
+     * @param texturePath      path to the tower's texture image
+     * @param locked           whether the tower is locked ("true") or unlocked ("false")
      */
     public TowerBookDeckComponent(
             String name,
@@ -51,6 +60,24 @@ public class TowerBookDeckComponent extends DeckComponent {
         );
     }
 
+    /**
+     * Creates an ordered map of tower stats for display in the deck.
+     * The insertion order is preserved, which defines how stats appear in the UI.
+     *
+     * @param name             tower name
+     * @param damage           base damage dealt by the tower
+     * @param range            attack range of the tower
+     * @param cooldown         time delay between attacks (rounded to 2 decimal places)
+     * @param projectileSpeed  speed of the projectile fired
+     * @param projectileLife   lifespan of the projectile before it disappears
+     * @param metalScrapCost   cost in metal scrap resources (currently unused)
+     * @param titaniumCoreCost cost in titanium core resources (currently unused)
+     * @param neurochipCost    cost in neurochip resources (currently unused)
+     * @param lore             description or background information about the tower
+     * @param texturePath      path to the tower's texture image
+     * @param locked           whether the tower is locked ("true") or unlocked ("false")
+     * @return a {@link Map} of {@link StatType} to their corresponding string values
+     */
     private static Map<StatType, String> createOrderedStats(
             String name,
             int damage,
@@ -79,7 +106,6 @@ public class TowerBookDeckComponent extends DeckComponent {
 //        stats.put(StatType.METAL_SCRAP_COST, String.valueOf(metalScrapCost));
 //        stats.put(StatType.TITANIUM_CORE_COST, String.valueOf(titaniumCoreCost));
 //        stats.put(StatType.NEUROCHIP_COST, String.valueOf(neurochipCost));
-
         return stats;
     }
 }

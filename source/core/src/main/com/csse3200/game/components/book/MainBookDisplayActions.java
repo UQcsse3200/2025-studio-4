@@ -7,14 +7,39 @@ import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Handles main book UI navigation actions. This component listens for events
+ * triggered by the book UI and updates the game's screen accordingly. It also
+ * plays sound effects when navigating to specific pages.
+ *
+ * <p>Supported events:</p>
+ * <ul>
+ *     <li>{@code backToMain} - returns to the main menu</li>
+ *     <li>{@code goToCurrency} - navigates to the currency book page</li>
+ *     <li>{@code goToEnemy} - navigates to the enemy book page</li>
+ *     <li>{@code goToTower} - navigates to the tower book page</li>
+ * </ul>
+ */
 public class MainBookDisplayActions extends Component {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplayActions.class);
+    /** Reference to the main game instance to switch screens. */
     private GdxGame game;
-    private final String openBookSoundPath = "sounds/book_opening.mp3";
+    /** Path to the sound effect played when opening the book. */
+    private final String OPEN_BOOK_SOUND_PATH = "sounds/book_opening.mp3";
+
+    /**
+     * Constructs a new {@code MainBookDisplayActions} with a reference to the game.
+     *
+     * @param game the main {@link GdxGame} instance
+     */
     public MainBookDisplayActions(GdxGame game) {
         this.game = game;
     }
 
+    /**
+     * Registers event listeners for book UI actions.
+     * This method is called when the component is created.
+     */
     @Override
     public void create() {
         entity.getEvents().addListener("backToMain", this::backToMain);
@@ -23,28 +48,44 @@ public class MainBookDisplayActions extends Component {
         entity.getEvents().addListener("goToTower", this::goToTower);
     }
 
+    /**
+     * Event handler for returning to the main menu screen.
+     */
     private void backToMain() {
         logger.info("Returning to main menu");
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
     }
 
+    /**
+     * Event handler for navigating to the currency book page and
+     * playing the open book sound effect.
+     */
     private void goToCurrency() {
         logger.info("Go to currency page");
         game.setScreen(GdxGame.ScreenType.CURRENCY_BOOK);
-        playCurrencySound(openBookSoundPath);
+        playCurrencySound(OPEN_BOOK_SOUND_PATH);
     }
 
+    /**
+     * Event handler for navigating to the enemy book page and
+     * playing the open book sound effect.
+     */
     private void goToEnemy() {
         logger.info("Go to enemy page");
         game.setScreen(GdxGame.ScreenType.ENEMY_BOOK);
-        playCurrencySound(openBookSoundPath);
+        playCurrencySound(OPEN_BOOK_SOUND_PATH);
     }
 
+    /**
+     * Event handler for navigating to the tower book page and
+     * playing the open book sound effect.
+     */
     private void goToTower() {
         logger.info("Go to tower page");
         game.setScreen(GdxGame.ScreenType.TOWER_BOOK);
-        playCurrencySound(openBookSoundPath);
+        playCurrencySound(OPEN_BOOK_SOUND_PATH);
     }
+
     /**
      * Plays the collection sound associated with the given currency type.
      *

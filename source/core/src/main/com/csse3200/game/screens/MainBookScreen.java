@@ -48,7 +48,7 @@ public class MainBookScreen extends ScreenAdapter {
 
         // UI entity (display + actions)
         Entity ui = new Entity()
-                .addComponent(new MainBookDisplay(game))
+                .addComponent(new MainBookDisplay())
                 .addComponent(new MainBookDisplayActions(game));
         ServiceLocator.getEntityService().register(ui);
 

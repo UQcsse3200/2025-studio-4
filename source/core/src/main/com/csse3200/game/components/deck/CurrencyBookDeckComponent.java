@@ -3,6 +3,16 @@ package com.csse3200.game.components.deck;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * The {@link CurrencyBookDeckComponent} class represents a specialized deck component
+ * for currencies in the game. It displays information such as the currency's name,
+ * lore (description), associated image, and sound effect.
+ *
+ * <p>
+ * This component can be used inside a book or encyclopedia UI where currencies
+ * are listed with their details.
+ * </p>
+ */
 public class CurrencyBookDeckComponent extends DeckComponent {
 
     /**
@@ -17,6 +27,16 @@ public class CurrencyBookDeckComponent extends DeckComponent {
         super(createOrderedStats(name, lore, image, sound));
     }
 
+    /**
+     * Creates an ordered map of stats for the currency deck component.
+     * The order ensures consistent display in the UI.
+     *
+     * @param name   the name of the currency
+     * @param lore   a description or lore of the currency
+     * @param image  the file path to the image representing the currency
+     * @param sound  the file path to the sound effect played when the currency is collected
+     * @return a {@link Map} containing currency statistics keyed by {@link StatType}
+     */
     private static Map<StatType, String> createOrderedStats(String name, String lore, String image, String sound) {
         Map<StatType, String> stats = new LinkedHashMap<>();
         stats.put(StatType.NAME, name.toUpperCase());

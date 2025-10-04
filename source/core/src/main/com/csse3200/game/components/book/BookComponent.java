@@ -8,34 +8,71 @@ import com.csse3200.game.entities.configs.CurrencyConfig;
 import com.csse3200.game.entities.configs.EnemyConfig;
 import com.csse3200.game.entities.configs.TowerConfig;
 import com.csse3200.game.files.FileLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a book that contains multiple deck entries for different
+ * categories such as towers, enemies, and currencies. Each deck stores detailed
+ * stats or information for display in the book UI.
+ */
 public class BookComponent {
+    private static final Logger logger = LoggerFactory.getLogger(BookComponent.class);
+    /** The title of this book (e.g., "TOWERS", "ENEMIES", "CURRENCIES"). */
     private final String title;
+    /** The list of deck entries (pages) contained in this book. */
     private final List<DeckComponent> decks;
 
+    /**
+     * Constructs a new book with a title and a list of deck entries.
+     *
+     * @param title the title of the book
+     * @param decks the list of deck components (pages) to include
+     */
     public BookComponent(String title, List<DeckComponent> decks) {
         this.title = title;
         this.decks = decks;
     }
 
+    /**
+     * Returns the title of the book.
+     *
+     * @return the book title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Returns the list of deck components contained in the book.
+     *
+     * @return a list of {@link DeckComponent} entries
+     */
     public List<DeckComponent> getDecks() {
         return decks;
     }
 
+    /**
+     * A book component containing tower decks loaded from configuration.
+     */
     public static class TowerBookComponent extends BookComponent {
+        /** The tower configuration loaded from JSON. */
         private static final TowerConfig towerConfig = FileLoader.readClass(TowerConfig.class, "configs/tower.json");
 
+        /** Constructs a tower book component with all towers loaded. */
         public TowerBookComponent() {
             super("TOWERS", createDecks());
         }
+
+        /**
+         * Creates a list of tower deck components from the tower configuration.
+         *
+         * @return a list of {@link DeckComponent} for all towers
+         */
         private static List<DeckComponent> createDecks() {
             List<DeckComponent> decks = new ArrayList<>();
 
@@ -63,20 +100,30 @@ public class BookComponent {
                     ));
                 }
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.debug("Error with loop through tower config");
             }
 
             return decks;
         }
     }
 
+    /**
+     * A book component containing enemy decks loaded from configuration.
+     */
     public static class EnemyBookComponent extends BookComponent {
+        /** The enemy configuration loaded from JSON. */
         private static final EnemyConfig enemyConfig = FileLoader.readClass(EnemyConfig.class, "configs/enemy.json");
 
+        /** Constructs an enemy book component with all enemies loaded. */
         public EnemyBookComponent() {
             super("ENEMIES", createDecks());
         }
 
+        /**
+         * Creates a list of enemy deck components from the enemy configuration.
+         *
+         * @return a list of {@link DeckComponent} for all enemies
+         */
         private static List<DeckComponent> createDecks() {
             List<DeckComponent> decks = new ArrayList<>();
 
@@ -104,13 +151,23 @@ public class BookComponent {
         }
     }
 
+    /**
+     * A book component containing currency decks loaded from configuration.
+     */
     public static class CurrencyBookComponent extends BookComponent {
+        /** The currency configuration loaded from JSON. */
         private static final CurrencyConfig currencyConfig = FileLoader.readClass(CurrencyConfig.class, "configs/currency.json");
 
+        /** Constructs a currency book component with all currencies loaded. */
         public CurrencyBookComponent() {
             super("CURRENCIES", createDecks());
         }
 
+        /**
+         * Creates a list of currency deck components from the currency configuration.
+         *
+         * @return a list of {@link DeckComponent} for all currencies
+         */
         private static List<DeckComponent> createDecks() {
             List<DeckComponent> decks = new ArrayList<>();
 

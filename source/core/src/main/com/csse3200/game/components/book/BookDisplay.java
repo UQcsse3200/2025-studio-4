@@ -1,7 +1,6 @@
 package com.csse3200.game.components.book;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,32 +8,50 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Scaling;
-import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.print.Book;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * UI component responsible for displaying a book interface in the game.
+ * <p>
+ * The book can display towers, enemies, or currencies depending on the
+ * {@link BookPage} provided. Each entry in the book is represented by a
+ * {@link DeckComponent}, and selecting an entry shows detailed stats and
+ * lore on the right-hand panel.
+ */
 public class BookDisplay extends UIComponent {
-    private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
+    private static final Logger logger = LoggerFactory.getLogger(BookDisplay.class);
+
+    /** The book data (tower/enemy/currency) displayed by this component. */
     private BookComponent book;
-    private List<DeckComponent> decks;
+
+    /** List of deck entries (pages) in the current book. */
+    private final List<DeckComponent> decks;
+
+    /** Right-hand panel for displaying detailed deck info. */
     private Table rightTable;
+
+    /** Name of the event triggered when a deck is selected. */
     private final String eventName = "changeData";
+
+    /** Maximum number of words to display in lore before truncating. */
     private int maxWordsLore;
 
-    public BookDisplay(GdxGame game, BookPage bookPage) {
+    /**
+     * Constructs a BookDisplay for a specific page type.
+     *
+     * @param bookPage the type of book page to display (TOWER_PAGE, ENEMY_PAGE, or CURRENCY_PAGE)
+     */
+    public BookDisplay(BookPage bookPage) {
         super();
         if (bookPage == BookPage.CURRENCY_PAGE) {
             this.book = new BookComponent.CurrencyBookComponent();
@@ -46,9 +63,13 @@ public class BookDisplay extends UIComponent {
             this.book = new BookComponent.TowerBookComponent();
             maxWordsLore = 25;
         }
-        this.decks = book.getDecks();
+        this.decks = book == null ? null : book.getDecks();
     }
 
+    /**
+     * Creates the UI for the book, including the content list, right panel, and
+     * exit button. Registers listeners for deck selection events.
+     */
     @Override
     public void create() {
         super.create();
@@ -64,6 +85,10 @@ public class BookDisplay extends UIComponent {
 
     }
 
+    /**
+     * Adds all UI elements to the stage: background, content list, default
+     * selection, and exit button.
+     */
     void addActors() {
         this.renderBackGround();
         this.renderContentList();
@@ -74,6 +99,9 @@ public class BookDisplay extends UIComponent {
         this.renderExitButton();
     }
 
+    /**
+     * Renders the background image for the book UI.
+     */
     private void renderBackGround() {
         Image backgroundImage =
                 new Image(
@@ -83,6 +111,10 @@ public class BookDisplay extends UIComponent {
         stage.addActor(backgroundImage);
     }
 
+    /**
+     * Renders the left-hand content list of the book with all available decks.
+     * Adds clickable buttons for each deck, triggering the right panel update.
+     */
     private void renderContentList() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
@@ -143,7 +175,11 @@ public class BookDisplay extends UIComponent {
         stage.addActor(table);
     }
 
-
+    /**
+     * Renders the details of a selected deck on the right-hand panel.
+     *
+     * @param deck the deck to display in detail
+     */
     private void renderRightDeck(DeckComponent deck) {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
@@ -242,7 +278,11 @@ public class BookDisplay extends UIComponent {
     }
 
     /**
-     * Helper method to trim a string to a max number of words.
+     * Trims a string to a maximum number of words, adding "..." if trimmed.
+     *
+     * @param text     the text to trim
+     * @param maxWords the maximum number of words allowed
+     * @return the trimmed string with ellipsis if necessary
      */
     private String trimWords(String text, int maxWords) {
         String[] words = text.split("\\s+");
@@ -252,6 +292,10 @@ public class BookDisplay extends UIComponent {
         return String.join(" ", Arrays.copyOfRange(words, 0, maxWords)) + "...";
     }
 
+    /**
+     * Renders the exit/back button for the book UI.
+     * Triggers the "backToMain" event when clicked.
+     */
     private void renderExitButton() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
@@ -279,7 +323,13 @@ public class BookDisplay extends UIComponent {
         stage.addActor(exitTable);
     }
 
-
+    /**
+     * Creates a custom button style for book content buttons.
+     *
+     * @param backGround the texture path to use for the button
+     * @param canClick   whether the button is clickable (true) or locked (false)
+     * @return a configured {@link TextButton.TextButtonStyle}
+     */
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround, boolean canClick) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
 
@@ -298,7 +348,7 @@ public class BookDisplay extends UIComponent {
         hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
 
         style.up = new NinePatchDrawable(buttonPatch);
-        if (canClick == true) {
+        if (canClick) {
             style.down = new NinePatchDrawable(pressedPatch);
             style.over = new NinePatchDrawable(hoverPatch);
 
@@ -310,6 +360,12 @@ public class BookDisplay extends UIComponent {
         return style;
     }
 
+
+    /**
+     * Empty draw method. Stage handles rendering.
+     *
+     * @param batch the sprite batch used for drawing
+     */
     @Override
     protected void draw(SpriteBatch batch) {
 

@@ -118,7 +118,6 @@ public class DeckComponent extends Component {
 
     /**
      * Specialized deck component for towers.
-     *
      * Usage:
      *      // Example inside TowerComponent or EnemyComponent click handler
      *      playerEntity.getEvents().trigger("displayDeck", towerEntity.getComponent(DeckComponent.class));
@@ -191,7 +190,6 @@ public class DeckComponent extends Component {
 
     /**
      * Specialized deck component for enemies.
-     *
      * Usage:
      *      // Example inside TowerComponent or EnemyComponent click handler
      *      playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));

@@ -11,44 +11,55 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Main UI component for the book display menu.
+ * <p>
+ * Renders buttons to navigate to different book pages (enemies, currencies, towers),
+ * displays the background, and provides a back button to exit the book menu.
+ */
 public class MainBookDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
-    private static final float Z_INDEX = 2f;
-    private Table table;
-    private String[] buttonBackGround = {
+
+    /** Background images for buttons: enemies, currencies, towers, back button. */
+    private final String[] buttonBackGround = {
             "images/book/enemies_book.png",
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
             "images/book/hologram.png"
     };
-    private final float buttonWidth = 500f;
-    private final float buttonHeight = 500f;
-    private final float exitButtonWidth = 100f;
-    private final float exitButtonHeight = 100f;
 
-
-    public MainBookDisplay(GdxGame game) {
+    /**
+     * Constructs the main book display UI component.
+     */
+    public MainBookDisplay() {
         super();
     }
 
+    /**
+     * Called when the component is created.
+     * Initializes and renders all UI elements.
+     */
     @Override
     public void create() {
         super.create();
         addActors();
     }
 
+    /**
+     * Adds all UI actors (background, buttons, exit button) to the stage.
+     */
     void addActors() {
         this.renderBackGround();
         this.renderContentList();
         this.renderExitButton();
     }
 
+    /** Renders the main background image of the book menu. */
     private void renderBackGround() {
         Image backgroundImage =
                 new Image(
@@ -58,6 +69,7 @@ public class MainBookDisplay extends UIComponent {
         stage.addActor(backgroundImage);
     }
 
+    /** Renders the navigation buttons for enemies, currencies, and towers. */
     private void renderContentList() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
@@ -66,7 +78,7 @@ public class MainBookDisplay extends UIComponent {
         float buttonWidth = stageWidth * 0.3f;   // 8% of stage width
         float buttonHeight = stageHeight * 0.45f; // 12% of stage height
 
-        table = new Table();
+        Table table = new Table();
         table.setFillParent(true);
 
         TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
@@ -113,7 +125,7 @@ public class MainBookDisplay extends UIComponent {
         stage.addActor(table);
     }
 
-
+    /** Renders the back/exit button to return to the main menu. */
     private void renderExitButton() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
@@ -144,6 +156,12 @@ public class MainBookDisplay extends UIComponent {
         stage.addActor(exitTable);
     }
 
+    /**
+     * Helper method to create a custom button style using a texture.
+     *
+     * @param backGround the texture path for the button
+     * @return configured TextButtonStyle
+     */
     private TextButton.TextButtonStyle createCustomButtonStyle(String backGround) {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
 
@@ -172,10 +190,12 @@ public class MainBookDisplay extends UIComponent {
         return style;
     }
 
+    /**
+     * Draw method overridden from UIComponent.
+     * Drawing is handled by the stage, so this is intentionally left empty.
+     */
     @Override
     protected void draw(SpriteBatch batch) {
 
     }
-
-
 }

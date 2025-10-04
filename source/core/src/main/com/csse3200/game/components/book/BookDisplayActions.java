@@ -1,37 +1,51 @@
 package com.csse3200.game.components.book;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
-import java.util.Map;
-
+/**
+ * Component responsible for handling actions in the book display UI.
+ * <p>
+ * This includes listening for events such as exiting the book and playing
+ * associated sounds.
+ */
 public class BookDisplayActions extends Component {
     private static final Logger logger = LoggerFactory.getLogger(BookDisplayActions.class);
-    private GdxGame game;
-    private final String closeBookSoundPath = "sounds/book_closing.mp3";
 
+    /** Reference to the main game to switch screens. */
+    private final GdxGame game;
+
+    /**
+     * Constructs a BookDisplayActions component.
+     *
+     * @param game the main game instance
+     */
     public BookDisplayActions(GdxGame game) {
         this.game = game;
     }
 
+    /**
+     * Called when the component is created. Registers event listeners
+     * for book actions.
+     */
     @Override
     public void create() {
         entity.getEvents().addListener("backToMain", this::onExit);
     }
 
+    /**
+     * Handles the "backToMain" event. Switches the screen to the book
+     * and plays the book closing sound.
+     */
     private void onExit() {
+        logger.debug("Exit book");
         game.setScreen(GdxGame.ScreenType.BOOK);
-        playCurrencySound(closeBookSoundPath);
+        String CLOSE_BOOK_SOUND_PATH = "sounds/book_closing.mp3";
+        playCurrencySound(CLOSE_BOOK_SOUND_PATH);
     }
 
     /**

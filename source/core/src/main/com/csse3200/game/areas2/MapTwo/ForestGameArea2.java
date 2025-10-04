@@ -74,7 +74,7 @@ public class ForestGameArea2 extends GameArea2 {
     private static final String[] forestSounds = {
             "sounds/homebase_hit_sound.mp3"
     };
-    private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+    private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
     private final TerrainFactory2 terrainFactory;
@@ -566,8 +566,8 @@ public class ForestGameArea2 extends GameArea2 {
     private void playMusic() {
         // Route all music through AudioService to avoid overlaps across screens
         if (ServiceLocator.getAudioService() != null) {
-            ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
-            ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+            ServiceLocator.getAudioService().registerMusic("new_menutheme", backgroundMusic);
+            ServiceLocator.getAudioService().playMusic("new_menutheme", true);
             ServiceLocator.getAudioService().setMusicVolume(0.3f);
         } else {
             Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
@@ -690,9 +690,9 @@ public class ForestGameArea2 extends GameArea2 {
             mapEditor.cleanup();
         }
         if (ServiceLocator.getAudioService() != null) {
-            ServiceLocator.getAudioService().stopMusic();
+            //ServiceLocator.getAudioService().stopMusic();
         } else {
-            ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+            //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
     }

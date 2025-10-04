@@ -220,11 +220,6 @@ public class SettingsMenuDisplay extends UIComponent {
         difficultySelect.setItems("Easy", "Normal", "Hard");
         difficultySelect.setSelected(settings.difficulty);
 
-        Label languageLabel = new Label("Language:", skin);
-        languageSelect = new SelectBox<>(skin);
-        languageSelect.setItems("English", "中文", "Español");
-        languageSelect.setSelected(settings.language);
-
         Label displayModeLabel = new Label("Resolution:", skin);
         displayModeSelect = new SelectBox<>(skin);
         Monitor selectedMonitor = Gdx.graphics.getMonitor();
@@ -272,10 +267,6 @@ public class SettingsMenuDisplay extends UIComponent {
         table.row().padTop(10f);
         table.add(difficultyLabel).right().padRight(15f);
         table.add(difficultySelect).left();
-
-        table.row().padTop(10f);
-        table.add(languageLabel).right().padRight(15f);
-        table.add(languageSelect).left();
 
         table.row().padTop(10f);
         table.add(displayModeLabel).right().padRight(15f);
@@ -404,7 +395,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
         // Gameplay settings
         settings.difficulty = difficultySelect.getSelected();
-        settings.language = languageSelect.getSelected();
+        //settings.language = languageSelect.getSelected();
 
         UserSettings.set(settings, true);
 

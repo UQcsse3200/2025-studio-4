@@ -26,6 +26,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("continue", this::onContinue);
     entity.getEvents().addListener("exit", this::onExit);
     entity.getEvents().addListener("settings", this::onSettings);
+    entity.getEvents().addListener("book", this::onBook);
     entity.getEvents().addListener("ranking", this::onRanking);
   }
 
@@ -36,7 +37,7 @@ public class MainMenuActions extends Component {
     logger.info("New Game clicked, showing name input dialog");
     showNameInputDialog();
   }
-  
+
   /**
    * Shows the name input dialog for new game.
    */
@@ -45,21 +46,21 @@ public class MainMenuActions extends Component {
     if (ServiceLocator.getPlayerNameService() == null) {
       ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
-    
+
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(), 
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
         new NameInputDialog.NameInputCallback() {
           @Override
           public void onNameConfirmed(String name) {
             handleNameConfirmed(name);
           }
-          
+
           @Override
           public void onNameCancelled() {
             handleNameCancelled();
           }
         });
-    
+
     // Get the current stage from the render service
     if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
       ServiceLocator.getRenderService().getStage().addActor(nameDialog);
@@ -70,7 +71,7 @@ public class MainMenuActions extends Component {
       game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
     }
   }
-  
+
   /**
    * Handles when player confirms their name.
    */
@@ -79,7 +80,7 @@ public class MainMenuActions extends Component {
     // Proceed to map selection
     game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }
-  
+
   /**
    * Handles when player cancels name input.
    */
@@ -115,6 +116,11 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.SETTINGS);
   }
 
+  private void onBook() {
+    logger.info("Launching book");
+    game.setScreen(GdxGame.ScreenType.BOOK);
+  }
+
   /**
    * Shows the leaderboard/ranking screen.
    */
@@ -131,24 +137,24 @@ public class MainMenuActions extends Component {
   private void showLeaderboard() {
     try {
       // Use the global leaderboard service (already registered in GdxGame)
-      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService =
         ServiceLocator.getLeaderboardService();
-      
+
       if (leaderboardService == null) {
         logger.error("Leaderboard service not available");
         return;
       }
-      
+
       // Create and show leaderboard popup
-      com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
+      com.csse3200.game.ui.leaderboard.LeaderboardController controller =
         new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboardService);
-      
-      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = 
+
+      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup =
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(
           com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(), controller);
-      
+
       popup.showOn(ServiceLocator.getRenderService().getStage());
-      
+
     } catch (Exception e) {
       logger.error("Failed to show leaderboard", e);
     }

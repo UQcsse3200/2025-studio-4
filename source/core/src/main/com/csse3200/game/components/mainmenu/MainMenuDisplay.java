@@ -53,6 +53,7 @@ public class MainMenuDisplay extends UIComponent {
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
+    TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
     // stars display
     Image starImage = new Image(
@@ -125,7 +126,16 @@ public class MainMenuDisplay extends UIComponent {
           }
         });
 
-    
+    bookBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+
+        logger.debug("Book button clicked");
+        entity.getEvents().trigger("book");
+      }
+    });
+
+
     table.add().expandY().row();
     HorizontalGroup group = new HorizontalGroup();
     group.space(5);
@@ -138,6 +148,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();
+    table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();

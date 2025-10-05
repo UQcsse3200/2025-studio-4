@@ -1,7 +1,8 @@
-package com.csse3200.game.components;
+package com.csse3200.game.components.towers;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
 
 public class TowerStatsComponentTest {
 

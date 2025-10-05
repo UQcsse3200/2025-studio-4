@@ -1,7 +1,6 @@
 package core.src.main.com.csse3200.game.components.towers;
 
 import com.csse3200.game.components.Component;
-
 /**
  * Component storing stats for a tower, such as health, damage, range, and attack cooldown.
  * Upgrade paths now only increment level; no stats are changed.

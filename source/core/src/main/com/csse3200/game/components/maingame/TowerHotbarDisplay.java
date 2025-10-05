@@ -65,16 +65,18 @@ public class TowerHotbarDisplay extends UIComponent {
         title.setAlignment(Align.center);
 
         // Images
-        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/boneicon.png")));
-        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/dinoicon.png")));
-        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/campfireicon.png")));
+        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/boneicon.png")));
+        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
+        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/campfireicon.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
+        // pterodactyl icon for the second-row first-column slot
+        TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
 
         // Create 12 buttons (3x4 grid). First 4 are functional, rest use placeholder.
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
-        ImageButton pteroBtn = new ImageButton(placeholderImage); // pterodactyl slot
+        ImageButton pteroBtn = new ImageButton(pteroImage); // pterodactyl slot
         ImageButton[] allButtons = new ImageButton[12];
         allButtons[0] = boneBtn;
         allButtons[1] = dinoBtn;

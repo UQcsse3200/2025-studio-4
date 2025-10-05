@@ -1,7 +1,9 @@
-package com.csse3200.game.components;
+package com.csse3200.game.components.towers;
 
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.Test;
+import core.src.main.com.csse3200.game.components.towers.TowerComponent;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 

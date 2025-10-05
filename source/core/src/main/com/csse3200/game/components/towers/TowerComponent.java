@@ -337,18 +337,23 @@ public class TowerComponent extends Component {
             }
 
             if (target != null) {
-                Vector2 dir = target.getCenterPosition().cpy().sub(spawnOrigin).nor();
+                // Unified single-shot behaviour for all towers
+                Vector2 dir = target.getCenterPosition().cpy().sub(spawnOrigin);
+                if (dir.len() <= 0.0001f) {
+                    dir.set(1f, 0f); // fallback direction to avoid NaN
+                } else {
+                    dir.nor();
+                }
                 if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
 
                 float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
-                // If this tower is a pteradactyl, give projectiles infinite life; otherwise use range/speed
+                // pterodactyl projectiles are infinite-life; others use range/speed
                 float life;
                 if ("pterodactyl".equalsIgnoreCase(type)) {
                     life = Float.POSITIVE_INFINITY;
                 } else {
                     life = stats.getRange() / speed;
                 }
-
                 String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
                 int damage = (int) stats.getDamage();
 

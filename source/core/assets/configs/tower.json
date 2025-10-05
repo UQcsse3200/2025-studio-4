@@ -12,7 +12,7 @@
       "projectileSpeed": 4.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/bone_projectile.png",
-      "image": "images/bone.png"
+      "image": "images/towers/bone.png"
     }
   },
   "dinoTower": {
@@ -28,7 +28,7 @@
       "projectileSpeed": 2,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/fireballdino.png",
-      "image": "images/dino.png"
+      "image": "images/towers/dino.png"
     }
   },
   "cavemenTower": {
@@ -44,7 +44,7 @@
       "projectileSpeed": 6.0,
       "projectileLife": 4,
       "projectileTexture": "images/towers/projectile animations/zap.png",
-      "image": "images/cavemen.png"
+      "image": "images/towers/cavemen.png"
     }
   },
   "pterodactylTower": {
@@ -60,7 +60,7 @@
       "projectileSpeed": 15.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/spike.png",
-      "image": "images/pteradactyl.png"
+      "image": "images/towers/pteradactyl.png"
     }
   }
 }

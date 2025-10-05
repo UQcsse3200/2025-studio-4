@@ -92,7 +92,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="DeckComponent.EnemyDeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent.EnemyDeckComponent</a></code>, <code><a href="DeckComponent.TowerDeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent.TowerDeckComponent</a></code></dd>
+<dd><code><a href="CurrencyBookDeckComponent.html" title="class in com.csse3200.game.components.deck">CurrencyBookDeckComponent</a></code>, <code><a href="DeckComponent.EnemyDeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent.EnemyDeckComponent</a></code>, <code><a href="DeckComponent.TowerDeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent.TowerDeckComponent</a></code>, <code><a href="EnemyBookDeckComponent.html" title="class in com.csse3200.game.components.deck">EnemyBookDeckComponent</a></code>, <code><a href="TowerBookDeckComponent.html" title="class in com.csse3200.game.components.deck">TowerBookDeckComponent</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DeckComponent</span>
@@ -178,7 +178,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateStats()" class="member-name-link">updateStats</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Update stats when needed</div>
+<div class="block">Update stats when needed.</div>
 </div>
 </div>
 </div>
@@ -250,7 +250,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="updateStats()">
 <h3>updateStats</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateStats</span>()</div>
-<div class="block">Update stats when needed</div>
+<div class="block">Update stats when needed.
+ <p>
+ Subclasses should override this method to dynamically refresh stats
+ from their associated components (e.g. combat, tower).</div>
 </section>
 </li>
 </ul>

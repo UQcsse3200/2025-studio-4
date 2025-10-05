@@ -100,7 +100,6 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public static class </span><span class="element-name type-name-label">DeckComponent.EnemyDeckComponent</span>
 <span class="extends-implements">extends <a href="DeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent</a></span></div>
 <div class="block">Specialized deck component for enemies.
-
  Usage:
       // Example inside TowerComponent or EnemyComponent click handler
       playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));</div>
@@ -139,7 +138,9 @@ loadScripts(document, 'script');</script>
  <a href="../../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;resistance,
  <a href="../../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;weakness,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a new <a href="DeckComponent.EnemyDeckComponent.html" title="class in com.csse3200.game.components.deck"><code>DeckComponent.EnemyDeckComponent</code></a> with enemy-specific stats.</div>
+</div>
 </div>
 </section>
 </li>
@@ -157,7 +158,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateStats()" class="member-name-link">updateStats</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Update stats when needed</div>
+<div class="block">Updates the enemy's stats from its <a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a>.</div>
 </div>
 </div>
 </div>
@@ -191,6 +192,16 @@ loadScripts(document, 'script');</script>
  <a href="../../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;resistance,
  <a href="../../entities/configs/DamageTypeConfig.html" title="enum class in com.csse3200.game.entities.configs">DamageTypeConfig</a>&nbsp;weakness,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</span></div>
+<div class="block">Constructs a new <a href="DeckComponent.EnemyDeckComponent.html" title="class in com.csse3200.game.components.deck"><code>DeckComponent.EnemyDeckComponent</code></a> with enemy-specific stats.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - the enemy's name</dd>
+<dd><code>health</code> - the enemy's health points</dd>
+<dd><code>damage</code> - the enemy's damage</dd>
+<dd><code>resistance</code> - the enemy's resistance damage type</dd>
+<dd><code>weakness</code> - the enemy's weakness damage type</dd>
+<dd><code>texturePath</code> - the path to the enemy's image/texture</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -205,8 +216,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="updateStats()">
 <h3>updateStats</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateStats</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="DeckComponent.html#updateStats()">DeckComponent</a></code></span></div>
-<div class="block">Update stats when needed</div>
+<div class="block">Updates the enemy's stats from its <a href="../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a>.
+ This method synchronizes the deck display with the enemy's
+ current in-game health.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="DeckComponent.html#updateStats()">updateStats</a></code>&nbsp;in class&nbsp;<code><a href="DeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent</a></code></dd>

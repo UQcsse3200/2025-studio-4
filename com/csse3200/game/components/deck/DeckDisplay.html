@@ -103,7 +103,6 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
 <div class="block">A UI component for displaying detailed deck info (tower/enemy stats)
  when an entity with a <a href="DeckComponent.html" title="class in com.csse3200.game.components.deck"><code>DeckComponent</code></a> is clicked.
-
  Usage:
       // Example inside TowerComponent or EnemyComponent click handler
       playerEntity.getEvents().trigger("displayDeck", towerEntity.getComponent(DeckComponent.class));</div>
@@ -149,17 +148,18 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Initializes this UI component, creating the UI table and registering listeners
+ for deck display and clear events.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#displayDeck(com.csse3200.game.components.deck.DeckComponent)" class="member-name-link">displayDeck</a><wbr>(<a href="DeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent</a>&nbsp;deck)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Render a deck’s info in the UI.</div>
+<div class="block">Renders a deck’s information in the UI.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the component is disposed.</div>
+<div class="block">Disposes of this component by clearing and removing the table.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
@@ -169,12 +169,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hide()" class="member-name-link">hide</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Hide the deck UI</div>
+<div class="block">Hides the deck UI by clearing the table and removing the current deck reference.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Updates the deck UI each frame.</div>
 </div>
 </div>
 </div>
@@ -226,9 +226,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Initializes this UI component, creating the UI table and registering listeners
+ for deck display and clear events.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
@@ -239,9 +238,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Updates the deck UI each frame. If the underlying deck stats change,
+ the display is refreshed.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -252,10 +250,15 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="displayDeck(com.csse3200.game.components.deck.DeckComponent)">
 <h3>displayDeck</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">displayDeck</span><wbr><span class="parameters">(<a href="DeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent</a>&nbsp;deck)</span></div>
-<div class="block">Render a deck’s info in the UI.</div>
+<div class="block">Renders a deck’s information in the UI. This includes:
+ <ul>
+   <li>The deck image (if <a href="DeckComponent.StatType.html#TEXTURE_PATH"><code>DeckComponent.StatType.TEXTURE_PATH</code></a> is present)</li>
+   <li>The name of the entity (as a large title)</li>
+   <li>Other stats with associated icons or text values</li>
+ </ul></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>deck</code> - the deck data from a tower or enemy</dd>
+<dd><code>deck</code> - the <a href="DeckComponent.html" title="class in com.csse3200.game.components.deck"><code>DeckComponent</code></a> containing the stats to display</dd>
 </dl>
 </section>
 </li>
@@ -263,7 +266,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="hide()">
 <h3>hide</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">hide</span>()</div>
-<div class="block">Hide the deck UI</div>
+<div class="block">Hides the deck UI by clearing the table and removing the current deck reference.</div>
 </section>
 </li>
 <li>
@@ -284,8 +287,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#dispose()">Component</a></code></span></div>
-<div class="block">Called when the component is disposed. Dispose of any internal resources here.</div>
+<div class="block">Disposes of this component by clearing and removing the table.
+ Ensures that UI resources are properly cleaned up when the component is no longer needed.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>dispose</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.utils.Disposable</code></dd>

@@ -14,7 +14,7 @@ public class EnemyBookDeckComponentTest {
     public void testEnemyBookDeckStats() {
         EnemyBookDeckComponent deck = new EnemyBookDeckComponent(
                 "Goblin", "50", "10", "1.5", "Fast, Weak", "Melee", "Metal Scrap", "Small green creature", "5",
-                "Fire", "Ice", "images/goblin.png", "false"
+                "Fire", "Ice", "images/goblin.png", false
         );
 
         Map<DeckComponent.StatType, String> stats = deck.getStats();

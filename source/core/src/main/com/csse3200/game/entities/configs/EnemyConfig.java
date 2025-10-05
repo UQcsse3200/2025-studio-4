@@ -31,7 +31,7 @@ public class EnemyConfig {
         public String weakness;
         public String resistance;
         public String image;
-        public String locked;
+        public boolean locked;
     }
 
     public List<EnemyStats> getAllEnemies() {

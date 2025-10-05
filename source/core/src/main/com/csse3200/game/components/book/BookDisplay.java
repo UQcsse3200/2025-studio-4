@@ -42,7 +42,7 @@ public class BookDisplay extends UIComponent {
     private Table rightTable;
 
     /** Name of the event triggered when a deck is selected. */
-    private final String eventName = "changeData";
+    private static final String eventName = "changeData";
 
     /** Maximum number of words to display in lore before truncating. */
     private int maxWordsLore;
@@ -146,8 +146,8 @@ public class BookDisplay extends UIComponent {
         int imagesPerRow = 2;
         int count = 0;
 
-        for (DeckComponent deck : decks) {
-            Map<DeckComponent.StatType, String> stats = deck.getStats();
+        for (DeckComponent currentDeck : decks) {
+            Map<DeckComponent.StatType, String> stats = currentDeck.getStats();
 
             // start a new row
             if (count % imagesPerRow == 0) {
@@ -168,7 +168,7 @@ public class BookDisplay extends UIComponent {
                     @Override
                     public void changed(ChangeEvent changeEvent, Actor actor) {
                         logger.debug("Button inside bookPage clicked");
-                        entity.getEvents().trigger(eventName, deck);
+                        entity.getEvents().trigger(eventName, currentDeck);
                     }
                 });
             }
@@ -191,9 +191,9 @@ public class BookDisplay extends UIComponent {
 
         this.deck = deck;
 
-        if (hasJustOpenedBook == false) {
-            String PAGE_FLIP_SOUND_PATH = "sounds/page_flip.mp3";
-            playSound(PAGE_FLIP_SOUND_PATH);
+        if (!hasJustOpenedBook) {
+            String pageFlipSoundPath = "sounds/page_flip.mp3";
+            playSound(pageFlipSoundPath);
         } else {
             hasJustOpenedBook = false;
         }
@@ -387,7 +387,7 @@ public class BookDisplay extends UIComponent {
         if (sound != null) {
             sound.play(1.0f);
         } else {
-            System.out.println("Sound not found: " + soundPath);
+            logger.info("Sound not found: " + soundPath);
         }
     }
 
@@ -398,6 +398,6 @@ public class BookDisplay extends UIComponent {
      */
     @Override
     protected void draw(SpriteBatch batch) {
-
+        // Empty
     }
 }

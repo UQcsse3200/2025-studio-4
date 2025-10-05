@@ -196,6 +196,6 @@ public class MainBookDisplay extends UIComponent {
      */
     @Override
     protected void draw(SpriteBatch batch) {
-
+        // Empty
     }
 }

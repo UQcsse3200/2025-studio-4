@@ -55,7 +55,7 @@
       "weakness": "none",
       "resistance": "none",
       "image": "images/drone_enemy.png",
-      "locked": "true"
+      "locked": true
     },
     "gruntEnemy": {
       "name": "Grunt",

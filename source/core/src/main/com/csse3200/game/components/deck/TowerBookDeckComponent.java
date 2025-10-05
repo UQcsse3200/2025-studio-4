@@ -40,7 +40,7 @@ public class TowerBookDeckComponent extends DeckComponent {
             int neurochipCost,
             String lore,
             String texturePath,
-            String locked
+            boolean locked
     ) {
         super(
                 createOrderedStats(
@@ -90,7 +90,7 @@ public class TowerBookDeckComponent extends DeckComponent {
             int neurochipCost,
             String lore,
             String texturePath,
-            String locked
+            boolean locked
     ) {
         Map<StatType, String> stats = new LinkedHashMap<>();
         stats.put(StatType.NAME, name.toUpperCase());
@@ -101,7 +101,7 @@ public class TowerBookDeckComponent extends DeckComponent {
 //        stats.put(StatType.PROJECTILE_LIFE, String.valueOf(Math.floor(projectileLife * 100) / 100));
         stats.put(StatType.LORE, lore);
         stats.put(StatType.TEXTURE_PATH, texturePath);
-        stats.put(StatType.LOCKED, locked);
+        stats.put(StatType.LOCKED, String.valueOf(locked));
         // resource costs
 //        stats.put(StatType.METAL_SCRAP_COST, String.valueOf(metalScrapCost));
 //        stats.put(StatType.TITANIUM_CORE_COST, String.valueOf(titaniumCoreCost));

@@ -44,8 +44,8 @@ public class BookDisplayActions extends Component {
     private void onExit() {
         logger.debug("Exit book");
         game.setScreen(GdxGame.ScreenType.BOOK);
-        String CLOSE_BOOK_SOUND_PATH = "sounds/book_closing.mp3";
-        playSound(CLOSE_BOOK_SOUND_PATH);
+        String closeBookSoundPATH = "sounds/book_closing.mp3";
+        playSound(closeBookSoundPATH);
     }
 
     /**

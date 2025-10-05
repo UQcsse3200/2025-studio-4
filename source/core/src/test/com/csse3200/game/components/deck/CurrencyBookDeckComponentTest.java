@@ -1,7 +1,7 @@
 package com.csse3200.game.components.deck;
 
 import com.csse3200.game.extensions.GameExtension;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;

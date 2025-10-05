@@ -25,7 +25,7 @@ public class MainBookDisplayActions extends Component {
     /** Reference to the main game instance to switch screens. */
     private GdxGame game;
     /** Path to the sound effect played when opening the book. */
-    private final String OPEN_BOOK_SOUND_PATH = "sounds/book_opening.mp3";
+    private static final String openBookSoundPath = "sounds/book_opening.mp3";
 
     /**
      * Constructs a new {@code MainBookDisplayActions} with a reference to the game.
@@ -63,7 +63,7 @@ public class MainBookDisplayActions extends Component {
     private void goToCurrency() {
         logger.info("Go to currency page");
         game.setScreen(GdxGame.ScreenType.CURRENCY_BOOK);
-        playCurrencySound(OPEN_BOOK_SOUND_PATH);
+        playCurrencySound(openBookSoundPath);
     }
 
     /**
@@ -73,7 +73,7 @@ public class MainBookDisplayActions extends Component {
     private void goToEnemy() {
         logger.info("Go to enemy page");
         game.setScreen(GdxGame.ScreenType.ENEMY_BOOK);
-        playCurrencySound(OPEN_BOOK_SOUND_PATH);
+        playCurrencySound(openBookSoundPath);
     }
 
     /**
@@ -83,7 +83,7 @@ public class MainBookDisplayActions extends Component {
     private void goToTower() {
         logger.info("Go to tower page");
         game.setScreen(GdxGame.ScreenType.TOWER_BOOK);
-        playCurrencySound(OPEN_BOOK_SOUND_PATH);
+        playCurrencySound(openBookSoundPath);
     }
 
     /**
@@ -96,7 +96,7 @@ public class MainBookDisplayActions extends Component {
         if (sound != null) {
             sound.play(1.0f);
         } else {
-            System.out.println("Sound not found: " + soundPath);
+            logger.info("Sound not found: " + soundPath);
         }
     }
 

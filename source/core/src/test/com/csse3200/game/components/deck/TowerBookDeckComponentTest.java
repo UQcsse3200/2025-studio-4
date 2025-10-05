@@ -1,7 +1,7 @@
 package com.csse3200.game.components.deck;
 
 import com.csse3200.game.extensions.GameExtension;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
@@ -13,7 +13,7 @@ public class TowerBookDeckComponentTest {
     @Test
     public void testTowerBookDeckStats() {
         TowerBookDeckComponent deck = new TowerBookDeckComponent(
-                "Arrow Tower", 15, 5.0, 1.2, 3.0, 2.5, 50, 10, 1, "Basic arrow-shooting tower", "images/arrow_tower.png", "false"
+                "Arrow Tower", 15, 5.0, 1.2, 3.0, 2.5, 50, 10, 1, "Basic arrow-shooting tower", "images/arrow_tower.png", false
         );
 
         Map<DeckComponent.StatType, String> stats = deck.getStats();

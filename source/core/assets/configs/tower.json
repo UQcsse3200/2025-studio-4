@@ -19,7 +19,7 @@
   },
   "dinoTower": {
     "name": "dino tower",
-    "locked": "true",
+    "locked": true,
     "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
     "base": {
       "level_A": 1,

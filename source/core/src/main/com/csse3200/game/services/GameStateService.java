@@ -35,6 +35,10 @@ public class GameStateService {
         heroUnlocks.put(HeroType.ENGINEER, false);
     }
 
+    /**
+     * Sets the current Base entity to track health
+     * @param player the base of our current map
+     */
     public void setBase (Entity player) {
         this.base = player;
     }
@@ -89,7 +93,15 @@ public class GameStateService {
      * Uses the player/base entity that was set in GameStateService.
      */
     public void rewardStarsOnWin() {
+        if (base == null) {
+            logger.warn("Base is not set in GameStateService");
+            return;
+        }
         PlayerCombatStatsComponent stats = base.getComponent(PlayerCombatStatsComponent.class);
+        if (stats == null){
+            logger.warn("Base is missing PlayerCombatStatsComponent");
+            return;
+        }
         double hpPercent = (double) stats.getHealth()/stats.getMaxHealth();
         rewardStarsByHealth(hpPercent);
     }

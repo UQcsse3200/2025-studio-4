@@ -8,7 +8,6 @@ public class SamuraiConfig extends BaseEntityConfig {
     public float swordRadius = 0.9f;
     public float swordAngularSpeed=360.0f;
     public String heroTexture = "images/samurai/Samurai.png";
-    public String swordTexture = "images/samurai/Sword.png";
     public String[] levelTextures = {
             "images/samurai/Sword.png",
     };
@@ -20,4 +19,10 @@ public class SamuraiConfig extends BaseEntityConfig {
                 "images/samurai/Samurai.png"
         };
     }
+
+    public String swordTexture = "images/samurai/Sword.png"; // 初始刀
+    public String[] swordLevelTextures = {                   // 刀的分级外观
+            "images/samurai/Sword.png",              // L1
+            "images/samurai/Katana_Level_2.png"     // L2
+    };
 }

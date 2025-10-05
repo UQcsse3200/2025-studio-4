@@ -2,10 +2,12 @@ package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.hero.samurai.SwordAppearanceComponent;
 import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
 import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.entities.configs.SamuraiConfig;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -34,6 +36,7 @@ public final class SwordFactory {
     public static Entity createSword(Entity owner,
                                      String swordTexture,
                                      float radius,
+                                     SamuraiConfig cfg,
                                      float angularSpeedDeg,
                                      float spriteForwardOffsetDeg,
                                      float centerToHandle,
@@ -47,6 +50,7 @@ public final class SwordFactory {
                         .setLayer(PhysicsLayer.PLAYER_ATTACK)
                         .setSensor(true))
                 .addComponent(new RotatingTextureRenderComponent(swordTexture))
+                .addComponent(new SwordAppearanceComponent(owner, cfg))
                 .addComponent(new SwordJabPhysicsComponent(owner, /*restRadius=*/radius)
                         .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                         .setCenterToHandle(centerToHandle)
@@ -69,6 +73,7 @@ public final class SwordFactory {
      */
     /** Overload with defaults: forward=0°, centerToHandle=-0.25, damage=20, hitCooldown=0.2s */
     public static Entity createSword(Entity owner,
+                                     SamuraiConfig cfg,
                                      String swordTexture,
                                      float radius,
                                      float angularSpeedDeg) {
@@ -76,6 +81,7 @@ public final class SwordFactory {
                 owner,
                 swordTexture,
                 radius,
+                cfg,
                 angularSpeedDeg,
                 0f,       // spriteForwardOffsetDeg
                 -0.25f,   // centerToHandle

@@ -193,6 +193,7 @@ public final class HeroFactory {
                 .addComponent(new SamuraiSpinAttackComponent(
                         cfg.swordRadius,   // 直接传半径
                         cfg.swordTexture,  // 贴图
+                        cfg,
                         camera             // 相机
                 ))
                 .addComponent(new HeroUpgradeComponent())

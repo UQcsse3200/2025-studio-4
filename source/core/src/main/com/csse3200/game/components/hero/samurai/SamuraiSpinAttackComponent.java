@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.entities.configs.SamuraiConfig;
 
 public class SamuraiSpinAttackComponent extends Component {
     private final float restRadius;
@@ -20,13 +21,16 @@ public class SamuraiSpinAttackComponent extends Component {
     private float centerToHandle = -1.0f;
     private float jabDuration = 0.18f, jabExtra = 0.8f, jabCooldown = 0f;
     private float sweepDuration = 0.22f, sweepExtra = 0.35f, sweepCooldown = 0f;
+    private final SamuraiConfig cfg;
+
 
     private Entity sword;
     private InputAdapter adapter; // 保存起来用于 dispose 时移除
 
-    public SamuraiSpinAttackComponent(float restRadius, String swordTexture, Camera camera) {
+    public SamuraiSpinAttackComponent(float restRadius, String swordTexture, SamuraiConfig cfg,Camera camera) {
         this.restRadius = restRadius;
         this.swordTexture = swordTexture;
+        this.cfg = cfg;
         this.camera = camera;
     }
 
@@ -51,7 +55,7 @@ public class SamuraiSpinAttackComponent extends Component {
 
         // 1) 创建剑（角速度参数给 0 即可）
         sword = com.csse3200.game.entities.factories.SwordFactory.createSword(
-                this.entity, swordTexture, restRadius, 0f
+                this.entity, cfg,swordTexture, restRadius, 0f
         );
 
         // 2) 挂运动控制（J/K/L）

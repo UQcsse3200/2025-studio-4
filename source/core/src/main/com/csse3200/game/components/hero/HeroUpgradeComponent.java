@@ -52,6 +52,20 @@ public class HeroUpgradeComponent extends Component {
             if (p != null && p != this.player) attachPlayer(p);
             tryUpgrade();
         });
+
+        broadcastSnapshot();
+    }
+
+    private void broadcastSnapshot() {
+        CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            // 等级
+            entity.getEvents().trigger("hero.level", level);
+            // 伤害（按你的字段改：baseAttack / totalAttack）
+            entity.getEvents().trigger("hero.damage", stats.getBaseAttack());
+        }
+        // 能量/怒气如有对应组件也可广播一次（举例）
+        // entity.getEvents().trigger("hero.energy", curEnergy, maxEnergy);
     }
 
     @Override
@@ -102,6 +116,14 @@ public class HeroUpgradeComponent extends Component {
         applyStatGrowth(level);
         Gdx.app.log("HeroUpgrade", "success: level=" + level + ", cost=" + cost);
         entity.getEvents().trigger("upgraded", level, costType, cost);
+
+
+        // ✅ 广播新数值，供UI刷新
+        entity.getEvents().trigger("hero.level", level);
+        CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            entity.getEvents().trigger("hero.damage", stats.getBaseAttack());
+        }
     }
 
     /** Applies stat growth when hero levels up (customizable). */

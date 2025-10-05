@@ -5,6 +5,7 @@ import com.csse3200.game.components.hero.HeroSelectionComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.services.SelectedHeroService;
+import com.csse3200.game.ui.HeroStatusPanelComponent;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -223,6 +224,7 @@ public class ForestGameArea extends GameArea {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
         cameraControl.addComponent(new CameraZoomDragComponent());
@@ -246,6 +248,8 @@ public class ForestGameArea extends GameArea {
                 }
             }
         }
+
+
 
 
         // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
@@ -307,6 +311,8 @@ public class ForestGameArea extends GameArea {
                 new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
         );
         spawnEntity(placementEntity);
+
+
 
 
 
@@ -505,6 +511,11 @@ public class ForestGameArea extends GameArea {
         }
 
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+        hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
+
+        Entity heroStatusUI = new Entity()
+                .addComponent(new HeroStatusPanelComponent(hero));
+        spawnEntity(heroStatusUI);
 
         spawnEntityAt(hero, cell, true, true);
 

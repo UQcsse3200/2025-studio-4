@@ -15,6 +15,7 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.movement.AdjustSpeedByHealthComponent;
 
 public class GruntEnemyFactory {
     // Default grunt configuration
@@ -88,6 +89,10 @@ public class GruntEnemyFactory {
             }
         });
 
+        grunt.addComponent(new AdjustSpeedByHealthComponent()
+                .addThreshold(0.5f, 1.4f)
+                .addThreshold(0.2f, 2f)
+        );
         return grunt;
     }
 

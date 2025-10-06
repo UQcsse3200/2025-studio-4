@@ -263,17 +263,17 @@ public class MapSelectionDisplay extends UIComponent {
     /**
      * Find .tmx maps under assets/maps/ (internal).
      */
-//    private List<FileHandle> findMaps() {
-//        List<FileHandle> out = new ArrayList<>();
-//        FileHandle dir = Gdx.files.internal("maps");
-//        if (dir.exists() && dir.isDirectory()) {
-//            Arrays.stream(dir.list())
-//                    .filter(f -> f.extension().equalsIgnoreCase("tmx"))
-//                    .sorted(Comparator.comparing(FileHandle::name))
-//                    .forEach(out::add);
-//        }
-//        return out;
-//    }
+    private List<FileHandle> findMaps() {
+        List<FileHandle> out = new ArrayList<>();
+        FileHandle dir = Gdx.files.internal("maps");
+        if (dir.exists() && dir.isDirectory()) {
+            Arrays.stream(dir.list())
+                    .filter(f -> f.extension().equalsIgnoreCase("tmx"))
+                    .sorted(Comparator.comparing(FileHandle::name))
+                    .forEach(out::add);
+        }
+        return out;
+    }
 
     @Override
     protected void draw(SpriteBatch batch) { /* stage draws */ }

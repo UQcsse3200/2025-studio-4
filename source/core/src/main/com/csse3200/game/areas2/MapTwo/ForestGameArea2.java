@@ -1,6 +1,7 @@
 package com.csse3200.game.areas2.MapTwo;
 
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.utils.Difficulty;
@@ -434,8 +435,9 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private Entity spawnPlayer() {
-        // Map2 使用更大的homebase缩放 (3.5f)
-        Entity newPlayer = PlayerFactory.createPlayer("images/homebase2.png", 3f);
+        // Map2 使用更大的homebase缩放 (3f) 和更大的血条
+        HealthBarComponent healthBar = new HealthBarComponent(2.5f, 0.25f, 1.3f);
+        Entity newPlayer = PlayerFactory.createPlayer("images/homebase2.png", 3f, healthBar);
         // 确保新玩家有钱包组件
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));

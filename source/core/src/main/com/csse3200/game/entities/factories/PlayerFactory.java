@@ -55,6 +55,17 @@ public class PlayerFactory {
    * @return a new basement entity
    */
   public static Entity createPlayer(String texturePath, float scale) {
+    return createPlayer(texturePath, scale, new HealthBarComponent());
+  }
+
+  /**
+   * Create a basement entity with custom texture, scale, and health bar configuration.
+   * @param texturePath the path to the homebase texture
+   * @param scale the scale factor for the homebase (1.0 = original size)
+   * @param healthBar custom health bar component
+   * @return a new basement entity
+   */
+  public static Entity createPlayer(String texturePath, float scale, HealthBarComponent healthBar) {
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
@@ -72,7 +83,7 @@ public class PlayerFactory {
             .addComponent(new HomebaseDamageEffectComponent(texturePath))
             .addComponent(new PlayerScoreComponent())
             .addComponent(new DamagePopupComponent())
-            .addComponent(new HealthBarComponent());
+            .addComponent(healthBar);
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(scale, scale);
     PhysicsUtils.setScaledCollider(basement, 0.6f, 0.3f);

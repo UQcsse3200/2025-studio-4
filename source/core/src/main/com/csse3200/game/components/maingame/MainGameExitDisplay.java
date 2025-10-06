@@ -12,14 +12,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.ui.MockRanks;
-import com.csse3200.game.ui.PlayerRank;
-import com.csse3200.game.ui.RankingDialog;
+import com.csse3200.game.ui.leaderboard.LeaderboardController;
+import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
+import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
+import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Displays a button to exit the Main Game screen to the Main Menu screen.
@@ -76,8 +77,22 @@ public class MainGameExitDisplay extends UIComponent {
 
       rankingBtn.addListener(new ChangeListener() {
           @Override public void changed(ChangeEvent event, Actor actor) {
-              List<PlayerRank> players = MockRanks.make(30);     // Generate 30 entries
-              new RankingDialog("Leaderboard", players, 12).show(stage);
+              logger.debug("Ranking button clicked");
+              try {
+                  // Use the global leaderboard service (already registered in GdxGame)
+                  LeaderboardService leaderboardService = ServiceLocator.getLeaderboardService();
+                  
+                  if (leaderboardService == null) {
+                      logger.error("Leaderboard service not available");
+                      return;
+                  }
+                  LeaderboardController controller = new LeaderboardController(leaderboardService);
+                  LeaderboardPopup popup = new LeaderboardPopup(MinimalSkinFactory.create(), controller);
+                  popup.showOn(stage);
+                  
+              } catch (Exception e) {
+                  logger.error("Error showing ranking", e);
+              }
           }
       });
 

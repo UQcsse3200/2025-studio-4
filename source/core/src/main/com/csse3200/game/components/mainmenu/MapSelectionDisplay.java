@@ -69,15 +69,15 @@ public class MapSelectionDisplay extends UIComponent {
         // Add built-in maps first
         addBuiltInMaps();
         
-        // Then add TMX files from maps directory
-        List<FileHandle> maps = findMaps();
-        for (FileHandle fh : maps) {
-            MapEntry e = new MapEntry();
-            e.mapId = fh.nameWithoutExtension();
-            e.displayName = e.mapId;
-            e.thumbTex = THUMB_TEX;                   // reuse placeholder thumbnail
-            entries.add(e);
-        }
+//        // Then add TMX files from maps directory
+//        List<FileHandle> maps = findMaps();
+//        for (FileHandle fh : maps) {
+//            MapEntry e = new MapEntry();
+//            e.mapId = fh.nameWithoutExtension();
+//            e.displayName = e.mapId;
+//            e.thumbTex = THUMB_TEX;                   // reuse placeholder thumbnail
+//            entries.add(e);
+//        }
         
         // If no maps at all, add default
         if (entries.isEmpty()) {
@@ -221,17 +221,17 @@ public class MapSelectionDisplay extends UIComponent {
     /**
      * Find .tmx maps under assets/maps/ (internal).
      */
-    private List<FileHandle> findMaps() {
-        List<FileHandle> out = new ArrayList<>();
-        FileHandle dir = Gdx.files.internal("maps");
-        if (dir.exists() && dir.isDirectory()) {
-            Arrays.stream(dir.list())
-                    .filter(f -> f.extension().equalsIgnoreCase("tmx"))
-                    .sorted(Comparator.comparing(FileHandle::name))
-                    .forEach(out::add);
-        }
-        return out;
-    }
+//    private List<FileHandle> findMaps() {
+//        List<FileHandle> out = new ArrayList<>();
+//        FileHandle dir = Gdx.files.internal("maps");
+//        if (dir.exists() && dir.isDirectory()) {
+//            Arrays.stream(dir.list())
+//                    .filter(f -> f.extension().equalsIgnoreCase("tmx"))
+//                    .sorted(Comparator.comparing(FileHandle::name))
+//                    .forEach(out::add);
+//        }
+//        return out;
+//    }
 
     @Override
     protected void draw(SpriteBatch batch) { /* stage draws */ }

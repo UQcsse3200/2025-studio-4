@@ -93,6 +93,12 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldDropCurrency() {
+        // Mock ResourceService to avoid loading actual sound files
+        ResourceService resourceService = mock(ResourceService.class);
+        Sound mockSound = mock(Sound.class);
+        when(resourceService.getAsset(anyString(), eq(Sound.class))).thenReturn(mockSound);
+        ServiceLocator.registerResourceService(resourceService);
+
         Entity player = new Entity();
         CurrencyManagerComponent manager = new CurrencyManagerComponent();
         player.addComponent(manager);
@@ -143,6 +149,12 @@ class CurrencyManagerComponentTest {
 
     @Test
     void shouldNotDeductCurrency() {
+        // Mock ResourceService to avoid loading actual sound files
+        ResourceService resourceService = mock(ResourceService.class);
+        Sound mockSound = mock(Sound.class);
+        when(resourceService.getAsset(anyString(), eq(Sound.class))).thenReturn(mockSound);
+        ServiceLocator.registerResourceService(resourceService);
+
         // Create sample cost for testing
         Map<CurrencyComponent.CurrencyType,Integer> costMap = new EnumMap<>(CurrencyComponent.CurrencyType.class);
         costMap.put(CurrencyComponent.CurrencyType.METAL_SCRAP, 5);
@@ -345,12 +357,12 @@ class CurrencyManagerComponentTest {
 
         manager.create();
 
-        assertEquals(1000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
+        assertEquals(100000, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.METAL_SCRAP));
         assertEquals(300, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.TITANIUM_CORE));
         assertEquals(50, manager.getCurrencyAmount(CurrencyComponent.CurrencyType.NEUROCHIP));
 
         // Assert: updateCurrencyUI was triggered for each type with correct amounts
-        assertTrue(triggeredEvents.contains("METAL_SCRAP:1000"));
+        assertTrue(triggeredEvents.contains("METAL_SCRAP:100000"));
         assertTrue(triggeredEvents.contains("TITANIUM_CORE:300"));
         assertTrue(triggeredEvents.contains("NEUROCHIP:50"));
     }

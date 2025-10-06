@@ -56,6 +56,7 @@ public class VictoryScreen implements Screen {
         this.game = game;
         initializeServices();
         setupVictoryScreen();
+        submitCurrentScore(); // 自动提交当前得分到排行榜
     }
     
     private void initializeServices() {
@@ -251,6 +252,9 @@ public class VictoryScreen implements Screen {
     public void show() {
         logger.info("Showing victory screen");
         Gdx.input.setInputProcessor(stage);
+        
+        // 自动提交当前游戏得分到排行榜
+        submitCurrentScore();
     }
     
     @Override
@@ -317,4 +321,34 @@ public class VictoryScreen implements Screen {
             batch.dispose();
         }
     }
+    
+    /**
+     * 提交当前游戏得分到排行榜（通过会话管理器防止重复提交）
+     */
+    private void submitCurrentScore() {
+        try {
+            // 使用会话管理器防止重复提交
+            com.csse3200.game.services.GameSessionManager sessionManager = 
+                ServiceLocator.getGameSessionManager();
+            
+            if (sessionManager == null) {
+                logger.error("Game session manager not available");
+                return;
+            }
+            
+            // 尝试提交得分（如果本次会话还未提交）
+            // 现在使用GameScoreService获取真实得分
+            boolean submitted = sessionManager.submitScoreIfNotSubmitted(true); // true = 游戏胜利
+            
+            if (submitted) {
+                logger.info("Successfully submitted victory score to leaderboard");
+            } else {
+                logger.info("Score already submitted for this session, skipping duplicate submission");
+            }
+            
+        } catch (Exception e) {
+            logger.error("Failed to submit victory score to leaderboard", e);
+        }
+    }
+    
 }

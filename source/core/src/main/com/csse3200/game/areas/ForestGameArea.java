@@ -81,7 +81,9 @@ public class ForestGameArea extends GameArea {
 
     private static final String[] forestSounds = {
             "sounds/homebase_hit_sound.mp3",
-            CurrencyManagerComponent.SOUND_PATH
+            CurrencyManagerComponent.SOUND_PATH,
+            "sounds/book_opening.mp3",
+            "sounds/book_closing.mp3",
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};

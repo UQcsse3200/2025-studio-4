@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.maingame.SummonPlacementController;
+import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
@@ -24,7 +25,9 @@ public class EngineerSummonComponent extends Component {
     private float cd = 0f;
     private int alive = 0;
 
-    /** 方案A使用的输入监听器（注意：不是项目的 InputComponent） */
+    /**
+     * 方案A使用的输入监听器（注意：不是项目的 InputComponent）
+     */
     private InputAdapter qAdapter;
 
     public EngineerSummonComponent(float cooldownSec, int maxSummons,
@@ -58,6 +61,12 @@ public class EngineerSummonComponent extends Component {
                 } else if (keycode == Input.Keys.NUM_2) {
                     ctrl.armSummon(new SimplePlacementController.SummonSpec(
                             "images/engineer/Turret.png", "turret"
+                    ));
+                    return true;
+                } else if (keycode == Input.Keys.NUM_3) {
+                    ctrl.armSummon(new SimplePlacementController.SummonSpec(
+                            "images/engineer/Currency_tower.png",  // 放一张你的机器人贴图
+                            "currencyBot"                       // 新增类型标识
                     ));
                     return true;
                 }
@@ -118,8 +127,6 @@ public class EngineerSummonComponent extends Component {
         }
         return null;
     }
-
-
 
     // =====（可选）供生成逻辑回调调用：维护冷却与计数 =====
     public void onSummonSpawned() {

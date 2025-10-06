@@ -195,4 +195,10 @@ public class CurrencyManagerComponent extends Component {
             this.updateCurrencyUI(type);
         });
     }
+
+    public void addCurrency(CurrencyType type, int amount) {
+        if (amount <= 0) return;
+        addCurrencyAmount(type, amount);
+        updateCurrencyUI(type);
+    }
 }

@@ -361,6 +361,12 @@ public class SimplePlacementController extends Component {
         return null;
     }
 
+    private void safeDispose(Entity e) {
+        try {
+            e.dispose();  // 你们的 Entity.dispose() 通常会从 EntityService 注销
+        } catch (Exception ignore) {}
+    }
+
     /**
      * Cancels the current placement and disposes of the ghost tower.
      */
@@ -369,8 +375,16 @@ public class SimplePlacementController extends Component {
             ghostTower.dispose();
             ghostTower = null;
         }
+
+        if (ghostSummon != null) {
+            safeDispose(ghostSummon);
+            ghostSummon = null;
+        }
+
         placementActive = false;
         needRelease = false;
+        mode = Mode.NONE;           // ★ 重要：复位模式
+        pendingType = "bone";
         System.out.println(">>> placement OFF");
     }
 
@@ -452,6 +466,33 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> placement ON (summon: " + spec.type + ")");
     }
 
+    /**
+     * 该瓦片上是否已有炮台（按 TurretAttackComponent 判断）
+     */
+    private boolean hasTurretOnTile(GridPoint2 tile, TerrainComponent terrain) {
+        Array<Entity> all = safeEntities();
+        if (all == null) return false;
+        float tileSize = terrain.getTileSize();
+
+        for (Entity e : all) {
+            if (e == null) continue;
+            if (e.getComponent(com.csse3200.game.components.hero.engineer.TurretAttackComponent.class) == null)
+                continue;
+
+            Vector2 p = e.getPosition();
+            if (p == null) continue;
+
+            GridPoint2 etile = new GridPoint2(
+                    (int) (p.x / tileSize),
+                    (int) (p.y / tileSize)
+            );
+            if (etile.x == tile.x && etile.y == tile.y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
         if (ghostSummon == null) return;
 
@@ -473,11 +514,19 @@ public class SimplePlacementController extends Component {
         ghostSummon.setPosition(snapPos);
 
         // 左键落地
+        // 左键落地
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (!onPath) return; // 不合法直接忽略
+            if (!onPath) return;
+
+            // 新增：瓦片占位检测
+            if (hasTurretOnTile(tile, terrain)) {
+                return;
+            }
             placeSummon(snapPos, tile);
         }
+
     }
+
 
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
         if (ghostSummon != null) {
@@ -485,32 +534,68 @@ public class SimplePlacementController extends Component {
             ghostSummon = null;
         }
 
-        Entity summon;
         if ("turret".equals(pendingType)) {
-            summon = SummonFactory.createDirectionalTurret(
-                    pendingSummonTexture,
-                    1f,          // 缩放
-                    1.0f,        // 攻击间隔
-                    new Vector2(-1, 0) // 固定朝右
+            // 四向同时射击
+            Vector2[] dirs = new Vector2[]{
+                    new Vector2(-1, 0), // 左
+
+            };
+
+            // 可选：给每个炮台一个起始冷却偏移，避免同帧齐射卡顿
+            float[] phaseShift = new float[]{0f, 0.25f, 0.50f, 0.75f};
+
+            for (int i = 0; i < dirs.length; i++) {
+                Vector2 d = dirs[i].nor();
+                Entity t = SummonFactory.createDirectionalTurret(
+                        pendingSummonTexture,
+                        1f,          // 缩放
+                        1.0f,        // 攻击间隔（你原来的值）
+                        d            // 射击方向
+                );
+
+                // 如果 DirectionalTurret 支持设置起始冷却（可选）
+                // 例如 t.getComponent(TurretShootComponent.class).setInitialCooldown(phaseShift[i]);
+                // 没有就删掉这段注释
+
+                t.setPosition(snapPos);
+                ServiceLocator.getEntityService().register(t);
+                t.create();
+            }
+
+        } else if ("currencyBot".equals(pendingType)) {
+            // === 产币机器人分支 ===
+            Entity owner = findPlayerEntity(); // ✅ 改成自动查找玩家
+
+            Entity bot = SummonFactory.createCurrencyBot(
+                    pendingSummonTexture,     // 贴图
+                    1f,                       // 缩放比例
+                    owner,                    // ★ 归属玩家
+                    CurrencyType.METAL_SCRAP, // ★ 币种（可改）
+                    300,                        // ★ 每次产币量
+                    2f                      // ★ 间隔秒
             );
+
+            bot.setPosition(snapPos);
+            ServiceLocator.getEntityService().register(bot);
+            bot.create();
+            System.out.println(">>> currencyBot placed at " + tile);
         } else {
-            summon = SummonFactory.createMeleeSummon(
+            // 原有近战/路障逻辑
+            Entity summon = SummonFactory.createMeleeSummon(
                     pendingSummonTexture,
                     false,
                     1f
             );
+            summon.setPosition(snapPos);
+            ServiceLocator.getEntityService().register(summon);
+            summon.create();
         }
-
-        summon.setPosition(snapPos);
-        ServiceLocator.getEntityService().register(summon);
-        summon.create();
 
         placementActive = false;
         mode = Mode.NONE;
         pendingType = "bone";
-        System.out.println(">>> " + pendingType + " SUMMON placed at " + tile);
+        System.out.println(">>> turret(四向) placed at " + tile);
     }
-
 
 
 }

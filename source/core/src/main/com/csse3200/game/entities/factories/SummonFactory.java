@@ -5,6 +5,8 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.hero.engineer.AutoDespawnOnDeathComponent; // ✅ 新增 import
 
+import com.csse3200.game.components.hero.engineer.CurrencyGeneratorComponent;
+import com.csse3200.game.components.hero.engineer.OwnerComponent;
 import com.csse3200.game.components.hero.engineer.TurretAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -16,7 +18,8 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
 public final class SummonFactory {
-    private SummonFactory() {}
+    private SummonFactory() {
+    }
 
     // —— 近战召唤物 ——
     public static Entity createMeleeSummon(String texturePath, boolean colliderSensor, float scale) {
@@ -31,7 +34,7 @@ public final class SummonFactory {
                 .addComponent(new HitboxComponent()
                         .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new TextureRenderComponent(texturePath))
-                .addComponent(new CombatStatsComponent(100, /*baseAttack*/0, resistance, weakness))
+                .addComponent(new CombatStatsComponent(500, /*baseAttack*/0, resistance, weakness))
                 .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, /*knockback*/4.0f))
                 .addComponent(new AutoDespawnOnDeathComponent());              // ✅ 死亡自动移除
 
@@ -58,7 +61,7 @@ public final class SummonFactory {
                 .addComponent(new HitboxComponent()
                         .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new TextureRenderComponent(texturePath))
-                .addComponent(new CombatStatsComponent(5, 15, resistance, weakness))
+                .addComponent(new CombatStatsComponent(20, 15, resistance, weakness))
                 .addComponent(new AutoDespawnOnDeathComponent());              // ✅ 死亡自动移除
 
         var phys = turret.getComponent(PhysicsComponent.class);
@@ -69,10 +72,46 @@ public final class SummonFactory {
         turret.setScale(scale, scale);
 
         turret.addComponent(new TurretAttackComponent(
-                fireDirection.nor(), attackCooldown, 6f, 3f, "images/hero/Bullet.png"));
+                fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/hero/Bullet.png"));
 
         return turret;
     }
+
+    // —— 产币机器人 ——
+// 需要 import CurrencyType, CurrencyGeneratorComponent, AutoDespawnOnDeathComponent
+    public static Entity createCurrencyBot(
+            String texturePath, float scale,
+            Entity owner,
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType currencyType,
+            int amountPerTick, float intervalSec
+    ) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        Entity bot = new Entity()
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent()
+                        .setSensor(false)
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new HitboxComponent()
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new TextureRenderComponent(texturePath))
+                .addComponent(new CombatStatsComponent(5, 0, resistance, weakness)) // 有少量血量
+                .addComponent(new AutoDespawnOnDeathComponent())
+                .addComponent(new OwnerComponent(owner))
+                .addComponent(new CurrencyGeneratorComponent(owner, currencyType, amountPerTick, intervalSec));
+
+        var phys = bot.getComponent(PhysicsComponent.class);
+        if (phys != null) {
+            phys.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.StaticBody);
+        }
+        PhysicsUtils.setScaledCollider(bot, 0.8f * scale, 0.8f * scale);
+        bot.setScale(scale, scale);
+
+
+        return bot;
+    }
+
 
     // —— 幽灵预览保持不变 ——
     public static Entity createMeleeSummonGhost(String texturePath, float scale) {

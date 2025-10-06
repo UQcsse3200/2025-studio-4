@@ -3,12 +3,10 @@ package com.csse3200.game.areas;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
-
 import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.HeroStatusPanelComponent;
 
 import com.csse3200.game.services.GameStateService;
-
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

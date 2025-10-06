@@ -129,4 +129,12 @@ class GameStateServiceTest {
         assertEquals(2, gameState.getStars());
     }
 
+    @Test
+    void heroesUnlockedCorrectly() {
+        assertTrue(gameState.getHeroUnlocks().get(GameStateService.HeroType.HERO));
+        assertFalse(gameState.getHeroUnlocks().get(GameStateService.HeroType.ENGINEER));
+        gameState.setHeroUnlocked(GameStateService.HeroType.ENGINEER);
+        assertTrue(gameState.getHeroUnlocks().get(GameStateService.HeroType.ENGINEER));
+    }
+
 }

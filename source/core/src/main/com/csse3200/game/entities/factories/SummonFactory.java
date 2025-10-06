@@ -3,11 +3,8 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
-import com.csse3200.game.components.hero.engineer.AutoDespawnOnDeathComponent; // ✅ 新增 import
+import com.csse3200.game.components.hero.engineer.*;
 
-import com.csse3200.game.components.hero.engineer.CurrencyGeneratorComponent;
-import com.csse3200.game.components.hero.engineer.OwnerComponent;
-import com.csse3200.game.components.hero.engineer.TurretAttackComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -73,6 +70,8 @@ public final class SummonFactory {
 
         turret.addComponent(new TurretAttackComponent(
                 fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/hero/Bullet.png"));
+
+        turret.addComponent(new FourWayCycleComponent(attackCooldown, fireDirection));
 
         return turret;
     }

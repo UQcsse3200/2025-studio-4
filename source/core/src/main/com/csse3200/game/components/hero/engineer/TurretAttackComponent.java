@@ -15,11 +15,12 @@ import com.csse3200.game.services.ServiceLocator;
  * - 子弹伤害从 CombatStatsComponent 读取
  */
 public class TurretAttackComponent extends Component {
-    private final Vector2 direction;
+    private  Vector2 direction;
     private final float cooldown;
     private final float bulletSpeed;
     private final float bulletLife;
     private final String bulletTexture;
+
 
     private float cdTimer = 0f;
 
@@ -30,6 +31,12 @@ public class TurretAttackComponent extends Component {
         this.bulletSpeed = bulletSpeed;
         this.bulletLife = bulletLife;
         this.bulletTexture = bulletTexture;
+    }
+
+    public void setDirection(Vector2 newDir) {
+        if (newDir != null) {
+            this.direction = new Vector2(newDir).nor();
+        }
     }
 
     @Override

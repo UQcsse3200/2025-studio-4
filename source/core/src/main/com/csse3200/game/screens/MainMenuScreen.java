@@ -102,18 +102,19 @@ public class MainMenuScreen extends ScreenAdapter {
   
   private void registerAudioAssets() {
     if (ServiceLocator.getAudioService() != null) {
-      ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/BGM_03_mp3.mp3");
+      //ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/BGM_03_mp3.mp3");
+      ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/new_menutheme.mp3");
     }
   }
   
   private void playMenuMusic() {
-    if (GdxGame.musicON == 0) {
+    //if (GdxGame.musicON == 0) {
       if (ServiceLocator.getAudioService() != null) {
         ServiceLocator.getAudioService().playMusic("menu_bgm", true);
         // Set the flag to indicate music is now on
         GdxGame.musicON = 1;
       }
-    }
+    //}
   }
 
   private void unloadAssets() {

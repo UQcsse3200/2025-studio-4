@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.utils.Difficulty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,6 +120,7 @@ public class MapSelectionDisplay extends UIComponent {
         Label title = new Label("Select Map", skin, "title");
 
         // Thumbnail + labels (no dialog/window background)
+        // Thumbnail + labels
         thumbImage = new Image(ServiceLocator.getResourceService().getAsset(THUMB_TEX, Texture.class));
         thumbImage.setScaling(Scaling.fit);
 
@@ -129,7 +131,18 @@ public class MapSelectionDisplay extends UIComponent {
         card.defaults().pad(6f);
         card.add(thumbImage).width(420f).height(420f).row();
         card.add(mapNameLabel).padTop(8f).row();
-        card.add(counterLabel).padTop(2f);
+        card.add(counterLabel).padTop(2f).row();
+
+        // Difficulty selector row
+        Label difficultyLabel = new Label("Difficulty:", skin);
+        SelectBox<String> difficultySelect = new SelectBox<>(skin);
+        difficultySelect.setItems("Easy", "Normal", "Hard");
+
+        Table difficultyRow = new Table();
+        difficultyRow.add(difficultyLabel).padRight(10f);
+        difficultyRow.add(difficultySelect).width(150f);
+
+        card.add(difficultyRow).padTop(10f).row();
 
         // Left/Right arrows
         TextButton leftArrow = new TextButton("<", skin);
@@ -152,11 +165,40 @@ public class MapSelectionDisplay extends UIComponent {
         playBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                MapEntry e = entries.get(currentIndex); // the selected map
+                String selected = difficultySelect.getSelected(); // "Easy", "Normal", "Hard"
+                Difficulty chosenDifficulty;
+
+                switch (selected.toLowerCase()) {
+                    case "Easy":
+                        chosenDifficulty = Difficulty.EASY;
+                        break;
+                    case "Normal":
+                        chosenDifficulty = Difficulty.MEDIUM;
+                        break;
+                    case "Hard":
+                        chosenDifficulty = Difficulty.HARD;
+                        break;
+                    default:
+                        chosenDifficulty = Difficulty.EASY;
+                }
+
+                entity.getEvents().trigger("mapSelected", e.mapId, chosenDifficulty);
+
+            }
+        });
+
+
+
+        /*
+        playBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
                 MapEntry e = entries.get(currentIndex);
                 entity.getEvents().trigger("mapSelected", e.mapId); // may be null (default)
             }
         });
-
+        */
         TextButton backBtn = new TextButton("Back", skin);
         backBtn.addListener(new ChangeListener() {
             @Override

@@ -7,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @ExtendWith(GameExtension.class)
 class GameStateServiceTest {
@@ -51,6 +52,33 @@ class GameStateServiceTest {
     }
 
     @Test
+    void rewardStarsOnWin_doesNothing_when_base_is_null() {
+        gameState.setBase(null);
+        gameState.setStars(2);
+
+        gameState.rewardStarsOnWin();
+
+        assertEquals(2, gameState.getStars(), "Stars must be unchanged when base is null");
+    }
+
+    @Test
+    void selectedHero_default_is_HERO() {
+        assertEquals(GameStateService.HeroType.HERO, gameState.getSelectedHero());
+    }
+
+    @Test
+    void setSelectedHero_sets_and_gets() {
+        gameState.setSelectedHero(GameStateService.HeroType.ENGINEER);
+        assertEquals(GameStateService.HeroType.ENGINEER, gameState.getSelectedHero());
+    }
+
+    @Test
+    void setSelectedHero_null_does_not_change_existing_selection() {
+        gameState.setSelectedHero(null);
+        assertEquals(GameStateService.HeroType.HERO, gameState.getSelectedHero(), "Null set should not change selection");
+    }
+
+    @Test
     void rewardStarsByHealth_tiers_and_updates_total() {
         // 80% -> 3
         Entity base = makeBaseWithHealth(80,100);
@@ -86,7 +114,7 @@ class GameStateServiceTest {
     void rewardStarsOnWin_returnsZero_when_no_player_cached() {
         gameState.setStars(4);
         gameState.rewardStarsOnWin();
-        assertEquals("Total unchanged when no player",4, gameState.getStars());
+        assertEquals(4, gameState.getStars(), "Total unchanged when no player");
     }
 
     @Test

@@ -43,6 +43,27 @@ public class SimpleSaveService {
     }
   }
 
+  /** Save to a specific filename under saves/, using provided name (without extension or with). */
+  public boolean saveAs(String name) {
+    try {
+      SaveData data = collect();
+      String safe = sanitize(name);
+      if (safe.endsWith(".json")) {
+        safe = safe.substring(0, safe.length() - 5);
+      }
+      FileHandle dir = Gdx.files.absolute("./saves");
+      if (!dir.exists()) dir.mkdirs();
+      String target = "saves/" + safe + ".json";
+      Gdx.files.absolute("./" + target).writeString(json.toJson(data), false);
+      logger.info("Saved to ./{} (players={}, towers={}, enemies={})", target,
+              data.player != null, data.towers.size(), data.enemies.size());
+      return true;
+    } catch (Exception e) {
+      logger.error("SaveAs failed", e);
+      return false;
+    }
+  }
+
   public boolean loadToPending() {
     try {
       FileHandle fh = Gdx.files.absolute("./" + SAVE_FILE);
@@ -52,6 +73,28 @@ public class SimpleSaveService {
       return true;
     } catch (Exception e) {
       logger.error("Load failed", e);
+      return false;
+    }
+  }
+
+  /** Load a specific save file by name (with or without .json) into pending. */
+  public boolean loadToPending(String name) {
+    try {
+      String safe = sanitize(name);
+      if (safe.endsWith(".json")) {
+        safe = safe.substring(0, safe.length() - 5);
+      }
+      String target = "saves/" + safe + ".json";
+      FileHandle fh = Gdx.files.absolute("./" + target);
+      if (!fh.exists()) fh = Gdx.files.local(target);
+      if (!fh.exists()) {
+        logger.warn("Named save not found: {}", target);
+        return false;
+      }
+      pending = json.fromJson(SaveData.class, fh.readString());
+      return true;
+    } catch (Exception e) {
+      logger.error("Load (named) failed", e);
       return false;
     }
   }
@@ -315,6 +358,11 @@ public class SimpleSaveService {
     float x = Math.max(0f, Math.min(15f, p.x));
     float y = Math.max(0f, Math.min(15f, p.y));
     return new Vector2(x, y);
+  }
+
+  private static String sanitize(String name) {
+    if (name == null) return "save";
+    return name.replaceAll("[^a-zA-Z0-9 _-]", "_");
   }
 
   // --- DTO ---

@@ -122,7 +122,7 @@ public class MainGameScreen extends ScreenAdapter {
     boolean hasExistingPlayer = false;
     if (isContinue && startupArg != null) {
       logger.info("Loading specific save file: {}", startupArg);
-      boolean success = simpleSave.loadToPending();
+      boolean success = simpleSave.loadToPending(startupArg);
       if (success) {
         logger.info("Save file loaded successfully");
         hasExistingPlayer = true;

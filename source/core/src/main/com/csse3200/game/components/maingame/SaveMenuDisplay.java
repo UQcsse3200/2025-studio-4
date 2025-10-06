@@ -152,9 +152,9 @@ public class SaveMenuDisplay extends UIComponent {
         // Use Segoe UI font
         style.font = skin.getFont("segoe_ui");
         
-        // Load button background image
+        // Load button background image (match main menu wooden buttons)
         Texture buttonTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Game_Button.png", Texture.class);
+            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
         
         // Create NinePatch for scalable button background
@@ -173,9 +173,9 @@ public class SaveMenuDisplay extends UIComponent {
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
         
-        style.fontColor = Color.CYAN;
-        style.downFontColor = new Color(0.0f, 0.6f, 0.8f, 1.0f);
-        style.overFontColor = new Color(0.2f, 0.8f, 1.0f, 1.0f);
+        style.fontColor = Color.WHITE;
+        style.downFontColor = Color.LIGHT_GRAY;
+        style.overFontColor = Color.WHITE;
         
         return style;
     }

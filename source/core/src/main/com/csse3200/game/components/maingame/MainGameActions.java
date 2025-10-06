@@ -165,25 +165,38 @@ public class MainGameActions extends Component {
   }
 
   private void onPerformSave() {
-    logger.info("Performing save operation (CI sync)");
-    
+    logger.info("Performing save operation with naming dialog");
     try {
-      var entityService = ServiceLocator.getEntityService();
-      if (entityService != null) {
-        var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
-        boolean success = saveService.save();
-        if (success) {
-          logger.info("Manual save completed successfully");
-          entity.getEvents().trigger("showSaveSuccess");
-          // auto-close save UI after success
-          entity.getEvents().trigger("hideSaveUI");
-        } else {
-          logger.warn("Manual save failed");
-          entity.getEvents().trigger("showSaveError");
-        }
-      }
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
+          "Save Game", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
+            @Override public void onConfirmed(String name) {
+              try {
+                var entityService = ServiceLocator.getEntityService();
+                if (entityService == null) {
+                  entity.getEvents().trigger("showSaveError");
+                  return;
+                }
+                var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
+                boolean success = saveService.saveAs(name);
+                if (success) {
+                  logger.info("Saved as '{}' successfully", name);
+                  entity.getEvents().trigger("showSaveSuccess");
+                  entity.getEvents().trigger("hideSaveUI");
+                } else {
+                  entity.getEvents().trigger("showSaveError");
+                }
+              } catch (Exception ex) {
+                logger.error("Error during named save", ex);
+                entity.getEvents().trigger("showSaveError");
+              }
+            }
+            @Override public void onCancelled() { /* no-op */ }
+          }
+      );
+      dialog.show(stage);
     } catch (Exception e) {
-      logger.error("Error during manual save", e);
+      logger.error("Error opening SaveNameDialog", e);
       entity.getEvents().trigger("showSaveError");
     }
   }

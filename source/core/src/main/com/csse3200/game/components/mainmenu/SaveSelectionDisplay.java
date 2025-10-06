@@ -132,10 +132,8 @@ public class SaveSelectionDisplay extends UIComponent {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateStr = sdf.format(new Date(saveFile.lastModified()));
     Label dateLabel = new Label(dateStr, skin);
-    Label nameLabel1 = new Label("Save point:", skin);
     dateLabel.setColor(Color.WHITE);
-    nameLabel1.setColor(Color.RED);
-    // 创建自定义按钮样式
+
     TextButtonStyle customButtonStyle = createCustomButtonStyle();
     
     TextButton loadBtn = new TextButton("Load", customButtonStyle);
@@ -159,7 +157,8 @@ public class SaveSelectionDisplay extends UIComponent {
           }
         });
 
-    rowTable.add(nameLabel1).width(200f).left();
+    // Show save file name exactly as created (without .json)
+    rowTable.add(nameLabel).width(260f).left();
     rowTable.add(dateLabel).width(150f).left();
     rowTable.add(loadBtn).size(80f, 40f).padLeft(20f);
     rowTable.add(deleteBtn).size(80f, 40f).padLeft(10f);

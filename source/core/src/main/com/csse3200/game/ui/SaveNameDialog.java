@@ -2,16 +2,18 @@ package com.csse3200.game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.csse3200.game.services.ServiceLocator;
 
-/**
- * A dialog for entering a save name. Mirrors styling from SimpleUI/NameInputDialog.
- */
 public class SaveNameDialog extends Dialog {
     public interface Callback {
         void onConfirmed(String name);
@@ -34,7 +36,7 @@ public class SaveNameDialog extends Dialog {
         nameField.setMessageText("Enter save name...");
         nameField.setMaxLength(24);
 
-        TextButton.TextButtonStyle buttonStyle = SimpleUI.buttonStyle();
+        TextButton.TextButtonStyle buttonStyle = createMainButtonStyle();
         TextButton confirmButton = new TextButton("Confirm", buttonStyle);
         TextButton cancelButton = new TextButton("Cancel", buttonStyle);
 
@@ -56,18 +58,21 @@ public class SaveNameDialog extends Dialog {
             }
         });
 
+        // Background panel: solid color for clarity
+        getContentTable().setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.6f)));
+
         Table content = getContentTable();
         content.pad(20);
-        Label title = new Label("Enter Save Name", SimpleUI.title());
+        Label title = new Label("Enter Save Name", new Label.LabelStyle(SimpleUI.font(), Color.WHITE));
         content.add(title).colspan(2).padBottom(20); content.row();
         content.add(nameField).width(300).height(40).colspan(2).padBottom(10); content.row();
         content.add(errorLabel).colspan(2).padBottom(10); content.row();
         Table buttons = new Table();
-        buttons.add(cancelButton).width(120).height(40).padRight(10);
-        buttons.add(confirmButton).width(120).height(40);
+        buttons.add(cancelButton).width(200).height(50).padRight(20);
+        buttons.add(confirmButton).width(200).height(50);
         content.add(buttons).colspan(2);
 
-        setSize(420, 200);
+        setSize(500, 260);
         centerWindow();
     }
 
@@ -111,6 +116,31 @@ public class SaveNameDialog extends Dialog {
         stage.setKeyboardFocus(nameField);
         nameField.setCursorPosition(nameField.getText().length());
         return this;
+    }
+
+    /**
+     * Create a button style matching the main menu wooden buttons used across the UI.
+     */
+    private TextButton.TextButtonStyle createMainButtonStyle() {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = SimpleUI.font();
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+        if (buttonTexture != null) {
+            TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+            NinePatch up = new NinePatch(buttonRegion, 10, 10, 10, 10);
+            NinePatch down = new NinePatch(buttonRegion, 10, 10, 10, 10);
+            down.setColor(new Color(0.85f, 0.85f, 0.85f, 1f));
+            NinePatch over = new NinePatch(buttonRegion, 10, 10, 10, 10);
+            over.setColor(new Color(1.05f, 1.05f, 1.05f, 1f));
+            style.up = new NinePatchDrawable(up);
+            style.down = new NinePatchDrawable(down);
+            style.over = new NinePatchDrawable(over);
+        }
+        style.fontColor = Color.WHITE;
+        style.downFontColor = Color.LIGHT_GRAY;
+        style.overFontColor = Color.WHITE;
+        return style;
     }
 }
 

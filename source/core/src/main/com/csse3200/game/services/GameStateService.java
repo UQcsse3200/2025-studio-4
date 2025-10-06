@@ -17,7 +17,8 @@ public class GameStateService {
 
     public enum HeroType {
         HERO,       // 普通英雄
-        ENGINEER    // 工程师
+        ENGINEER,    // 工程师
+        SAMURAI
     }
 
     private Entity base;
@@ -28,11 +29,12 @@ public class GameStateService {
     public GameStateService() {
         // should load from save file later
         logger.info("Loading GameStateService");
-        stars = 0;
+        stars = 10;
         heroUnlocks = new HashMap<>();
 
         heroUnlocks.put(HeroType.HERO, true);
         heroUnlocks.put(HeroType.ENGINEER, false);
+        heroUnlocks.put(HeroType.SAMURAI, false);
     }
 
     /**

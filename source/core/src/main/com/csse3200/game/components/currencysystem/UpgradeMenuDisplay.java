@@ -36,9 +36,13 @@ public class UpgradeMenuDisplay extends UIComponent {
     private static final String HERO_IMG = "images/hero/Heroshoot.png";
     private static final String ENG_IMG = "images/engineer/Engineer.png";
 
+    private static final String Sum_IMG = "images/samurai/Samurai.png";
+
     private final float IMG_SIZE = 96f;
 
     private static final int ENGINEER_COST = 3;
+
+    private static final int SAMURAI_COST = 5;
 
     public UpgradeMenuDisplay(GdxGame game) {
         super();
@@ -192,11 +196,23 @@ public class UpgradeMenuDisplay extends UIComponent {
                 ENGINEER_COST
         );
 
+        // =====  card =====
+        Image sumImg = new Image(ServiceLocator.getResourceService().getAsset(Sum_IMG, Texture.class));
+        sumImg.setSize(IMG_SIZE, IMG_SIZE);
+
+        Table sumCol = makeHeroCard(
+                GameStateService.HeroType. SAMURAI,
+                "SAMURAI",
+                sumImg,
+                SAMURAI_COST
+        );
+
         // ===== cards row (horizontal) =====
         Table cardsRow = new Table();
         cardsRow.defaults().pad(16f).top();
         cardsRow.add(heroCol).padRight(24f);
         cardsRow.add(engCol).padLeft(24f);
+        cardsRow.add(sumCol).padLeft(24f);
 
         return cardsRow;
     }

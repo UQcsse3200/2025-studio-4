@@ -5,6 +5,7 @@ import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.hero.samurai.SwordAppearanceComponent;
 import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
 import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
+import com.csse3200.game.components.hero.samurai.SwordLevelSyncComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.entities.configs.SamuraiConfig;
@@ -58,11 +59,12 @@ public final class SwordFactory {
                         .setJabCooldown(0.05f))
                 // ✅ 关键：给剑一个“伤害是多少”的组件
                 .addComponent(new CombatStatsComponent(
-                        50, damage,
+                        10, damage,
                         DamageTypeConfig.None,
                         DamageTypeConfig.None))
                 // ✅ 关键：把“碰撞”转成“对 NPC 造成伤害”
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown));
+                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown))
+                .addComponent(new SwordLevelSyncComponent(owner, cfg));
 
         return sword;
     }
@@ -71,7 +73,9 @@ public final class SwordFactory {
     /**
      * Overload with common defaults (forward=0°, centerToHandle=-0.25).
      */
-    /** Overload with defaults: forward=0°, centerToHandle=-0.25, damage=20, hitCooldown=0.2s */
+    /**
+     * Overload with defaults: forward=0°, centerToHandle=-0.25, damage=20, hitCooldown=0.2s
+     */
     public static Entity createSword(Entity owner,
                                      SamuraiConfig cfg,
                                      String swordTexture,
@@ -85,7 +89,7 @@ public final class SwordFactory {
                 angularSpeedDeg,
                 0f,       // spriteForwardOffsetDeg
                 -0.25f,   // centerToHandle
-                50,       // 默认伤害（按需改）
+                10,       // 默认伤害（按需改）
                 0.2f      // 默认对同一目标的命中间隔（秒）
         );
     }

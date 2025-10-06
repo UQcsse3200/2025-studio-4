@@ -77,7 +77,7 @@ public class SaveSelectionScreen extends ScreenAdapter {
     ServiceLocator.getRenderService().dispose();
     ServiceLocator.getEntityService().dispose();
 
-    ServiceLocator.clear();
+    //ServiceLocator.clear();
   }
 
   private void loadAssets() {

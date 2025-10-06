@@ -167,7 +167,13 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
      * Try to find the hero entity (with HeroTurretAttackComponent).
      */
     private boolean tryFindHero() {
-        for (Entity e : ServiceLocator.getEntityService().getEntities()) {
+        var entityService = ServiceLocator.getEntityService();
+        if (entityService == null) {
+            logger.debug("[HeroSkinSwitch] EntityService not available yet");
+            return false;
+        }
+        for (Entity e : entityService.getEntities()) {
+
             if (e.getComponent(HeroTurretAttackComponent.class) != null) {
                 hero = e;
                 return true;

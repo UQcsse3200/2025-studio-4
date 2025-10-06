@@ -49,25 +49,9 @@ public class MainMenuDisplay extends UIComponent {
 
         TextButton startBtn = new TextButton("New Game", customButtonStyle);
         TextButton loadBtn = new TextButton("Continue", customButtonStyle);
-
-        //TextButton heroSelectBtn = new TextButton("选择英雄", customButtonStyle);   // MERGED
-        TextButton heroSelectBtn = new TextButton("Select Hero", customButtonStyle);   // unified
-
         TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
-        TextButton exitBtn = new TextButton("Exit", customButtonStyle);
-
-        // stars display
-        Image starImage = new Image(
-                ServiceLocator.getResourceService().getAsset(
-                        "images/star.png",
-                        Texture.class
-                )
-        );
-        Label starsLabel = new Label(
-                Integer.toString(ServiceLocator.getGameStateService().getStars()),
-                skin,
-                "large"
-        );
+        TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
+    TextButton exitBtn = new TextButton("Exit", customButtonStyle);
 
         // 设置按钮大小
         float buttonWidth = 200f;
@@ -75,10 +59,10 @@ public class MainMenuDisplay extends UIComponent {
 
         startBtn.getLabel().setColor(Color.WHITE);
         loadBtn.getLabel().setColor(Color.WHITE);
-        heroSelectBtn.getLabel().setColor(Color.WHITE);
 
         settingsBtn.getLabel().setColor(Color.WHITE);
-        exitBtn.getLabel().setColor(Color.WHITE);
+        rankingBtn.getLabel().setColor(Color.WHITE);
+    exitBtn.getLabel().setColor(Color.WHITE);
 
         // Triggers an event when the button is pressed
         startBtn.addListener(new ChangeListener() {
@@ -98,31 +82,6 @@ public class MainMenuDisplay extends UIComponent {
             }
         });
 
-        heroSelectBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                                logger.debug("Select Hero button clicked");
-                                entity.getEvents().trigger("openHeroSelect");
-                            }
-        });
-
-        //heroSelectBtn.addListener(new ChangeListener() {   // NEW
-        //    @Override
-         //   public void changed(ChangeEvent event, Actor actor) {
-         //       logger.debug("Select Hero button clicked");
-         //       entity.getEvents().trigger("heroSelect");
-         //   }
-       // });
-
-       // engineerBtn.addListener(new ChangeListener() {     // NEW
-        //    @Override
-        //    public void changed(ChangeEvent event, Actor actor) {
-        //        logger.debug("Pick Engineer button clicked");
-         //       entity.getEvents().trigger("pickEngineer");
-         //   }
-      //  });
-
-
         settingsBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -131,32 +90,35 @@ public class MainMenuDisplay extends UIComponent {
             }
         });
 
-        exitBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Exit button clicked");
-                entity.getEvents().trigger("exit");
-            }
+    rankingBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Ranking button clicked");
+            entity.getEvents().trigger("ranking");
+          }
+        });
+
+    exitBtn.addListener(
+        new ChangeListener() {
+          @Override
+          public void changed(ChangeEvent changeEvent, Actor actor) {
+
+            logger.debug("Exit button clicked");
+            entity.getEvents().trigger("exit");
+          }
         });
 
         // === 布局 ===
         table.add().expandY().row();
-        HorizontalGroup group = new HorizontalGroup();
-        group.space(5);
-        group.addActor(starImage);
-        group.addActor(starsLabel);
-        table.add(group);
-        table.row();
         table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
         table.row();
         table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);
         table.row();
-        table.add(heroSelectBtn).size(buttonWidth, buttonHeight).padTop(20f);   // MERGED
-        table.row();
-        table.row();
         table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
         table.row();
-        table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
+        table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
         table.row();
         table.add().expandY();
 

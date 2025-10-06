@@ -3,7 +3,7 @@ package com.csse3200.game.components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.csse3200.game.components.maingame.MainGameOver;
+import com.csse3200.game.screens.GameOverScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -17,10 +17,12 @@ public class PlayerCombatStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(PlayerCombatStatsComponent.class);
   private int health;
   private int baseAttack;
+  private final int maxHealth;
 
   public PlayerCombatStatsComponent(int health, int baseAttack) {
     setHealth(health);
     setBaseAttack(baseAttack);
+    this.maxHealth = health;
   }
 
   /**
@@ -57,7 +59,7 @@ public class PlayerCombatStatsComponent extends Component {
       if (this.health == 0) {
         // Lose Condition
         ServiceLocator.getEntityService().unregister(entity);
-        MainGameScreen.ui.getComponent(MainGameOver.class).addActors();
+        MainGameScreen.ui.getComponent(GameOverScreen.class).addActors();
         }
       }
     }
@@ -96,5 +98,9 @@ public class PlayerCombatStatsComponent extends Component {
   public void hit(CombatStatsComponent attacker) {
     int newHealth = getHealth() - attacker.getBaseAttack();
     setHealth(newHealth);
+  }
+
+  public int getMaxHealth() {
+    return maxHealth;
   }
 }

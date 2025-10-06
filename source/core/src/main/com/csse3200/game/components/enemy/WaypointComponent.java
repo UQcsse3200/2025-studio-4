@@ -45,6 +45,58 @@ public class WaypointComponent extends Component {
     }
 
     /**
+     * Rebind this enemy to a new waypoint list and reset progression to start.
+     * After rebinding, the enemy will follow the provided path from the beginning.
+     *
+     * @param newWaypoints new waypoint list (must be non-null and non-empty)
+     */
+    public void rebindWaypoints(List<Entity> newWaypoints) {
+        if (newWaypoints == null || newWaypoints.isEmpty()) {
+            throw new IllegalArgumentException("New waypoints list cannot be null or empty");
+        }
+        this.waypoints = newWaypoints;
+        resetWaypoints();
+    }
+
+    /**
+     * Rebind to new waypoints and snap progression to the nearest waypoint
+     * based on the entity's current world position. This keeps movement
+     * continuing from the saved spot along the path rather than restarting.
+     */
+    public void rebindWaypointsAndSnap(List<Entity> newWaypoints, Vector2 entityWorldPos) {
+        if (newWaypoints == null || newWaypoints.isEmpty()) {
+            throw new IllegalArgumentException("New waypoints list cannot be null or empty");
+        }
+        this.waypoints = newWaypoints;
+        // Find nearest waypoint to current position
+        int nearestIdx = 0;
+        float bestDst2 = Float.MAX_VALUE;
+        for (int i = 0; i < waypoints.size(); i++) {
+            Entity wp = waypoints.get(i);
+            if (wp == null) continue;
+            Vector2 wpPos = wp.getPosition();
+            float d2 = wpPos.dst2(entityWorldPos);
+            if (d2 < bestDst2) {
+                bestDst2 = d2;
+                nearestIdx = i;
+            }
+        }
+
+        // Prefer forward progress: if next waypoint is closer than nearest, target next
+        int targetIdx = nearestIdx;
+        if (nearestIdx + 1 < waypoints.size()) {
+            float dCurr = waypoints.get(nearestIdx).getPosition().dst2(entityWorldPos);
+            float dNext = waypoints.get(nearestIdx + 1).getPosition().dst2(entityWorldPos);
+            if (dNext <= dCurr) {
+                targetIdx = nearestIdx + 1;
+            }
+        }
+
+        setCurrentWaypointIndex(targetIdx);
+        setCurrentTarget(waypoints.get(targetIdx));
+    }
+
+    /**
      * Gets the list of waypoints for this enemy.
      *
      * @return List of waypoint entities

@@ -1,11 +1,14 @@
 package com.csse3200.game.areas;
 
 import com.badlogic.gdx.Gdx;
-import com.csse3200.game.components.hero.HeroSelectionComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+
 import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.HeroStatusPanelComponent;
+
+import com.csse3200.game.services.GameStateService;
+
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,8 +69,12 @@ public class ForestGameArea extends GameArea {
     private boolean waveInProgress = false;
     private float spawnDelay = 2f; // Delay between spawns
 
+    // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
+    private boolean autoStartWaves = true;
+
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
+    private static ForestGameArea currentGameArea;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -79,7 +86,8 @@ public class ForestGameArea extends GameArea {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            CurrencyManagerComponent.SOUND_PATH
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};
@@ -89,10 +97,10 @@ public class ForestGameArea extends GameArea {
     private boolean hasExistingPlayer = false;
     private MapEditor mapEditor;
 
-    // 一次性提示是否已显示
+    // One-time prompt: Has this been displayed?
     private boolean heroHintShown = false;
 
-    // 障碍物坐标单一事实源：由关卡（GameArea）定义
+    // Obstacle Coordinate Single Fact Source: Defined by the GameArea
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
@@ -125,6 +133,14 @@ public class ForestGameArea extends GameArea {
      */
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
+    }
+
+    /**
+     * Control whether waves should auto start during create().
+     * Useful to disable when restoring from a save to avoid duplicated spawns.
+     */
+    public void setAutoStartWaves(boolean autoStartWaves) {
+        this.autoStartWaves = autoStartWaves;
     }
 
     /**
@@ -175,12 +191,35 @@ public class ForestGameArea extends GameArea {
     }
 
     /**
-     * Schedule the next enemy spawn with delay
+     * Schedule the next enemy spawn with delay (with comprehensive safety checks)
      */
     private void scheduleNextEnemySpawn() {
-        if (enemySpawnQueue.isEmpty()) {
+        // Safety check: ensure this game area is still the active one
+        if (currentGameArea != this) {
+            logger.info("Game area changed, stopping wave spawning");
+            forceStopWave();
+            return;
+        }
+
+        // Safety check: ensure services are still available
+        try {
+            if (ServiceLocator.getPhysicsService() == null ||
+                    ServiceLocator.getEntityService() == null ||
+                    ServiceLocator.getResourceService() == null) {
+                logger.warn("Services not available, stopping wave spawning");
+                forceStopWave();
+                return;
+            }
+        } catch (Exception e) {
+            logger.warn("Error checking services, stopping wave spawning: {}", e.getMessage());
+            forceStopWave();
+            return;
+        }
+
+        if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
             // Wave complete
             waveInProgress = false;
+            logger.info("Wave completed successfully");
             return;
         }
 
@@ -193,13 +232,32 @@ public class ForestGameArea extends GameArea {
         waveSpawnTask = Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                if (!enemySpawnQueue.isEmpty()) {
-                    // Spawn the next enemy
-                    Runnable spawnAction = enemySpawnQueue.remove(0);
-                    spawnAction.run();
+                // Double-check we're still the active game area
+                if (currentGameArea != ForestGameArea.this) {
+                    logger.info("Game area changed during spawn, stopping");
+                    return;
+                }
 
-                    // Schedule the next one
-                    scheduleNextEnemySpawn();
+                // Double-check services are still available when task runs
+                try {
+                    if (ServiceLocator.getPhysicsService() == null ||
+                            ServiceLocator.getEntityService() == null) {
+                        logger.warn("Services disposed during spawn, stopping wave");
+                        forceStopWave();
+                        return;
+                    }
+
+                    if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
+                        // Spawn the next enemy
+                        Runnable spawnAction = enemySpawnQueue.remove(0);
+                        spawnAction.run();
+
+                        // Schedule the next one
+                        scheduleNextEnemySpawn();
+                    }
+                } catch (Exception e) {
+                    logger.error("Error spawning enemy: {}", e.getMessage());
+                    forceStopWave();
                 }
             }
         }, spawnDelay);
@@ -213,6 +271,7 @@ public class ForestGameArea extends GameArea {
     public void create() {
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
+        registerForCleanup();
 
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
@@ -261,12 +320,14 @@ public class ForestGameArea extends GameArea {
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
 
-        Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                startEnemyWave();
-            }
-        }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
+        if (autoStartWaves) {
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    startEnemyWave();
+                }
+            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
+        }
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
@@ -291,14 +352,15 @@ public class ForestGameArea extends GameArea {
         //Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnEngineerAt));
 
         //spawnEntity(placement);
-        var svc = ServiceLocator.getSelectedHeroService();
-        if (svc == null) {
-            throw new IllegalStateException("SelectedHeroService not registered before MAIN_GAME!");
+        var gameState = ServiceLocator.getGameStateService();
+        if (gameState == null) {
+            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
         }
-        SelectedHeroService.HeroType chosen = svc.getSelected();
+        GameStateService.HeroType chosen = gameState.getSelectedHero();
         Gdx.app.log("ForestGameArea", "chosen=" + chosen);
 
 // 根据选择安装一个只放“指定英雄”的放置器
+
         java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
         switch (chosen) {
             case ENGINEER -> placeCb = this::spawnEngineerAt;
@@ -307,14 +369,11 @@ public class ForestGameArea extends GameArea {
         }
 
 
+
         Entity placementEntity = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
         );
         spawnEntity(placementEntity);
-
-
-
-
 
         playMusic();
 
@@ -342,7 +401,6 @@ public class ForestGameArea extends GameArea {
     private void spawnTerrain() {
         terrain = terrainFactory.createTerrain(TerrainType.FOREST_DEMO);
         spawnEntity(new Entity().addComponent(terrain));
-
         // Create boundary walls
         createBoundaryWalls();
     }
@@ -427,6 +485,13 @@ public class ForestGameArea extends GameArea {
             }
         }
         return null;
+    }
+
+    /**
+     * Expose current waypoint list generated by the map editor, for save/load rebinding.
+     */
+    public java.util.List<Entity> getWaypointList() {
+        return (mapEditor != null) ? mapEditor.waypointList : java.util.Collections.emptyList();
     }
 
     private void spawnSingleDrone() {
@@ -604,12 +669,18 @@ public class ForestGameArea extends GameArea {
         }
     }
 
-
     private void playMusic() {
-        Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
-        music.setLooping(true);
-        music.setVolume(0.3f);
-        music.play();
+        // Route all music through AudioService to avoid overlaps across screens
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
+            ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+            ServiceLocator.getAudioService().setMusicVolume(0.3f);
+        } else {
+            Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
+            music.setLooping(true);
+            music.setVolume(0.3f);
+            music.play();
+        }
     }
 
     private void loadAssets() {
@@ -632,13 +703,46 @@ public class ForestGameArea extends GameArea {
         resourceService.unloadAssets(forestMusic);
     }
 
+    public static void cleanupAllWaves() {
+        if (currentGameArea != null) {
+            currentGameArea.forceStopWave();
+            currentGameArea = null;
+        }
+        logger.info("Wave cleanup completed");
+    }
+
+    private void registerForCleanup() {
+        currentGameArea = this;
+    }
+
+    public void forceStopWave() {
+        try {
+            if (waveSpawnTask != null) {
+                waveSpawnTask.cancel();
+                waveSpawnTask = null;
+            }
+            waveInProgress = false;
+            if (enemySpawnQueue != null) {
+                enemySpawnQueue.clear();
+                enemySpawnQueue = null;
+            }
+            logger.info("Wave spawning force stopped");
+        } catch (Exception e) {
+            logger.error("Error during force stop: {}", e.getMessage());
+        }
+    }
+
     @Override
     public void dispose() {
         super.dispose();
         if (mapEditor != null) {
             mapEditor.cleanup();
         }
-        ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().stopMusic();
+        } else {
+            ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+        }
         this.unloadAssets();
     }
 }

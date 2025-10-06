@@ -49,9 +49,7 @@ public class CollectibleComponent extends Component {
                 isCollected = true;
                 entity.getEvents().trigger("collectCurrency", this.entity);
                 Gdx.app.postRunnable(entity::dispose);
-
             }
-
         }
     }
 
@@ -76,5 +74,4 @@ public class CollectibleComponent extends Component {
     public boolean isCollected() {
         return isCollected;
     }
-
 }

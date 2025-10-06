@@ -58,6 +58,9 @@ public class SettingsMenuDisplay extends UIComponent {
     private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
     private SelectBox<String> difficultySelect;
     private SelectBox<String> languageSelect;
+    private SelectBox<String> heroSkinSelect;
+    private SelectBox<String> heroWeaponSelect;
+    private SelectBox<String> heroEffectSelect;
     private boolean overlayMode = false;
 
     // Added: references used in overlay mode
@@ -226,6 +229,21 @@ public class SettingsMenuDisplay extends UIComponent {
         displayModeSelect.setItems(getDisplayModes(selectedMonitor));
         displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
+        Label heroSkinLabel = new Label("Hero Skin:", skin);
+        heroSkinSelect = new SelectBox<>(skin);
+        heroSkinSelect.setItems("Default", "Warrior", "Mage", "Archer", "Assassin");
+        heroSkinSelect.setSelected(settings.heroSkin.equals("default") ? "Default" : settings.heroSkin);
+
+        Label heroWeaponLabel = new Label("Hero Weapon:", skin);
+        heroWeaponSelect = new SelectBox<>(skin);
+        heroWeaponSelect.setItems("Default", "Sword", "Bow", "Staff", "Dagger");
+        heroWeaponSelect.setSelected(settings.heroWeapon.equals("default") ? "Default" : settings.heroWeapon);
+
+        Label heroEffectLabel = new Label("Hero Effect:", skin);
+        heroEffectSelect = new SelectBox<>(skin);
+        heroEffectSelect.setItems("Default", "Fire", "Ice", "Lightning", "Shadow");
+        heroEffectSelect.setSelected(settings.heroEffect.equals("default") ? "Default" : settings.heroEffect);
+
         // Position Components on table
         Table table = new Table();
 
@@ -271,6 +289,23 @@ public class SettingsMenuDisplay extends UIComponent {
         table.row().padTop(10f);
         table.add(displayModeLabel).right().padRight(15f);
         table.add(displayModeSelect).left();
+
+        table.row().padTop(20f);
+        Label heroCustomizationTitle = new Label("Hero Customization", skin);
+        heroCustomizationTitle.setColor(Color.YELLOW);
+        table.add(heroCustomizationTitle).colspan(2).center().padBottom(10f);
+
+        table.row().padTop(10f);
+        table.add(heroSkinLabel).right().padRight(15f);
+        table.add(heroSkinSelect).left();
+
+        table.row().padTop(10f);
+        table.add(heroWeaponLabel).right().padRight(15f);
+        table.add(heroWeaponSelect).left();
+
+        table.row().padTop(10f);
+        table.add(heroEffectLabel).right().padRight(15f);
+        table.add(heroEffectSelect).left();
 
         // Events on inputs
         uiScaleSlider.addListener(
@@ -396,6 +431,10 @@ public class SettingsMenuDisplay extends UIComponent {
         // Gameplay settings
         settings.difficulty = difficultySelect.getSelected();
         //settings.language = languageSelect.getSelected();
+        
+        settings.heroSkin = heroSkinSelect.getSelected().toLowerCase();
+        settings.heroWeapon = heroWeaponSelect.getSelected().toLowerCase();
+        settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
 
         UserSettings.set(settings, true);
 

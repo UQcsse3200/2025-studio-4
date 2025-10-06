@@ -178,7 +178,7 @@ public class MapEditor extends InputAdapter {
                 {25, 12}, {25, 11}, {25, 10}, {25, 9}, {25, 8}, {25, 7}, {25, 6},
 
                 // Finally walk to the right for 4 coordinates
-                {26, 6}, {27, 6}, {28, 6}, {29, 6}
+                {26, 6}, {27, 6}, {28, 6}
         };
 
         // Create path tiles based on predefined path根据预定义路径创建路径瓦片
@@ -196,7 +196,7 @@ public class MapEditor extends InputAdapter {
         keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
-        keyWaypoints.add(new GridPoint2(29, 6));    // End
+        keyWaypoints.add(new GridPoint2(28, 6));    // End
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {

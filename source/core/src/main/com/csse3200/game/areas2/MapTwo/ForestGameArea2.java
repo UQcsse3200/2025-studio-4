@@ -63,7 +63,7 @@ public class ForestGameArea2 extends GameArea2 {
 
     private static ForestGameArea2 currentGameArea;
 
-    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(6, 36);
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(5, 34);
     private static final float WALL_WIDTH = 0.1f;
 
 
@@ -434,7 +434,8 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private Entity spawnPlayer() {
-        Entity newPlayer = PlayerFactory.createPlayer();
+        // Map2 使用更大的homebase缩放 (3.5f)
+        Entity newPlayer = PlayerFactory.createPlayer("images/homebase2.png", 3f);
         // 确保新玩家有钱包组件
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));

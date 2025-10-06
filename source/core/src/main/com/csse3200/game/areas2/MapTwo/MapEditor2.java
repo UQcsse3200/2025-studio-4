@@ -148,18 +148,18 @@ public class MapEditor2 extends InputAdapter {
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints.add(new GridPoint2(6, 36));    // End
+        keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints.add(new GridPoint2(5, 32));    // End
         
         // 新增的5个关键点
-        keyWaypoints2.add(new GridPoint2(27, 5));    // 新坐标5
+        keyWaypoints2.add(new GridPoint2(28, 6));    // 新坐标5
         keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
         keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 36));    // End
+        keyWaypoints2.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints2.add(new GridPoint2(5, 32));    // End
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {

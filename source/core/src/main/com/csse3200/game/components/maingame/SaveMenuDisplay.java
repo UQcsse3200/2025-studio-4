@@ -80,7 +80,6 @@ public class SaveMenuDisplay extends UIComponent {
 
         // Save buttons
         TextButton saveBtn = new TextButton("Save Game", customButtonStyle);
-        TextButton saveAsBtn = new TextButton("Save As...", customButtonStyle);
         TextButton cancelBtn = new TextButton("Cancel", customButtonStyle);
 
         // Button listeners
@@ -90,11 +89,7 @@ public class SaveMenuDisplay extends UIComponent {
             }
         });
 
-        saveAsBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("performSaveAs");
-            }
-        });
+        // Save As removed per requirement
 
         cancelBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
@@ -106,7 +101,6 @@ public class SaveMenuDisplay extends UIComponent {
         window.add(title).row();
         window.add(statusLabel).padBottom(10f).row();
         window.add(saveBtn).size(280f, 50f).row();
-        window.add(saveAsBtn).size(280f, 50f).row();
         window.add(cancelBtn).size(280f, 50f).row();
 
         overlayTable.add(window).center();

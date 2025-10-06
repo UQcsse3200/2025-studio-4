@@ -33,7 +33,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
     entity.getEvents().addListener("performSave", this::onPerformSave);
-    entity.getEvents().addListener("performSaveAs", this::onPerformSaveAs);
+    // Save As removed
     entity.getEvents().addListener("togglePause", this::onTogglePause);
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
@@ -188,11 +188,7 @@ public class MainGameActions extends Component {
     }
   }
 
-  private void onPerformSaveAs() {
-    logger.info("Save As requested");
-    // TODO: Implement save as functionality
-    entity.getEvents().trigger("showSaveError"); // For now, show error
-  }
+  // Save As removed
 
   /**
    * Awards stars when won

@@ -90,6 +90,8 @@ public class UserSettings {
      */
     public float uiScale = 1f;
     public DisplaySettings displayMode = null;
+    public String heroWeapon = "default";
+    public String heroEffect = "default";
   }
 
   /**

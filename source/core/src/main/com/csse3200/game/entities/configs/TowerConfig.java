@@ -6,11 +6,16 @@ package com.csse3200.game.entities.configs;
  */
 public class TowerConfig {
     /** Stats for the bone tower. */
-    public TowerStats boneTower;
+    public TowerWrapper boneTower;
     /** Stats for the dino tower. */
-    public TowerStats dinoTower;
+    public TowerWrapper dinoTower;
     /** Stats for the cavemen tower. */
-    public TowerStats cavemenTower;
+    public TowerWrapper cavemenTower;
+
+    /** Stats for the advanced tower. */
+    public static class TowerWrapper {
+        public TowerStats base;
+    }
 
     /**
      * Inner class representing stats for a single tower type.
@@ -24,13 +29,17 @@ public class TowerConfig {
         public float cooldown;
         /** Cost to place the tower. */
         public int metalScrapCost;
-        public int titaniumCoreCost = 0;
-        public int neurochipCost = 0;
+        public int titaniumCoreCost;
+        public int neurochipCost;
         /** projectile speed of tower projectile */
         public float projectileSpeed;
         /** projectile life of tower projectile */
         public float projectileLife;
         /** projectile texture of tower projectile */
         public String projectileTexture;
+        /** image of tower */
+        public String image;
+        public int level_A;
+        public int level_B;
     }
 }

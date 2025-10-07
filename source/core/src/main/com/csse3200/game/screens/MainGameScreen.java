@@ -53,7 +53,10 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Main_Game_Button.png",
           "images/scrap.png",
           "images/Game_Over.png",
-          "images/Game_Victory.png"
+          "images/Game_Victory.png",
+          "images/homebase1.png",
+          "images/homebase2.png",
+          "images/basement.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);

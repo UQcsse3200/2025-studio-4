@@ -36,11 +36,41 @@ public class PlayerFactory {
    * Create a basement entity that inherits original player attributes (health, inventory, currency).
    */
   public static Entity createPlayer() {
+    return createPlayer("images/basement.png");
+  }
+
+  /**
+   * Create a basement entity with a custom texture.
+   * @param texturePath the path to the homebase texture
+   * @return a new basement entity
+   */
+  public static Entity createPlayer(String texturePath) {
+    return createPlayer(texturePath, BASEMENT_SCALE);
+  }
+
+  /**
+   * Create a basement entity with a custom texture and custom scale.
+   * @param texturePath the path to the homebase texture
+   * @param scale the scale factor for the homebase (1.0 = original size)
+   * @return a new basement entity
+   */
+  public static Entity createPlayer(String texturePath, float scale) {
+    return createPlayer(texturePath, scale, new HealthBarComponent());
+  }
+
+  /**
+   * Create a basement entity with custom texture, scale, and health bar configuration.
+   * @param texturePath the path to the homebase texture
+   * @param scale the scale factor for the homebase (1.0 = original size)
+   * @param healthBar custom health bar component
+   * @return a new basement entity
+   */
+  public static Entity createPlayer(String texturePath, float scale, HealthBarComponent healthBar) {
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForPlayer();
 
     Entity basement = new Entity()
-            .addComponent(new SwitchableTextureRenderComponent("images/basement.png"))
+            .addComponent(new SwitchableTextureRenderComponent(texturePath))
             .addComponent(new PhysicsComponent())
             .addComponent(new ColliderComponent().setSensor(true))
             .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
@@ -50,13 +80,12 @@ public class PlayerFactory {
             .addComponent(inputComponent)
             .addComponent(new CurrencyManagerComponent())
             .addComponent(new PlayerStatsDisplay())
-            .addComponent(new HomebaseDamageEffectComponent())
+            .addComponent(new HomebaseDamageEffectComponent(texturePath))
             .addComponent(new PlayerScoreComponent())
-            .addComponent(new HomebaseDamageEffectComponent())
             .addComponent(new DamagePopupComponent())
-            .addComponent(new HealthBarComponent());
+            .addComponent(healthBar);
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
-    basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);
+    basement.setScale(scale, scale);
     PhysicsUtils.setScaledCollider(basement, 0.6f, 0.3f);
     basement.getComponent(ColliderComponent.class).setDensity(1.5f);
     return basement;

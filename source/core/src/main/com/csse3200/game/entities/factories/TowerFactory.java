@@ -71,9 +71,9 @@ public class TowerFactory {
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle_1", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_1", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_1");
+        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle_");
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -104,9 +104,9 @@ public class TowerFactory {
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle_1", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_1", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_1");
+        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle_");
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -138,9 +138,9 @@ public class TowerFactory {
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle_1", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_1", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_1");
+        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle_");
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -173,9 +173,9 @@ public class TowerFactory {
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim)
                 .addComponent(new OrbitComponent(nest, stats.range, 0.5f)); // radius and speed can be tuned
-        headAnim.addAnimation("idle_1", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_1", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_1");
+        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle_");
 
         // Attach the head to the nest via TowerComponent
         nest.getComponent(TowerComponent.class)

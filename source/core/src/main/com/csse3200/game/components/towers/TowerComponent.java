@@ -327,7 +327,7 @@ public class TowerComponent extends Component {
         if (headRenderer != null) {
             String curr = headRenderer.getCurrentAnimation();
             if (curr != null && curr.startsWith("fire_") && headRenderer.isFinished()) {
-                String idleName = "idle_" + level;
+                String idleName = "idle_";
                 headRenderer.startAnimation(idleName);
             }
         }
@@ -421,7 +421,7 @@ public class TowerComponent extends Component {
                 if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
 
                 if (headRenderer != null) {
-                    headRenderer.startAnimation("fire_" + level);
+                    headRenderer.startAnimation("fire_");
                 }
             }
 

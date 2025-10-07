@@ -159,11 +159,11 @@ public class RotatingAnimationRenderComponent extends RenderComponent {
         animations.clear();
 
     // Try to automatically add idle/fire animations for current level
-    String idle = "idle_" + currentLevel;
-    String fire = "fire_" + currentLevel;
+    String idle = "idle_";
+    String fire = "fire_";
 
-        if (atlas.findRegion(idle) != null) addAnimation(idle, 0.1f, Animation.PlayMode.LOOP);
-        if (atlas.findRegion(fire) != null) addAnimation(fire, 0.08f, Animation.PlayMode.NORMAL);
+        addAnimation(idle, 0.1f, Animation.PlayMode.LOOP);
+        addAnimation(fire, 0.20f, Animation.PlayMode.NORMAL);
 
     startAnimation(idle);
     currentAtlasPath = texturePath;

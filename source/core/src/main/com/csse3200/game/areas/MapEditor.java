@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Set;
 import java.util.HashSet;
@@ -192,17 +193,43 @@ public class MapEditor extends InputAdapter {
         keyWaypoints.add(new GridPoint2(0, 10));    // Start
         keyWaypoints.add(new GridPoint2(5, 10));    // First turn
         keyWaypoints.add(new GridPoint2(5, 6));     // Up turn completed
+        keyWaypoints.add(new GridPoint2(6, 6));
+        keyWaypoints.add(new GridPoint2(7, 6));
+        keyWaypoints.add(new GridPoint2(8, 6));
+        keyWaypoints.add(new GridPoint2(9, 6));
         keyWaypoints.add(new GridPoint2(12, 6));    // Walk to the right completed
         keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
+        keyWaypoints.add(new GridPoint2(18, 12));
+        keyWaypoints.add(new GridPoint2(19, 12));
+        keyWaypoints.add(new GridPoint2(20, 12));
+        keyWaypoints.add(new GridPoint2(21, 12));
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
         keyWaypoints.add(new GridPoint2(29, 6));    // End
+        Map<String, Float> speedModifiers = Map.of(
+            "6,6", 0.5f,
+            "7,6", 0.5f,
+            "8,6", 0.5f,
+            "9,6", 0.5f,
+            "18,12", 0.5f,
+            "19,12", 0.5f,
+            "20,12", 0.5f,
+            "21,12", 0.5f
+        );
+
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
-            markKeypoint(wp);
+            String key = wp.x + "," + wp.y;
+            Float modifier = speedModifiers.get(key);
+            if (modifier == null) {
+                markKeypoint(wp);
+            }
             Entity waypoint = new Entity();
-            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypoint.setPosition(wp.x / 2f, wp.y / 2f);
+            if (modifier != null) {
+                waypoint.addComponent(new SpeedWaypointComponent(modifier));
+            }
             waypointList.add(waypoint);
         }
         int[][] redCircledArea = {

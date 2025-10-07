@@ -16,6 +16,7 @@ public class WaypointComponent extends Component {
     private Entity currentTarget;
     private int priorityTaskCount;
     private Vector2 speed;
+    private Vector2 baseSpeed;
     private Entity playerRef;
 
     /**
@@ -41,6 +42,7 @@ public class WaypointComponent extends Component {
         this.currentTarget = waypoints.get(0);
         this.priorityTaskCount = 1;
         this.speed = new Vector2(speed); // Create a copy to avoid external modifications
+        this.baseSpeed = new Vector2(speed);
         this.playerRef = player;
     }
 
@@ -142,6 +144,15 @@ public class WaypointComponent extends Component {
     }
 
     /**
+     * Gets the base movement speed for this enemy.
+     *
+     * @return Copy of the base speed vector
+     */
+    public Vector2 getBaseSpeed() {
+        return new Vector2(baseSpeed);
+    }
+
+    /**
      * Gets the player entity reference.
      *
      * @return Player entity
@@ -235,6 +246,8 @@ public class WaypointComponent extends Component {
         // Clean up any resources if needed
         waypoints = null;
         currentTarget = null;
+        speed = null;
+        baseSpeed = null;
         playerRef = null;
         super.dispose();
     }

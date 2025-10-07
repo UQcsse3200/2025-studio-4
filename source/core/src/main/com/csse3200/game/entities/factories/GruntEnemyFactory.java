@@ -9,6 +9,7 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -31,6 +32,7 @@ public class GruntEnemyFactory {
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 150;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -69,6 +71,7 @@ public class GruntEnemyFactory {
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         grunt.addComponent(waypointComponent);
+        applySpeedModifier(grunt, waypointComponent, waypoints.get(idx));
 
         grunt
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
@@ -84,6 +87,7 @@ public class GruntEnemyFactory {
             if (wc != null && wc.hasMoreWaypoints()) {
                 Entity nextTarget = wc.getNextWaypoint();
                 if (nextTarget != null) {
+                    applySpeedModifier(grunt, wc, nextTarget);
                     updateChaseTarget(grunt, nextTarget);
                 }
             }
@@ -116,6 +120,22 @@ public class GruntEnemyFactory {
 
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(grunt, desiredSpeed);
+        }
     }
 
     private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
@@ -210,3 +230,4 @@ public class GruntEnemyFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 }
+

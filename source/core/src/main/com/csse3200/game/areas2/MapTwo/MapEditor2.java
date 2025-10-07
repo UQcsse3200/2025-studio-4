@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas2.terrainTwo.TerrainComponent2;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Set;
 import java.util.HashSet;
@@ -142,18 +143,43 @@ public class MapEditor2 extends InputAdapter {
         // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
         keyWaypoints.add(new GridPoint2(5, 0));     // Start
+        keyWaypoints.add(new GridPoint2(5, 2));
+        keyWaypoints.add(new GridPoint2(5, 3));
+        keyWaypoints.add(new GridPoint2(5, 4));
+        keyWaypoints.add(new GridPoint2(5, 5));
         keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
+        keyWaypoints.add(new GridPoint2(7, 10));
+        keyWaypoints.add(new GridPoint2(8, 10));
+        keyWaypoints.add(new GridPoint2(9, 10));
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(14, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(14, 25));   // Fifth waypoint
         keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
         keyWaypoints.add(new GridPoint2(6, 36));    // End
 
+        Map<String, Float> speedModifiers = Map.of(
+            "5,2", 0.5f,
+            "5,3", 0.5f,
+            "5,4", 0.5f,
+            "5,5", 0.5f,
+            "7,10", 0.5f,
+            "8,10", 0.5f,
+            "9,10", 0.5f,
+            "10,10", 0.5f
+        );
+
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
-            markKeypoint(wp);
+            String key = wp.x + "," + wp.y;
+            Float modifier = speedModifiers.get(key);
+            if (modifier == null) {
+                markKeypoint(wp);
+            }
             Entity waypoint = new Entity();
-            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypoint.setPosition(wp.x / 2f, wp.y / 2f);
+            if (modifier != null) {
+                waypoint.addComponent(new SpeedWaypointComponent(modifier));
+            }
             waypointList.add(waypoint);
         }
 
@@ -162,7 +188,10 @@ public class MapEditor2 extends InputAdapter {
         
         // 重新标记关键点，确保它们不被路径瓦片覆盖
         for (GridPoint2 wp : keyWaypoints) {
-            markKeypoint(wp);
+            String key = wp.x + "," + wp.y;
+            if (!speedModifiers.containsKey(key)) {
+                markKeypoint(wp);
+            }
         }
         int[][] redCircledArea = {
             {12, 17, 5, 12}, 

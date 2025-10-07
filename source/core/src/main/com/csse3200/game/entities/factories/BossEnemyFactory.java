@@ -9,6 +9,7 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -32,6 +33,7 @@ public class BossEnemyFactory {
     private static final int DEFAULT_CURRENCY_AMOUNT = 10;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
     private static final int DEFAULT_POINTS = 600;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -69,6 +71,7 @@ public class BossEnemyFactory {
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         boss.addComponent(waypointComponent);
+        applySpeedModifier(boss, waypointComponent, waypoints.get(idx));
 
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
@@ -83,6 +86,7 @@ public class BossEnemyFactory {
             if (wc != null && wc.hasMoreWaypoints()) {
                 Entity nextTarget = wc.getNextWaypoint();
                 if (nextTarget != null) {
+                    applySpeedModifier(boss, wc, nextTarget);
                     updateChaseTarget(boss, nextTarget);
                 }
             }
@@ -118,6 +122,22 @@ public class BossEnemyFactory {
 
         Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void applySpeedModifier(Entity boss, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(boss, desiredSpeed);
+        }
     }
 
     private static void updateSpeed(Entity boss, Vector2 newSpeed) {
@@ -213,3 +233,4 @@ public class BossEnemyFactory {
     }
 
 }
+

@@ -5,15 +5,16 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Unit tests for InMemoryLeaderboardService implementation.
+ * Unit tests for SessionLeaderboardService implementation.
  */
-class InMemoryLeaderboardServiceTest {
+class SessionLeaderboardServiceTest {
     
-    private InMemoryLeaderboardService leaderboardService;
+    private SessionLeaderboardService leaderboardService;
+    private static final String TEST_PLAYER_ID = "test-player-123";
     
     @BeforeEach
     void setUp() {
-        leaderboardService = new InMemoryLeaderboardService("test-player");
+        leaderboardService = new SessionLeaderboardService(TEST_PLAYER_ID);
     }
     
     @Test
@@ -28,11 +29,12 @@ class InMemoryLeaderboardServiceTest {
         assertEquals(1, entries.size());
         assertEquals(1000, entries.get(0).score);
         assertEquals(1, entries.get(0).rank);
+        assertEquals(TEST_PLAYER_ID, entries.get(0).playerId);
     }
     
     @Test
-    void testMultipleScoresRanking() {
-        // Submit multiple scores
+    void testMultipleScoresFromSamePlayer() {
+        // Submit multiple scores from same player
         leaderboardService.submitScore(500);
         leaderboardService.submitScore(1000);
         leaderboardService.submitScore(750);
@@ -41,14 +43,10 @@ class InMemoryLeaderboardServiceTest {
             new LeaderboardService.LeaderboardQuery(0, 10, false)
         );
         
-        assertEquals(3, entries.size());
-        // Should be ranked by score (highest first)
+        // Should only keep the highest score
+        assertEquals(1, entries.size());
         assertEquals(1000, entries.get(0).score);
         assertEquals(1, entries.get(0).rank);
-        assertEquals(750, entries.get(1).score);
-        assertEquals(2, entries.get(1).rank);
-        assertEquals(500, entries.get(2).score);
-        assertEquals(3, entries.get(2).rank);
     }
     
     @Test
@@ -59,7 +57,8 @@ class InMemoryLeaderboardServiceTest {
         
         var myBest = leaderboardService.getMyBest();
         assertNotNull(myBest);
-        assertEquals(1000, myBest.score); // Should return highest score
+        assertEquals(1000, myBest.score);
+        assertEquals(TEST_PLAYER_ID, myBest.playerId);
     }
     
     @Test
@@ -73,24 +72,35 @@ class InMemoryLeaderboardServiceTest {
     }
     
     @Test
-    void testPagination() {
-        // Submit 25 scores
-        for (int i = 1; i <= 25; i++) {
-            leaderboardService.submitScore(i * 100);
-        }
+    void testPlayerIdConsistency() {
+        leaderboardService.submitScore(1000);
         
-        // Test first page
-        var firstPage = leaderboardService.getEntries(
+        var myBest = leaderboardService.getMyBest();
+        assertEquals(TEST_PLAYER_ID, myBest.playerId);
+        
+        var entries = leaderboardService.getEntries(
             new LeaderboardService.LeaderboardQuery(0, 10, false)
         );
-        assertEquals(10, firstPage.size());
-        assertEquals(2500, firstPage.get(0).score); // Highest score first
+        assertEquals(TEST_PLAYER_ID, entries.get(0).playerId);
+    }
+    
+    @Test
+    void testScoreUpdate() {
+        // Submit initial score
+        leaderboardService.submitScore(500);
+        var initialBest = leaderboardService.getMyBest();
+        assertEquals(500, initialBest.score);
         
-        // Test second page
-        var secondPage = leaderboardService.getEntries(
-            new LeaderboardService.LeaderboardQuery(10, 10, false)
+        // Submit higher score
+        leaderboardService.submitScore(1000);
+        var updatedBest = leaderboardService.getMyBest();
+        assertEquals(1000, updatedBest.score);
+        
+        // Should only have one entry (the highest)
+        var entries = leaderboardService.getEntries(
+            new LeaderboardService.LeaderboardQuery(0, 10, false)
         );
-        assertEquals(10, secondPage.size());
-        assertEquals(1500, secondPage.get(0).score); // 16th highest score
+        assertEquals(1, entries.size());
+        assertEquals(1000, entries.get(0).score);
     }
 }

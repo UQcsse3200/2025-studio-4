@@ -72,7 +72,10 @@ public class ForestGameArea extends GameArea {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            CurrencyManagerComponent.SOUND_PATH,
+            "sounds/book_opening.mp3",
+            "sounds/book_closing.mp3",
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};
@@ -88,10 +91,11 @@ public class ForestGameArea extends GameArea {
     // Obstacle Coordinate Single Fact Source: Defined by the GameArea
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
-            {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
+            {26, 3}, {27, 3}, {28, 3}, {29, 3},
             {5, 24}, {8, 20},
-            {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
-            {7, 25}, {2, 15}, {6, 29}, 
+            // 在x<31且y>13且x<13范围内随机添加的坐标点
+            {8, 15}, {5, 17}, {11, 14}, {3, 18},
+            {7, 25}, {2, 15},  {6, 29},
     };
 
     private static final int[][] SNOWTREE_COORDS = new int[][]{
@@ -416,6 +420,7 @@ public class ForestGameArea extends GameArea {
                 GridPoint2Utils.ZERO, false, false);
     }
 
+    //Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
         for (int[] p : coords) {
@@ -505,6 +510,7 @@ public class ForestGameArea extends GameArea {
 
     public static void checkEnemyCount() {
         if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+            // Wave complete - let onWaveDefeated handle progression
             if (currentGameArea != null) {
                 currentGameArea.onWaveDefeated();
             }
@@ -600,6 +606,20 @@ public class ForestGameArea extends GameArea {
     }
 
     public void forceStopWave() {
+        try {
+            if (waveSpawnTask != null) {
+                waveSpawnTask.cancel();
+                waveSpawnTask = null;
+            }
+            waveInProgress = false;
+            if (enemySpawnQueue != null) {
+                enemySpawnQueue.clear();
+                enemySpawnQueue = null;
+            }
+            logger.info("Wave spawning force stopped");
+        } catch (Exception e) {
+            logger.error("Error during force stop: {}", e.getMessage());
+        }
         try {
             if (waveSpawnTask != null) {
                 waveSpawnTask.cancel();

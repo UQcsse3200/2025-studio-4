@@ -32,7 +32,8 @@ public class MainMenuScreen extends ScreenAdapter {
   };
   
   private static final String[] mainMenuMusic = {
-    "sounds/BGM_03_mp3.mp3"
+    "sounds/BGM_03_mp3.mp3",
+    "sounds/book_theme.mp3"
   };
 
 

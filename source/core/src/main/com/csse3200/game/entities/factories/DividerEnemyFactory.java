@@ -8,6 +8,7 @@ import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -71,6 +72,7 @@ public class DividerEnemyFactory {
 
         divider
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
+                .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
@@ -98,8 +100,16 @@ public class DividerEnemyFactory {
     private static void destroyEnemy(Entity entity, Entity target, GameArea area) {
         if (entity == null) return;
 
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         final Vector2 pos = entity.getPosition().cpy();
         final Vector2[] offsets = new Vector2[]{
@@ -116,6 +126,12 @@ public class DividerEnemyFactory {
                 PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
                 if (psc != null) {
                     psc.addPoints(points);
+                }
+
+                // Track kill for ranking component
+                com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+                if (prc != null) {
+                    prc.addKill();
                 }
             }
         }

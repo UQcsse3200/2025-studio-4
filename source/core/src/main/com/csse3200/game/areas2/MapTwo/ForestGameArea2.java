@@ -1,5 +1,6 @@
 package com.csse3200.game.areas2.MapTwo;
 
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.utils.Difficulty;
@@ -16,6 +17,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
+import com.csse3200.game.wavesystem.Wave;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
@@ -42,27 +44,27 @@ import com.csse3200.game.components.CameraZoomDragComponent;
 public class ForestGameArea2 extends GameArea2 {
     private static final Logger logger = LoggerFactory.getLogger(ForestGameArea2.class);
 
-    private static final int NUM_DRONES = 5;
-    private static final int NUM_GRUNTS = 3;
-    private static final int NUM_TANKS = 2;
-    private static final int NUM_BOSSES = 1;
-    private static final int NUM_DIVIDERS = 1;
+    // Wave management
+    private List<Wave> waves;
+    private int currentWaveIndex = 0;
+    private Wave.WaveSpawnCallbacks spawnCallbacks;
+    
     public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
 
     private Timer.Task waveSpawnTask;
     private List<Runnable> enemySpawnQueue;
     private boolean waveInProgress = false;
-    private float spawnDelay = 2f; // Delay between spawns
+    private float spawnDelay = 2f; // Delay between spawns (updated per wave)
 
     // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
     private boolean autoStartWaves = true;
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
-    private static ForestGameArea2 currentGameArea;
+    public static ForestGameArea2 currentGameArea;
 
-    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(6, 36);
     private static final float WALL_WIDTH = 0.1f;
 
 
@@ -88,17 +90,12 @@ public class ForestGameArea2 extends GameArea2 {
     // Obstacle Coordinate Single Fact Source: Defined by the GameArea
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
-            {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
-            {26, 3}, {27, 3}, {28, 3}, {29, 3}, 
-             {5, 24}, {8, 20},
-             // 在x<31且y>13且x<13范围内随机添加的坐标点
-             {8, 15}, {5, 17}, {11, 14}, {3, 18}, 
-             {7, 25}, {2, 15},  {6, 29}, 
+            {27, 9}
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
+            {15, 9}   };
 
     /**
      * Initialise this ForestGameArea2 to use the provided TerrainFactory2.
@@ -122,132 +119,174 @@ public class ForestGameArea2 extends GameArea2 {
 
     /**
      * Control whether waves should auto start during create().
-     * Useful to disable when restoring from a save to avoid duplicated spawns.
      */
     public void setAutoStartWaves(boolean autoStartWaves) {
         this.autoStartWaves = autoStartWaves;
     }
 
-            /**
-         * Initialize and start the enemy wave spawning
-         */
-        private void startEnemyWave() {
-            if (waveInProgress) return;
-            
-            waveInProgress = true;
-            enemySpawnQueue = new ArrayList<>();
-            
-            buildSpawnQueue();
-            
-            scheduleNextEnemySpawn();
+    /**
+     * Initialize all waves for this game area.
+     */
+    private void initializeWaves() {
+        waves = new ArrayList<>();
+        
+        // Wave 1:
+        waves.add(new Wave(1, 5, 0, 0, 0, 0, 3.0f));
+        
+        // Wave 2:
+        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2.0f));
+        
+        // Wave 3:
+        waves.add(new Wave(3, 10, 5, 2, 0, 0, 2.0f));
+        
+        // Wave 4:
+        waves.add(new Wave(4, 8, 6, 3, 0, 1, 1.5f));
+        
+        // Wave 5:
+        waves.add(new Wave(5, 10, 8, 4, 1, 1, 1.2f));
+        
+        // Initialize spawn callbacks
+        spawnCallbacks = new Wave.WaveSpawnCallbacks(
+            this::spawnSingleDrone,
+            this::spawnSingleGrunt,
+            this::spawnSingleTank,
+            this::spawnSingleBoss,
+            this::spawnSingleDivider
+        );
+    }
+
+    /**
+     * Initialize and start the enemy wave spawning
+     */
+    private void startEnemyWave() {
+        if (waveInProgress) return;
+        
+        waveInProgress = true;
+        buildSpawnQueue();
+        scheduleNextEnemySpawn();
+    }
+
+    /**
+     * Build the queue of enemies to spawn based on current wave
+     */
+    private void buildSpawnQueue() {
+        if (currentWaveIndex >= waves.size()) {
+            logger.info("All waves completed!");
+            return;
         }
+        
+        Wave currentWave = waves.get(currentWaveIndex);
+        NUM_ENEMIES_TOTAL = currentWave.getTotalEnemies();
+        NUM_ENEMIES_DEFEATED = 0;
+        spawnDelay = currentWave.getSpawnDelay();
 
+        ForestGameArea.NUM_ENEMIES_TOTAL = NUM_ENEMIES_TOTAL;
+        ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
+        
+        enemySpawnQueue = currentWave.buildSpawnQueue(spawnCallbacks);
+        logger.info("Starting Wave {} with {} enemies", currentWave.getWaveNumber(), NUM_ENEMIES_TOTAL);
+    }
 
-        /**
-         * Build the queue of enemies to spawn in wave order
-         */
-        private void buildSpawnQueue() {
-            NUM_ENEMIES_TOTAL = (NUM_DRONES + NUM_GRUNTS + NUM_TANKS + NUM_BOSSES + (NUM_DIVIDERS * 4));
-            NUM_ENEMIES_DEFEATED = 0;
-            // Add drones to spawn queue
-            for (int i = 0; i < NUM_DRONES; i++) {
-                enemySpawnQueue.add(this::spawnSingleDrone);
-            }
-            
-            // Add grunts to spawn queue
-            for (int i = 0; i < NUM_GRUNTS; i++) {
-                enemySpawnQueue.add(this::spawnSingleGrunt);
-            }
-            
-            // Add tanks to spawn queue
-            for (int i = 0; i < NUM_TANKS; i++) {
-                enemySpawnQueue.add(this::spawnSingleTank);
-            }
-                        
-            // Add dividers to spawn queue
-            for (int i = 0; i < NUM_DIVIDERS; i++) {
-                enemySpawnQueue.add(this::spawnSingleDivider);
-            }
-
-            // Add bosses to spawn queue
-            for (int i = 0; i < NUM_BOSSES; i++) {
-                enemySpawnQueue.add(this::spawnSingleBoss);
-            }
-        }
-
-        /**
-         * Schedule the next enemy spawn with delay (with comprehensive safety checks)
-         */
-        private void scheduleNextEnemySpawn() {
-            // Safety check: ensure this game area is still the active one
-            if (currentGameArea != this) {
-                logger.info("Game area changed, stopping wave spawning");
-                forceStopWave();
-                return;
-            }
-            
-            // Safety check: ensure services are still available
-            try {
-                if (ServiceLocator.getPhysicsService() == null || 
-                    ServiceLocator.getEntityService() == null ||
-                    ServiceLocator.getResourceService() == null) {
-                    logger.warn("Services not available, stopping wave spawning");
-                    forceStopWave();
-                    return;
+    /**
+     * Called when all enemies in the current wave have been defeated.
+     */
+    public void onWaveDefeated() {
+        logger.info("Wave {} defeated!", currentWaveIndex + 1);
+        
+        // Check if this was the final wave
+        if (currentWaveIndex + 1 >= waves.size()) {
+            // All waves complete - trigger victory!
+            logger.info("All waves completed! Victory!");
+            if (MainGameScreen.ui != null) {
+                MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+                if (winComponent != null) {
+                    winComponent.addActors();
                 }
-            } catch (Exception e) {
-                logger.warn("Error checking services, stopping wave spawning: {}", e.getMessage());
-                forceStopWave();
-                return;
             }
-            
-            if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
-                // Wave complete
-                waveInProgress = false;
-                logger.info("Wave completed successfully");
-                return;
-            }
-            
-            // Cancel any existing spawn task
-            if (waveSpawnTask != null) {
-                waveSpawnTask.cancel();
-            }
-            
-            // Schedule next spawn
-            waveSpawnTask = Timer.schedule(new Timer.Task() {
+        } else {
+            // Start next wave after delay
+            currentWaveIndex++;
+            Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
-                    // Double-check we're still the active game area
-                    if (currentGameArea != ForestGameArea2.this) {
-                        logger.info("Game area changed during spawn, stopping");
+                    startEnemyWave();
+                }
+            }, 3.0f);
+        }
+    }
+
+    /**
+     * Schedule the next enemy spawn with delay (with comprehensive safety checks)
+     */
+    private void scheduleNextEnemySpawn() {
+        // Safety check: ensure this game area is still the active one
+        if (currentGameArea != this) {
+            logger.info("Game area changed, stopping wave spawning");
+            forceStopWave();
+            return;
+        }
+        
+        // Safety check: ensure services are still available
+        try {
+            if (ServiceLocator.getPhysicsService() == null || 
+                ServiceLocator.getEntityService() == null ||
+                ServiceLocator.getResourceService() == null) {
+                logger.warn("Services not available, stopping wave spawning");
+                forceStopWave();
+                return;
+            }
+        } catch (Exception e) {
+            logger.warn("Error checking services, stopping wave spawning: {}", e.getMessage());
+            forceStopWave();
+            return;
+        }
+        
+        if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
+            // Spawning complete, but enemies still alive
+            waveInProgress = false;
+            logger.info("Wave {} spawning completed", currentWaveIndex + 1);
+            return;
+        }
+        
+        // Cancel any existing spawn task
+        if (waveSpawnTask != null) {
+            waveSpawnTask.cancel();
+        }
+        
+        // Schedule next spawn
+        waveSpawnTask = Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                // Double-check we're still the active game area
+                if (currentGameArea != ForestGameArea2.this) {
+                    logger.info("Game area changed during spawn, stopping");
+                    return;
+                }
+                
+                // Double-check services are still available when task runs
+                try {
+                    if (ServiceLocator.getPhysicsService() == null || 
+                        ServiceLocator.getEntityService() == null) {
+                        logger.warn("Services disposed during spawn, stopping wave");
+                        forceStopWave();
                         return;
                     }
                     
-                    // Double-check services are still available when task runs
-                    try {
-                        if (ServiceLocator.getPhysicsService() == null || 
-                            ServiceLocator.getEntityService() == null) {
-                            logger.warn("Services disposed during spawn, stopping wave");
-                            forceStopWave();
-                            return;
-                        }
+                    if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
+                        // Spawn the next enemy
+                        Runnable spawnAction = enemySpawnQueue.remove(0);
+                        spawnAction.run();
                         
-                        if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
-                            // Spawn the next enemy
-                            Runnable spawnAction = enemySpawnQueue.remove(0);
-                            spawnAction.run();
-                            
-                            // Schedule the next one
-                            scheduleNextEnemySpawn();
-                        }
-                    } catch (Exception e) {
-                        logger.error("Error spawning enemy: {}", e.getMessage());
-                        forceStopWave();
-                        }
+                        // Schedule the next one
+                        scheduleNextEnemySpawn();
                     }
-                }, spawnDelay);
+                } catch (Exception e) {
+                    logger.error("Error spawning enemy: {}", e.getMessage());
+                    forceStopWave();
+                }
             }
-
+        }, spawnDelay);
+    }
 
     /**
      * Create the game area, including terrain, static entities (trees), dynamic entities (player)
@@ -314,6 +353,7 @@ public class ForestGameArea2 extends GameArea2 {
         placementController.refreshInvalidTiles();
 
         if (autoStartWaves) {
+            initializeWaves();
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
@@ -468,30 +508,26 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private void spawnSingleDrone() {
-        //NUM_ENEMIES_TOTAL++;
         Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(drone, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleGrunt() {
-        //NUM_ENEMIES_TOTAL++;
         Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(grunt, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleTank() {
-        //NUM_ENEMIES_TOTAL++;
         Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(tank, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleBoss() {
-        //NUM_ENEMIES_TOTAL++;
         Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(boss, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
@@ -501,21 +537,18 @@ public class ForestGameArea2 extends GameArea2 {
         // These are incompatible types - we would need to create a DividerEnemyFactory2 or modify the factory
         // For now, comment out to resolve compilation errors
         // Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
-        // spawnEntityAt(divider, new GridPoint2(0, 10), true, true);
+        // spawnEntityAt(divider, new GridPoint2(5, 0), true, true);
         logger.debug("Divider spawn disabled - requires compatible factory. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
-  public static void checkEnemyCount() {
-      if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
-          // Only try to access UI if we're in a real game environment
-          if (MainGameScreen.ui != null) {
-              MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
-              if (winComponent != null) {
-                  winComponent.addActors();
-              }
-          }
-      }
-  }
+    public static void checkEnemyCount() {
+        if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+            // Wave complete - let onWaveDefeated handle progression
+            if (currentGameArea != null) {
+                currentGameArea.onWaveDefeated();
+            }
+        }
+    }
 
     private void spawnHeroAt(GridPoint2 cell) {
 
@@ -610,20 +643,34 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     public void forceStopWave() {
-    try {
-        if (waveSpawnTask != null) {
-            waveSpawnTask.cancel();
-            waveSpawnTask = null;
+        try {
+            if (waveSpawnTask != null) {
+                waveSpawnTask.cancel();
+                waveSpawnTask = null;
+            }
+            waveInProgress = false;
+            if (enemySpawnQueue != null) {
+                enemySpawnQueue.clear();
+                enemySpawnQueue = null;
+            }
+            logger.info("Wave spawning force stopped");
+        } catch (Exception e) {
+            logger.error("Error during force stop: {}", e.getMessage());
         }
-        waveInProgress = false;
-        if (enemySpawnQueue != null) {
-            enemySpawnQueue.clear();
-            enemySpawnQueue = null;
+        try {
+            if (waveSpawnTask != null) {
+                waveSpawnTask.cancel();
+                waveSpawnTask = null;
+            }
+            waveInProgress = false;
+            if (enemySpawnQueue != null) {
+                enemySpawnQueue.clear();
+                enemySpawnQueue = null;
+            }
+            logger.info("Wave spawning force stopped");
+        } catch (Exception e) {
+            logger.error("Error during force stop: {}", e.getMessage());
         }
-        logger.info("Wave spawning force stopped");
-    } catch (Exception e) {
-        logger.error("Error during force stop: {}", e.getMessage());
-    }
     }
     
     /**

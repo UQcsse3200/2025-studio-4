@@ -20,7 +20,11 @@ import java.util.List;
 /** Map selection UI shown after pressing "New Game". */
 public class MapSelectionDisplay extends UIComponent {
     private static final String BG_TEX = "images/main_menu_background.png";
-    private static final String THUMB_TEX = "images/Main_Game_Button.png"; // existing asset
+    private static final String THUMB_TEX = "images/Main_Game_Button.png"; // default fallback
+    
+    // Resolved thumbnail textures for the two built-in maps
+    private String thumbTexMap1; // prefers images/mmap1.png, falls back to images/mmap.png or THUMB_TEX
+    private String thumbTexMap2; // prefers images/mmap2.png, falls back to THUMB_TEX
 
     private Table root;
 
@@ -44,7 +48,20 @@ public class MapSelectionDisplay extends UIComponent {
 
     private void ensureThumbLoaded() {
         ResourceService rs = ServiceLocator.getResourceService();
-        rs.loadTextures(new String[]{THUMB_TEX});
+        
+        // Resolve thumbnails with graceful fallbacks
+        String mmap1 = "images/mmap1.png";
+        String mmapFallback = "images/mmap.png"; // present in assets
+        String mmap2 = "images/mmap2.png";
+        
+        boolean hasMmap1 = Gdx.files.internal(mmap1).exists();
+        boolean hasMmapFallback = Gdx.files.internal(mmapFallback).exists();
+        boolean hasMmap2 = Gdx.files.internal(mmap2).exists();
+        
+        thumbTexMap1 = hasMmap1 ? mmap1 : (hasMmapFallback ? mmapFallback : THUMB_TEX);
+        thumbTexMap2 = hasMmap2 ? mmap2 : THUMB_TEX;
+        
+        rs.loadTextures(new String[]{THUMB_TEX, thumbTexMap1, thumbTexMap2});
         rs.loadAll();
     }
 
@@ -52,15 +69,15 @@ public class MapSelectionDisplay extends UIComponent {
         // Add built-in maps first
         addBuiltInMaps();
         
-        // Then add TMX files from maps directory
-        List<FileHandle> maps = findMaps();
-        for (FileHandle fh : maps) {
-            MapEntry e = new MapEntry();
-            e.mapId = fh.nameWithoutExtension();
-            e.displayName = e.mapId;
-            e.thumbTex = THUMB_TEX;                   // reuse placeholder thumbnail
-            entries.add(e);
-        }
+//        // Then add TMX files from maps directory
+//        List<FileHandle> maps = findMaps();
+//        for (FileHandle fh : maps) {
+//            MapEntry e = new MapEntry();
+//            e.mapId = fh.nameWithoutExtension();
+//            e.displayName = e.mapId;
+//            e.thumbTex = THUMB_TEX;                   // reuse placeholder thumbnail
+//            entries.add(e);
+//        }
         
         // If no maps at all, add default
         if (entries.isEmpty()) {
@@ -80,14 +97,14 @@ public class MapSelectionDisplay extends UIComponent {
         MapEntry defaultMap = new MapEntry();
         defaultMap.mapId = null;                     // null means default ForestGameArea
         defaultMap.displayName = "Forest Demo";
-        defaultMap.thumbTex = THUMB_TEX;
+        defaultMap.thumbTex = thumbTexMap1;
         entries.add(defaultMap);
         
         // MapTwo
         MapEntry mapTwo = new MapEntry();
         mapTwo.mapId = "MapTwo";                     // This will trigger ForestGameArea2
         mapTwo.displayName = "Map Two";
-        mapTwo.thumbTex = THUMB_TEX;
+        mapTwo.thumbTex = thumbTexMap2;
         entries.add(mapTwo);
     }
 
@@ -204,17 +221,17 @@ public class MapSelectionDisplay extends UIComponent {
     /**
      * Find .tmx maps under assets/maps/ (internal).
      */
-    private List<FileHandle> findMaps() {
-        List<FileHandle> out = new ArrayList<>();
-        FileHandle dir = Gdx.files.internal("maps");
-        if (dir.exists() && dir.isDirectory()) {
-            Arrays.stream(dir.list())
-                    .filter(f -> f.extension().equalsIgnoreCase("tmx"))
-                    .sorted(Comparator.comparing(FileHandle::name))
-                    .forEach(out::add);
-        }
-        return out;
-    }
+//    private List<FileHandle> findMaps() {
+//        List<FileHandle> out = new ArrayList<>();
+//        FileHandle dir = Gdx.files.internal("maps");
+//        if (dir.exists() && dir.isDirectory()) {
+//            Arrays.stream(dir.list())
+//                    .filter(f -> f.extension().equalsIgnoreCase("tmx"))
+//                    .sorted(Comparator.comparing(FileHandle::name))
+//                    .forEach(out::add);
+//        }
+//        return out;
+//    }
 
     @Override
     protected void draw(SpriteBatch batch) { /* stage draws */ }

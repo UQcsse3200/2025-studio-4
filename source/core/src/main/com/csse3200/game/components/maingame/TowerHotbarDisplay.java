@@ -42,58 +42,54 @@ public class TowerHotbarDisplay extends UIComponent {
         placementController = entity.getComponent(SimplePlacementController.class);
         table = new Table();
         table.bottom().left();
-        table.setFillParent(true);
+        // Remove setFillParent(true);
+
+        // --- Create brown background for hotbar only ---
+        com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+        pixmap.setColor(0.6f, 0.3f, 0.0f, 1f); // Brown color RGBA
+        pixmap.fill();
+        com.badlogic.gdx.graphics.Texture bgTexture = new com.badlogic.gdx.graphics.Texture(pixmap);
+        pixmap.dispose();
+        table.setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
 
         // Load button textures
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/dinoicon.png")));
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/boneicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/campfireicon.png")));
 
-        // Bone Tower button
+        // Create buttons (same as before)
         ImageButton boneBtn = new ImageButton(boneImage);
         boneBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (placementController != null && placementController.isPlacementActive()) {
-                    // Cancel current placement if already active
                     placementController.cancelPlacement();
-                    System.out.println(">>> cancelled existing placement");
                     return;
                 }
-
-                System.out.println(">>> startPlacementBone fired");
                 entity.getEvents().trigger("startPlacementBone");
             }
         });
 
-        // Dino Tower button
         ImageButton dinoBtn = new ImageButton(dinoImage);
         dinoBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (placementController != null && placementController.isPlacementActive()) {
                     placementController.cancelPlacement();
-                    System.out.println(">>> cancelled existing placement");
                     return;
                 }
-
-                System.out.println(">>> startPlacementDino fired");
                 entity.getEvents().trigger("startPlacementDino");
             }
         });
 
-        // Cavemen Tower button
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
         cavemenBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (placementController != null && placementController.isPlacementActive()) {
                     placementController.cancelPlacement();
-                    System.out.println(">>> cancelled existing placement");
                     return;
                 }
-
-                System.out.println(">>> startPlacementCavemen fired");
                 entity.getEvents().trigger("startPlacementCavemen");
             }
         });
@@ -109,8 +105,13 @@ public class TowerHotbarDisplay extends UIComponent {
         table.add(dinoBtn).pad(8f);
         table.row();
         table.add(cavemenBtn).pad(8f);
+
+        // Pack table to fit buttons
+        table.pack();
+
         stage.addActor(table);
     }
+
 
     /**
      * Rendering is handled by the stage, so nothing is drawn directly here.

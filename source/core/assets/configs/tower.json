@@ -1,30 +1,57 @@
 {
   "boneTower": {
-    "damage": 10,
-    "range": 3.0,
-    "cooldown": 1.0,
-    "metalScrapCost": 500,
-    "projectileSpeed": 2.0,
-    "projectileLife": 1,
-    "projectileTexture": "images/towers/bone_projectile.png"
+    "name": "bone tower",
+    "lore": "Crafted by ancient tribes, Bone Towers channel the primal energy of the land. Their flying bone projectiles carry the spirits of long-dead guardians, sending a chilling warning to any who dare approach.",
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 10,
+      "range": 3.0,
+      "cooldown": 1.0,
+      "metalScrapCost": 500,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 0,
+      "projectileSpeed": 2.0,
+      "projectileLife": 1,
+      "projectileTexture": "images/towers/bone_projectile.png",
+      "image": "images/bone.png"
+    }
   },
   "dinoTower": {
-    "damage": 20,
-    "range": 2.0,
-    "cooldown": 0.8,
-    "metalScrapCost": 1000,
-    "projectileSpeed": 2,
-    "projectileLife": 1,
-    "projectileTexture": "images/towers/projectile animations/fireballdino.png"
+    "name": "dino tower",
+    "locked": true,
+    "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 20,
+      "range": 2.0,
+      "cooldown": 0.8,
+      "metalScrapCost": 1000,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 0,
+      "projectileSpeed": 2,
+      "projectileLife": 1,
+      "projectileTexture": "images/towers/projectile animations/fireballdino.png",
+      "image": "images/dino.png"
+    }
   },
   "cavemenTower": {
-    "damage": 15,
-    "range": 5.0,
-    "cooldown": 0.8,
-    "metalScrapCost": 750,
-    "projectileSpeed": 2.0,
-    "projectileLife": 4,
-    "projectileTexture": "images/towers/projectile animations/zap.png"
-
+    "name": "cavemen tower",
+    "lore": "Cavemen Towers are staffed by expert marksmen armed with guns salvaged from defeated AI bots. With sharp eyes and steady hands, they make sure nothing slips through their sights.",
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 15,
+      "range": 5.0,
+      "cooldown": 0.8,
+      "metalScrapCost": 750,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 0,
+      "projectileSpeed": 2.0,
+      "projectileLife": 4,
+      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "image": "images/cavemen.png"
+    }
   }
 }

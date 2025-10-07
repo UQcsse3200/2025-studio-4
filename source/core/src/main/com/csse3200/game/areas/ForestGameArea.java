@@ -217,12 +217,14 @@ public class ForestGameArea extends GameArea {
         } else {
             // Start next wave after delay
             currentWaveIndex++;
+            // Adjust delay by time scale
+            float adjustedDelay = 3.0f / ServiceLocator.getTimeSource().getTimeScale();
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                     startEnemyWave();
                 }
-            }, 3.0f);
+            }, adjustedDelay);
         }
     }
 
@@ -264,6 +266,9 @@ public class ForestGameArea extends GameArea {
             waveSpawnTask.cancel();
         }
         
+        // Adjust spawn delay to compensate for time scale
+        float adjustedSpawnDelay = spawnDelay / ServiceLocator.getTimeSource().getTimeScale();
+
         // Schedule next spawn
         waveSpawnTask = Timer.schedule(new Timer.Task() {
             @Override
@@ -296,7 +301,7 @@ public class ForestGameArea extends GameArea {
                     forceStopWave();
                 }
             }
-        }, spawnDelay);
+        }, adjustedSpawnDelay);
     }
 
     /**
@@ -316,6 +321,11 @@ public class ForestGameArea extends GameArea {
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController);
         spawnEntity(ui);
+
+        // Create time speed control button
+        Entity timeSpeedUI = new Entity();
+        timeSpeedUI.addComponent(new com.csse3200.game.components.maingame.TimeSpeedButton());
+        spawnEntity(timeSpeedUI);
 
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
@@ -680,3 +690,4 @@ public class ForestGameArea extends GameArea {
         this.unloadAssets();
     }
 }
+

@@ -98,6 +98,10 @@ public class UserSettings {
     // Gameplay settings
     public String difficulty = "Normal";
     public String language = "English";
+
+    public String heroWeapon = "default";
+    public String heroEffect = "default";
+
   }
 
   /**

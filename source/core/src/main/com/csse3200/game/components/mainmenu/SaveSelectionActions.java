@@ -75,16 +75,8 @@ public class SaveSelectionActions extends Component {
       com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
           "New Save", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
             @Override public void onConfirmed(String name) {
-              // Create initial save file under saves/<name>.json
-              boolean ok = new com.csse3200.game.services.SimpleSaveService(
-                  com.csse3200.game.services.ServiceLocator.getEntityService()).save();
-              // The call above saves the current (empty) world; for out-of-game creation we write a minimal template instead.
-              if (!ok) {
-                // Write a minimal template file
-                writeInitialSaveTemplate(name);
-              } else {
-                renameDefaultSave(name);
-              }
+              // Directly write a minimal template saves/<name>.json for out-of-game creation
+              writeInitialSaveTemplate(name);
               entity.getEvents().trigger("refreshSaveList");
             }
             @Override public void onCancelled() { /* no-op */ }
@@ -96,29 +88,6 @@ public class SaveSelectionActions extends Component {
     }
   }
 
-  /**
-   * Rename the default save file to the user-specified save name.
-   */
-  private void renameDefaultSave(String name) {
-    try {
-      java.io.File def = new java.io.File("saves/game_save.json");
-      if (!def.exists()) return;
-      java.io.File target = new java.io.File("saves/" + sanitize(name) + ".json");
-      if (!target.getParentFile().exists()) target.getParentFile().mkdirs();
-      if (target.exists()) target.delete();
-      boolean ok = def.renameTo(target);
-      if (!ok) {
-        // Fallback to copy if rename fails
-        try (java.io.FileInputStream in = new java.io.FileInputStream(def);
-             java.io.FileOutputStream out = new java.io.FileOutputStream(target)) {
-          in.transferTo(out);
-        }
-        def.delete();
-      }
-    } catch (Exception e) {
-      logger.error("Rename default save failed", e);
-    }
-  }
 
   /**
    * Write a minimal usable save template.

@@ -90,8 +90,9 @@ public class GruntEnemyFactory {
         });
 
         grunt.addComponent(new AdjustSpeedByHealthComponent()
+                // Must add thresholds in order of ascending health percentages
+                .addThreshold(0.25f, 2f)
                 .addThreshold(0.5f, 1.4f)
-                .addThreshold(0.2f, 2f)
         );
         return grunt;
     }

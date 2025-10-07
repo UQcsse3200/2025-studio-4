@@ -51,7 +51,24 @@ public class HeroCustomizationComponent extends Component {
     }
     
     private void applyEffect() {
-        logger.debug("Applied hero effect: {}", currentEffect);
+        String soundPath = getSoundPath(currentEffect);
+        if (soundPath != null) {
+            logger.debug("Applied weapon sound: {}", currentEffect);
+        }
+    }
+    
+    private String getSoundPath(String effect) {
+        switch (effect.toLowerCase()) {
+            case "sound 1":
+                return "sounds/weapon_sound1.ogg";
+            case "sound 2":
+                return "sounds/weapon_sound2.ogg";
+            case "sound 3":
+                return "sounds/weapon_sound3.ogg";
+            case "default":
+            default:
+                return "sounds/weapon_default.ogg";
+        }
     }
     
     private String getSkinPath(String skin) {
@@ -74,20 +91,12 @@ public class HeroCustomizationComponent extends Component {
     
     private String getWeaponPath(String weapon) {
         switch (weapon.toLowerCase()) {
-            case "sword":
-                return "images/hero/sword_bullet.png";
-            case "bow":
-                return "images/hero/arrow_bullet.png";
-            case "staff":
-                return "images/hero/magic_bullet.png";
-            case "dagger":
-                return "images/hero/dagger_bullet.png";
-            case "pistol":
-                return "images/hero/pistol_bullet.png";
-            case "rifle":
-                return "images/hero/rifle_bullet.png";
-            case "shotgun":
-                return "images/hero/shotgun_bullet.png";
+            case "normal sword":
+                return "images/hero/normal_sword_bullet.png";
+            case "weapon 2":
+                return "images/hero/weapon2_bullet.png";
+            case "weapon 3":
+                return "images/hero/weapon3_bullet.png";
             case "default":
             default:
                 return "images/hero/Bullet.png";

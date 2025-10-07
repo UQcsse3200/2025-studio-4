@@ -246,16 +246,18 @@ public class TowerUpgradeMenu extends UIComponent {
         if ("pteradactyl".equalsIgnoreCase(key)) {
             return CurrencyType.TITANIUM_CORE;
         }
+        // Totem uses METAL_SCRAP (default)
         return UPGRADE_CURRENCY;
     }
 
-    // Normalize tower type to canonical keys used in upgrade maps.
     private static String canonicalTowerType(String towerType) {
         if (towerType == null) return "";
         String s = towerType.toLowerCase().trim();
-        // Accept common misspellings / variants and map them to the same key
         if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) {
             return "pteradactyl";
+        }
+        if (s.equals("totem")) {
+            return "totem";
         }
         return s;
     }

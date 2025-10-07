@@ -16,6 +16,7 @@ import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.towers.BeamAttackComponent;
 
 import java.util.Map;
 
@@ -310,6 +311,49 @@ public class TowerComponent extends Component {
             }
         }
 
+        if ("totem".equalsIgnoreCase(type)) return;
+
+        // SuperCavemen behaviour: assign nearest enemy to head's BeamAttackComponent and rotate head
+        if ("supercavemen".equalsIgnoreCase(type)) {
+            // find nearest enemy within range
+            Entity nearest = null;
+            float minDist = Float.MAX_VALUE;
+            Vector2 myCenter = entity.getCenterPosition();
+            float range = stats.getRange();
+
+            for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
+                if (other == entity || !isEnemyTarget(other)) continue;
+                Vector2 otherCenter = other.getCenterPosition();
+                if (otherCenter == null) continue;
+                float d = otherCenter.dst(myCenter);
+                if (d <= range && d < minDist) {
+                    nearest = other;
+                    minDist = d;
+                }
+            }
+
+            // set/clear beam target on head's BeamAttackComponent
+            if (headEntity != null) {
+                var beam = headEntity.getComponent(BeamAttackComponent.class);
+                if (beam != null) {
+                    if (nearest != null) {
+                        beam.setTarget(nearest);
+                        // rotate head to face target
+                        Vector2 spawnOrigin = headEntity.getCenterPosition() != null ? headEntity.getCenterPosition() : myCenter;
+                        Vector2 dir = nearest.getCenterPosition().cpy().sub(spawnOrigin);
+                        if (dir.len() <= 0.0001f) dir.set(1f, 0f);
+                        else dir.nor();
+                        if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
+                    } else {
+                        beam.clearTarget();
+                    }
+                }
+            }
+
+            // skip normal projectile logic for supercavemen
+            return;
+        }
+
         if (stats.canAttack()) {
             Vector2 myCenter = entity.getCenterPosition();
 
@@ -320,7 +364,7 @@ public class TowerComponent extends Component {
                 if (headCenter != null) spawnOrigin = headCenter;
             }
 
-            // Normal tower targeting logic (used for all tower types now)
+            // Target selection
             Entity target = null;
             float range = stats.getRange();
 
@@ -337,23 +381,16 @@ public class TowerComponent extends Component {
             }
 
             if (target != null) {
-                // Unified single-shot behaviour for all towers
                 Vector2 dir = target.getCenterPosition().cpy().sub(spawnOrigin);
                 if (dir.len() <= 0.0001f) {
-                    dir.set(1f, 0f); // fallback direction to avoid NaN
+                    dir.set(1f, 0f); // fallback to avoid NaN
                 } else {
                     dir.nor();
                 }
                 if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());
 
                 float speed = stats.getProjectileSpeed() != 0f ? stats.getProjectileSpeed() : 400f;
-                // pterodactyl projectiles are infinite-life; others use range/speed
-                float life;
-                if ("pterodactyl".equalsIgnoreCase(type)) {
-                    life = Float.POSITIVE_INFINITY;
-                } else {
-                    life = stats.getRange() / speed;
-                }
+                float life = "pterodactyl".equalsIgnoreCase(type) ? Float.POSITIVE_INFINITY : stats.getRange() / speed;
                 String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
                 int damage = (int) stats.getDamage();
 

@@ -68,47 +68,77 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/boneicon.png")));
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/campfireicon.png")));
+        // use cavemen image as the icon for SuperCavemen slot (replace with dedicated image if available)
+        TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/supercavemen.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
         // pterodactyl icon for the second-row first-column slot
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
+        TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totem.png")));
 
         // Create 12 buttons (3x4 grid). First 4 are functional, rest use placeholder.
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
         ImageButton pteroBtn = new ImageButton(pteroImage); // pterodactyl slot
+        ImageButton totemBtn = new ImageButton(totemImage); // totem slot
+
         ImageButton[] allButtons = new ImageButton[12];
         allButtons[0] = boneBtn;
         allButtons[1] = dinoBtn;
         allButtons[2] = cavemenBtn;
         allButtons[3] = pteroBtn;
-        for (int i = 4; i < allButtons.length; i++) {
-            allButtons[i] = new ImageButton(placeholderImage);
+        allButtons[4] = totemBtn;
+        for (int i = 5; i < allButtons.length; i++) {
+            // last button (index 11) is the SuperCavemen placement button
+            if (i == 11) {
+                allButtons[i] = new ImageButton(superCavemenImage);
+            } else {
+                allButtons[i] = new ImageButton(placeholderImage);
+            }
         }
 
         // Assign listeners for the first four
         boneBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                handlePlacement("startPlacementBone");
+                if (placementController != null) placementController.requestPlacement("bone");
+                else handlePlacement("startPlacementBone");
             }
         });
         dinoBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                handlePlacement("startPlacementDino");
+                if (placementController != null) placementController.requestPlacement("dino");
+                else handlePlacement("startPlacementDino");
             }
         });
         cavemenBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                handlePlacement("startPlacementCavemen");
+                if (placementController != null) placementController.requestPlacement("cavemen");
+                else handlePlacement("startPlacementCavemen");
             }
         });
         pteroBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                handlePlacement("startPlacementPterodactyl");
+                if (placementController != null) placementController.requestPlacement("pterodactyl");
+                else handlePlacement("startPlacementPterodactyl");
+            }
+        });
+        totemBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (placementController != null) placementController.requestPlacement("totem");
+                else handlePlacement("startPlacementTotem");
+            }
+        });
+        // Hook up the supercavemen button (bottom-right)
+        allButtons[11].addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (placementController != null) placementController.requestPlacement("supercavemen");
+                else handlePlacement("startPlacementSuperCavemen");
             }
         });
 
@@ -146,6 +176,7 @@ public class TowerHotbarDisplay extends UIComponent {
             placementController.cancelPlacement();
             return;
         }
+        // fallback: trigger on our UI entity (legacy)
         entity.getEvents().trigger(eventName);
     }
 

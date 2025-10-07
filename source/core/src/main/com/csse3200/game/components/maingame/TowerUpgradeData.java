@@ -79,6 +79,14 @@ public class TowerUpgradeData {
         pteroA.put(5, new UpgradeStats(20, 6.2f, 1.0f, 4.0f, 190, "images/pteradactyl.png"));
         pathA.put("pteradactyl", pteroA);
 
+        // Totem tower (Path A: Range)
+        Map<Integer, UpgradeStats> totemA = new HashMap<>();
+        totemA.put(2, new UpgradeStats(0, 5.0f, 0f, 5.0f, 900, "images/towers/totem.png"));
+        totemA.put(3, new UpgradeStats(0, 6.0f, 0f, 5.0f, 1100, "images/towers/totem.png"));
+        totemA.put(4, new UpgradeStats(0, 7.0f, 0f, 5.0f, 1300, "images/towers/totem.png"));
+        totemA.put(5, new UpgradeStats(0, 8.0f, 0f, 5.0f, 1500, "images/towers/totem.png"));
+        pathA.put("totem", totemA);
+
         return pathA;
     }
 
@@ -121,6 +129,14 @@ public class TowerUpgradeData {
         pteroB.put(4, new UpgradeStats(10, 2.5f, 0.7f, 22.0f, 120, "images/pteradactyl.png"));
         pteroB.put(5, new UpgradeStats(10, 2.5f, 0.6f, 25.0f, 200, "images/pteradactyl.png"));
         pathB.put("pteradactyl", pteroB);
+
+        // Totem tower (Path B: Speed)
+        Map<Integer, UpgradeStats> totemB = new HashMap<>();
+        totemB.put(2, new UpgradeStats(0, 4.0f, 0f, 7.0f, 900, "images/towers/totem.png"));
+        totemB.put(3, new UpgradeStats(0, 4.0f, 0f, 9.0f, 1100, "images/towers/totem.png"));
+        totemB.put(4, new UpgradeStats(0, 4.0f, 0f, 11.0f, 1300, "images/towers/totem.png"));
+        totemB.put(5, new UpgradeStats(0, 4.0f, 0f, 13.0f, 1500, "images/towers/totem.png"));
+        pathB.put("totem", totemB);
 
         return pathB;
     }

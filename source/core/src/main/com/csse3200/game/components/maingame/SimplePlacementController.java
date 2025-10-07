@@ -103,11 +103,42 @@ public class SimplePlacementController extends Component {
      */
     @Override
     public void create() {
-        entity.getEvents().addListener("startPlacementBone", this::armBone);
-        entity.getEvents().addListener("startPlacementDino", this::armDino);
-        entity.getEvents().addListener("startPlacementCavemen", this::armCavemen);
-        entity.getEvents().addListener("startPlacementPterodactyl", this::armPterodactyl);
+        entity.getEvents().addListener("startPlacementBone", this::handleHotbarBone);
+        entity.getEvents().addListener("startPlacementDino", this::handleHotbarDino);
+        entity.getEvents().addListener("startPlacementCavemen", this::handleHotbarCavemen);
+        entity.getEvents().addListener("startPlacementPterodactyl", this::handleHotbarPterodactyl);
+        entity.getEvents().addListener("startPlacementSuperCavemen", this::handleHotbarSuperCavemen);
+        entity.getEvents().addListener("startPlacementTotem", this::handleHotbarTotem);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
+    }
+
+    // Hotbar click handlers: toggle placement if already active and same type
+    private void handleHotbarBone() {
+        handleHotbarClick("bone");
+    }
+    private void handleHotbarDino() {
+        handleHotbarClick("dino");
+    }
+    private void handleHotbarCavemen() {
+        handleHotbarClick("cavemen");
+    }
+    private void handleHotbarPterodactyl() {
+        handleHotbarClick("pterodactyl");
+    }
+    private void handleHotbarSuperCavemen() {
+        handleHotbarClick("supercavemen");
+    }
+    private void handleHotbarTotem() {
+        handleHotbarClick("totem");
+    }
+
+    private void handleHotbarClick(String type) {
+        // Always cancel placement if active and same type, regardless of mouse state
+        if (placementActive && pendingType.equalsIgnoreCase(type)) {
+            cancelPlacement();
+            return;
+        }
+        startPlacement(type);
     }
 
     /** Arms the controller to start placing a Bone tower. */
@@ -130,6 +161,27 @@ public class SimplePlacementController extends Component {
         startPlacement("pterodactyl");
     }
 
+    /** Arms the controller to start placing a SuperCavemen tower. */
+    private void armSuperCavemen() {
+        startPlacement("supercavemen");
+    }
+
+    /** Arms the controller to start placing a Totem tower. */
+    private void armTotem() {
+        startPlacement("totem");
+    }
+
+    /**
+     * Public API for UI to request a placement directly on this controller instance.
+     * This avoids trying to trigger events on other entities (hotbar -> placement controller).
+     *
+     * @param type canonical tower type string ("bone","dino","cavemen","pterodactyl","supercavemen")
+     */
+    public void requestPlacement(String type) {
+        if (type == null) return;
+        startPlacement(type);
+    }
+
     /**
      * Starts placement mode for the specified tower type.
      *
@@ -144,6 +196,8 @@ public class SimplePlacementController extends Component {
             case "dino" -> ghostTower = TowerFactory.createDinoTower();
             case "cavemen" -> ghostTower = TowerFactory.createCavemenTower();
             case "pterodactyl" -> ghostTower = TowerFactory.createPterodactylTower();
+            case "supercavemen" -> ghostTower = TowerFactory.createSuperCavemenTower();
+            case "totem" -> ghostTower = TowerFactory.createTotemTower();
             default -> ghostTower = TowerFactory.createBoneTower();
         }
 
@@ -216,6 +270,8 @@ public class SimplePlacementController extends Component {
                 case "dino" -> stats = TowerFactory.getTowerConfig().dinoTower.base;
                 case "cavemen" -> stats = TowerFactory.getTowerConfig().cavemenTower.base;
                 case "pterodactyl" -> stats = TowerFactory.getTowerConfig().pterodactylTower.base;
+                case "supercavemen" -> stats = TowerFactory.getTowerConfig().supercavemenTower.base;
+                case "totem" -> stats = TowerFactory.getTowerConfig().totemTower.base;
                 default -> stats = TowerFactory.getTowerConfig().boneTower.base;
             }
 
@@ -240,6 +296,8 @@ public class SimplePlacementController extends Component {
                 case "dino" -> newTower = TowerFactory.createDinoTower();
                 case "cavemen" -> newTower = TowerFactory.createCavemenTower();
                 case "pterodactyl" -> newTower = TowerFactory.createPterodactylTower();
+                case "supercavemen" -> newTower = TowerFactory.createSuperCavemenTower();
+                case "totem" -> newTower = TowerFactory.createTotemTower();
                 default -> newTower = TowerFactory.createBoneTower();
             }
 

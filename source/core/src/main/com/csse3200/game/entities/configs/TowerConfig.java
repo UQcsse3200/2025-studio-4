@@ -13,8 +13,14 @@ public class TowerConfig {
     public TowerWrapper cavemenTower;
     /** Stats for the pteradactyl tower. */
     public TowerWrapper pterodactylTower;
+    /** Stats for the super cavemen tower. */
+    public TowerWrapper supercavemenTower;
+    /** Stats for the totem tower. */
+    public TowerWrapper totemTower;
 
-    /** Stats for the advanced tower. */
+    /**
+     * Inner wrapper class to match JSON structure.
+     */
     public static class TowerWrapper {
         public TowerStats base;
     }

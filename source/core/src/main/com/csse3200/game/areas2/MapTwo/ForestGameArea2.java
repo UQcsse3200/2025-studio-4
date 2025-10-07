@@ -56,6 +56,7 @@ public class ForestGameArea2 extends GameArea2 {
     private List<Runnable> enemySpawnQueue;
     private boolean waveInProgress = false;
     private float spawnDelay = 2f; // Delay between spawns (updated per wave)
+    private List<List<Entity>> waypointLists;
 
     // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
     private boolean autoStartWaves = true;
@@ -124,34 +125,44 @@ public class ForestGameArea2 extends GameArea2 {
         this.autoStartWaves = autoStartWaves;
     }
 
-    /**
-     * Initialize all waves for this game area.
-     */
+    private void initializeWaypointLists() {
+        waypointLists = new ArrayList<>();
+        waypointLists.add(MapEditor2.waypointList);
+        waypointLists.add(MapEditor2.waypointList2);
+    }
+
     private void initializeWaves() {
+        // Initialize waypoint lists first
+        initializeWaypointLists();
+        
+        // Initialize spawn callbacks
+        initializeSpawnCallbacks();
+        
         waves = new ArrayList<>();
         
         // Wave 1:
-        waves.add(new Wave(1, 5, 0, 0, 0, 0, 3.0f));
+        waves.add(new Wave(1, 5, 0, 0, 0, 0, 3.0f, waypointLists));
         
         // Wave 2:
-        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2.0f));
+        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2.0f, waypointLists));
         
         // Wave 3:
-        waves.add(new Wave(3, 10, 5, 2, 0, 0, 2.0f));
+        waves.add(new Wave(3, 10, 5, 2, 0, 0, 2.0f, waypointLists));
         
         // Wave 4:
-        waves.add(new Wave(4, 8, 6, 3, 0, 1, 1.5f));
+        waves.add(new Wave(4, 8, 6, 3, 0, 1, 1.5f, waypointLists));
         
         // Wave 5:
-        waves.add(new Wave(5, 10, 8, 4, 1, 1, 1.2f));
-        
-        // Initialize spawn callbacks
+        waves.add(new Wave(5, 10, 8, 4, 1, 1, 1.2f, waypointLists));
+    }
+
+    private void initializeSpawnCallbacks() {
         spawnCallbacks = new Wave.WaveSpawnCallbacks(
-            this::spawnSingleDrone,
-            this::spawnSingleGrunt,
-            this::spawnSingleTank,
-            this::spawnSingleBoss,
-            this::spawnSingleDivider
+            this::spawnDrone,
+            this::spawnGrunt,
+            this::spawnTank,
+            this::spawnBoss,
+            this::spawnDivider
         );
     }
 
@@ -507,38 +518,53 @@ public class ForestGameArea2 extends GameArea2 {
         return (mapEditor != null) ? mapEditor.waypointList : java.util.Collections.emptyList();
     }
 
-    private void spawnSingleDrone() {
-        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(drone, new GridPoint2(5, 0), true, true);
-        logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnDrone(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity drone = DroneEnemyFactory.createDroneEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(drone, spawnPos, true, true);
+        logger.debug("Spawned drone at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleGrunt() {
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(grunt, new GridPoint2(5, 0), true, true);
-        logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnGrunt(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(grunt, spawnPos, true, true);
+        logger.debug("Spawned grunt at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleTank() {
-        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(tank, new GridPoint2(5, 0), true, true);
-        logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnTank(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(tank, spawnPos, true, true);
+        logger.debug("Spawned tank at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleBoss() {
-        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
-        spawnEntityAt(boss, new GridPoint2(5, 0), true, true);
-        logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnBoss(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(boss, spawnPos, true, true);
+        logger.debug("Spawned boss at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleDivider() {
-        //NUM_ENEMIES_TOTAL += 4; // Dividers count as 4 enemies
-        // Note: DividerEnemyFactory.createDividerEnemy expects GameArea, but we have ForestGameArea2 (extends GameArea2)
-        // These are incompatible types - we would need to create a DividerEnemyFactory2 or modify the factory
-        // For now, comment out to resolve compilation errors
-        // Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.waypointList, this, player, gameDifficulty);
-        // spawnEntityAt(divider, new GridPoint2(5, 0), true, true);
-        logger.debug("Divider spawn disabled - requires compatible factory. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnDivider(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity divider = DividerEnemyFactoryLevel2.createDividerEnemy(waypoints, this, player, gameDifficulty);
+        spawnEntityAt(divider, spawnPos, true, true);
+        logger.debug("Spawned divider at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
+    }
+
+    /**
+     * Helper method to get spawn position from the first waypoint in the list
+     */
+    private GridPoint2 getSpawnPosition(List<Entity> waypoints) {
+        if (waypoints == null || waypoints.isEmpty()) {
+            logger.warn("No waypoints provided, using default spawn position");
+            return new GridPoint2(0, 0);
+        }
+        // Get position from the first waypoint entity
+        Entity firstWaypoint = waypoints.get(0);
+        Vector2 pos = firstWaypoint.getPosition();
+        return new GridPoint2((int) pos.x * 2, (int) pos.y * 2);
     }
 
     public static void checkEnemyCount() {

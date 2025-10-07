@@ -37,7 +37,7 @@ public class MapEditor extends InputAdapter {
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
-    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;

@@ -38,7 +38,8 @@ public class MapEditor2 extends InputAdapter {
     private java.util.List<GridPoint2> keyWaypoints2 = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
-    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList2 = new java.util.ArrayList<>();
 
     public MapEditor2(TerrainComponent2 terrain, Entity player) {
         this.terrain = terrain;
@@ -174,7 +175,7 @@ public class MapEditor2 extends InputAdapter {
             markKeypoint(wp);
             Entity waypoint = new Entity();
             waypoint.setPosition(wp.x/2, wp.y/2);
-            waypointList.add(waypoint);
+            waypointList2.add(waypoint);
         }
 
         // Connect waypoints with path tiles连接关键点之间的路径

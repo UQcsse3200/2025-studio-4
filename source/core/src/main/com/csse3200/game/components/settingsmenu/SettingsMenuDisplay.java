@@ -231,7 +231,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
         Label heroSkinLabel = new Label("Hero Skin:", skin);
         heroSkinSelect = new SelectBox<>(skin);
-        heroSkinSelect.setItems("Default", "Warrior", "Mage", "Archer", "Assassin");
+        heroSkinSelect.setItems("Default", "Warrior", "Mage", "Archer", "Assassin", "Samurai");
         heroSkinSelect.setSelected(settings.heroSkin.equals("default") ? "Default" : settings.heroSkin);
 
         Label heroWeaponLabel = new Label("Hero Weapon:", skin);

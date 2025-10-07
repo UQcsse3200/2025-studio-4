@@ -64,6 +64,8 @@ public class HeroCustomizationComponent extends Component {
                 return "images/hero/archer_skin.png";
             case "assassin":
                 return "images/hero/assassin_skin.png";
+            case "samurai":
+                return "images/hero/samurai_skin.png";
             case "default":
             default:
                 return "images/hero/Heroshoot.png";

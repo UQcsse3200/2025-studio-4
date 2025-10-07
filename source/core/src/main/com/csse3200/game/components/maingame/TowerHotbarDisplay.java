@@ -69,11 +69,11 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/campfireicon.png")));
         // use cavemen image as the icon for SuperCavemen slot (replace with dedicated image if available)
-        TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/supercavemen.png")));
+        TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/supercavemenicon.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
         // pterodactyl icon for the second-row first-column slot
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
-        TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totem.png")));
+        TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
 
         // Create 12 buttons (3x4 grid). First 4 are functional, rest use placeholder.
         ImageButton boneBtn = new ImageButton(boneImage);
@@ -101,44 +101,97 @@ public class TowerHotbarDisplay extends UIComponent {
         boneBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) placementController.requestPlacement("bone");
-                else handlePlacement("startPlacementBone");
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("bone".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("bone");
+                } else handlePlacement("startPlacementBone");
             }
         });
         dinoBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) placementController.requestPlacement("dino");
-                else handlePlacement("startPlacementDino");
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("dino".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("dino");
+                } else handlePlacement("startPlacementDino");
             }
         });
         cavemenBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) placementController.requestPlacement("cavemen");
-                else handlePlacement("startPlacementCavemen");
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("cavemen".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("cavemen");
+                } else handlePlacement("startPlacementCavemen");
             }
         });
         pteroBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) placementController.requestPlacement("pterodactyl");
-                else handlePlacement("startPlacementPterodactyl");
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("pterodactyl".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("pterodactyl");
+                } else handlePlacement("startPlacementPterodactyl");
             }
         });
         totemBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) placementController.requestPlacement("totem");
-                else handlePlacement("startPlacementTotem");
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("totem".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("totem");
+                } else handlePlacement("startPlacementTotem");
             }
         });
-        // Hook up the supercavemen button (bottom-right)
         allButtons[11].addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) placementController.requestPlacement("supercavemen");
-                else handlePlacement("startPlacementSuperCavemen");
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("supercavemen".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("supercavemen");
+                } else handlePlacement("startPlacementSuperCavemen");
             }
         });
 

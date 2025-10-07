@@ -87,6 +87,14 @@ public class TowerUpgradeData {
         totemA.put(5, new UpgradeStats(0, 8.0f, 0f, 5.0f, 1500, "images/towers/totem.png"));
         pathA.put("totem", totemA);
 
+        // SuperCavemen tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> superCavemenA = new HashMap<>();
+        superCavemenA.put(2, new UpgradeStats(60, 7.0f, 1.0f, 10.0f, 2000, "images/towers/supercavemen.png"));
+        superCavemenA.put(3, new UpgradeStats(80, 8.0f, 1.0f, 10.0f, 2500, "images/towers/supercavemen.png"));
+        superCavemenA.put(4, new UpgradeStats(100, 9.0f, 1.0f, 10.0f, 3000, "images/towers/supercavemen.png"));
+        superCavemenA.put(5, new UpgradeStats(130, 10.0f, 1.0f, 10.0f, 3500, "images/towers/supercavemen.png"));
+        pathA.put("supercavemen", superCavemenA);
+
         return pathA;
     }
 
@@ -137,6 +145,14 @@ public class TowerUpgradeData {
         totemB.put(4, new UpgradeStats(0, 4.0f, 0f, 11.0f, 1300, "images/towers/totem.png"));
         totemB.put(5, new UpgradeStats(0, 4.0f, 0f, 13.0f, 1500, "images/towers/totem.png"));
         pathB.put("totem", totemB);
+
+        // SuperCavemen tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> superCavemenB = new HashMap<>();
+        superCavemenB.put(2, new UpgradeStats(60, 6.0f, 0.8f, 15.0f, 2000, "images/towers/supercavemen.png"));
+        superCavemenB.put(3, new UpgradeStats(60, 6.0f, 0.7f, 20.0f, 2500, "images/towers/supercavemen.png"));
+        superCavemenB.put(4, new UpgradeStats(60, 6.0f, 0.6f, 25.0f, 3000, "images/towers/supercavemen.png"));
+        superCavemenB.put(5, new UpgradeStats(60, 6.0f, 0.5f, 30.0f, 3500, "images/towers/supercavemen.png"));
+        pathB.put("supercavemen", superCavemenB);
 
         return pathB;
     }

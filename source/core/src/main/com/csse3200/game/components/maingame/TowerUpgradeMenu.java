@@ -259,6 +259,9 @@ public class TowerUpgradeMenu extends UIComponent {
         if (s.equals("totem")) {
             return "totem";
         }
+        if (s.equals("supercavemen")) {
+            return "supercavemen";
+        }
         return s;
     }
 
@@ -471,4 +474,6 @@ public class TowerUpgradeMenu extends UIComponent {
 
     }
 
+    // Remove manual updateUpgradeData and handleUpgradeA/B for supercavemen.
+    // The upgrade menu uses the upgrade maps, so supercavemen upgrades will now work automatically.
 }

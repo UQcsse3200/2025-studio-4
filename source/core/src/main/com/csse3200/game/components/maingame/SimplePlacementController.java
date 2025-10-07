@@ -103,43 +103,15 @@ public class SimplePlacementController extends Component {
      */
     @Override
     public void create() {
-        entity.getEvents().addListener("startPlacementBone", this::handleHotbarBone);
-        entity.getEvents().addListener("startPlacementDino", this::handleHotbarDino);
-        entity.getEvents().addListener("startPlacementCavemen", this::handleHotbarCavemen);
-        entity.getEvents().addListener("startPlacementPterodactyl", this::handleHotbarPterodactyl);
-        entity.getEvents().addListener("startPlacementSuperCavemen", this::handleHotbarSuperCavemen);
-        entity.getEvents().addListener("startPlacementTotem", this::handleHotbarTotem);
+        entity.getEvents().addListener("startPlacementBone", this::armBone);
+        entity.getEvents().addListener("startPlacementDino", this::armDino);
+        entity.getEvents().addListener("startPlacementCavemen", this::armCavemen);
+        entity.getEvents().addListener("startPlacementPterodactyl", this::armPterodactyl);
+        entity.getEvents().addListener("startPlacementSuperCavemen", this::armSuperCavemen);
+        entity.getEvents().addListener("startPlacementTotem", this::armTotem);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
-    // Hotbar click handlers: toggle placement if already active and same type
-    private void handleHotbarBone() {
-        handleHotbarClick("bone");
-    }
-    private void handleHotbarDino() {
-        handleHotbarClick("dino");
-    }
-    private void handleHotbarCavemen() {
-        handleHotbarClick("cavemen");
-    }
-    private void handleHotbarPterodactyl() {
-        handleHotbarClick("pterodactyl");
-    }
-    private void handleHotbarSuperCavemen() {
-        handleHotbarClick("supercavemen");
-    }
-    private void handleHotbarTotem() {
-        handleHotbarClick("totem");
-    }
-
-    private void handleHotbarClick(String type) {
-        // Always cancel placement if active and same type, regardless of mouse state
-        if (placementActive && pendingType.equalsIgnoreCase(type)) {
-            cancelPlacement();
-            return;
-        }
-        startPlacement(type);
-    }
 
     /** Arms the controller to start placing a Bone tower. */
     private void armBone() {
@@ -251,10 +223,19 @@ public class SimplePlacementController extends Component {
                 tile.x + towerWidth <= mapBounds.x &&
                 tile.y + towerHeight <= mapBounds.y;
 
-        Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
+        Vector2 snapPos;
+        if (inBounds) {
+            snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
+        } else {
+            // Prevent ghost tower from snapping outside map
+            snapPos = terrain.tileToWorldPosition(
+                Math.max(0, Math.min(tile.x, mapBounds.x - towerWidth)),
+                Math.max(0, Math.min(tile.y, mapBounds.y - towerHeight))
+            );
+        }
         ghostTower.setPosition(snapPos);
 
-        // Handle placement on left-click
+        // Only allow placement if in bounds
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && inBounds) {
             if (isTowerOnPath(tile, towerWidth, towerHeight) ||
                     !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
@@ -439,3 +420,7 @@ public class SimplePlacementController extends Component {
         return pendingType;
     }
 }
+
+// The placement controller only creates a ghost tower for preview when you click a hotbar icon.
+// It does NOT place a real tower until you click on the map and all checks (location, cost, overlap) pass.
+// If towers are being created instantly, check your UI/hotbar code for direct calls to TowerFactory.

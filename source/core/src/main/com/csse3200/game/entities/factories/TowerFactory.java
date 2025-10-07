@@ -203,7 +203,7 @@ public class TowerFactory {
                         "totem", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/totem.png"))
-                .addComponent(new StatsBoostComponent(stats.range)); // <-- Add this line
+                .addComponent(new StatsBoostComponent());
 
         RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
         Entity head = new Entity().addComponent(headRender);

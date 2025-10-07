@@ -84,16 +84,16 @@ public class TowerStatsComponent extends Component {
         return attackCooldown;
     }
 
-    public void setAttackCooldown(float attackCooldown) {
-        this.attackCooldown = attackCooldown;
+    public void setAttackCooldown(float cooldown) {
+        this.attackCooldown = Math.max(0, cooldown);
     }
 
     public float getProjectileSpeed() {
         return projectileSpeed;
     }
 
-    public void setProjectileSpeed(float projectileSpeed) {
-        this.projectileSpeed = projectileSpeed;
+    public void setProjectileSpeed(float speed) {
+        this.projectileSpeed = Math.max(0, speed);
     }
 
     public float getProjectileLife() {

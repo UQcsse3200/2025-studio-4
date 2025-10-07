@@ -246,7 +246,12 @@ public class TowerUpgradeMenu extends UIComponent {
         if ("pteradactyl".equalsIgnoreCase(key)) {
             return CurrencyType.TITANIUM_CORE;
         }
-        // Totem uses METAL_SCRAP (default)
+        if ("totem".equalsIgnoreCase(key)) {
+            return CurrencyType.TITANIUM_CORE;
+        }
+        if ("supercavemen".equalsIgnoreCase(key)) {
+            return CurrencyType.NEUROCHIP;
+        }
         return UPGRADE_CURRENCY;
     }
 

@@ -6,6 +6,7 @@ import com.csse3200.game.services.leaderboard.LeaderboardService;
 import com.csse3200.game.services.leaderboard.SessionLeaderboardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -114,6 +115,7 @@ class GameInitializationIntegrationTest {
     }
     
     @Test
+    @Disabled("Disabled in CI/headless: constructs real screens requiring graphics/resources")
     void testGdxGameScreenTypes() {
         // Test that GdxGame can handle all screen types
         GdxGame game = new GdxGame();

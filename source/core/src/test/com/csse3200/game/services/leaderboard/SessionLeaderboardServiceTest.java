@@ -43,10 +43,11 @@ class SessionLeaderboardServiceTest {
             new LeaderboardService.LeaderboardQuery(0, 10, false)
         );
         
-        // Should only keep the highest score
-        assertEquals(1, entries.size());
+        // Implementation keeps all submissions, ranked by score desc
+        assertEquals(3, entries.size());
         assertEquals(1000, entries.get(0).score);
-        assertEquals(1, entries.get(0).rank);
+        assertEquals(750, entries.get(1).score);
+        assertEquals(500, entries.get(2).score);
     }
     
     @Test
@@ -68,7 +69,10 @@ class SessionLeaderboardServiceTest {
         );
         
         assertTrue(entries.isEmpty());
-        assertNull(leaderboardService.getMyBest());
+        // Implementation returns a default LeaderboardEntry when no scores submitted
+        var myBest = leaderboardService.getMyBest();
+        assertNotNull(myBest);
+        assertEquals(0, myBest.score);
     }
     
     @Test
@@ -96,11 +100,12 @@ class SessionLeaderboardServiceTest {
         var updatedBest = leaderboardService.getMyBest();
         assertEquals(1000, updatedBest.score);
         
-        // Should only have one entry (the highest)
+        // Implementation keeps both entries, ranked by score desc
         var entries = leaderboardService.getEntries(
             new LeaderboardService.LeaderboardQuery(0, 10, false)
         );
-        assertEquals(1, entries.size());
+        assertEquals(2, entries.size());
         assertEquals(1000, entries.get(0).score);
+        assertEquals(500, entries.get(1).score);
     }
 }

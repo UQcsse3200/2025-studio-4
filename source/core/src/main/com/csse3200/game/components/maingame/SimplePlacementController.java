@@ -155,12 +155,11 @@ public class SimplePlacementController extends Component
      * Updates the placement controller, handling ghost tower and placement logic.
      */
     @Override
-    public void update()
-    {
+    public void update() {
         if (camera == null) findWorldCamera();
         if (!placementActive || camera == null || ghostTower == null) return;
-        if (needRelease)
-        {
+
+        if (needRelease) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) needRelease = false;
             return;
         }
@@ -172,71 +171,72 @@ public class SimplePlacementController extends Component
         TerrainComponent terrain = findTerrain();
         if (terrain == null) return;
 
-        int towerWidth = 2;
-        int towerHeight = 2;
-        Vector2 snapPos = mouseWorld;
-        boolean inBounds = true;
-        GridPoint2 tile = new GridPoint2((int)(mouseWorld.x / terrain.getTileSize()), (int)(mouseWorld.y / terrain.getTileSize()));
+        TowerComponent ghostTC = ghostTower.getComponent(TowerComponent.class);
+        int towerWidth = ghostTC != null ? ghostTC.getWidth() : 1;
+        int towerHeight = ghostTC != null ? ghostTC.getHeight() : 1;
+        float tileSize = terrain.getTileSize();
+
+        GridPoint2 tile = new GridPoint2(
+                (int)(mouseWorld.x / tileSize),
+                (int)(mouseWorld.y / tileSize)
+        );
 
         GridPoint2 mapBounds = terrain.getMapBounds(0);
-        if (tile.x < 0 || tile.y < 0 || tile.x + towerWidth > mapBounds.x || tile.y + towerHeight > mapBounds.y)
-        {
-            inBounds = false;
-        }
-        else
-        {
-            snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
-        }
+        boolean inBounds = tile.x >= 0 && tile.y >= 0 &&
+                tile.x + towerWidth <= mapBounds.x &&
+                tile.y + towerHeight <= mapBounds.y;
 
+        Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
         ghostTower.setPosition(snapPos);
 
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT))
-        {
-            if (!inBounds || isTowerOnPath(tile, towerWidth, towerHeight) || !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
+        // Place tower on left click
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && inBounds) {
+            if (isTowerOnPath(tile, towerWidth, towerHeight) ||
+                    !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
 
-            // Check player currency
             Entity player = findPlayerEntity();
             if (player == null) return;
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+
             Entity newTower;
-            if ("dino".equalsIgnoreCase(pendingType))
-            {
-                newTower = TowerFactory.createDinoTower(selectedCurrencyType);
-            }
-            else if ("cavemen".equalsIgnoreCase(pendingType))
-            {
-                newTower = TowerFactory.createCavemenTower(selectedCurrencyType);
-            }
-            else
-            {
-                newTower = TowerFactory.createBoneTower(selectedCurrencyType);
+            switch (pendingType.toLowerCase()) {
+                case "dino": newTower = TowerFactory.createDinoTower(selectedCurrencyType); break;
+                case "cavemen": newTower = TowerFactory.createCavemenTower(selectedCurrencyType); break;
+                default: newTower = TowerFactory.createBoneTower(selectedCurrencyType);
             }
 
             TowerCostComponent costComponent = newTower.getComponent(TowerCostComponent.class);
             int cost = costComponent != null ? costComponent.getCostForCurrency(selectedCurrencyType) : 0;
             if (currencyManager == null || !currencyManager.canAffordAndSpendCurrency(Map.of(selectedCurrencyType, cost))) return;
 
-            if (ghostTower != null)
-            {
-                ghostTower.dispose();
-                ghostTower = null;
-            }
+            // Dispose of ghost tower
+            ghostTower.dispose();
+            ghostTower = null;
 
+            // Set tower position
             newTower.setPosition(snapPos);
-            TowerComponent tc = newTower.getComponent(TowerComponent.class);
-            if (tc != null && tc.hasHead())
-            {
-                tc.getHeadEntity().setPosition(snapPos.x, snapPos.y - 0.01f);
+
+            TowerComponent newTC = newTower.getComponent(TowerComponent.class);
+            if (newTC != null && newTC.hasHead()) {
+                // Center the head on the tower
+                Vector2 headOffset = new Vector2(
+                        towerWidth * tileSize / 2f,
+                        towerHeight * tileSize / 2f
+                );
+                newTC.getHeadEntity().setPosition(snapPos.x + headOffset.x, snapPos.y + headOffset.y - 0.01f);
             }
 
+            // Register tower and head
             ServiceLocator.getEntityService().register(newTower);
-            if (tc != null && tc.hasHead())
-            {
-                ServiceLocator.getEntityService().register(tc.getHeadEntity());
+            if (newTC != null && newTC.hasHead()) {
+                ServiceLocator.getEntityService().register(newTC.getHeadEntity());
             }
+
             placementActive = false;
         }
     }
+
+
 
     /**
      * Checks if the tower would overlap the fixed path.

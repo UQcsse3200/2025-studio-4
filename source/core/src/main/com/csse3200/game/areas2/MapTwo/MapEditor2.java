@@ -30,43 +30,23 @@ public class MapEditor2 extends InputAdapter {
     private Set<String> occupiedTiles = new HashSet<>();
 
     // Tile types瓦片类型
-    private TiledMapTile pathTile;
     private TiledMapTile keypointTile;
     private TiledMapTile snowTile;
+    private TiledMapTile pathTile;
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
+    private java.util.List<GridPoint2> keyWaypoints2 = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
     public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
     public MapEditor2(TerrainComponent2 terrain, Entity player) {
         this.terrain = terrain;
-        initializePathTile();
         initializeKeypointTile();
         initializeSnowTile();
+        initializePathTile();
     }
 
-    /** Initialize path tiles初始化路径瓦片 */
-    private void initializePathTile() {
-        try {
-            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
-            // Avoid blurring when zooming
-            pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-
-            // Make the path tile size consistent with the base tile layer to prevent size anomalies
-            TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-            int tileW = baseLayer.getTileWidth();
-            int tileH = baseLayer.getTileHeight();
-            int regionW = Math.min(tileW, pathTexture.getWidth());
-            int regionH = Math.min(tileH, pathTexture.getHeight());
-            TextureRegion region = new TextureRegion(pathTexture, 0, 0, regionW, regionH);
-            pathTile = new StaticTiledMapTile(region);
-            System.out.println("Path tile initialized successfully");
-        } catch (Exception e) {
-            System.out.println("Path tile initialization failed: " + e.getMessage());
-            pathTile = null;
-        }
-    }
 
     /** Initialize keypoint tiles初始化关键点瓦片 */
     private void initializeKeypointTile() {
@@ -112,25 +92,30 @@ public class MapEditor2 extends InputAdapter {
         }
     }
 
-    /** Create path tiles创建路径瓦片 */
-    private void createPathTile(int tx, int ty) {
-        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
-        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
-        if (tx < 0 || ty < 0 || tx >= pathLayer.getWidth() || ty >= pathLayer.getHeight()) return;
-        String key = tx + "," + ty;
-        if (pathTiles.containsKey(key)) return;
+    /** Initialize path tiles初始化路径瓦片 */
+    private void initializePathTile() {
+        try {
+            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
+            // Avoid blurring when zooming避免放大时模糊
+            pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-        //if (placedTrees.containsKey(key)) placedTrees.remove(key).dispose();
-
-        if (pathTile != null) {
-            TiledMapTileLayer.Cell cell = new TiledMapTileLayer.Cell();
-            cell.setTile(pathTile);
-            pathLayer.setCell(tx, ty, cell);
+            // Make the path tile size consistent with the base tile layer to prevent size anomalies使路径瓦片尺寸与基础图层瓦片一致，防止尺寸异常
+            TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+            int tileW = baseLayer.getTileWidth();
+            int tileH = baseLayer.getTileHeight();
+            int regionW = Math.min(tileW, pathTexture.getWidth());
+            int regionH = Math.min(tileH, pathTexture.getHeight());
+            TextureRegion region = new TextureRegion(pathTexture, 0, 0, regionW, regionH);
+            pathTile = new StaticTiledMapTile(region);
+            System.out.println("✅ path.png tile initialized successfully");
+        } catch (Exception e) {
+            System.out.println("⚠️ path.png tile initialization failed: " + e.getMessage());
+            pathTile = null;
         }
-        pathTiles.put(key, new GridPoint2(tx, ty));
     }
 
-    /** Get or create path layer for path, always append to the end, ensuring it is above the base layer and mmap2获取或创建用于路径的图层，始终追加到末尾，保证在基础层与mmap2之上 */
+
+    /** Get or create layer for keypoints and other elements, always append to the end, ensuring it is above the base layer and mmap2获取或创建用于关键点和其他元素的图层，始终追加到末尾，保证在基础层与mmap2之上 */
     private TiledMapTileLayer getOrCreatePathLayer(TiledMapTileLayer baseLayer) {
         int count = terrain.getMap().getLayers().getCount();
         if (count > 1 && terrain.getMap().getLayers().get(count - 1) instanceof TiledMapTileLayer) {
@@ -154,48 +139,27 @@ public class MapEditor2 extends InputAdapter {
         // Clear existing paths清空现有路径
         pathTiles.clear();
         keyWaypoints.clear();
+        keyWaypoints2.clear();
 
-        // Predefined fixed path coordinates (x, y)预定义固定路径坐标 (x, y)
-        int[][] fixedPath = {
-                // Start from the left
-                {0, 10}, {1, 10}, {2, 10}, {3, 10}, {4, 10},
-
-                // First turn up
-                {5, 10}, {5, 9}, {5, 8}, {5, 7}, {5, 6},
-
-                // Walk to the right first segment
-                {6, 6}, {7, 6}, {8, 6}, {9, 6}, {10, 6}, {11, 6},
-
-                // Turn down
-                {12, 6}, {12, 7}, {12, 8}, {12, 9}, {12, 10}, {12, 11}, {12, 12},
-
-                // Walk to the right for a longer distance
-                {13, 12}, {14, 12}, {15, 12}, {16, 12}, {17, 12}, {18, 12},
-                {19, 12}, {20, 12}, {21, 12}, {22, 12}, {23, 12}, {24, 12},
-
-                // Turn up
-                {25, 12}, {25, 11}, {25, 10}, {25, 9}, {25, 8}, {25, 7}, {25, 6},
-
-                // Finally walk to the right for 4 coordinates
-                {26, 6}, {27, 6}, {28, 6}, {29, 6}
-        };
-
-        // Create path tiles based on predefined path根据预定义路径创建路径瓦片
-        for (int i = 0; i < fixedPath.length; i++) {
-            int x = fixedPath[i][0];
-            int y = fixedPath[i][1];
-            createPathTile(x, y);
-        }
-
+        // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
-        keyWaypoints.add(new GridPoint2(0, 10));    // Start
-        keyWaypoints.add(new GridPoint2(5, 10));    // First turn
-        keyWaypoints.add(new GridPoint2(5, 6));     // Up turn completed
-        keyWaypoints.add(new GridPoint2(12, 6));    // Walk to the right completed
-        keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
-        keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
-        keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
-        keyWaypoints.add(new GridPoint2(29, 6));    // End
+        keyWaypoints.add(new GridPoint2(5, 0));     // Start
+        keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
+        keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
+        keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
+        keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
+        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
+        keyWaypoints.add(new GridPoint2(6, 36));    // End
+        
+        // 新增的5个关键点
+        keyWaypoints2.add(new GridPoint2(27, 5));    // 新坐标5
+        keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
+        keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
+        keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
+        keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
+        keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
+        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
+        keyWaypoints2.add(new GridPoint2(6, 36));    // End
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
@@ -203,6 +167,30 @@ public class MapEditor2 extends InputAdapter {
             Entity waypoint = new Entity();
             waypoint.setPosition(wp.x/2, wp.y/2);
             waypointList.add(waypoint);
+        }
+
+        // Mark keyWaypoints2 points标记第二组关键路径点
+        for (GridPoint2 wp : keyWaypoints2) {
+            markKeypoint(wp);
+            Entity waypoint = new Entity();
+            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypointList.add(waypoint);
+        }
+
+        // Connect waypoints with path tiles连接关键点之间的路径
+        connectWaypointsWithPath();
+        
+        // Connect keyWaypoints2 with path tiles连接第二组关键点之间的路径
+        connectWaypoints2WithPath();
+        
+        // 重新标记关键点，确保它们不被路径瓦片覆盖
+        for (GridPoint2 wp : keyWaypoints) {
+            markKeypoint(wp);
+        }
+        
+        // 重新标记第二组关键点，确保它们不被路径瓦片覆盖
+        for (GridPoint2 wp : keyWaypoints2) {
+            markKeypoint(wp);
         }
         int[][] redCircledArea = {
             {12, 17, 5, 12}, 
@@ -237,8 +225,7 @@ public class MapEditor2 extends InputAdapter {
         }
 
        // generatePlaceableAreas();
-        System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
-        System.out.println("✅ Key path points number=" + keyWaypoints.size());
+        System.out.println("✅ Key path points generated, number=" + keyWaypoints.size());
         System.out.println("✅ Snow coordinates number=" + snowCoords.size());
     }
 
@@ -255,6 +242,118 @@ public class MapEditor2 extends InputAdapter {
         cell.setTile(keypointTile);
     }
 
+    /** Connect waypoints with path tiles and mark them as invalid for placement连接关键点之间的路径并标记为不可放置 */
+    private void connectWaypointsWithPath() {
+        if (keyWaypoints.size() < 2) return;
+        
+        System.out.println("🛤️ Connecting waypoints with path tiles...");
+        
+        // 连接相邻的关键点
+        for (int i = 0; i < keyWaypoints.size() - 1; i++) {
+            GridPoint2 start = keyWaypoints.get(i);
+            GridPoint2 end = keyWaypoints.get(i + 1);
+            
+            System.out.println("🔗 Connecting waypoint " + i + " (" + start.x + "," + start.y + ") to waypoint " + (i+1) + " (" + end.x + "," + end.y + ")");
+            
+            // 生成两点之间的直线路径
+            generatePathBetweenPoints(start, end);
+        }
+        
+        System.out.println("✅ Path connection completed. Total path tiles: " + pathTiles.size());
+    }
+
+    /** Connect keyWaypoints2 with path tiles and mark them as invalid for placement连接第二组关键点之间的路径并标记为不可放置 */
+    private void connectWaypoints2WithPath() {
+        if (keyWaypoints2.size() < 2) return;
+        
+        System.out.println("🛤️ Connecting keyWaypoints2 with path tiles...");
+        
+        // 连接相邻的关键点
+        for (int i = 0; i < keyWaypoints2.size() - 1; i++) {
+            GridPoint2 start = keyWaypoints2.get(i);
+            GridPoint2 end = keyWaypoints2.get(i + 1);
+            
+            System.out.println("🔗 Connecting keyWaypoints2 " + i + " (" + start.x + "," + start.y + ") to keyWaypoints2 " + (i+1) + " (" + end.x + "," + end.y + ")");
+            
+            // 生成两点之间的直线路径
+            generatePathBetweenPoints(start, end);
+        }
+        
+        System.out.println("✅ keyWaypoints2 Path connection completed. Total path tiles: " + pathTiles.size());
+    }
+
+    /** Generate path tiles between two points生成两点之间的路径瓦片 */
+    private void generatePathBetweenPoints(GridPoint2 start, GridPoint2 end) {
+        // 使用Bresenham算法生成直线路径
+        int x0 = start.x;
+        int y0 = start.y;
+        int x1 = end.x;
+        int y1 = end.y;
+        
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+        int err = dx - dy;
+        
+        int x = x0;
+        int y = y0;
+        
+        while (true) {
+            // 标记路径瓦片为不可放置
+            markPathTile(new GridPoint2(x, y));
+            
+            if (x == x1 && y == y1) break;
+            
+            int e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y += sy;
+            }
+        }
+    }
+
+    /** Mark a tile as path tile and add to invalid tiles标记瓦片为路径瓦片并添加到不可放置区域 */
+    private void markPathTile(GridPoint2 pos) {
+        String key = pos.x + "," + pos.y;
+        
+        // 避免重复标记
+        if (pathTiles.containsKey(key)) return;
+        
+        // 检查是否是关键点，如果是关键点则跳过路径瓦片显示
+        boolean isKeypoint = false;
+        for (GridPoint2 wp : keyWaypoints) {
+            if (wp.x == pos.x && wp.y == pos.y) {
+                isKeypoint = true;
+                break;
+            }
+        }
+        
+        // 添加到路径瓦片记录
+        pathTiles.put(key, pos);
+        
+        // 添加到不可放置区域
+        invalidTiles.put(key, pos);
+        
+        // 在地图上显示路径瓦片（但不在关键点上显示）
+        if (pathTile != null && !isKeypoint) {
+            TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+            TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
+            TiledMapTileLayer.Cell cell = pathLayer.getCell(pos.x, pos.y);
+            if (cell == null) {
+                cell = new TiledMapTileLayer.Cell();
+                pathLayer.setCell(pos.x, pos.y, cell);
+            }
+            cell.setTile(pathTile);
+        }
+        
+        System.out.println("🛤️ Path tile marked at (" + pos.x + "," + pos.y + ")" + (isKeypoint ? " (keypoint, no path tile)" : ""));
+    }
+
     /** Clean up all objects清理所有对象 */
     public void cleanup() {
         //for (Entity tree : placedTrees.values()) tree.dispose();
@@ -264,15 +363,17 @@ public class MapEditor2 extends InputAdapter {
         snowTreeTiles.clear();
         occupiedTiles.clear();
         keyWaypoints.clear();
+        keyWaypoints2.clear();
         snowCoords.clear();
         System.out.println("🧹 MapEditor cleaned up");
     }
 
     public Map<String, GridPoint2> getInvalidTiles() {
         invalidTiles.clear();
-        invalidTiles.putAll(pathTiles);
+        // 包含所有无效区域：障碍物、雪树、雪地、路径瓦片
         invalidTiles.putAll(barrierTiles);
         invalidTiles.putAll(snowTreeTiles);
+        invalidTiles.putAll(pathTiles);  // 添加路径瓦片到不可放置区域
         snowCoords.forEach(coord -> invalidTiles.put(coord.x + "," + coord.y, coord));
         return invalidTiles;
     }
@@ -290,10 +391,9 @@ public class MapEditor2 extends InputAdapter {
             return;
         }
         String key = x + "," + y;
-        if (pathTiles.containsKey(key) || 
-            invalidTiles.containsKey(key) || 
+        if (invalidTiles.containsKey(key) || 
             barrierTiles.containsKey(key)) {
-            System.out.println("🚫 Position (" + x + ", " + y + ") is occupied by path/barrier, skipping");
+            System.out.println("🚫 Position (" + x + ", " + y + ") is occupied by barrier, skipping");
             return;
         }
          // Add to snow coordinates list添加到雪地坐标列表

@@ -4,6 +4,7 @@ import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.HomebaseDamageEffectComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -19,7 +20,7 @@ import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.SwitchableTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.PlayerScoreComponent;
-import com.csse3200.game.ui.DamagePopupComponent;
+import com.csse3200.game.components.PlayerRankingComponent;
 
 /**
  * Basement factory (renamed from PlayerFactory).
@@ -52,9 +53,10 @@ public class PlayerFactory {
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new HomebaseDamageEffectComponent())
             .addComponent(new PlayerScoreComponent())
-            .addComponent(new HomebaseDamageEffectComponent())
-            .addComponent(new DamagePopupComponent())
-            .addComponent(new HealthBarComponent());
+            .addComponent(new PlayerRankingComponent())
+            .addComponent(new HealthBarComponent())
+            .addComponent(new DeckDisplay());
+
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(BASEMENT_SCALE, BASEMENT_SCALE);
     PhysicsUtils.setScaledCollider(basement, 0.6f, 0.3f);

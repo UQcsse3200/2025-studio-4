@@ -1,0 +1,22 @@
+{
+  "currencies": {
+    "metalScrapCurrency": {
+      "name": "Metal Scrap",
+      "lore": "A basic and plentiful resource, scavenged from the battlefield. Useful for early upgrades and essential constructions.",
+      "image": "images/currency/metal_scrap.png",
+      "sound": "sounds/metal_scrap_currency_collect.ogg"
+    },
+    "titaniumCoreCurrency": {
+      "name": "Titanium Core",
+      "lore": "A rare and valuable resource, often obtained from tougher enemies. Needed for powerful upgrades and advanced technology.",
+      "image": "images/currency/titanium_core.png",
+      "sound": "sounds/titanium_core_currency_collect.ogg"
+    },
+    "neurochipCurrency": {
+      "name": "Neurochip",
+      "lore": "A highly advanced implant once designed to enhance human intelligence, now repurposed by AI to control and outsmart its creators. Extremely rare and vital for high-level upgrades",
+      "image": "images/currency/neurochip.png",
+      "sound": "sounds/neurochip_currency_collect.ogg"
+    }
+  }
+}

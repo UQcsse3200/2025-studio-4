@@ -7,6 +7,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -73,6 +74,7 @@ public class BossEnemyFactory {
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
+                .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
@@ -96,8 +98,16 @@ public class BossEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
@@ -113,6 +123,12 @@ public class BossEnemyFactory {
             PlayerScoreComponent totalScore = wc.getPlayerRef().getComponent(PlayerScoreComponent.class);
             if (totalScore != null) {
                 totalScore.addPoints(points);
+            }
+
+            // Track kill for ranking component
+            com.csse3200.game.components.PlayerRankingComponent prc = wc.getPlayerRef().getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+            if (prc != null) {
+                prc.addKill();
             }
         }
 

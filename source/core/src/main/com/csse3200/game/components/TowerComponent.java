@@ -325,7 +325,7 @@ public class TowerComponent extends Component {
         }
 
         // Update attack timer
-        float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
+        float dt = ServiceLocator.getTimeSource().getDeltaTime();
         stats.updateAttackTimer(dt);
 
         // Rotate head toward target and shoot projectile if available

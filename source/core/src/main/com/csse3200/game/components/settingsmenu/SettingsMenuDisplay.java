@@ -236,7 +236,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
         Label heroWeaponLabel = new Label("Hero Weapon:", skin);
         heroWeaponSelect = new SelectBox<>(skin);
-        heroWeaponSelect.setItems("Default", "Sword", "Bow", "Staff", "Dagger");
+        heroWeaponSelect.setItems("Default", "Sword", "Bow", "Staff", "Dagger", "Pistol", "Rifle", "Shotgun");
         heroWeaponSelect.setSelected(settings.heroWeapon.equals("default") ? "Default" : settings.heroWeapon);
 
         Label heroEffectLabel = new Label("Hero Effect:", skin);

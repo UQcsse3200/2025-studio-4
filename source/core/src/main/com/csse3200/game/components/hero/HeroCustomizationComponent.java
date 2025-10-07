@@ -82,6 +82,12 @@ public class HeroCustomizationComponent extends Component {
                 return "images/hero/magic_bullet.png";
             case "dagger":
                 return "images/hero/dagger_bullet.png";
+            case "pistol":
+                return "images/hero/pistol_bullet.png";
+            case "rifle":
+                return "images/hero/rifle_bullet.png";
+            case "shotgun":
+                return "images/hero/shotgun_bullet.png";
             case "default":
             default:
                 return "images/hero/Bullet.png";

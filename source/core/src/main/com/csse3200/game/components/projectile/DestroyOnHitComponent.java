@@ -19,6 +19,9 @@ public class DestroyOnHitComponent extends Component {
   /** One-time fuse: ensures destroy is only scheduled once */
   private final AtomicBoolean scheduled = new AtomicBoolean(false);
 
+  // Add a flag to ensure only one hit per projectile
+  private boolean hasHit = false;
+
   public DestroyOnHitComponent(short targetLayer) {
     this.targetLayer = targetLayer;
   }
@@ -33,8 +36,14 @@ public class DestroyOnHitComponent extends Component {
     // Only handle contacts involving this entity's hitbox
     if (hitbox == null || hitbox.getFixture() != me) return;
 
+    // Only allow one hit per projectile
+    if (hasHit) return;
+
     // Process only if the other fixture matches the target layer
     if (!PhysicsLayer.contains(targetLayer, other.getFilterData().categoryBits)) return;
+
+    // Mark as hit so future collisions are ignored
+    hasHit = true;
 
     // Allow entry only once
     if (!scheduled.compareAndSet(false, true)) return;
@@ -45,6 +54,3 @@ public class DestroyOnHitComponent extends Component {
     });
   }
 }
-
-
-

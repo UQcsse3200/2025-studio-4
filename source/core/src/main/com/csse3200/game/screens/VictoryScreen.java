@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -31,32 +32,47 @@ public class VictoryScreen implements Screen {
     private SpriteBatch batch;
     private float timeElapsed = 0f;
     private Skin skin;
+    private String currentMapId;
     
-    // UI Elements
+    private enum VictoryStage {
+        SCROLLING_TEXT,
+        VICTORY_DISPLAY
+    }
+    
+    private VictoryStage currentStage = VictoryStage.SCROLLING_TEXT;
+    
+    private Label scrollLabel;
+    private BitmapFont scrollFont;
+    private float scrollSpeed = 50f;
+    private float scrollStartY;
+    private float scrollCenterY;
+    private boolean scrollTextFinished = false;
+    private boolean scrollTextCentered = false;
+    
+    private int clickCount = 0;
+    private float lastClickTime = 0f;
+    private float clickTimeout = 0.5f;
+    
     private Image backgroundImage;
-    private Label titleLabel;
-    private Label subtitleLabel;
-    private Label messageLabel;
     private TextButton mainMenuButton;
     private TextButton playAgainButton;
+    private TextButton nextMapButton;
     private TextButton exitGameButton;
     private Table mainTable;
     private Table buttonTable;
     
-    // Animation timing
-    private float fadeInDuration = 2f;
-    private float buttonDelay = 3f;
-    
-    // Animation states
-    private boolean titleShown = false;
-    private boolean messageShown = false;
     private boolean buttonsShown = false;
     
     public VictoryScreen(GdxGame game) {
+        this(game, null);
+    }
+    
+    public VictoryScreen(GdxGame game, String mapId) {
         this.game = game;
+        this.currentMapId = mapId;
         initializeServices();
         setupVictoryScreen();
-        submitCurrentScore(); // 自动提交当前得分到排行榜
+        submitCurrentScore();
     }
     
     private void initializeServices() {
@@ -72,32 +88,29 @@ public class VictoryScreen implements Screen {
         stage = new Stage(new ScreenViewport());
         batch = new SpriteBatch();
         
-        // Initialize skin with error handling
         try {
             skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
             logger.info("Successfully loaded flat-earth skin for victory screen");
         } catch (Exception e) {
             logger.warn("Could not load flat-earth skin, using default skin: " + e.getMessage());
-            // Create a basic skin as fallback
             skin = new Skin();
-            com.badlogic.gdx.graphics.g2d.BitmapFont defaultFont = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+            BitmapFont defaultFont = new BitmapFont();
             skin.add("default", defaultFont);
             skin.add("font", defaultFont);
             skin.add("title", defaultFont);
             
-            // Add default styles
-            com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle defaultLabelStyle = new com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle();
+            Label.LabelStyle defaultLabelStyle = new Label.LabelStyle();
             defaultLabelStyle.font = defaultFont;
             skin.add("default", defaultLabelStyle);
             skin.add("title", defaultLabelStyle);
             
-            com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle defaultButtonStyle = new com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle();
+            TextButton.TextButtonStyle defaultButtonStyle = new TextButton.TextButtonStyle();
             defaultButtonStyle.font = defaultFont;
             skin.add("default", defaultButtonStyle);
         }
         
         loadAssets();
-        createUI();
+        createScrollingText();
     }
     
     private void loadAssets() {
@@ -121,63 +134,153 @@ public class VictoryScreen implements Screen {
         }
     }
     
-    private void createUI() {
-        // Background
+    private void createScrollingText() {
+        String mapName = getMapName();
+        String scrollText = currentMapId == null ? 
+            "VICTORY!\n\n" +
+            "Congratulations!\n\n" +
+            "You have successfully defended the " + mapName + "!\n" +
+            "Your strategic prowess has held the first line of defense.\n\n" +
+            "Commander, your defense was exemplary!\n" +
+            "The corrupted machines have been pushed back.\n\n" +
+            "But the war is not over...\n" +
+            "The enemy still approaches from another sector!\n\n" +
+            "The enemy regroups with greater force.\n" +
+            "Prepare yourself, Commander.\n" +
+            "Your next battle awaits!" :
+            "VICTORY!\n\n" +
+            "Congratulations!\n\n" +
+            "Outstanding, Commander!\n" +
+            "You have defended both strongholds and secured victory!\n\n" +
+            "You have successfully defended both sectors\n" +
+            "against the relentless AI assault!\n\n" +
+            "The corrupted AI forces have been defeated,\n" +
+            "and humanity's future is once again secured.\n\n" +
+            "Their mechanical armies lie in ruins.\n" +
+            "You are a true hero of the resistance.\n" +
+            "History will remember your valor!";
+        
+        scrollFont = new BitmapFont();
+        scrollFont.getData().setScale(1.6f);
+        
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = scrollFont;
+        labelStyle.fontColor = Color.WHITE;
+        
+        scrollLabel = new Label(scrollText, labelStyle);
+        scrollLabel.setAlignment(Align.center);
+        scrollLabel.setWrap(true);
+        scrollLabel.setWidth(Gdx.graphics.getWidth() * 0.8f);
+        
+        scrollStartY = -scrollLabel.getPrefHeight() - 100f;
+        scrollCenterY = (Gdx.graphics.getHeight() - scrollLabel.getPrefHeight()) / 2f;
+        scrollLabel.setPosition(
+            (Gdx.graphics.getWidth() - scrollLabel.getWidth()) / 2f,
+            scrollStartY
+        );
+        
+        stage.addActor(scrollLabel);
+        
+        Label hintLabel = new Label("Double-click to skip", labelStyle);
+        hintLabel.setFontScale(0.8f);
+        hintLabel.setColor(new Color(1f, 1f, 1f, 0.6f));
+        hintLabel.setPosition(
+            (Gdx.graphics.getWidth() - hintLabel.getPrefWidth()) / 2f,
+            50f
+        );
+        stage.addActor(hintLabel);
+        hintLabel.addAction(Actions.sequence(
+            Actions.fadeIn(1f),
+            Actions.delay(2f),
+            Actions.fadeOut(1f),
+            Actions.removeActor()
+        ));
+    }
+    
+    private void updateScrollingText(float delta) {
+        handleSkipInput(delta);
+        
+        if (scrollLabel != null && !scrollTextFinished && !scrollTextCentered) {
+            float currentY = scrollLabel.getY();
+            float newY = currentY + scrollSpeed * delta;
+            
+            if (newY >= scrollCenterY) {
+                scrollLabel.setY(scrollCenterY);
+                scrollTextCentered = true;
+                logger.info("Scrolling text centered, waiting 3 seconds before continuing");
+                scheduleTransition();
+            } else {
+                scrollLabel.setY(newY);
+            }
+        }
+    }
+    
+    private void handleSkipInput(float delta) {
+        if (Gdx.input.justTouched()) {
+            float currentTime = timeElapsed;
+            
+            if (currentTime - lastClickTime < clickTimeout) {
+                clickCount++;
+                if (clickCount >= 2) {
+                    logger.info("Double click detected, skipping scrolling text");
+                    skipToVictoryDisplay();
+                }
+            } else {
+                clickCount = 1;
+            }
+            lastClickTime = currentTime;
+        }
+        
+        if (clickCount > 0 && timeElapsed - lastClickTime > clickTimeout) {
+            clickCount = 0;
+        }
+    }
+    
+    private void scheduleTransition() {
+        scrollLabel.addAction(Actions.sequence(
+            Actions.delay(3f),
+            Actions.run(() -> {
+                logger.info("Transitioning to victory display after centered pause");
+                skipToVictoryDisplay();
+            })
+        ));
+    }
+    
+    private void skipToVictoryDisplay() {
+        if (scrollTextFinished) return;
+        scrollTextFinished = true;
+        if (scrollLabel != null) {
+            scrollLabel.remove();
+        }
+        currentStage = VictoryStage.VICTORY_DISPLAY;
+        createVictoryDisplay();
+    }
+    
+    private void createVictoryDisplay() {
+        timeElapsed = 0f;
+        
         ResourceService resourceService = ServiceLocator.getResourceService();
         if (resourceService != null) {
             backgroundImage = new Image(resourceService
                 .getAsset("images/Game_Victory.png", Texture.class));
             backgroundImage.setFillParent(true);
+            backgroundImage.addAction(Actions.alpha(0f));
             stage.addActor(backgroundImage);
+            backgroundImage.addAction(Actions.fadeIn(1f));
         }
         
-        // Main table for layout
         mainTable = new Table();
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
         
-        // Victory title
-        titleLabel = new Label("VICTORY!", skin, "title");
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setColor(Color.GOLD);
-        titleLabel.setFontScale(4.0f);
-        titleLabel.addAction(Actions.alpha(0f));
-        mainTable.add(titleLabel).expandX().center().padBottom(20f);
-        mainTable.row();
-        
-        // Subtitle
-        subtitleLabel = new Label("Congratulations!", skin, "default");
-        subtitleLabel.setAlignment(Align.center);
-        subtitleLabel.setColor(Color.WHITE);
-        subtitleLabel.setFontScale(2.0f);
-        subtitleLabel.addAction(Actions.alpha(0f));
-        mainTable.add(subtitleLabel).expandX().center().padBottom(40f);
-        mainTable.row();
-        
-        // Victory message
-        messageLabel = new Label("You have successfully defended the Box Forest!\n" +
-                               "Your strategic prowess and courage have saved the realm.\n\n" +
-                               "The ancient enemies have been vanquished,\n" +
-                               "and peace has been restored to the mystical lands.",
-                               skin, "default");
-        messageLabel.setAlignment(Align.center);
-        messageLabel.setColor(Color.LIGHT_GRAY);
-        messageLabel.setFontScale(1.4f);
-        messageLabel.addAction(Actions.alpha(0f));
-        mainTable.add(messageLabel).expandX().center().padBottom(50f);
-        mainTable.row();
-        
-        // Button table
         buttonTable = new Table();
         buttonTable.center();
         mainTable.add(buttonTable).expandX().center();
         
-        // Create buttons
         createButtons();
     }
     
     private void createButtons() {
-        // Main Menu button
         mainMenuButton = new TextButton("Main Menu", createButtonStyle());
         mainMenuButton.addListener(new ChangeListener() {
             @Override
@@ -188,18 +291,28 @@ public class VictoryScreen implements Screen {
         });
         mainMenuButton.addAction(Actions.alpha(0f));
         
-        // Play Again button
         playAgainButton = new TextButton("Play Again", createButtonStyle());
         playAgainButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
                 logger.info("Play Again button clicked");
-                game.setScreen(GdxGame.ScreenType.MAIN_GAME);
+                game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, currentMapId);
             }
         });
         playAgainButton.addAction(Actions.alpha(0f));
         
-        // Exit Game button
+        if (currentMapId == null) {
+            nextMapButton = new TextButton("Next Map", createButtonStyle());
+            nextMapButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                    logger.info("Next Map button clicked - transitioning to Map Two");
+                    game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, "MapTwo");
+                }
+            });
+            nextMapButton.addAction(Actions.alpha(0f));
+        }
+        
         exitGameButton = new TextButton("Exit Game", createButtonStyle());
         exitGameButton.addListener(new ChangeListener() {
             @Override
@@ -210,8 +323,10 @@ public class VictoryScreen implements Screen {
         });
         exitGameButton.addAction(Actions.alpha(0f));
         
-        // Add buttons to table
         buttonTable.add(mainMenuButton).size(200f, 60f).pad(15f);
+        if (currentMapId == null) {
+            buttonTable.add(nextMapButton).size(200f, 60f).pad(15f);
+        }
         buttonTable.add(playAgainButton).size(200f, 60f).pad(15f);
         buttonTable.add(exitGameButton).size(200f, 60f).pad(15f);
     }
@@ -219,18 +334,15 @@ public class VictoryScreen implements Screen {
     private TextButton.TextButtonStyle createButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         
-        // Use skin font with fallback
         try {
             style.font = skin.getFont("font");
         } catch (Exception e) {
-            // Fallback to default font if font is not available
             style.font = skin.getFont("default");
             if (style.font == null) {
-                style.font = new com.badlogic.gdx.graphics.g2d.BitmapFont();
+                style.font = new BitmapFont();
             }
         }
         
-        // Load button background
         ResourceService resourceService = ServiceLocator.getResourceService();
         if (resourceService != null) {
             Texture buttonTexture = resourceService
@@ -240,7 +352,6 @@ public class VictoryScreen implements Screen {
             style.over = new TextureRegionDrawable(buttonTexture);
         }
         
-        // Set font colors
         style.fontColor = Color.BLUE;
         style.downFontColor = new Color(0.0f, 0.0f, 0.8f, 1.0f);
         style.overFontColor = new Color(0.2f, 0.2f, 1.0f, 1.0f);
@@ -252,43 +363,43 @@ public class VictoryScreen implements Screen {
     public void show() {
         logger.info("Showing victory screen");
         Gdx.input.setInputProcessor(stage);
-        
-        // 自动提交当前游戏得分到排行榜
         submitCurrentScore();
     }
     
     @Override
     public void render(float delta) {
         timeElapsed += delta;
-        
-        updateAnimation(delta);
-        
         ScreenUtils.clear(0, 0, 0, 1);
+        
+        if (currentStage == VictoryStage.SCROLLING_TEXT) {
+            updateScrollingText(delta);
+        } else if (currentStage == VictoryStage.VICTORY_DISPLAY) {
+            updateVictoryAnimation(delta);
+        }
+        
         stage.act(delta);
         stage.draw();
     }
     
-    private void updateAnimation(float delta) {
-        // Title fade in
-        if (timeElapsed >= 1f && !titleShown) {
-            titleLabel.addAction(Actions.fadeIn(fadeInDuration));
-            subtitleLabel.addAction(Actions.fadeIn(fadeInDuration));
-            titleShown = true;
-        }
-        
-        // Message fade in
-        if (timeElapsed >= 2f && !messageShown) {
-            messageLabel.addAction(Actions.fadeIn(fadeInDuration));
-            messageShown = true;
-        }
-        
-        // Buttons fade in
-        if (timeElapsed >= buttonDelay && !buttonsShown) {
-            mainMenuButton.addAction(Actions.fadeIn(1f));
-            playAgainButton.addAction(Actions.fadeIn(1f));
-            exitGameButton.addAction(Actions.fadeIn(1f));
+    private void updateVictoryAnimation(float delta) {
+        if (timeElapsed >= 0.5f && !buttonsShown) {
+            mainMenuButton.addAction(Actions.fadeIn(1.5f));
+            if (nextMapButton != null) {
+                nextMapButton.addAction(Actions.fadeIn(1.5f));
+            }
+            playAgainButton.addAction(Actions.fadeIn(1.5f));
+            exitGameButton.addAction(Actions.fadeIn(1.5f));
             buttonsShown = true;
         }
+    }
+    
+    private String getMapName() {
+        if (currentMapId == null) {
+            return "Forest Demo Sector";
+        } else if ("MapTwo".equalsIgnoreCase(currentMapId)) {
+            return "Map Two Sector";
+        }
+        return "Unknown Sector";
     }
     
     @Override
@@ -320,14 +431,13 @@ public class VictoryScreen implements Screen {
         if (batch != null) {
             batch.dispose();
         }
+        if (scrollFont != null) {
+            scrollFont.dispose();
+        }
     }
     
-    /**
-     * 提交当前游戏得分到排行榜（通过会话管理器防止重复提交）
-     */
     private void submitCurrentScore() {
         try {
-            // 使用会话管理器防止重复提交
             com.csse3200.game.services.GameSessionManager sessionManager = 
                 ServiceLocator.getGameSessionManager();
             
@@ -336,9 +446,7 @@ public class VictoryScreen implements Screen {
                 return;
             }
             
-            // 尝试提交得分（如果本次会话还未提交）
-            // 现在使用GameScoreService获取真实得分
-            boolean submitted = sessionManager.submitScoreIfNotSubmitted(true); // true = 游戏胜利
+            boolean submitted = sessionManager.submitScoreIfNotSubmitted(true);
             
             if (submitted) {
                 logger.info("Successfully submitted victory score to leaderboard");

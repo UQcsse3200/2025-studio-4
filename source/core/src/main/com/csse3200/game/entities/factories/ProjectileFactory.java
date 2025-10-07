@@ -117,6 +117,8 @@ public final class ProjectileFactory {
         return bullet;
     }
 
+
+
     private static boolean isFinite(float v) {
         return !Float.isNaN(v) && !Float.isInfinite(v);
     }

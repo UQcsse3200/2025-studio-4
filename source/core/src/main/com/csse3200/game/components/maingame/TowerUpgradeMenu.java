@@ -18,10 +18,10 @@ import com.badlogic.gdx.InputAdapter;
 
 import com.csse3200.game.entities.Entity;
 
-import core.src.main.com.csse3200.game.components.towers.TowerComponent;
-import core.src.main.com.csse3200.game.components.towers.TowerCostComponent;
-import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
-import core.src.main.com.csse3200.game.components.towers.OrbitComponent;
+import com.csse3200.game.components.towers.TowerComponent;
+import com.csse3200.game.components.towers.TowerCostComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
+import com.csse3200.game.components.towers.OrbitComponent;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -360,14 +360,14 @@ public class TowerUpgradeMenu extends UIComponent {
 
         if (highestUpgrades != null) {
             UpgradeStats levelData = highestUpgrades.get(highestLevel);
-            if (levelData != null && levelData.imagePath != null) {
+            if (levelData != null && levelData.atlasPath != null) {
                 TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
                 if (towerComp != null) {
-                    towerComp.changeHeadTexture(levelData.imagePath);
+                    towerComp.changeHeadTexture(levelData.atlasPath, currentLevel);
                     System.out.println("Tower texture set from path " +
                             (levelA >= levelB ? "A" : "B") +
                             " at level " + highestLevel +
-                            ": " + levelData.imagePath);
+                            ": " + levelData.atlasPath);
                 }
             }
         }

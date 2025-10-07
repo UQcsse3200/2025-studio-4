@@ -1,0 +1,13 @@
+caveman_lvl1.png
+size:2048,2048
+repeat:none
+fire_1
+index:1
+bounds:2,2,789,789
+fire_1
+index:2
+bounds:879,2,875,875
+idle_1
+index:1
+bounds:2,932,581,782
+

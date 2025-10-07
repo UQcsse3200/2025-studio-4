@@ -1,7 +1,8 @@
-package core.src.main.com.csse3200.game.components.towers;
+package com.csse3200.game.components.towers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -12,10 +13,12 @@ import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.rendering.Renderer;
+import com.csse3200.game.rendering.RotatingAnimationRenderComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.towers.OrbitComponent;
 import com.csse3200.game.components.towers.BeamAttackComponent;
 
 import java.util.Map;
@@ -32,7 +35,7 @@ public class TowerComponent extends Component {
     private boolean showSellButton = false;
 
     private Entity headEntity;
-    private RotatingTextureRenderComponent headRenderer;
+    private RotatingAnimationRenderComponent headRenderer;
     private final Vector2 headOffset = new Vector2(0f, 0f);
     private float zNudge = 0.01f;
     private boolean active = true;
@@ -63,6 +66,16 @@ public class TowerComponent extends Component {
         this.height = height;
     }
 
+
+
+    private int level = 1;
+    /**
+     level getter
+     */
+    public int getLevel() {return level;}
+
+    public void setLevel(int lvl) { this.level = Math.max(1, lvl); }
+
     /**
      * Attaches a head entity and renderer to this tower.
      *
@@ -72,7 +85,7 @@ public class TowerComponent extends Component {
      * @param zNudge The z-axis nudge for rendering.
      * @return This TowerComponent for chaining.
      */
-    public TowerComponent withHead(Entity head, RotatingTextureRenderComponent headRender, Vector2 offset, float zNudge)
+    public TowerComponent withHead(Entity head, RotatingAnimationRenderComponent headRender, Vector2 offset, float zNudge)
     {
         this.headEntity = head;
         this.headRenderer = headRender;
@@ -92,9 +105,9 @@ public class TowerComponent extends Component {
      *
      * @param texturePath The new texture file path.
      */
-    public void changeHeadTexture(String texturePath) {
+    public void changeHeadTexture(String texturePath, int level) {
         if (headRenderer != null) {
-            headRenderer.setTexture(texturePath);
+            headRenderer.setNewTexture(texturePath, level);
             System.out.println("[Tower] Head texture changed for " + type + " tower to " + texturePath);
         }
     }
@@ -310,6 +323,14 @@ public class TowerComponent extends Component {
                 );
             }
         }
+        // 🔄 Auto-revert fire -> idle when a non-looping fire clip finishes
+        if (headRenderer != null) {
+            String curr = headRenderer.getCurrentAnimation();
+            if (curr != null && curr.startsWith("fire_") && headRenderer.isFinished()) {
+                String idleName = "idle_" + level;
+                headRenderer.startAnimation(idleName);
+            }
+        }
 
         if ("totem".equalsIgnoreCase(type)) return;
 
@@ -364,7 +385,7 @@ public class TowerComponent extends Component {
                 if (headCenter != null) spawnOrigin = headCenter;
             }
 
-            // Target selection
+            // Normal tower targeting logic (used for all tower types now)
             Entity target = null;
             float range = stats.getRange();
 
@@ -381,9 +402,10 @@ public class TowerComponent extends Component {
             }
 
             if (target != null) {
+                // Unified single-shot behaviour for all towers
                 Vector2 dir = target.getCenterPosition().cpy().sub(spawnOrigin);
                 if (dir.len() <= 0.0001f) {
-                    dir.set(1f, 0f); // fallback to avoid NaN
+                    dir.set(1f, 0f); // fallback direction to avoid NaN
                 } else {
                     dir.nor();
                 }
@@ -397,6 +419,10 @@ public class TowerComponent extends Component {
                 Entity bullet = ProjectileFactory.createBullet(tex, spawnOrigin, dir.x * speed, dir.y * speed, life, damage);
                 var es = ServiceLocator.getEntityService();
                 if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
+
+                if (headRenderer != null) {
+                    headRenderer.startAnimation("fire_" + level);
+                }
             }
 
             stats.resetAttackTimer();
@@ -405,7 +431,7 @@ public class TowerComponent extends Component {
         // Handle tower selection by click
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
             Vector3 worldClickPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            com.badlogic.gdx.graphics.Camera camera = getCamera();
+            Camera camera = getCamera();
             if (camera != null) {
                 camera.unproject(worldClickPos);
                 Vector2 towerPos = entity.getPosition();

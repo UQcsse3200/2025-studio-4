@@ -1,4 +1,4 @@
-package core.src.main.com.csse3200.game.components.towers;
+package com.csse3200.game.components.towers;
 
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.entities.Entity;

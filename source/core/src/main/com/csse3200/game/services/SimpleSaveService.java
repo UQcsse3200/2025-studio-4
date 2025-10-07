@@ -7,8 +7,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import core.src.main.com.csse3200.game.components.towers.TowerComponent;
-import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
+import com.csse3200.game.components.towers.TowerComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

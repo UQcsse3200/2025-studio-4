@@ -20,15 +20,15 @@ public class TowerUpgradeData {
          * @param cooldown   Cooldown value for the upgrade.
          * @param speed      Projectile speed for the upgrade.
          * @param cost       Cost of the upgrade.
-         * @param imagePath  Texture path for the upgrade.
+         * @param atlasPath  Texture path for the upgrade.
          */
-        public UpgradeStats(int damage, float range, float cooldown, float speed, int cost, String imagePath) {
+        public UpgradeStats(int damage, float range, float cooldown, float speed, int cost, String atlasPath) {
             this.damage = damage;
             this.range = range;
             this.cooldown = cooldown;
             this.speed = speed;
             this.cost = cost;
-            this.imagePath = imagePath;
+            this.atlasPath = atlasPath;
         }
 
         public final int damage;
@@ -36,7 +36,7 @@ public class TowerUpgradeData {
         public final float cooldown;
         public final float speed;
         public final int cost;
-        public final String imagePath; // 🔹 new field for upgrade texture
+        public final String atlasPath; // 🔹 new field for upgrade texture
     }
 
     /**
@@ -49,34 +49,34 @@ public class TowerUpgradeData {
 
         // Bone tower
         Map<Integer, UpgradeStats> boneA = new HashMap<>();
-        boneA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/bone.png"));
-        boneA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/bone.png"));
-        boneA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/bone.png"));
-        boneA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/bone.png"));
+        boneA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/cavemen/lvl1/caveman_lvl1.atlas"));
+        boneA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
+        boneA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
+        boneA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         pathA.put("bone", boneA);
 
-        // Dino tower
+        // Dino towerk
         Map<Integer, UpgradeStats> dinoA = new HashMap<>();
-        dinoA.put(2, new UpgradeStats(17, 2.5f, 0.8f, 2.0f, 1200, "images/dino.png"));
-        dinoA.put(3, new UpgradeStats(20, 3.0f, 0.8f, 2.0f, 1500, "images/dino.png"));
-        dinoA.put(4, new UpgradeStats(25, 3.5f, 0.8f, 2.0f, 1800, "images/dino.png"));
-        dinoA.put(5, new UpgradeStats(30, 4.0f, 0.8f, 2.0f, 2000, "images/dino.png"));
+        dinoA.put(2, new UpgradeStats(17, 2.5f, 0.8f, 2.0f, 1200, "images/towers/cavemen/lvl1/caveman_lvl1.atlas"));
+        dinoA.put(3, new UpgradeStats(20, 3.0f, 0.8f, 2.0f, 1500, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
+        dinoA.put(4, new UpgradeStats(25, 3.5f, 0.8f, 2.0f, 1800, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
+        dinoA.put(5, new UpgradeStats(30, 4.0f, 0.8f, 2.0f, 2000, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         pathA.put("dino", dinoA);
 
         // Cavemen tower
         Map<Integer, UpgradeStats> cavemenA = new HashMap<>();
-        cavemenA.put(2, new UpgradeStats(35, 6.0f, 0.8f, 6.0f, 900, "images/cavemen.png"));
-        cavemenA.put(3, new UpgradeStats(43, 7.0f, 0.8f, 6.0f, 1100, "images/cavemen.png"));
-        cavemenA.put(4, new UpgradeStats(53, 8.0f, 0.8f, 6.0f, 1300, "images/cavemen.png"));
-        cavemenA.put(5, new UpgradeStats(65, 10.0f, 0.8f, 6.0f, 1450, "images/cavemen.png"));
+        cavemenA.put(2, new UpgradeStats(35, 6.0f, 0.8f, 6.0f, 900, "images/towers/cavemen/lvl1/caveman_lvl1.atlas"));
+        cavemenA.put(3, new UpgradeStats(43, 7.0f, 0.8f, 6.0f, 1100, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
+        cavemenA.put(4, new UpgradeStats(53, 8.0f, 0.8f, 6.0f, 1300, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
+        cavemenA.put(5, new UpgradeStats(65, 10.0f, 0.8f, 6.0f, 1450, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         pathA.put("cavemen", cavemenA);
 
         // Pteradactyl tower (Path A: Damage & Range)
         Map<Integer, UpgradeStats> pteroA = new HashMap<>();
-        pteroA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 4.0f, 60, "images/pteradactyl.png"));
-        pteroA.put(3, new UpgradeStats(10, 4.2f, 1.0f, 4.0f, 70, "images/pteradactyl.png"));
-        pteroA.put(4, new UpgradeStats(14, 5.1f, 1.0f, 4.0f, 110, "images/pteradactyl.png"));
-        pteroA.put(5, new UpgradeStats(20, 6.2f, 1.0f, 4.0f, 190, "images/pteradactyl.png"));
+        pteroA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 4.0f, 60, "images/towers/cavemen/lvl1/caveman_lvl1.atlas"));
+        pteroA.put(3, new UpgradeStats(10, 4.2f, 1.0f, 4.0f, 70, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
+        pteroA.put(4, new UpgradeStats(14, 5.1f, 1.0f, 4.0f, 110, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
+        pteroA.put(5, new UpgradeStats(20, 6.2f, 1.0f, 4.0f, 190, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         pathA.put("pteradactyl", pteroA);
 
         // Totem tower (Path A: Range)

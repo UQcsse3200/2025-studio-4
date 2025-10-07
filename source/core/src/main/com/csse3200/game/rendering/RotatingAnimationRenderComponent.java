@@ -159,8 +159,8 @@ public class RotatingAnimationRenderComponent extends RenderComponent {
         animations.clear();
 
     // Try to automatically add idle/fire animations for current level
-    String idle = "idle_";
-    String fire = "fire_";
+    String idle = "idle";
+    String fire = "fire";
 
         addAnimation(idle, 0.1f, Animation.PlayMode.LOOP);
         addAnimation(fire, 0.20f, Animation.PlayMode.NORMAL);

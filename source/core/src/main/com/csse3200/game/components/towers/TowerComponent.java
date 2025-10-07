@@ -326,8 +326,8 @@ public class TowerComponent extends Component {
         // 🔄 Auto-revert fire -> idle when a non-looping fire clip finishes
         if (headRenderer != null) {
             String curr = headRenderer.getCurrentAnimation();
-            if (curr != null && curr.startsWith("fire_") && headRenderer.isFinished()) {
-                String idleName = "idle_";
+            if (curr != null && curr.startsWith("fire") && headRenderer.isFinished()) {
+                String idleName = "idle";
                 headRenderer.startAnimation(idleName);
             }
         }
@@ -421,7 +421,7 @@ public class TowerComponent extends Component {
                 if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
 
                 if (headRenderer != null) {
-                    headRenderer.startAnimation("fire_");
+                    headRenderer.startAnimation("fire");
                 }
             }
 

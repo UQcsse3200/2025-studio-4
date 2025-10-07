@@ -3,22 +3,13 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.deck.DeckComponent;
+import com.csse3200.game.components.towers.*;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.TowerConfig;
+import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.RotatingAnimationRenderComponent;
-import com.csse3200.game.components.towers.TowerStatsComponent;
-import com.csse3200.game.components.towers.TowerComponent;
-import com.csse3200.game.components.towers.BeamAttackComponent;
-import com.csse3200.game.components.towers.TowerStatsComponent;
-import com.csse3200.game.components.towers.TowerComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
-import com.csse3200.game.files.FileLoader;
-import com.csse3200.game.entities.configs.TowerConfig;
-import com.csse3200.game.components.towers.OrbitComponent;
-
-
-import com.csse3200.game.components.towers.OrbitComponent;
-import com.csse3200.game.components.towers.StatsBoostComponent;
 
 /**
  * Factory class for creating different types of tower entities.
@@ -66,14 +57,14 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/rock1.png"));
 //TEMPORATY
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/cavemen/lvl1/caveman_lvl1.atlas", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_");
+        headAnim.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle" );
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -99,14 +90,14 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/rock2.png"));
 //TEMPORARY
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/cavemen/lvl1/caveman_lvl1.atlas", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/dino/dinolvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_");
+        headAnim.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle" );
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -138,9 +129,9 @@ public class TowerFactory {
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_");
+        headAnim.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle" );
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -167,15 +158,15 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/rock4.png"));
         // TEMPORARY
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/cavemen/lvl1/caveman_lvl1.atlas", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/pteradactyl/perolvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim)
                 .addComponent(new OrbitComponent(nest, stats.range, 0.5f)); // radius and speed can be tuned
-        headAnim.addAnimation("idle_", 0.1f, Animation.PlayMode.LOOP);
-        headAnim.addAnimation("fire_", 0.08f, Animation.PlayMode.NORMAL);
-        headAnim.startAnimation("idle_");
+        headAnim.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle" );
 
         // Attach the head to the nest via TowerComponent
         nest.getComponent(TowerComponent.class)
@@ -202,7 +193,9 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/rock4.png"));
 
-        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/cavemen/lvl1/caveman_lvl1.atlas", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
         // Pass damage and cooldown directly to BeamAttackComponent
         BeamAttackComponent beam = new BeamAttackComponent(
                 stats.range,
@@ -210,12 +203,16 @@ public class TowerFactory {
                 stats.cooldown
         );
         Entity head = new Entity()
-                .addComponent(headRender)
+                .addComponent(headAnim)
                 .addComponent(beam)
                 .addComponent(new BeamAttackComponent.BeamRenderComponent(beam));
 
+        headAnim.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle" );
+
         base.getComponent(TowerComponent.class)
-                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+                .withHead(head, headAnim, new Vector2(0f, 0f), 0.01f);
 
         scaleToFootprint(base, head, 3, 3);
         return base;
@@ -241,10 +238,17 @@ public class TowerFactory {
                 .addComponent(new TextureRenderComponent("images/towers/totem.png"))
                 .addComponent(new StatsBoostComponent(stats.range)); // <-- Add this line
 
-        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
-        Entity head = new Entity().addComponent(headRender);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/cavemen/lvl1/caveman_lvl1.atlas", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
+        Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.1f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle" );
+
         base.getComponent(TowerComponent.class)
-                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+                .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
 
         scaleToFootprint(base, head, 2, 2);
         return base;

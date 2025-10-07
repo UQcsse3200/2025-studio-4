@@ -683,20 +683,6 @@ public class ForestGameArea2 extends GameArea2 {
         } catch (Exception e) {
             logger.error("Error during force stop: {}", e.getMessage());
         }
-        try {
-            if (waveSpawnTask != null) {
-                waveSpawnTask.cancel();
-                waveSpawnTask = null;
-            }
-            waveInProgress = false;
-            if (enemySpawnQueue != null) {
-                enemySpawnQueue.clear();
-                enemySpawnQueue = null;
-            }
-            logger.info("Wave spawning force stopped");
-        } catch (Exception e) {
-            logger.error("Error during force stop: {}", e.getMessage());
-        }
     }
     
     /**
@@ -758,6 +744,12 @@ public class ForestGameArea2 extends GameArea2 {
 
     @Override
     public void dispose() {
+        forceStopWave();
+
+        if (currentGameArea == this) {
+            currentGameArea = null;
+        }
+
         super.dispose();
         if (mapEditor != null) {
             mapEditor.cleanup();

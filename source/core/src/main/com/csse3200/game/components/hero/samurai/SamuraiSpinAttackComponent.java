@@ -101,13 +101,13 @@ public class SamuraiSpinAttackComponent extends Component {
                 var ctrl = sword.getComponent(SwordJabPhysicsComponent.class);
                 if (ctrl == null) return false;
 
-                if (keycode == Input.Keys.J) {
+                if (keycode == Input.Keys.NUM_1) {
                     ctrl.triggerJabTowards(mouseWorld);
                     return true;
-                } else if (keycode == Input.Keys.K) {
+                } else if (keycode == Input.Keys.NUM_2) {
                     ctrl.triggerSweepToward(mouseWorld);
                     return true;
-                } else if (keycode == Input.Keys.L) {
+                } else if (keycode == Input.Keys.NUM_3) {
                     ctrl.triggerSpin(true); // 逆时针
                     return true;
                 }

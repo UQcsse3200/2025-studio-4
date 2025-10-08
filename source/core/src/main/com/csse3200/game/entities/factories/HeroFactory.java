@@ -105,7 +105,6 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-                .addComponent(new UltimateButtonComponent())
                 .addComponent(new HeroAppearanceComponent(cfg));
 
         // Default scale to 1x1 so the hero is visible during testing

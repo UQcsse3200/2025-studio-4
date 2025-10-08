@@ -63,7 +63,7 @@ public class ForestGameArea extends GameArea {
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
-    private static ForestGameArea currentGameArea;
+    public static ForestGameArea currentGameArea;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;

@@ -63,6 +63,7 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
         TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank_tower.png")));
+        TextureRegionDrawable raftImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/rafticon.png")));
 
         // Create buttons
         ImageButton boneBtn = new ImageButton(boneImage);
@@ -72,11 +73,12 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton totemBtn = new ImageButton(totemImage); // totem slot
         ImageButton bankBtn = new ImageButton(bankImage); // bank slot
         ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
+        ImageButton raftBtn = new ImageButton(raftImage); // raft slot
         ImageButton placeholderBtn = new ImageButton(placeholderImage);
 
         // Only include allowed towers in the hotbar
         ImageButton[] allButtons = {
-                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn, superCavemenBtn, placeholderBtn
+                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn, superCavemenBtn, raftBtn, placeholderBtn
         };
 
         // Add listeners for all tower types
@@ -87,6 +89,7 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(totemBtn, "totem");
         addPlacementListener(superCavemenBtn, "supercavemen");
         addPlacementListener(bankBtn, "bank");
+        addPlacementListener(raftBtn, "raft");
 
         // Button grid
         Table buttonTable = new Table();

@@ -102,6 +102,14 @@ public class TowerUpgradeData {
         bankA.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
         pathA.put("bank", bankA);
 
+        // Raft tower (same as bone for now)
+        Map<Integer, UpgradeStats> raftA = new HashMap<>();
+        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/bones/bonelvl2"));
+        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/bones/bonelvl3"));
+        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/bones/bonelvl4"));
+        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/bones/bonelvl4"));
+        pathA.put("raft", raftA);
+
         return pathA;
     }
 
@@ -161,12 +169,13 @@ public class TowerUpgradeData {
         superCavemenB.put(5, new UpgradeStats(60, 6.0f, 0.5f, 30.0f, 3500, "images/towers/super/superlvl4"));
         pathB.put("supercavemen", superCavemenB);
 
-        Map<Integer, UpgradeStats> bankB = new HashMap<>();
-        bankB.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
-        bankB.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl3"));
-        bankB.put(4, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
-        bankB.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
-        pathB.put("bank", bankB);
+        // Raft tower (same as bone for now)
+        Map<Integer, UpgradeStats> raftB = new HashMap<>();
+        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
+        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
+        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
+        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        pathB.put("raft", raftB);
 
         return pathB;
     }

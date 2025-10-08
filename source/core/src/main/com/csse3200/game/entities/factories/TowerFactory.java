@@ -303,6 +303,39 @@ public class TowerFactory {
     }
 
     /**
+     * Creates a raft tower entity (same as bone tower for now).
+     */
+    public static Entity createRaftTower() {
+        TowerConfig.TowerStats stats = towers.raftTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("raft", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "raft", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+        // TEMPORARY: use bone tower atlas for now
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
+        Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle");
+
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
      * Returns the loaded TowerConfig for external access (e.g., for costs).
      */
     public static TowerConfig getTowerConfig() {

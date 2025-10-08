@@ -62,6 +62,9 @@ public class SimplePlacementController extends Component {
     /** Static 2D array storing fixed path tiles to prevent tower placement. */
     private static int[][] FIXED_PATH = {};
 
+    /** Static 2D array storing water tiles for raft tower placement. */
+    private static int[][] WATER_TILES = {};
+
     /**
      * Sets the map editor instance used to check invalid tiles.
      *
@@ -70,6 +73,7 @@ public class SimplePlacementController extends Component {
     public void setMapEditor(MapEditor mapEditor) {
         this.mapEditor = mapEditor;
         refreshInvalidTiles();
+        refreshWaterTiles();
     }
 
     /**
@@ -90,12 +94,37 @@ public class SimplePlacementController extends Component {
     }
 
     /**
+     * Refreshes the list of water tiles for raft tower placement from the MapEditor.
+     */
+    public void refreshWaterTiles() {
+        if (mapEditor == null) return;
+        List<GridPoint2> tiles = mapEditor.getWaterTiles();
+        if (tiles == null || tiles.isEmpty()) return;
+        int[][] newWater = new int[tiles.size()][2];
+        for (int i = 0; i < tiles.size(); i++) {
+            GridPoint2 t = tiles.get(i);
+            newWater[i][0] = t.x;
+            newWater[i][1] = t.y;
+        }
+        WATER_TILES = newWater;
+    }
+
+    /**
      * Returns the fixed path as a 2D array of tile coordinates.
      *
      * @return fixed path array
      */
     public int[][] getFixedPath() {
         return FIXED_PATH;
+    }
+
+    /**
+     * Returns the water tiles as a 2D array of tile coordinates.
+     *
+     * @return water tiles array
+     */
+    public int[][] getWaterTiles() {
+        return WATER_TILES;
     }
 
     /**
@@ -110,6 +139,7 @@ public class SimplePlacementController extends Component {
         entity.getEvents().addListener("startPlacementSuperCavemen", this::armSuperCavemen);
         entity.getEvents().addListener("startPlacementTotem", this::armTotem);
         entity.getEvents().addListener("startPlacementBank", this::armBank);
+        entity.getEvents().addListener("startPlacementRaft", this::armRaft); // Add raft event
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
@@ -149,6 +179,11 @@ public class SimplePlacementController extends Component {
         startPlacement("bank");
     }
 
+    /** Arms the controller to start placing a Raft tower. */
+    private void armRaft() {
+        startPlacement("raft");
+    }
+
     /**
      * Public API for UI to request a placement directly on this controller instance.
      * This avoids trying to trigger events on other entities (hotbar -> placement controller).
@@ -177,6 +212,7 @@ public class SimplePlacementController extends Component {
             case "supercavemen" -> ghostTower = TowerFactory.createSuperCavemenTower();
             case "totem" -> ghostTower = TowerFactory.createTotemTower();
             case "bank" -> ghostTower = TowerFactory.createBankTower();
+            case "raft" -> ghostTower = TowerFactory.createRaftTower();
             default -> ghostTower = TowerFactory.createBoneTower();
         }
 
@@ -244,8 +280,15 @@ public class SimplePlacementController extends Component {
 
         // Only allow placement if in bounds
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && inBounds) {
-            if (isTowerOnPath(tile, towerWidth, towerHeight) ||
-                    !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
+            // Raft tower: only allow placement on water tiles
+            if (pendingType.equalsIgnoreCase("raft")) {
+                if (!isTowerOnWater(tile, towerWidth, towerHeight) ||
+                        !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
+            } else {
+                // For all other towers: only block placement on path/barrier/snowtree/invalid tiles
+                if (isTowerOnInvalid(tile, towerWidth, towerHeight) ||
+                        !isPositionFree(snapPos, towerWidth, towerHeight, terrain)) return;
+            }
 
             // --- Begin: Cost logic ---
             // Get player entity and currency manager
@@ -288,6 +331,7 @@ public class SimplePlacementController extends Component {
                 case "supercavemen" -> newTower = TowerFactory.createSuperCavemenTower();
                 case "totem" -> newTower = TowerFactory.createTotemTower();
                 case "bank" -> newTower = TowerFactory.createBankTower();
+                case "raft" -> newTower = TowerFactory.createRaftTower();
                 default -> newTower = TowerFactory.createBoneTower();
             }
 
@@ -427,6 +471,42 @@ public class SimplePlacementController extends Component {
     /** Returns the pending tower type for placement. */
     public String getPendingType() {
         return pendingType;
+    }
+
+    /** Checks if tower overlaps the water tiles (for raft tower). */
+    private boolean isTowerOnWater(GridPoint2 tile, int towerWidth, int towerHeight) {
+        for (int tx = 0; tx < towerWidth; tx++) {
+            for (int ty = 0; ty < towerHeight; ty++) {
+                if (!isOnWater(new GridPoint2(tile.x + tx, tile.y + ty))) return false;
+            }
+        }
+        return true;
+    }
+
+    /** Checks if a single tile is on the water area. */
+    private boolean isOnWater(GridPoint2 tile) {
+        for (int[] p : WATER_TILES) {
+            if (p[0] == tile.x && p[1] == tile.y) return true;
+        }
+        return false;
+    }
+
+    /** Checks if tower overlaps any invalid tiles (path, barrier, snowtree, snow, etc). */
+    private boolean isTowerOnInvalid(GridPoint2 tile, int towerWidth, int towerHeight) {
+        for (int tx = 0; tx < towerWidth; tx++) {
+            for (int ty = 0; ty < towerHeight; ty++) {
+                if (isOnInvalid(new GridPoint2(tile.x + tx, tile.y + ty))) return true;
+            }
+        }
+        return false;
+    }
+
+    /** Checks if a single tile is in the invalid tiles array. */
+    private boolean isOnInvalid(GridPoint2 tile) {
+        for (int[] p : FIXED_PATH) {
+            if (p[0] == tile.x && p[1] == tile.y) return true;
+        }
+        return false;
     }
 }
 

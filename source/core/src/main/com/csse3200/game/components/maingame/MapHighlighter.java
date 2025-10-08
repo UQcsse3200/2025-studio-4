@@ -195,6 +195,8 @@ public class MapHighlighter extends UIComponent {
             pendingEntity = towerFactory.createTotemTower();
         } else if ("Bank".equalsIgnoreCase(pendingType)) {
             pendingEntity = towerFactory.createBankTower();
+        } else if ("Raft".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createRaftTower();
         } else {
             pendingEntity = towerFactory.createBoneTower();
         }
@@ -202,13 +204,23 @@ public class MapHighlighter extends UIComponent {
         int towerWidth = placingTower != null ? placingTower.getWidth() : 2;
         int towerHeight = placingTower != null ? placingTower.getHeight() : 2;
 
-        // Fill tiles with green (free) or red (blocked)
+        boolean isRaft = "Raft".equalsIgnoreCase(pendingType);
+        int[][] waterTiles = null;
+        if (isRaft && placementController != null) {
+            waterTiles = placementController.getWaterTiles();
+        }
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (int x = 0; x < mapBounds.x; x++) {
             for (int y = 0; y < mapBounds.y; y++) {
                 Vector2 worldPos = terrain.tileToWorldPosition(x, y);
-                boolean valid = isTileFree(x, y, entities);
-
+                boolean valid;
+                if (isRaft) {
+                    valid = isTileWater(x, y, waterTiles, towerWidth, towerHeight, mapBounds);
+                } else {
+                    // For all other towers: valid if not on invalid tiles and not overlapping towers
+                    valid = isTileFree(x, y, entities);
+                }
                 shapeRenderer.setColor(valid ? new Color(0, 1, 0, 0.2f) : new Color(1, 0, 0, 0.2f));
                 shapeRenderer.rect(worldPos.x, worldPos.y, tileSize, tileSize);
             }
@@ -249,6 +261,29 @@ public class MapHighlighter extends UIComponent {
     }
 
     /**
+     * Checks if a tile is a valid raft placement (all footprint tiles must be water).
+     */
+    private boolean isTileWater(int tileX, int tileY, int[][] waterTiles, int towerWidth, int towerHeight, GridPoint2 mapBounds) {
+        if (waterTiles == null) return false;
+        for (int dx = 0; dx < towerWidth; dx++) {
+            for (int dy = 0; dy < towerHeight; dy++) {
+                int tx = tileX + dx;
+                int ty = tileY + dy;
+                if (tx < 0 || ty < 0 || tx >= mapBounds.x || ty >= mapBounds.y) return false;
+                boolean found = false;
+                for (int[] p : waterTiles) {
+                    if (p[0] == tx && p[1] == ty) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Draws the attack range of the currently selected tower.
      */
     private void drawSelectedTowerRange() {
@@ -281,11 +316,11 @@ public class MapHighlighter extends UIComponent {
     private boolean isTileFree(int tileX, int tileY, Array<Entity> entities) {
         if (entities == null) return true;
 
-        // Check fixed path tiles
+        // Check invalid tiles (path, barrier, snowtree, snow, etc)
         if (placementController != null) {
-            int[][] path = placementController.getFixedPath();
-            if (path != null) {
-                for (int[] p : path) {
+            int[][] invalid = placementController.getFixedPath();
+            if (invalid != null) {
+                for (int[] p : invalid) {
                     if (p[0] == tileX && p[1] == tileY) return false;
                 }
             }

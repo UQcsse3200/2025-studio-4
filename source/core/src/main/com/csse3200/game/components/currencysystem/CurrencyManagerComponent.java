@@ -25,11 +25,15 @@ public class CurrencyManagerComponent extends Component {
     @Override
     public void create() {
         currencies.clear(); // Ensure no leftover values from previous runs/tests
-        this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
-        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500000);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 500000);
-        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 100000);
-        this.updateAllCurrencyUI();
+        if (this.entity != null) {
+            this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
+        }
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 50);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
+        if (this.entity != null) {
+            this.updateAllCurrencyUI();
+        }
     }
 
     /**
@@ -101,13 +105,16 @@ public class CurrencyManagerComponent extends Component {
     private void updateCurrencyUI(CurrencyType type) {
         final String updateCurrencyUIEvent = "updateCurrencyUI";
         int amount = getCurrencyAmount(type);
-        this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+        if (this.entity != null) {
+            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+        }
     }
 
     /**
      * Update UI rendering for all currency types
      */
     private void updateAllCurrencyUI() {
+        if (this.entity == null) return;
         for (CurrencyType type : CurrencyType.values()) {
             updateCurrencyUI(type);
         }
@@ -191,3 +198,4 @@ public class CurrencyManagerComponent extends Component {
         });
     }
 }
+

@@ -52,7 +52,7 @@ public class MapEditor2 extends InputAdapter {
     /** Initialize keypoint tiles初始化关键点瓦片 */
     private void initializeKeypointTile() {
         try {
-            Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/path_keypoint.png", Texture.class);
+            Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
             // Avoid blurring when zooming
             keypointTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
@@ -96,7 +96,7 @@ public class MapEditor2 extends InputAdapter {
     /** Initialize path tiles初始化路径瓦片 */
     private void initializePathTile() {
         try {
-            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
+            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
             // Avoid blurring when zooming避免放大时模糊
             pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 

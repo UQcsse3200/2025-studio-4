@@ -1,8 +1,10 @@
 package com.csse3200.game.areas;
 
 import com.csse3200.game.components.HealthBarComponent;
+import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +27,14 @@ import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
+import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
 import com.badlogic.gdx.utils.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,7 +81,10 @@ public class ForestGameArea extends GameArea {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            CurrencyManagerComponent.SOUND_PATH,
+            "sounds/book_opening.mp3",
+            "sounds/book_closing.mp3",
     };
     private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
     private static final String[] forestMusic = {backgroundMusic};
@@ -98,12 +105,12 @@ public class ForestGameArea extends GameArea {
             {5, 24}, {8, 20},
             // 在x<31且y>13且x<13范围内随机添加的坐标点
             {8, 15}, {5, 17}, {11, 14}, {3, 18},
-            {7, 25}, {2, 15},  {6, 29},
+            {7, 25}, {2, 15}, {6, 29},
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9},{16,8},{17,10},{19,10},{14,6},{10,3},{13,5},{5,4},{7,4},{3,8},{15,3 }    };
+            {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}};
 
     /**
      * Initialise this ForestGameArea to use the provided TerrainFactory.
@@ -336,9 +343,25 @@ public class ForestGameArea extends GameArea {
 
         // Add hero placement system
 
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
+        //Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnEngineerAt));
 
-        spawnEntity(placement);
+        //spawnEntity(placement);
+        var gameState = ServiceLocator.getGameStateService();
+        if (gameState == null) {
+            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
+        }
+        GameStateService.HeroType chosen = gameState.getSelectedHero();
+        Gdx.app.log("ForestGameArea", "chosen=" + chosen);
+
+// 根据选择安装一个只放“指定英雄”的放置器
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
+                (chosen == GameStateService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
+
+        Entity placementEntity = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
+        );
+        spawnEntity(placementEntity);
+
 
         playMusic();
 
@@ -354,12 +377,12 @@ public class ForestGameArea extends GameArea {
         cfg3.heroTexture = "images/hero3/Heroshoot.png";
         cfg3.bulletTexture = "images/hero3/Bullet.png";
 
-        // 2) 挂载“一次性换肤”组件（不会改变你其它逻辑）
+// 一次性换肤组件，注册到 EntityService
         Entity skinSwitcher = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
         );
-        com.csse3200.game.services.ServiceLocator.getEntityService().
-                register(skinSwitcher);
+        com.csse3200.game.services.ServiceLocator.getEntityService().register(skinSwitcher);
+
 
     }
 
@@ -550,6 +573,43 @@ public class ForestGameArea extends GameArea {
         if (!heroHintShown) {
             com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
+            heroHintShown = true;
+        }
+    }
+
+    private void spawnEngineerAt(GridPoint2 cell) {
+        // 1) 只读取工程师配置
+        EngineerConfig engCfg = FileLoader.readClass(EngineerConfig.class, "configs/engineer.json");
+        if (engCfg == null) {
+            logger.warn("Failed to load configs/engineer.json, using default EngineerConfig.");
+            engCfg = new EngineerConfig();
+        }
+
+        // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
+        ResourceService rs = ServiceLocator.getResourceService();
+        HeroFactory.loadAssets(rs, engCfg);  // 只传工程师
+        while (!rs.loadForMillis(10)) {
+            logger.info("Loading engineer assets... {}%", rs.getProgress());
+        }
+
+        // 3) 创建工程师实体（注意方法名：你现在实现的是 createEngineerHero）
+        Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
+        Entity engineer = HeroFactory.createEngineerHero(engCfg, cam);
+
+        var up = engineer.getComponent(HeroUpgradeComponent.class);
+        if (up != null) {
+            up.attachPlayer(player);
+        }
+
+        engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
+        // 4) 放置
+        spawnEntityAt(engineer, cell, true, true);
+
+        // 5) 一次性提示
+        if (!heroHintShown) {
+            var stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
             heroHintShown = true;
         }
     }

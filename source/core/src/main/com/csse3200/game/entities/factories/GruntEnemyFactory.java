@@ -7,6 +7,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.SpeedWaypointComponent;
@@ -77,6 +78,7 @@ public class GruntEnemyFactory {
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
+            .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
@@ -115,6 +117,12 @@ public class GruntEnemyFactory {
             PlayerScoreComponent totalScore = player.getComponent(PlayerScoreComponent.class);
             if (totalScore != null) {
                 totalScore.addPoints(points);
+            }
+
+            // Track kill for ranking component
+            com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+            if (prc != null) {
+                prc.addKill();
             }
         }
 

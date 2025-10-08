@@ -77,11 +77,6 @@ public class MyRankCard extends Group {
         packSelf();
     }
 
-    /** Refresh data with complete PlayerRank */
-    public void setData(PlayerRank pr) {
-        setData(pr.name, pr.rank, pr.score);
-    }
-
     /** Refresh data using only name/rank/score (more convenient) */
     public void setData(String name, int rank, int score) {
         nameLbl.setText("Name: " + name);

@@ -1,0 +1,9 @@
+{
+  "version":1,
+  "timestamp":"2025-10-08T19:33:33",
+  "mapId":null,
+  "difficulty":"EASY",
+  "player":{"pos":{"x":7.5,"y":7.5},"hp":100,"gold":0},
+  "towers":[],
+  "enemies":[]
+}

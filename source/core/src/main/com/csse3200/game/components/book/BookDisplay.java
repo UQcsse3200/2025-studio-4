@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.components.deck.DeckComponent;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -50,6 +51,10 @@ public class BookDisplay extends UIComponent {
     private DeckComponent deck;
     private boolean hasJustOpenedBook = true;
 
+    private Table contentListTable;
+    private Table titleTable;
+    private Table exitTable;
+
     /**
      * Constructs a BookDisplay for a specific page type.
      *
@@ -86,8 +91,48 @@ public class BookDisplay extends UIComponent {
         addActors();
         stage.addActor(rightTable);
         this.entity.getEvents().addListener(eventName, this::renderRightDeck);
-
+        //applyUiScale();
     }
+
+    /**
+     * Apply UI scale from user settings
+     */
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+
+        // Scale right panel (top-right aligned)
+        if (rightTable != null) {
+            rightTable.setTransform(true);
+            rightTable.validate();
+            rightTable.setOrigin(rightTable.getWidth(), rightTable.getHeight());
+            rightTable.setScale(settings.uiScale);
+        }
+
+        // Scale content list (left-aligned)
+        if (contentListTable != null) {
+            contentListTable.setTransform(true);
+            contentListTable.validate();
+            contentListTable.setOrigin(0f, contentListTable.getHeight());
+            contentListTable.setScale(settings.uiScale);
+        }
+
+        // Scale title table (top-left)
+        if (titleTable != null) {
+            titleTable.setTransform(true);
+            titleTable.validate();
+            titleTable.setOrigin(0f, titleTable.getHeight());
+            titleTable.setScale(settings.uiScale);
+        }
+
+        // Scale exit button (top-right)
+        if (exitTable != null) {
+            exitTable.setTransform(true);
+            exitTable.validate();
+            exitTable.setOrigin(exitTable.getWidth(), exitTable.getHeight());
+            exitTable.setScale(settings.uiScale);
+        }
+    }
+
 
     /**
      * Adds all UI elements to the stage: background, content list, default

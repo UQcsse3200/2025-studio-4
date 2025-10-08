@@ -2,3 +2,5 @@
 
 ### Gradle ###
 .gradle/
+*.log
+.DS_Store

@@ -2,6 +2,11 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -56,6 +61,7 @@ public class MainGameScreen extends ScreenAdapter {
           "images/homebase1.png",
           "images/homebase2.png",
           "images/basement.png"
+          "images/Background4.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -125,7 +131,7 @@ public class MainGameScreen extends ScreenAdapter {
     boolean hasExistingPlayer = false;
     if (isContinue && startupArg != null) {
       logger.info("Loading specific save file: {}", startupArg);
-      boolean success = simpleSave.loadToPending();
+      boolean success = simpleSave.loadToPending(startupArg);
       if (success) {
         logger.info("Save file loaded successfully");
         hasExistingPlayer = true;
@@ -260,6 +266,8 @@ public class MainGameScreen extends ScreenAdapter {
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForTerminal();
+
+    // 默认：不在世界层绘制整屏背景，避免遮挡地形
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

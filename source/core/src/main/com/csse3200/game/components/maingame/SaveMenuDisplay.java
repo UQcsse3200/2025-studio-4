@@ -15,6 +15,7 @@ import com.csse3200.game.ui.UIComponent;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +72,9 @@ public class SaveMenuDisplay extends UIComponent {
         Label title = new Label("Save Game", skin, "title");
 
         // Create custom button style
-        TextButtonStyle customButtonStyle = createCustomButtonStyle();
-        
+        TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
+
+
         // Status label for save feedback
         statusLabel = new Label("", skin);
         statusLabel.setColor(Color.GREEN);
@@ -80,7 +82,6 @@ public class SaveMenuDisplay extends UIComponent {
 
         // Save buttons
         TextButton saveBtn = new TextButton("Save Game", customButtonStyle);
-        TextButton saveAsBtn = new TextButton("Save As...", customButtonStyle);
         TextButton cancelBtn = new TextButton("Cancel", customButtonStyle);
 
         // Button listeners
@@ -90,11 +91,7 @@ public class SaveMenuDisplay extends UIComponent {
             }
         });
 
-        saveAsBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("performSaveAs");
-            }
-        });
+        // Save As removed per requirement
 
         cancelBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
@@ -106,7 +103,6 @@ public class SaveMenuDisplay extends UIComponent {
         window.add(title).row();
         window.add(statusLabel).padBottom(10f).row();
         window.add(saveBtn).size(280f, 50f).row();
-        window.add(saveAsBtn).size(280f, 50f).row();
         window.add(cancelBtn).size(280f, 50f).row();
 
         overlayTable.add(window).center();
@@ -158,9 +154,9 @@ public class SaveMenuDisplay extends UIComponent {
         // Use Segoe UI font
         style.font = skin.getFont("segoe_ui");
         
-        // Load button background image
+        // Load button background image (match main menu wooden buttons)
         Texture buttonTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Game_Button.png", Texture.class);
+            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
         
         // Create NinePatch for scalable button background
@@ -179,9 +175,9 @@ public class SaveMenuDisplay extends UIComponent {
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
         
-        style.fontColor = Color.CYAN;
-        style.downFontColor = new Color(0.0f, 0.6f, 0.8f, 1.0f);
-        style.overFontColor = new Color(0.2f, 0.8f, 1.0f, 1.0f);
+        style.fontColor = Color.WHITE;
+        style.downFontColor = Color.LIGHT_GRAY;
+        style.overFontColor = Color.WHITE;
         
         return style;
     }

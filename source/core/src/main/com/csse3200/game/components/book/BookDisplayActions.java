@@ -3,6 +3,7 @@ package com.csse3200.game.components.book;
 import com.badlogic.gdx.audio.Sound;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,9 @@ public class BookDisplayActions extends Component {
     private void playSound(String soundPath) {
         Sound sound = ServiceLocator.getResourceService().getAsset(soundPath, Sound.class);
         if (sound != null) {
-            sound.play(1.0f);
+            UserSettings.Settings settings = UserSettings.get();
+            float volume = settings.soundVolume;
+            sound.play(volume);
         } else {
             System.out.println("Sound not found: " + soundPath);
         }

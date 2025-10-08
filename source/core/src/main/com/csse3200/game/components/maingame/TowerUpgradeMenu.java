@@ -47,12 +47,24 @@ public class TowerUpgradeMenu extends UIComponent {
 
     private static final CurrencyType UPGRADE_CURRENCY = CurrencyType.METAL_SCRAP;
 
-    private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
-    private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
+    private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower;
+    private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower;
+    
+    // 防重复升级标志
+    private boolean upgradeInProgress = false;
 
     /**
      * Creates the UI for the tower upgrade menu and sets up listeners.
      */
+    public TowerUpgradeMenu() {
+        // Initialize upgrade data
+        this.pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
+        this.pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
+        
+        // Debug: Print loaded upgrade data
+        System.out.println("DEBUG: Loaded upgrade data for towers: " + pathAUpgradesPerTower.keySet());
+    }
+
     @Override
     public void create() {
         super.create();
@@ -132,14 +144,15 @@ public class TowerUpgradeMenu extends UIComponent {
 
                 // --- Calculate total spent ---
                 int totalSpent = 0;
-                // choose refund currency based on tower type
-                CurrencyType refundCurrencyType = currencyForTowerType(towerComp.getType());
+                // Use canonical tower type for refund currency and upgrades
+                String towerTypeKey = canonicalTowerType(towerComp.getType());
+                CurrencyType refundCurrencyType = currencyForTowerType(towerTypeKey);
 
                 // Base cost (uses chosen currency)
                 totalSpent += costComp.getCostForCurrency(refundCurrencyType);
 
                 // Path A upgrades
-                Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerComp.getType() == null ? "" : towerComp.getType().toLowerCase());
+                Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerTypeKey);
                 int levelA = statsComp.getLevel_A();
                 for (int lvl = 2; lvl <= levelA; lvl++) {
                     if (upgradesA != null && upgradesA.containsKey(lvl)) {
@@ -148,7 +161,7 @@ public class TowerUpgradeMenu extends UIComponent {
                 }
 
                 // Path B upgrades
-                Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerComp.getType() == null ? "" : towerComp.getType().toLowerCase());
+                Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerTypeKey);
                 int levelB = statsComp.getLevel_B();
                 for (int lvl = 2; lvl <= levelB; lvl++) {
                     if (upgradesB != null && upgradesB.containsKey(lvl)) {
@@ -221,7 +234,11 @@ public class TowerUpgradeMenu extends UIComponent {
      */
     public void setSelectedTower(Entity tower, String towerType) {
         this.selectedTower = tower;
-        // Store canonical tower type key so lookups always hit the upgrade maps
+        // Defensive: fallback to TowerComponent type if towerType is null
+        if (towerType == null && tower != null) {
+            TowerComponent tc = tower.getComponent(TowerComponent.class);
+            towerType = tc != null ? tc.getType() : "";
+        }
         this.currentTowerType = canonicalTowerType(towerType);
         rootTable.setVisible(tower != null);
         updateLabels();
@@ -242,7 +259,7 @@ public class TowerUpgradeMenu extends UIComponent {
     // Helper: choose upgrade/refund currency per tower type
     private static CurrencyType currencyForTowerType(String towerType) {
         String key = canonicalTowerType(towerType);
-        if (key == null) return UPGRADE_CURRENCY;
+        if (key == null || key.isEmpty()) return UPGRADE_CURRENCY;
         if ("pteradactyl".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
         if ("totem".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
         if ("supercavemen".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
@@ -256,7 +273,8 @@ public class TowerUpgradeMenu extends UIComponent {
 
     private static String canonicalTowerType(String towerType) {
         if (towerType == null) return "";
-        String s = towerType.toLowerCase().trim();
+        String s = towerType.trim().toLowerCase();
+        if (s.isEmpty()) return "";
         if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) return "pteradactyl";
         if (s.equals("totem")) return "totem";
         if (s.equals("supercavemen")) return "supercavemen";
@@ -308,26 +326,52 @@ public class TowerUpgradeMenu extends UIComponent {
      */
     private void attemptUpgrade(boolean isLevelA) {
         if (selectedTower == null || currentTowerType == null) return;
+        
+        // 防止重复升级
+        if (upgradeInProgress) {
+            System.out.println("Upgrade already in progress, ignoring duplicate request");
+            return;
+        }
+        
+        upgradeInProgress = true;
 
         TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
-        if (stats == null) return;
+        if (stats == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         int currentLevel = isLevelA ? stats.getLevel_A() : stats.getLevel_B();
-        if (currentLevel >= 5) return;
+        if (currentLevel >= 5) {
+            upgradeInProgress = false;
+            return;
+        }
         int nextLevel = currentLevel + 1;
 
         Map<Integer, UpgradeStats> upgrades = isLevelA
                 ? pathAUpgradesPerTower.get(currentTowerType)
                 : pathBUpgradesPerTower.get(currentTowerType);
-        if (upgrades == null) return;
+        if (upgrades == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         UpgradeStats upgrade = upgrades.get(nextLevel);
-        if (upgrade == null) return;
+        if (upgrade == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         Entity player = findPlayerEntity();
-        if (player == null) return;
+        if (player == null) {
+            upgradeInProgress = false;
+            return;
+        }
         CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-        if (currencyManager == null) return;
+        if (currencyManager == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         // choose currency for this tower type
         CurrencyType costCurrency = currencyForTowerType(currentTowerType);
@@ -337,6 +381,7 @@ public class TowerUpgradeMenu extends UIComponent {
 
         if (!currencyManager.canAffordAndSpendCurrency(costMap)) {
             System.out.println("Not enough " + costCurrency + " for upgrade!");
+            upgradeInProgress = false;
             return;
         }
 
@@ -380,9 +425,8 @@ public class TowerUpgradeMenu extends UIComponent {
         if (towerCompForOrbit != null && towerCompForOrbit.hasHead()) {
             Entity head = towerCompForOrbit.getHeadEntity();
             if (head != null) {
-                OrbitComponent orbit = head.getComponent(OrbitComponent.class);
+                com.csse3200.game.components.towers.OrbitComponent orbit = head.getComponent(com.csse3200.game.components.towers.OrbitComponent.class);
                 if (orbit != null) {
-                    // use the updated stats range so orbit follows upgrades
                     orbit.setRadius(stats.getRange());
                 }
             }
@@ -390,6 +434,9 @@ public class TowerUpgradeMenu extends UIComponent {
 
         updateLabels();
         System.out.println("Upgrade successful!");
+        
+        // 重置升级标志
+        upgradeInProgress = false;
     }
 
 
@@ -445,8 +492,33 @@ public class TowerUpgradeMenu extends UIComponent {
         int nextLevelA = levelA + 1;
         int nextLevelB = levelB + 1;
 
+        // Debug: Print tower type and available upgrades
+        System.out.println("DEBUG: Tower type = '" + currentTowerType + "'");
+        System.out.println("DEBUG: Available upgrade types: " + pathAUpgradesPerTower.keySet());
+        System.out.println("DEBUG: Current levels - A: " + levelA + ", B: " + levelB);
+        System.out.println("DEBUG: Next levels - A: " + nextLevelA + ", B: " + nextLevelB);
+        
         Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(currentTowerType);
         Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(currentTowerType);
+        
+        System.out.println("DEBUG: upgradesA = " + (upgradesA != null ? "found" : "null"));
+        System.out.println("DEBUG: upgradesB = " + (upgradesB != null ? "found" : "null"));
+        
+        if (upgradesA != null) {
+            System.out.println("DEBUG: upgradesA keys: " + upgradesA.keySet());
+            System.out.println("DEBUG: upgradesA contains nextLevelA(" + nextLevelA + "): " + upgradesA.containsKey(nextLevelA));
+            if (upgradesA.containsKey(nextLevelA)) {
+                System.out.println("DEBUG: upgradesA[" + nextLevelA + "].cost = " + upgradesA.get(nextLevelA).cost);
+            }
+        }
+        
+        if (upgradesB != null) {
+            System.out.println("DEBUG: upgradesB keys: " + upgradesB.keySet());
+            System.out.println("DEBUG: upgradesB contains nextLevelB(" + nextLevelB + "): " + upgradesB.containsKey(nextLevelB));
+            if (upgradesB.containsKey(nextLevelB)) {
+                System.out.println("DEBUG: upgradesB[" + nextLevelB + "].cost = " + upgradesB.get(nextLevelB).cost);
+            }
+        }
 
         // determine currency for current tower type
         CurrencyType displayCurrency = currencyForTowerType(currentTowerType);

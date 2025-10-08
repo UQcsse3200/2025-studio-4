@@ -109,6 +109,12 @@ public class TankEnemyFactory {
                 psc.addPoints(points);
             }
 
+            // Track kill for ranking component
+            com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+            if (prc != null) {
+                prc.addKill();
+            }
+
             // Drop currency upon defeating enemy
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {

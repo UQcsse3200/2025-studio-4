@@ -1,5 +1,7 @@
 {
   "boneTower": {
+    "name": "bone tower",
+    "lore": "Crafted by ancient tribes, Bone Towers channel the primal energy of the land. Their flying bone projectiles carry the spirits of long-dead guardians, sending a chilling warning to any who dare approach.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -16,6 +18,9 @@
     }
   },
   "dinoTower": {
+    "name": "dino tower",
+    "locked": true,
+    "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -32,6 +37,8 @@
     }
   },
   "cavemenTower": {
+    "name": "cavemen tower",
+    "lore": "Cavemen Towers are staffed by expert marksmen armed with guns salvaged from defeated AI bots. With sharp eyes and steady hands, they make sure nothing slips through their sights.",
     "base": {
       "level_A": 1,
       "level_B": 1,

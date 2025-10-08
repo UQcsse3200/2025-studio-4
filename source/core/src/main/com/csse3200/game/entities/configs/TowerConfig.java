@@ -33,6 +33,9 @@ public class TowerConfig {
      */
     public static class TowerWrapper {
         public TowerStats base;
+        public String name;
+        public String lore;
+        public boolean locked;
     }
 
     /**

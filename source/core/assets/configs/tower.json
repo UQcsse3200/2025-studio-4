@@ -175,7 +175,7 @@
       "cooldown": 1.0,
       "metalScrapCost": 0,
       "titaniumCoreCost": 0,
-      "neurochipCost": 350,
+      "neurochipCost": 500,
       "projectileSpeed": 5.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/magic.png",

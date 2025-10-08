@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.terrain.ITerrainComponent;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.towers.TowerComponent;
 import com.csse3200.game.components.towers.TowerStatsComponent;
@@ -27,7 +27,7 @@ import com.csse3200.game.ui.UIComponent;
  * shows tower attack ranges when a tower is selected.
  */
 public class MapHighlighter extends UIComponent {
-    private final TerrainComponent terrain;
+    private final ITerrainComponent terrain;
     private final ShapeRenderer shapeRenderer;
     private final SimplePlacementController placementController;
     private final TowerFactory towerFactory;
@@ -42,7 +42,7 @@ public class MapHighlighter extends UIComponent {
      * @param placementController the placement controller
      * @param towerFactory the tower factory
      */
-    public MapHighlighter(TerrainComponent terrain,
+    public MapHighlighter(ITerrainComponent terrain,
                           SimplePlacementController placementController,
                           TowerFactory towerFactory) {
         this.terrain = terrain;

@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.areas.terrain.TerrainComponent;
-import com.csse3200.game.areas.MapEditor;
+import com.csse3200.game.areas.IMapEditor;
 import com.csse3200.game.components.CameraComponent;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.towers.TowerComponent;
@@ -57,7 +57,7 @@ public class SimplePlacementController extends Component {
     private Entity ghostTower = null;
 
     /** Reference to the map editor for checking invalid tiles. */
-    private MapEditor mapEditor;
+    private IMapEditor mapEditor; // Use interface instead of MapEditor
     private static int[][] FIXED_PATH = {};
     private static int[][] WATER_TILES = {};
 
@@ -72,9 +72,9 @@ public class SimplePlacementController extends Component {
     /**
      * Sets the map editor instance used to check invalid tiles.
      *
-     * @param mapEditor the MapEditor instance
+     * @param mapEditor the IMapEditor instance
      */
-    public void setMapEditor(MapEditor mapEditor) {
+    public void setMapEditor(IMapEditor mapEditor) {
         this.mapEditor = mapEditor;
         refreshInvalidTiles();
         refreshWaterTiles();
@@ -255,7 +255,7 @@ public class SimplePlacementController extends Component {
         if (camera == null) findWorldCamera();
         if (!placementActive || camera == null) return;
 
-        TerrainComponent terrain = findTerrain();
+        com.csse3200.game.areas.terrain.ITerrainComponent terrain = findTerrain();
         if (terrain == null) return;
 
         Vector3 mousePos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
@@ -263,7 +263,10 @@ public class SimplePlacementController extends Component {
         Vector2 mouseWorld = new Vector2(mousePos3D.x, mousePos3D.y);
 
         if (mode == Mode.SUMMON) {
-            updateSummonPlacement(terrain, mouseWorld);
+            // Cast terrain to TerrainComponent if needed for summon placement
+            if (terrain instanceof com.csse3200.game.areas.terrain.TerrainComponent) {
+                updateSummonPlacement((com.csse3200.game.areas.terrain.TerrainComponent) terrain, mouseWorld);
+            }
             return;
         }
 
@@ -295,7 +298,6 @@ public class SimplePlacementController extends Component {
         if (inBounds) {
             snapPos = terrain.tileToWorldPosition(tile.x, tile.y);
         } else {
-            // Prevent ghost tower from snapping outside map
             snapPos = terrain.tileToWorldPosition(
                 Math.max(0, Math.min(tile.x, mapBounds.x - towerWidth)),
                 Math.max(0, Math.min(tile.y, mapBounds.y - towerHeight))
@@ -426,7 +428,7 @@ public class SimplePlacementController extends Component {
     }
 
     /** Checks if a given world position is free for tower placement. */
-    private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain) {
+    private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, com.csse3200.game.areas.terrain.ITerrainComponent terrain) {
         Array<Entity> all = safeEntities();
         if (all == null || candidate == null) return true;
         float tileSize = terrain.getTileSize();
@@ -452,13 +454,16 @@ public class SimplePlacementController extends Component {
     }
 
     /** Finds the terrain component from registered entities. */
-    private TerrainComponent findTerrain() {
+    private com.csse3200.game.areas.terrain.ITerrainComponent findTerrain() {
         Array<Entity> all = safeEntities();
         if (all == null) return null;
         for (Entity e : all) {
             if (e == null) continue;
-            TerrainComponent t = e.getComponent(TerrainComponent.class);
+            com.csse3200.game.areas.terrain.TerrainComponent t = e.getComponent(com.csse3200.game.areas.terrain.TerrainComponent.class);
             if (t != null) return t;
+            // --- Support TerrainComponent2 ---
+            com.csse3200.game.areas2.terrainTwo.TerrainComponent2 t2 = e.getComponent(com.csse3200.game.areas2.terrainTwo.TerrainComponent2.class);
+            if (t2 != null) return t2; // TerrainComponent2 implements ITerrainComponent
         }
         return null;
     }

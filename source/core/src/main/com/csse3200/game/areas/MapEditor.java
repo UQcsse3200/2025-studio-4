@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MapEditor extends InputAdapter {
+public class MapEditor extends InputAdapter implements IMapEditor {
     private TerrainComponent terrain;
 
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
@@ -295,6 +295,7 @@ public class MapEditor extends InputAdapter {
         System.out.println("🧹 MapEditor cleaned up");
     }
 
+    @Override
     public Map<String, GridPoint2> getInvalidTiles() {
         invalidTiles.clear();
         invalidTiles.putAll(pathTiles);
@@ -360,11 +361,14 @@ public class MapEditor extends InputAdapter {
         }
     }
 
-    /**
-     * Returns a list of water tiles (red circled area) for raft tower placement.
-     */
+    @Override
     public java.util.List<GridPoint2> getWaterTiles() {
         return waterTiles;
+    }
+
+    @Override
+    public java.util.List<Entity> getWaypointList() {
+        return waypointList;
     }
 
 

@@ -1,8 +1,8 @@
 package core.src.test.com.csse3200.game.components.towers;
 
 import core.src.main.com.csse3200.game.components.towers.StatsBoostComponent;
-import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
-import core.src.main.com.csse3200.game.components.towers.TowerComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
+import com.csse3200.game.components.towers.TowerComponent;
 import com.csse3200.game.entities.Entity;
 import org.junit.jupiter.api.Test;
 

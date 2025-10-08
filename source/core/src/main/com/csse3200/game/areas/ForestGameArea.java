@@ -2,7 +2,6 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
-<<<<<<< HEAD
 import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.utils.Difficulty;

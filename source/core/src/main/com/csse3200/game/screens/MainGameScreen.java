@@ -59,7 +59,7 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Game_Over.png",
           "images/Game_Victory.png",
           // Background frame overlay for in-game view
-          "images/Background3 （in game）.png"
+          "images/Background4.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -268,7 +268,7 @@ public class MainGameScreen extends ScreenAdapter {
     // Add full-screen background image (frame) to the UI stage
     try {
       Texture bgTex = ServiceLocator.getResourceService()
-              .getAsset("images/Background3 （in game）.png", Texture.class);
+              .getAsset("images/Background4.png", Texture.class);
       if (bgTex != null) {
         Image bg = new Image(new TextureRegionDrawable(new TextureRegion(bgTex)));
         bg.setFillParent(true);

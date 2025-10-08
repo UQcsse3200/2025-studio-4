@@ -16,6 +16,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.InputAdapter;
 
+import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 
 import core.src.main.com.csse3200.game.components.towers.TowerComponent;
@@ -387,6 +388,13 @@ public class TowerUpgradeMenu extends UIComponent {
 
         updateLabels();
         System.out.println("Upgrade successful!");
+
+        if ("bank".equalsIgnoreCase(currentTowerType)) {
+            BankTowerUpgradeComponent bankUpgrade = selectedTower.getComponent(BankTowerUpgradeComponent.class);
+            if (bankUpgrade != null) {
+                bankUpgrade.applyUpgrade(isLevelA ? "A" : "B", nextLevel);
+            }
+        }
     }
 
 

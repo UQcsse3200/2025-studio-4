@@ -1,7 +1,10 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.components.deck.DeckComponent;
+import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
+import com.csse3200.game.components.towers.CurrencyGeneratorComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.components.towers.BeamAttackComponent;
 import core.src.main.com.csse3200.game.components.towers.TowerStatsComponent;
@@ -204,6 +207,40 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/totem.png"))
                 .addComponent(new StatsBoostComponent(stats.range)); // <-- Add this line
+
+        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        Entity head = new Entity().addComponent(headRender);
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a bank tower entity that generates currency for the player.
+     * Does not attack enemies, but generates currency at regular intervals.
+     * Upgrade path A increases currency type (metal scrap -> titanium -> neuro core).
+     * Upgrade path B increases generation frequency.
+     */
+    public static Entity createBankTower() {
+        TowerConfig.TowerStats stats = towers.bankTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("bank", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "bank", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/bank_tower.png"));
+        base.addComponent(new BankTowerUpgradeComponent(base,
+                        CurrencyComponent.CurrencyType.METAL_SCRAP,
+                        50,
+                        3f
+                ));
 
         RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
         Entity head = new Entity().addComponent(headRender);

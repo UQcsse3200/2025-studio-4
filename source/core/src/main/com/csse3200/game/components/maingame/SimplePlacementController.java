@@ -109,6 +109,7 @@ public class SimplePlacementController extends Component {
         entity.getEvents().addListener("startPlacementPterodactyl", this::armPterodactyl);
         entity.getEvents().addListener("startPlacementSuperCavemen", this::armSuperCavemen);
         entity.getEvents().addListener("startPlacementTotem", this::armTotem);
+        entity.getEvents().addListener("startPlacementBank", this::armBank);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
@@ -143,11 +144,16 @@ public class SimplePlacementController extends Component {
         startPlacement("totem");
     }
 
+    /** Arms the controller to start placing a Bank tower. */
+    private void armBank() {
+        startPlacement("bank");
+    }
+
     /**
      * Public API for UI to request a placement directly on this controller instance.
      * This avoids trying to trigger events on other entities (hotbar -> placement controller).
      *
-     * @param type canonical tower type string ("bone","dino","cavemen","pterodactyl","supercavemen")
+     * @param type canonical tower type string ("bone","dino","cavemen","pterodactyl","supercavemen","totem","bank")
      */
     public void requestPlacement(String type) {
         if (type == null) return;
@@ -157,7 +163,7 @@ public class SimplePlacementController extends Component {
     /**
      * Starts placement mode for the specified tower type.
      *
-     * @param type tower type ("bone", "dino", "cavemen", "pterodactyl")
+     * @param type tower type ("bone", "dino", "cavemen", "pterodactyl", "supercavemen", "totem", "bank")
      */
     private void startPlacement(String type) {
         pendingType = type;
@@ -170,12 +176,13 @@ public class SimplePlacementController extends Component {
             case "pterodactyl" -> ghostTower = TowerFactory.createPterodactylTower();
             case "supercavemen" -> ghostTower = TowerFactory.createSuperCavemenTower();
             case "totem" -> ghostTower = TowerFactory.createTotemTower();
+            case "bank" -> ghostTower = TowerFactory.createBankTower();
             default -> ghostTower = TowerFactory.createBoneTower();
         }
 
         TowerComponent tc = ghostTower.getComponent(TowerComponent.class);
         if (tc != null) tc.setActive(false);
-
+        
         ServiceLocator.getEntityService().register(ghostTower);
         System.out.println(">>> placement ON (" + type + ")");
     }
@@ -253,6 +260,7 @@ public class SimplePlacementController extends Component {
                 case "pterodactyl" -> stats = TowerFactory.getTowerConfig().pterodactylTower.base;
                 case "supercavemen" -> stats = TowerFactory.getTowerConfig().supercavemenTower.base;
                 case "totem" -> stats = TowerFactory.getTowerConfig().totemTower.base;
+                case "bank" -> stats = TowerFactory.getTowerConfig().bankTower.base;
                 default -> stats = TowerFactory.getTowerConfig().boneTower.base;
             }
 
@@ -279,6 +287,7 @@ public class SimplePlacementController extends Component {
                 case "pterodactyl" -> newTower = TowerFactory.createPterodactylTower();
                 case "supercavemen" -> newTower = TowerFactory.createSuperCavemenTower();
                 case "totem" -> newTower = TowerFactory.createTotemTower();
+                case "bank" -> newTower = TowerFactory.createBankTower();
                 default -> newTower = TowerFactory.createBoneTower();
             }
 

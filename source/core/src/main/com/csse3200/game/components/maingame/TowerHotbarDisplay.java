@@ -74,6 +74,7 @@ public class TowerHotbarDisplay extends UIComponent {
         // pterodactyl icon for the second-row first-column slot
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
+        TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank_tower.png")));
 
         // Create 12 buttons (3x4 grid). First 4 are functional, rest use placeholder.
         ImageButton boneBtn = new ImageButton(boneImage);
@@ -81,6 +82,7 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
         ImageButton pteroBtn = new ImageButton(pteroImage); // pterodactyl slot
         ImageButton totemBtn = new ImageButton(totemImage); // totem slot
+        ImageButton bankBtn = new ImageButton(bankImage); // bank slot
 
         ImageButton[] allButtons = new ImageButton[12];
         allButtons[0] = boneBtn;
@@ -88,7 +90,8 @@ public class TowerHotbarDisplay extends UIComponent {
         allButtons[2] = cavemenBtn;
         allButtons[3] = pteroBtn;
         allButtons[4] = totemBtn;
-        for (int i = 5; i < allButtons.length; i++) {
+        allButtons[5] = bankBtn;
+        for (int i = 6; i < allButtons.length; i++) {
             // last button (index 11) is the SuperCavemen placement button
             if (i == 11) {
                 allButtons[i] = new ImageButton(superCavemenImage);
@@ -176,6 +179,22 @@ public class TowerHotbarDisplay extends UIComponent {
                     }
                     placementController.requestPlacement("totem");
                 } else handlePlacement("startPlacementTotem");
+            }
+        });
+        bankBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if ("bank".equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement("bank");
+                } else handlePlacement("startPlacementBank");
             }
         });
         allButtons[11].addListener(new ChangeListener() {

@@ -4,7 +4,8 @@ package core.src.main.com.csse3200.game.components.towers;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-
+import com.csse3200.game.components.towers.TowerStatsComponent;
+import com.csse3200.game.components.towers.TowerComponent;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

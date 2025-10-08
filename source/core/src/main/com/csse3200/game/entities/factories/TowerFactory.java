@@ -15,7 +15,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.entities.configs.TowerConfig;
 import com.csse3200.game.components.towers.OrbitComponent;
-import com.csse3200.game.components.towers.StatsBoostComponent;
+import core.src.main.com.csse3200.game.components.towers.StatsBoostComponent;
 
 /**
  * Factory class for creating different types of tower entities.
@@ -242,7 +242,7 @@ public class TowerFactory {
                         "totem", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"))
-                .addComponent(new StatsBoostComponent(stats.range)); // <-- Add this line
+                .addComponent(new StatsBoostComponent()); // <-- Fix: call with no arguments
 
         com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/totem/totemlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 

@@ -79,11 +79,12 @@ public class BeamAttackComponent extends Component {
         Vector2 end = centerSafe(target);
         if (start == null || end == null) return;
 
-        // --- Start beam from edge of tower ---
+        // --- Start beam closer to the center of the tower ---
         Vector2 dir = new Vector2(end).sub(start);
         if (dir.len() > 0.01f) {
             dir.nor();
-            float offset = Math.min(range * 0.2f, 0.5f);
+            // Tweak these values to move the beam start further away from the center:
+            float offset = Math.min(range * 0.15f, 0.25f); // Increase multiplier or max for further away
             start.add(dir.scl(offset));
         }
 
@@ -237,6 +238,11 @@ public class BeamAttackComponent extends Component {
         private final BeamAttackComponent beam;
         public BeamRenderComponent(BeamAttackComponent beam) {
             this.beam = beam;
+        }
+        @Override
+        public int getLayer() {
+            // Return a very high layer so the beam is rendered on top of all other components
+            return 9999;
         }
         @Override
         protected void draw(SpriteBatch batch) {

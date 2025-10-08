@@ -248,8 +248,7 @@ public final class HeroFactory {
 
                 // === Upgrade and ultimate abilities ===
                 .addComponent(new HeroUpgradeComponent())
-                .addComponent(new HeroUltimateComponent())
-                .addComponent(new HeroAppearanceComponent(cfg));
+                .addComponent(new HeroUltimateComponent());
 
         hero.setScale(1f, 1f);
 

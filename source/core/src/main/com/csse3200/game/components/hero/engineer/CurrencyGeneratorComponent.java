@@ -3,20 +3,52 @@ package com.csse3200.game.components.hero.engineer;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
-import com.csse3200.game.components.hero.engineer.OwnerComponent; // ✅ 别忘了导入
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * 定时给 owner 玩家产出货币的组件
+ * A component that periodically generates currency for its owner (typically the player).
+ * <p>
+ * This is mainly used for summonable entities such as engineer turrets or machines
+ * that produce resources over time. It checks for an {@link OwnerComponent} to find
+ * the owner automatically if not specified in the constructor.
  */
 public class CurrencyGeneratorComponent extends Component {
-    private Entity owner;          // ❌ 去掉 final，让它能在 create() 时动态获取
-    private final CurrencyType type;   // 产出货币类型
-    private final int amount;          // 每次产出的数量
-    private final float intervalSec;   // 间隔秒
+    /**
+     * The entity that owns this generator (usually the player).
+     */
+    private Entity owner;
+
+    /**
+     * Type of currency to generate.
+     */
+    private final CurrencyType type;
+
+    /**
+     * Amount of currency to generate each cycle.
+     */
+    private final int amount;
+
+    /**
+     * Time interval (in seconds) between currency generation cycles.
+     */
+    private final float intervalSec;
+
+    /**
+     * Internal timer used to track when to generate the next batch.
+     */
     private float timer = 0f;
 
+    /**
+     * Constructs a currency generator.
+     *
+     * @param owner       The owner entity who will receive the generated currency.
+     *                    Can be {@code null}; if so, it will attempt to retrieve it
+     *                    from an {@link OwnerComponent} during {@link #create()}.
+     * @param type        The type of currency to generate.
+     * @param amount      The amount of currency generated per interval.
+     * @param intervalSec The interval in seconds between each generation.
+     */
     public CurrencyGeneratorComponent(Entity owner, CurrencyType type, int amount, float intervalSec) {
         this.owner = owner;
         this.type = type;
@@ -27,7 +59,8 @@ public class CurrencyGeneratorComponent extends Component {
     @Override
     public void create() {
         super.create();
-        // ✅ 如果没有传 owner，就尝试从 OwnerComponent 里获取
+
+        // ✅ If no owner was provided, attempt to find one via the OwnerComponent
         if (owner == null) {
             OwnerComponent oc = this.entity.getComponent(OwnerComponent.class);
             if (oc != null) {
@@ -38,29 +71,36 @@ public class CurrencyGeneratorComponent extends Component {
 
     @Override
     public void update() {
+        // Increment timer based on the frame delta time
         float dt = ServiceLocator.getTimeSource().getDeltaTime();
         timer += dt;
-        if (timer >= intervalSec) {
-            timer -= intervalSec;
 
+        // If enough time has passed, trigger currency generation
+        if (timer >= intervalSec) {
+            timer -= intervalSec; // Reset timer for the next interval
+
+            // Safety check: if the owner is missing, skip generation
             if (owner == null) {
-                System.out.println("[CurrencyGen] owner == null，产币被跳过");
+                System.out.println("[CurrencyGen] owner == null, currency generation skipped.");
                 return;
             }
 
+            // Retrieve the CurrencyManagerComponent from the owner
             CurrencyManagerComponent cm = owner.getComponent(CurrencyManagerComponent.class);
             if (cm == null) {
-                System.out.println("[CurrencyGen] 玩家没挂 CurrencyManagerComponent，产币被跳过");
+                System.out.println("[CurrencyGen] Owner missing CurrencyManagerComponent, generation skipped.");
                 return;
             }
 
+            // Log before and after amounts for debugging
             int before = cm.getCurrencyAmount(type);
-            cm.addCurrency(type, amount); // 直接加钱，并自动更新UI
+            cm.addCurrency(type, amount); // Adds currency and automatically updates UI
             int after = cm.getCurrencyAmount(type);
+
             System.out.println("[CurrencyGen] +" + amount + " " + type
-                    + "  from " + before + " -> " + after);
+                    + "  | " + before + " -> " + after);
         }
     }
-
 }
+
 

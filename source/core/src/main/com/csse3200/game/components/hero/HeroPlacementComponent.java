@@ -23,9 +23,9 @@ public class HeroPlacementComponent extends InputComponent {
     private final HeroGhostPreview preview;
     private InputAdapter hotkeyAdapter;
 
-    // ====== 新增：放置上限控制 ======
-    private int maxPlacements = 1;   // 默认最多 1
-    private int placedCount   = 0;   // 已放置数量
+    // ====== New: Placement limit control======
+    private int maxPlacements = 1;   // Default most 1
+    private int placedCount   = 0;   // Placed quantity
 
     public HeroPlacementComponent(TerrainComponent terrain, MapEditor mapEditor, Consumer<GridPoint2> onPlace) {
         super(500);
@@ -35,7 +35,7 @@ public class HeroPlacementComponent extends InputComponent {
         this.preview = new HeroGhostPreview(terrain, 0.5f);
     }
 
-    /** 可选：带自定义上限的构造 */
+    /** Optional: Construction with custom caps */
     public HeroPlacementComponent(TerrainComponent terrain, MapEditor mapEditor, Consumer<GridPoint2> onPlace, int maxPlacements) {
         this(terrain, mapEditor, onPlace);
         this.maxPlacements = Math.max(1, maxPlacements);
@@ -63,9 +63,9 @@ public class HeroPlacementComponent extends InputComponent {
                     return true;
                 }
 
-                // 放置
+                // place
                 if (keycode == Input.Keys.S) {
-                    // 已达上限 -> 提示并吞掉事件
+                    // The limit has been reached -> prompt and swallow the event
                     if (placedCount >= maxPlacements) {
                         notifyUser("已达到放置上限（" + maxPlacements + "）。");
                         return true;
@@ -89,7 +89,7 @@ public class HeroPlacementComponent extends InputComponent {
                         placedCount++;
                         logger.info("Hero placed at ({}, {}) via 'S'  ({}/{})", cell.x, cell.y, placedCount, maxPlacements);
 
-                        // 达到上限后：提示 + 解绑输入 + 移除预览
+                        // After reaching the limit: prompt + unbind input + remove preview
                         if (placedCount >= maxPlacements) {
                             notifyUser("放置完成（" + placedCount + "/" + maxPlacements + "）。已锁定此组件。");
                             Gdx.app.postRunnable(() -> {
@@ -97,7 +97,7 @@ public class HeroPlacementComponent extends InputComponent {
                                 preview.remove();
                             });
                         } else {
-                            // 未达上限：仅清理这次预览
+                            // Limit not reached: Clear only this preview
                             Gdx.app.postRunnable(preview::remove);
                         }
                     } catch (Exception e) {
@@ -110,7 +110,7 @@ public class HeroPlacementComponent extends InputComponent {
             }
         };
 
-        // 把监听器插到 Multiplexer 的 index 0（优先级最高）
+        // Insert the listener at index 0 of the Multiplexer (highest priority)
         if (Gdx.input.getInputProcessor() instanceof InputMultiplexer mux) {
             mux.addProcessor(0, hotkeyAdapter);
         } else {

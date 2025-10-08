@@ -6,12 +6,13 @@ import com.csse3200.game.services.ServiceLocator;
 import com.badlogic.gdx.Gdx;
 
 /**
- * 进入关卡后自动根据主菜单选择，安装对应的英雄放置器。
- * 不再监听键盘/按钮，避免跨 Screen 的输入耦合。
+ * After entering the level, the corresponding hero placement device will be automatically installed according to the main menu selection.
+ *No longer monitors keyboard/buttons to avoid cross-screen input coupling.
+ *
  */
 public class HeroSelectionComponent extends Component {
-    private final Runnable installHeroPlacement;      // 选择 Hero 时执行
-    private final Runnable installEngineerPlacement;  // 选择 Engineer 时执行
+    private final Runnable installHeroPlacement;      // Executed when a Hero is selected
+    private final Runnable installEngineerPlacement;  // Execute when Engineer is selected
     private final Runnable installSamuraiPlacement;
     private boolean applied = false;
 
@@ -24,7 +25,7 @@ public class HeroSelectionComponent extends Component {
 
     @Override
     public void create() {
-        // 读取主菜单写入的选择
+        // Read the selection written to the main menu
         var gameState = ServiceLocator.getGameStateService();
         GameStateService.HeroType chosen =
                 (gameState != null) ? gameState.getSelectedHero() : GameStateService.HeroType.HERO;
@@ -45,7 +46,8 @@ public class HeroSelectionComponent extends Component {
         }
 
         applied = true;
-        // 选完就可以把自己移除（可选）
+
+        //You can remove yourself after selecting (optional)
         if (entity != null) {
             entity.dispose();
         }
@@ -53,7 +55,7 @@ public class HeroSelectionComponent extends Component {
 
     @Override
     public void dispose() {
-        // 无需移除输入处理器，已不再使用键盘监听
+        // No need to remove input handlers, keyboard listeners are no longer used
     }
 }
 

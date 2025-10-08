@@ -59,12 +59,13 @@ public class HeroUpgradeComponent extends Component {
     private void broadcastSnapshot() {
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
-            // 等级
+            // grade
             entity.getEvents().trigger("hero.level", level);
-            // 伤害（按你的字段改：baseAttack / totalAttack）
+            // Damage (change according to your field: baseAttack / totalAttack)
             entity.getEvents().trigger("hero.damage", stats.getBaseAttack());
         }
-        // 能量/怒气如有对应组件也可广播一次（举例）
+        //
+        //Energy/rage can also be broadcast once if there is a corresponding component (for example)
         // entity.getEvents().trigger("hero.energy", curEnergy, maxEnergy);
     }
 

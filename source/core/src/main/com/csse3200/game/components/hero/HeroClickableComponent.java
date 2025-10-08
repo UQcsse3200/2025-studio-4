@@ -12,13 +12,14 @@ import com.csse3200.game.services.ServiceLocator;
 import com.badlogic.gdx.Input;
 
 /**
- * 左键点击英雄，弹出英雄数值与升级界面。
+ * Left-click the hero to pop up the hero value and upgrade interface.
  */
 public class HeroClickableComponent extends Component {
     private float clickRadius = 0.8f;
     private HeroStatsDialog dialog; // 保证同一时间只存在一个
 
-    // 防抖：避免放置时的同一次点击立刻打开
+
+    //Anti-shake: Avoid opening the app immediately with the same click when placing it
     private boolean waitRelease = true;
     private float armDelaySec = 0.2f; // 200ms
 
@@ -33,12 +34,12 @@ public class HeroClickableComponent extends Component {
 
     @Override
     public void update() {
-        // 先等待鼠标松开或过了延迟时间
+        // Wait until the mouse is released or the delay time has passed
         if (waitRelease) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
                 waitRelease = false;
             } else {
-                // 仍在按压，继续等待
+                // Still pressing, waiting
                 return;
             }
         }
@@ -63,13 +64,13 @@ public class HeroClickableComponent extends Component {
         if (Math.abs(worldClick.x - epos.x) <= clickRadius && Math.abs(worldClick.y - epos.y) <= clickRadius) {
             Stage stage = ServiceLocator.getRenderService().getStage();
 
-            // 若已有窗口且仍在舞台上，则置顶并返回
+            // If there is a window and it is still on the stage, it will be placed on top and returned
             if (dialog != null && dialog.getStage() != null) {
                 dialog.toFront();
                 return;
             }
 
-            // 否则创建新窗口并缓存
+            // Otherwise create a new window and cache it
             dialog = new HeroStatsDialog(entity);
             dialog.showOn(stage);
         }

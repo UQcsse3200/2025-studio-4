@@ -177,7 +177,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (hero == null) return;
 
         // Lock when hero.level > 1
-        // --- 英雄升级后锁定（hero.level 事件只有一个参数）---
+        // --- Hero is locked after leveling up (hero.level event has only one parameter)---
         hero.getEvents().addListener("hero.level", (EventListener1<Integer>) newLevel -> {
             if (!locked && newLevel > 1) {
                 locked = true;
@@ -186,7 +186,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             }
         });
 
-// --- 英雄升级完成锁定（upgraded 事件有三个参数）---
+// --- Hero upgrade completed and locked (upgraded event has three parameters)---
         hero.getEvents().addListener("upgraded",
                 (EventListener3<Integer, Object, Integer>) (newLevel, _costType, _cost) -> {
                     if (!locked && newLevel > 1) {

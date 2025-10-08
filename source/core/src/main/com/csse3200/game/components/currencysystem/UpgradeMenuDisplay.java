@@ -288,15 +288,15 @@ public class UpgradeMenuDisplay extends UIComponent {
         // draw stage
     }
     /**
-     +     * 在屏幕底部生成一条带半透明背景的操作说明横幅。
+     +     * Generates an instructional banner with a semi-transparent background at the bottom of the screen.
      +     */
     private Table makeInstructionBanner() {
-                // 使用现有主菜单按钮底图做一个半透明背景
+                // Use the existing main menu button basemap to create a semi-transparent background
                         Texture buttonTexture = ServiceLocator.getResourceService()
                                 .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
                 NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
                 NinePatchDrawable bg = new NinePatchDrawable(patch);
-                bg = bg.tint(new Color(0, 0, 0, 0.45f)); // 半透明黑
+                bg = bg.tint(new Color(0, 0, 0, 0.45f)); // translucent black
 
         // Instructions (English)
                          String text =
@@ -311,13 +311,14 @@ public class UpgradeMenuDisplay extends UIComponent {
                 label.setAlignment(Align.center);
                 label.setWrap(true);
 
-                        // 包一层容器，设置背景与内边距
+
+        //Wrap a container and set the background and padding
                         Table banner = new Table();
                 banner.setBackground(bg);
                 banner.pad(10f, 16f, 10f, 16f);
                 banner.add(label).width(Math.min(Gdx.graphics.getWidth() * 0.9f, 980f)).center();
 
-                        // 再包一层全屏表，定位到底部
+                        // Wrap another full-screen table and position it at the bottom
                                 Table root = new Table();
                 root.setFillParent(true);
                 root.bottom().padBottom(12f);

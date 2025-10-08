@@ -19,28 +19,19 @@ import com.csse3200.game.ui.UIComponent;
 
 /**
  * UI component that displays a hotbar for selecting and placing towers.
- * <p>
- * Towers are arranged in a grid with a bold/pixel-art style title at the top.
+ * Towers are arranged in a grid with a pixel-art style title at the top.
  * Each button triggers the placement of its corresponding tower type.
- * </p>
  */
 public class TowerHotbarDisplay extends UIComponent {
 
-    /** Root table containing the hotbar UI */
     private Table rootTable;
-
-    /** Reference to the tower placement controller */
     private SimplePlacementController placementController;
-
-    /** Skin for the tower title label */
     private Skin hotbarSkin;
 
     @Override
     public void create() {
         super.create();
         placementController = entity.getComponent(SimplePlacementController.class);
-
-        // use shared skin
         hotbarSkin = skin;
 
         // Root table anchored bottom-left
@@ -48,7 +39,7 @@ public class TowerHotbarDisplay extends UIComponent {
         rootTable.setFillParent(true);
         rootTable.bottom().left();
 
-        // Brown background for container
+        // Brown background
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
         pixmap.fill();
@@ -60,161 +51,56 @@ public class TowerHotbarDisplay extends UIComponent {
         container.setBackground(backgroundDrawable);
         container.pad(6f);
 
-        // Title label using shared "title" style if present
         Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
 
-        // Images
+        // Load tower icons
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/boneicon.png")));
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/campfireicon.png")));
-        // use cavemen image as the icon for SuperCavemen slot (replace with dedicated image if available)
         TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/supercavemenicon.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
-        // pterodactyl icon for the second-row first-column slot
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
         TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank_tower.png")));
+        TextureRegionDrawable raftImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/rafticon.png")));
+        TextureRegionDrawable frozenMamoothSkullImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/mamoothskullicon.png")));
+        TextureRegionDrawable boulderCatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bouldercatapulticon.png")));
+        TextureRegionDrawable villageShamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/villageshamanicon.png")));
 
-        // Create 12 buttons (3x4 grid). First 4 are functional, rest use placeholder.
+        // Create buttons
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
         ImageButton pteroBtn = new ImageButton(pteroImage); // pterodactyl slot
         ImageButton totemBtn = new ImageButton(totemImage); // totem slot
         ImageButton bankBtn = new ImageButton(bankImage); // bank slot
+        ImageButton raftBtn = new ImageButton(raftImage);
+        ImageButton frozenMamoothSkullBtn = new ImageButton(frozenMamoothSkullImage);
+        ImageButton boulderCatapultBtn = new ImageButton(boulderCatapultImage);
+        ImageButton villageShamanBtn = new ImageButton(villageShamanImage);
+        ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
+        ImageButton placeholderBtn = new ImageButton(placeholderImage);
 
-        ImageButton[] allButtons = new ImageButton[12];
-        allButtons[0] = boneBtn;
-        allButtons[1] = dinoBtn;
-        allButtons[2] = cavemenBtn;
-        allButtons[3] = pteroBtn;
-        allButtons[4] = totemBtn;
-        allButtons[5] = bankBtn;
-        for (int i = 6; i < allButtons.length; i++) {
-            // last button (index 11) is the SuperCavemen placement button
-            if (i == 11) {
-                allButtons[i] = new ImageButton(superCavemenImage);
-            } else {
-                allButtons[i] = new ImageButton(placeholderImage);
-            }
-        }
+        ImageButton[] allButtons = {
+                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, cavemenVillageBtn,
+                raftBtn, frozenMamoothSkullBtn, boulderCatapultBtn, villageShamanBtn, superCavemenBtn, placeholderBtn
+        };
 
-        // Assign listeners for the first four
-        boneBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("bone".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("bone");
-                } else handlePlacement("startPlacementBone");
-            }
-        });
-        dinoBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("dino".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("dino");
-                } else handlePlacement("startPlacementDino");
-            }
-        });
-        cavemenBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("cavemen".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("cavemen");
-                } else handlePlacement("startPlacementCavemen");
-            }
-        });
-        pteroBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("pterodactyl".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("pterodactyl");
-                } else handlePlacement("startPlacementPterodactyl");
-            }
-        });
-        totemBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("totem".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("totem");
-                } else handlePlacement("startPlacementTotem");
-            }
-        });
-        bankBtn.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("bank".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("bank");
-                } else handlePlacement("startPlacementBank");
-            }
-        });
-        allButtons[11].addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (placementController != null) {
-                    if (placementController.isPlacementActive()) {
-                        if ("supercavemen".equalsIgnoreCase(placementController.getPendingType())) {
-                            placementController.cancelPlacement();
-                            return;
-                        } else {
-                            placementController.cancelPlacement();
-                        }
-                    }
-                    placementController.requestPlacement("supercavemen");
-                } else handlePlacement("startPlacementSuperCavemen");
-            }
-        });
+        // Add listeners for all tower types
+        addPlacementListener(boneBtn, "bone");
+        addPlacementListener(dinoBtn, "dino");
+        addPlacementListener(cavemenBtn, "cavemen");
+        addPlacementListener(pteroBtn, "pterodactyl");
+        addPlacementListener(totemBtn, "totem");
+        addPlacementListener(superCavemenBtn, "supercavemen");
+        addPlacementListener(bankBtn, "cavemenvillage");
+        addPlacementListener(raftBtn, "raft");
+        addPlacementListener(frozenMamoothSkullBtn, "frozenmamoothskull");
+        addPlacementListener(boulderCatapultBtn, "bouldercatapult");
+        addPlacementListener(villageShamanBtn, "villageshaman");
 
-        // Button grid (3 columns x 4 rows) with modest padding so visuals aren't cramped
+        // Button grid
         Table buttonTable = new Table();
         final float BUTTON_W = 132.5f;
         final float BUTTON_H = 140f;
@@ -226,7 +112,7 @@ public class TowerHotbarDisplay extends UIComponent {
             if ((i + 1) % 3 == 0) buttonTable.row();
         }
 
-        // Content: title + button grid
+        // Add title and grid to container
         Table content = new Table();
         content.add(title).colspan(3).center().padBottom(6f).row();
         content.add(buttonTable).colspan(3).center();
@@ -235,12 +121,42 @@ public class TowerHotbarDisplay extends UIComponent {
         rootTable.add(container);
         stage.addActor(rootTable);
 
-        // Input multiplexer
+        // Input multiplexer setup
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
-        if (Gdx.input.getInputProcessor() != null) multiplexer.addProcessor(Gdx.input.getInputProcessor());
+        if (Gdx.input.getInputProcessor() != null) {
+            multiplexer.addProcessor(Gdx.input.getInputProcessor());
+        }
         multiplexer.addProcessor(new InputAdapter() {});
         Gdx.input.setInputProcessor(multiplexer);
+    }
+
+    /** Adds placement logic for each button */
+    private void addPlacementListener(ImageButton button, String towerType) {
+        button.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (placementController != null) {
+                    if (placementController.isPlacementActive()) {
+                        if (towerType.equalsIgnoreCase(placementController.getPendingType())) {
+                            placementController.cancelPlacement();
+                            return;
+                        } else {
+                            placementController.cancelPlacement();
+                        }
+                    }
+                    placementController.requestPlacement(towerType);
+                } else {
+                    handlePlacement("startPlacement" + capitalize(towerType));
+                }
+            }
+        });
+    }
+
+    /** Helper to capitalize tower type for event name */
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) return str;
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
     private void handlePlacement(String eventName) {
@@ -248,7 +164,6 @@ public class TowerHotbarDisplay extends UIComponent {
             placementController.cancelPlacement();
             return;
         }
-        // fallback: trigger on our UI entity (legacy)
         entity.getEvents().trigger(eventName);
     }
 

@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardEntry;
 import com.csse3200.game.services.ServiceLocator;
@@ -28,6 +30,15 @@ public class LeaderboardPopup extends Window {
         setMovable(false);
         pad(16);
         getTitleLabel().setAlignment(Align.center);
+        
+        // Set background image
+        try {
+            Texture bgTexture = ServiceLocator.getResourceService().getAsset(
+                "images/name and leaderbooard background.png", Texture.class);
+            setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+        } catch (Exception e) {
+            // If background fails to load, continue without it
+        }
 
         friendsBtn = new TextButton("All", skin);
         closeBtn = new TextButton("Close", skin);

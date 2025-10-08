@@ -1,7 +1,6 @@
-// java
-package core.src.main.com.csse3200.game.components.towers;
+package com.csse3200.game.components.towers;
 
-import com.csse3200.game.components.Component;
+import com.csse3200.game.components.Component;k
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.towers.TowerStatsComponent;

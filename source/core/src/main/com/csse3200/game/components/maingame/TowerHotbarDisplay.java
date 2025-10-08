@@ -57,13 +57,16 @@ public class TowerHotbarDisplay extends UIComponent {
         // Load tower icons
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/boneicon.png")));
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
-        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/campfireicon.png")));
+        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/cavemenicon.png")));
         TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/supercavemenicon.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
-        TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank_tower.png")));
-        TextureRegionDrawable boneAtlasImage = boneImage; // Use bone icon for new towers
+        TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bankicon.png")));
+        TextureRegionDrawable raftImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/rafticon.png")));
+        TextureRegionDrawable frozenmamoothskullImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/mamoothskullicon.png")));
+        TextureRegionDrawable bouldercatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bouldercatapulticon.png")));
+        TextureRegionDrawable villageshamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/villageshamanicon.png")));
 
         // Create buttons
         ImageButton boneBtn = new ImageButton(boneImage);
@@ -72,10 +75,10 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton pteroBtn = new ImageButton(pteroImage);
         ImageButton totemBtn = new ImageButton(totemImage);
         ImageButton bankBtn = new ImageButton(bankImage);
-        ImageButton raftBtn = new ImageButton(boneAtlasImage);
-        ImageButton frozenmamoothskullBtn = new ImageButton(boneAtlasImage);
-        ImageButton bouldercatapultBtn = new ImageButton(boneAtlasImage);
-        ImageButton villageshamanBtn = new ImageButton(boneAtlasImage);
+        ImageButton raftBtn = new ImageButton(raftImage);
+        ImageButton frozenmamoothskullBtn = new ImageButton(frozenmamoothskullImage);
+        ImageButton bouldercatapultBtn = new ImageButton(bouldercatapultImage);
+        ImageButton villageshamanBtn = new ImageButton(villageshamanImage);
         ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
         ImageButton placeholderBtn = new ImageButton(placeholderImage);
 

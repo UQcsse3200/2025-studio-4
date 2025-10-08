@@ -37,7 +37,7 @@ loadScripts(document, 'script');</script>
 <li>
 <p>Summary:</p>
 <ul>
-<li>Nested</li>
+<li><a href="#nested-class-summary">Nested</a></li>
 <li>Field</li>
 <li><a href="#constructor-summary">Constr</a></li>
 <li><a href="#method-summary">Method</a></li>
@@ -57,7 +57,7 @@ loadScripts(document, 'script');</script>
 <div id="navbar-sub-list">
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -92,10 +92,25 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">GameStateService</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Service that handles persistent state within the game runtime
- Stores persistent data such as stars, unlocks, and level progress</div>
+ Stores persistent data such as stars, unlocks, selected hero, and level progress</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static enum&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="GameStateService.HeroType.html" class="type-name-link" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
 <li>
 <section class="constructor-summary" id="constructor-summary">
@@ -120,15 +135,55 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHeroUnlocks()" class="member-name-link">getHeroUnlocks</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the current unlock flags for the heroes</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSelectedHero()" class="member-name-link">getSelectedHero</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the current selected hero</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getStars()" class="member-name-link">getStars</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the current number of stars</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setStars(int)" class="member-name-link">setStars</a><wbr>(int&nbsp;newStars)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#rewardStarsByHealth(double)" class="member-name-link">rewardStarsByHealth</a><wbr>(double&nbsp;healthPercent)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Rewards stars based on remaining health percentage.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#rewardStarsOnWin()" class="member-name-link">rewardStarsOnWin</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Rewards stars at the end of a stage based on the player's remaining health.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBase(com.csse3200.game.entities.Entity)" class="member-name-link">setBase</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the current Base entity to track health</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setHeroUnlocked(com.csse3200.game.services.GameStateService.HeroType)" class="member-name-link">setHeroUnlocked</a><wbr>(<a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;hero)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Marks the given hero as unlocked</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelectedHero(com.csse3200.game.services.GameStateService.HeroType)" class="member-name-link">setSelectedHero</a><wbr>(<a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the current selected hero</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setStars(int)" class="member-name-link">setStars</a><wbr>(int&nbsp;newStars)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the current number of stars to the given number</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#spendStars(int)" class="member-name-link">spendStars</a><wbr>(int&nbsp;amount)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempts to spend the given number of stars.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateStars(int)" class="member-name-link">updateStars</a><wbr>(int&nbsp;increment)</code></div>
@@ -167,6 +222,17 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="setBase(com.csse3200.game.entities.Entity)">
+<h3>setBase</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBase</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
+<div class="block">Sets the current Base entity to track health</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>player</code> - the base of our current map</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getStars()">
 <h3>getStars</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getStars</span>()</div>
@@ -196,6 +262,83 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>increment</code> - the number of stars to increment by</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="spendStars(int)">
+<h3>spendStars</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">spendStars</span><wbr><span class="parameters">(int&nbsp;amount)</span></div>
+<div class="block">Attempts to spend the given number of stars.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>amount</code> - number of stars to spend</dd>
+<dt>Returns:</dt>
+<dd>true if the stars were successfully spent, false if not enough stars</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="rewardStarsOnWin()">
+<h3>rewardStarsOnWin</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">rewardStarsOnWin</span>()</div>
+<div class="block">Rewards stars at the end of a stage based on the player's remaining health.
+ Uses the player/base entity that was set in GameStateService.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="rewardStarsByHealth(double)">
+<h3>rewardStarsByHealth</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">rewardStarsByHealth</span><wbr><span class="parameters">(double&nbsp;healthPercent)</span></div>
+<div class="block">Rewards stars based on remaining health percentage.
+ 80–100% -&gt; 3★, 50–79% -&gt; 2★, 1–49% -&gt; 1★, 0% -&gt; 0★</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>healthPercent</code> - a value from 0.0 (dead) to 1.0 (full health)</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getHeroUnlocks()">
+<h3>getHeroUnlocks</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">getHeroUnlocks</span>()</div>
+<div class="block">Gets the current unlock flags for the heroes</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>map of the current hero unlocks</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setHeroUnlocked(com.csse3200.game.services.GameStateService.HeroType)">
+<h3>setHeroUnlocked</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setHeroUnlocked</span><wbr><span class="parameters">(<a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;hero)</span></div>
+<div class="block">Marks the given hero as unlocked</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>hero</code> - hero to unlock</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setSelectedHero(com.csse3200.game.services.GameStateService.HeroType)">
+<h3>setSelectedHero</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSelectedHero</span><wbr><span class="parameters">(<a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;type)</span></div>
+<div class="block">Sets the current selected hero</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - the HeroType of the selected hero</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getSelectedHero()">
+<h3>getSelectedHero</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></span>&nbsp;<span class="element-name">getSelectedHero</span>()</div>
+<div class="block">Gets the current selected hero</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the HeroType of the selected hero</dd>
 </dl>
 </section>
 </li>

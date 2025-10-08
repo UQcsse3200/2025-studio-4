@@ -13,6 +13,7 @@ com.csse3200.game.components.deck
 com.csse3200.game.components.enemy
 com.csse3200.game.components.gamearea
 com.csse3200.game.components.hero
+com.csse3200.game.components.hero.engineer
 com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
 com.csse3200.game.components.npc

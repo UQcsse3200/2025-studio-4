@@ -38,7 +38,7 @@ public class MainMenuActions extends Component {
     logger.info("New Game clicked, showing name input dialog");
     showNameInputDialog();
   }
-
+  
   /**
    * Shows the name input dialog for new game.
    */
@@ -47,21 +47,21 @@ public class MainMenuActions extends Component {
     if (ServiceLocator.getPlayerNameService() == null) {
       ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
-
+    
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(), 
         new NameInputDialog.NameInputCallback() {
           @Override
           public void onNameConfirmed(String name, String avatarId) {
             handleNameConfirmed(name, avatarId);
           }
-
+          
           @Override
           public void onNameCancelled() {
             handleNameCancelled();
           }
         });
-
+    
     // Get the current stage from the render service
     if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
       ServiceLocator.getRenderService().getStage().addActor(nameDialog);
@@ -72,7 +72,7 @@ public class MainMenuActions extends Component {
       game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
     }
   }
-
+  
   /**
    * Handles when player confirms their name and avatar.
    */
@@ -87,7 +87,7 @@ public class MainMenuActions extends Component {
     // Proceed to map selection
     game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }
-
+  
   /**
    * Handles when player cancels name input.
    */
@@ -146,9 +146,9 @@ public class MainMenuActions extends Component {
       logger.info("Attempting to show leaderboard popup");
       
       // Use the global leaderboard service (already registered in GdxGame)
-      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService =
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
         ServiceLocator.getLeaderboardService();
-
+      
       if (leaderboardService == null) {
         logger.error("Leaderboard service not available, registering fallback service");
         // Register a fallback service if none exists
@@ -158,10 +158,10 @@ public class MainMenuActions extends Component {
       }
       
       // Create and show leaderboard popup
-      com.csse3200.game.ui.leaderboard.LeaderboardController controller =
+      com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
         new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboardService);
-
-      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup =
+      
+      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = 
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(
           com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(), controller);
       

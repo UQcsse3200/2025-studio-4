@@ -39,7 +39,6 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
     entity.getEvents().addListener("showRanking", this::onShowRanking);
-    entity.getEvents().addListener("awardStars", this::awardStars);
   }
 
   private boolean isPaused = false;
@@ -241,17 +240,5 @@ public class MainGameActions extends Component {
     logger.info("Save As requested");
     // TODO: Implement save as functionality
     entity.getEvents().trigger("showSaveError"); // For now, show error
-  }
-
-  /**
-   * Awards stars when won
-   */
-  private void awardStars(int amount) {
-    if ((ServiceLocator.getGameStateService()) == null) {
-      logger.error("GameStateService is missing; register in Gdx.game");
-      return;
-    }
-    ServiceLocator.getGameStateService().updateStars(amount);
-    logger.info("Awarded {} star. Total = {}", amount, ServiceLocator.getGameStateService().getStars());
   }
 }

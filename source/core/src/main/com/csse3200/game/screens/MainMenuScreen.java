@@ -1,5 +1,6 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -61,6 +62,7 @@ public class MainMenuScreen extends ScreenAdapter {
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());
     }
+
 
     renderer = RenderFactory.createRenderer();
 

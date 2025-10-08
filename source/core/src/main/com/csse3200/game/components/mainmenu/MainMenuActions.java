@@ -47,8 +47,11 @@ public class MainMenuActions extends Component {
       ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
 
+    // Create skin using MinimalSkinFactory for consistent theme
+    com.badlogic.gdx.scenes.scene2d.ui.Skin skin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
+    
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", skin,
         new NameInputDialog.NameInputCallback() {
           @Override
           public void onNameConfirmed(String name, String avatarId) {

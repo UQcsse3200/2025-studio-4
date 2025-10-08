@@ -50,24 +50,26 @@ public class PlayerNameInputComponent extends UIComponent {
     }
     
     private void createUIElements() {
-        // 获取皮肤
-        Skin skin = ServiceLocator.getResourceService().getAsset("flat-earth/skin/flat-earth-ui.json", Skin.class);
+        // 使用 MinimalSkinFactory 创建统一风格的皮肤
+        Skin skin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
         
-        // 标题
-        titleLabel = new Label("Enter Your Name", skin, "title");
-        titleLabel.setColor(Color.WHITE);
+        // 标题 - 使用 Theme 颜色
+        Label.LabelStyle titleStyle = new Label.LabelStyle(skin.getFont("default"), com.csse3200.game.ui.Theme.TITLE_FG);
+        titleLabel = new Label("Enter Your Name", titleStyle);
         
-        // 说明文字
-        instructionLabel = new Label("Please enter your name for the leaderboard:", skin);
-        instructionLabel.setColor(Color.LIGHT_GRAY);
+        // 说明文字 - 使用 Theme 颜色
+        Label.LabelStyle instructionStyle = new Label.LabelStyle(skin.getFont("default"), com.csse3200.game.ui.Theme.ROW_MUTED);
+        instructionLabel = new Label("Please enter your name for the leaderboard:", instructionStyle);
         
-        // 姓名输入框
-        nameField = new TextField("", skin);
+        // 姓名输入框 - 使用 Theme 颜色
+        TextField.TextFieldStyle fieldStyle = createTextFieldStyle(skin);
+        nameField = new TextField("", fieldStyle);
         nameField.setMessageText("Your Name");
         nameField.setMaxLength(20); // 限制姓名长度
         
-        // 确认按钮
-        confirmButton = new TextButton("Start Game", skin);
+        // 确认按钮 - 使用 Theme 的主要按钮颜色
+        TextButton.TextButtonStyle buttonStyle = createPrimaryButtonStyle(skin);
+        confirmButton = new TextButton("Start Game", buttonStyle);
         confirmButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -76,12 +78,37 @@ public class PlayerNameInputComponent extends UIComponent {
         });
     }
     
+    private TextField.TextFieldStyle createTextFieldStyle(Skin skin) {
+        TextField.TextFieldStyle style = new TextField.TextFieldStyle();
+        style.font = skin.getFont("default");
+        style.fontColor = com.csse3200.game.ui.Theme.ROW_FG;
+        style.background = com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.TABLE_BG);
+        style.focusedBackground = com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.ROW_HOVER_BG);
+        style.cursor = com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.ROW_FG);
+        style.selection = com.csse3200.game.ui.SimpleUI.solid(new Color(com.csse3200.game.ui.Theme.BTN_PRIMARY_BG.r, 
+                com.csse3200.game.ui.Theme.BTN_PRIMARY_BG.g, com.csse3200.game.ui.Theme.BTN_PRIMARY_BG.b, 0.5f));
+        style.messageFontColor = com.csse3200.game.ui.Theme.ROW_MUTED;
+        return style;
+    }
+    
+    private TextButton.TextButtonStyle createPrimaryButtonStyle(Skin skin) {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = skin.getFont("default");
+        style.fontColor = Color.WHITE;
+        style.up = com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.BTN_PRIMARY_BG);
+        style.over = com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.BTN_PRIMARY_HV);
+        style.down = com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.BTN_PRIMARY_DN);
+        return style;
+    }
+    
     private void layoutElements() {
         table.center();
+        table.setBackground(com.csse3200.game.ui.SimpleUI.solid(com.csse3200.game.ui.Theme.WINDOW_BG));
+        table.pad(com.csse3200.game.ui.Theme.PAD);
         
-        table.add(titleLabel).padBottom(20).row();
-        table.add(instructionLabel).padBottom(15).row();
-        table.add(nameField).width(300).height(40).padBottom(20).row();
+        table.add(titleLabel).padBottom(com.csse3200.game.ui.Theme.PAD).row();
+        table.add(instructionLabel).padBottom(com.csse3200.game.ui.Theme.PAD).row();
+        table.add(nameField).width(300).height(40).padBottom(com.csse3200.game.ui.Theme.PAD).row();
         table.add(confirmButton).width(200).height(50);
         
         table.pack();

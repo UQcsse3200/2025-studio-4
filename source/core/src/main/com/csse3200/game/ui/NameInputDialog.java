@@ -45,16 +45,16 @@ public class NameInputDialog extends Dialog {
     
     private NameInputCallback callback;
     
-    public NameInputDialog(String title, WindowStyle windowStyle) {
-        super(title, windowStyle);
+    public NameInputDialog(String title, Skin skin) {
+        super(title, skin);
         this.playerNameService = ServiceLocator.getPlayerNameService();
         this.playerAvatarService = ServiceLocator.getPlayerAvatarService();
         this.selectedAvatarId = playerAvatarService.getPlayerAvatar();
         createContent();
     }
     
-    public NameInputDialog(String title, WindowStyle windowStyle, NameInputCallback callback) {
-        super(title, windowStyle);
+    public NameInputDialog(String title, Skin skin, NameInputCallback callback) {
+        super(title, skin);
         this.playerNameService = ServiceLocator.getPlayerNameService();
         this.playerAvatarService = ServiceLocator.getPlayerAvatarService();
         this.callback = callback;
@@ -69,13 +69,14 @@ public class NameInputDialog extends Dialog {
         nameField.setMessageText("Enter your name...");
         nameField.setMaxLength(20); // Limit name length
         
-        // Create buttons
-        TextButton.TextButtonStyle buttonStyle = SimpleUI.buttonStyle();
-        confirmButton = new TextButton("Confirm", buttonStyle);
-        cancelButton = new TextButton("Cancel", buttonStyle);
+        // Create buttons using Theme colors
+        TextButton.TextButtonStyle confirmStyle = createPrimaryButtonStyle();
+        TextButton.TextButtonStyle cancelStyle = createDarkButtonStyle();
+        confirmButton = new TextButton("Confirm", confirmStyle);
+        cancelButton = new TextButton("Cancel", cancelStyle);
         
         // Create error label (initially hidden)
-        Label.LabelStyle errorStyle = new Label.LabelStyle(SimpleUI.font(), Color.RED);
+        Label.LabelStyle errorStyle = new Label.LabelStyle(getSkin().getFont("default"), Color.RED);
         errorLabel = new Label("", errorStyle);
         errorLabel.setVisible(false);
         
@@ -84,52 +85,76 @@ public class NameInputDialog extends Dialog {
         
         // Layout the dialog
         Table contentTable = getContentTable();
-        contentTable.pad(20);
+        contentTable.pad(Theme.PAD);
+        contentTable.setBackground(SimpleUI.solid(Theme.WINDOW_BG));
         
         // Title
-        Label titleLabel = new Label("Create Your Character", SimpleUI.title());
-        contentTable.add(titleLabel).colspan(2).padBottom(20);
+        Label.LabelStyle titleStyle = new Label.LabelStyle(getSkin().getFont("default"), Theme.TITLE_FG);
+        Label titleLabel = new Label("Create Your Character", titleStyle);
+        contentTable.add(titleLabel).colspan(2).padBottom(Theme.PAD);
         contentTable.row();
         
         // Name input field
-        Label nameLabel = new Label("Name:", SimpleUI.label());
-        contentTable.add(nameLabel).left().padBottom(5);
+        Label.LabelStyle labelStyle = new Label.LabelStyle(getSkin().getFont("default"), Theme.ROW_FG);
+        Label nameLabel = new Label("Name:", labelStyle);
+        contentTable.add(nameLabel).left().padBottom(Theme.PAD_SM);
         contentTable.row();
-        contentTable.add(nameField).width(300).height(40).colspan(2).padBottom(15);
+        contentTable.add(nameField).width(300).height(40).colspan(2).padBottom(Theme.PAD);
         contentTable.row();
         
         // Avatar selection
-        Label avatarLabel = new Label("Choose Avatar:", SimpleUI.label());
-        contentTable.add(avatarLabel).left().padBottom(10);
+        Label avatarLabel = new Label("Choose Avatar:", labelStyle);
+        contentTable.add(avatarLabel).left().padBottom(Theme.PAD_SM);
         contentTable.row();
         
         Table avatarTable = createAvatarSelectionTable();
-        contentTable.add(avatarTable).colspan(2).padBottom(15);
+        contentTable.add(avatarTable).colspan(2).padBottom(Theme.PAD);
         contentTable.row();
         
         // Error message
-        contentTable.add(errorLabel).colspan(2).padBottom(10);
+        contentTable.add(errorLabel).colspan(2).padBottom(Theme.PAD_SM);
         contentTable.row();
         
         // Buttons
         Table buttonTable = new Table();
-        buttonTable.add(cancelButton).width(120).height(40).padRight(10);
+        buttonTable.add(cancelButton).width(120).height(40).padRight(Theme.PAD_SM);
         buttonTable.add(confirmButton).width(120).height(40);
         contentTable.add(buttonTable).colspan(2);
         
         // Set dialog size and position
-        setSize(450, 350);
+        setSize(450, 400);
         centerWindow();
     }
     
     private TextField.TextFieldStyle createTextFieldStyle() {
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
-        style.font = SimpleUI.font();
-        style.fontColor = Color.BLACK;
-        style.background = SimpleUI.solid(new Color(0.95f, 0.95f, 0.95f, 1f));
-        style.focusedBackground = SimpleUI.solid(new Color(0.9f, 0.9f, 0.9f, 1f));
-        style.cursor = SimpleUI.solid(Color.BLACK);
-        style.selection = SimpleUI.solid(new Color(0.3f, 0.6f, 1f, 0.5f));
+        style.font = getSkin().getFont("default");
+        style.fontColor = Theme.ROW_FG;
+        style.background = SimpleUI.solid(Theme.TABLE_BG);
+        style.focusedBackground = SimpleUI.solid(Theme.ROW_HOVER_BG);
+        style.cursor = SimpleUI.solid(Theme.ROW_FG);
+        style.selection = SimpleUI.solid(new Color(Theme.BTN_PRIMARY_BG.r, Theme.BTN_PRIMARY_BG.g, Theme.BTN_PRIMARY_BG.b, 0.5f));
+        style.messageFontColor = Theme.ROW_MUTED;
+        return style;
+    }
+    
+    private TextButton.TextButtonStyle createPrimaryButtonStyle() {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = getSkin().getFont("default");
+        style.fontColor = Color.WHITE;
+        style.up = SimpleUI.solid(Theme.BTN_PRIMARY_BG);
+        style.over = SimpleUI.solid(Theme.BTN_PRIMARY_HV);
+        style.down = SimpleUI.solid(Theme.BTN_PRIMARY_DN);
+        return style;
+    }
+    
+    private TextButton.TextButtonStyle createDarkButtonStyle() {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = getSkin().getFont("default");
+        style.fontColor = Color.WHITE;
+        style.up = SimpleUI.solid(Theme.BTN_DARK_BG);
+        style.over = SimpleUI.solid(Theme.BTN_DARK_HV);
+        style.down = SimpleUI.solid(Theme.BTN_DARK_DN);
         return style;
     }
     
@@ -181,11 +206,11 @@ public class NameInputDialog extends Dialog {
             buttonStyle.checked = createRedBorderDrawable(drawable);
             
         } catch (Exception e) {
-            // Fallback to a simple colored button if texture loading fails
+            // Fallback to a simple colored button if texture loading fails using Theme colors
             logger.warn("Failed to load avatar texture: {}", imagePath);
-            buttonStyle.up = SimpleUI.solid(new Color(0.8f, 0.8f, 0.8f, 1f));
-            buttonStyle.down = SimpleUI.solid(new Color(0.7f, 0.7f, 0.7f, 1f));
-            buttonStyle.checked = SimpleUI.solid(new Color(1f, 0.2f, 0.2f, 0.8f)); // Red background for fallback
+            buttonStyle.up = SimpleUI.solid(Theme.TABLE_BG);
+            buttonStyle.down = SimpleUI.solid(Theme.ROW_HOVER_BG);
+            buttonStyle.checked = SimpleUI.solid(Theme.BTN_PRIMARY_BG); // Green background for selected state
         }
         
         ImageButton button = new ImageButton(buttonStyle);
@@ -218,23 +243,23 @@ public class NameInputDialog extends Dialog {
     }
     
     /**
-     * Draws a red border around the specified area
+     * Draws a green border around the specified area using Theme colors
      */
     private void drawRedBorder(Batch batch, float x, float y, float width, float height) {
         float borderWidth = 3f; // Border thickness
-        Color borderColor = new Color(1f, 0f, 0f, 1f); // Red color
+        Color borderColor = Theme.BTN_PRIMARY_BG; // Use primary green color from Theme
         
-        // Create a simple red border by drawing rectangles
-        Drawable redDrawable = SimpleUI.solid(borderColor);
+        // Create a simple border by drawing rectangles
+        Drawable borderDrawable = SimpleUI.solid(borderColor);
         
         // Draw top border
-        redDrawable.draw(batch, x, y + height - borderWidth, width, borderWidth);
+        borderDrawable.draw(batch, x, y + height - borderWidth, width, borderWidth);
         // Draw bottom border  
-        redDrawable.draw(batch, x, y, width, borderWidth);
+        borderDrawable.draw(batch, x, y, width, borderWidth);
         // Draw left border
-        redDrawable.draw(batch, x, y, borderWidth, height);
+        borderDrawable.draw(batch, x, y, borderWidth, height);
         // Draw right border
-        redDrawable.draw(batch, x + width - borderWidth, y, borderWidth, height);
+        borderDrawable.draw(batch, x + width - borderWidth, y, borderWidth, height);
     }
     
     private void setupListeners() {

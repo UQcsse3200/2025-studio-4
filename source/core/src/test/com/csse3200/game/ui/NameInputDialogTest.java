@@ -35,7 +35,8 @@ class NameInputDialogTest {
     @Test
     void testNameInputDialogCreation() {
         // Test that NameInputDialog can be created
-        NameInputDialog dialog = new NameInputDialog("Test Title", SimpleUI.windowStyle());
+        com.badlogic.gdx.scenes.scene2d.ui.Skin skin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
+        NameInputDialog dialog = new NameInputDialog("Test Title", skin);
         assertNotNull(dialog);
         assertTrue(dialog instanceof Window);
     }
@@ -61,7 +62,8 @@ class NameInputDialogTest {
             }
         };
         
-        NameInputDialog dialog = new NameInputDialog("Test Title", SimpleUI.windowStyle(), callback);
+        com.badlogic.gdx.scenes.scene2d.ui.Skin skin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
+        NameInputDialog dialog = new NameInputDialog("Test Title", skin, callback);
         assertNotNull(dialog);
     }
     

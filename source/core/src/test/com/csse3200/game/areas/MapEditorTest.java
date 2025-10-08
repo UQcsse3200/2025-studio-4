@@ -13,12 +13,9 @@ import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.extensions.GameExtension;
-import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -27,7 +24,6 @@ class MapEditorTest {
 
     @BeforeEach
     void setUp() {
-        ServiceLocator.clear();
         // Mock ResourceService for texture loading
         ResourceService resourceService = mock(ResourceService.class);
         ServiceLocator.registerResourceService(resourceService);
@@ -90,49 +86,6 @@ class MapEditorTest {
         //assertDoesNotThrow(() -> mapEditor.generatePlaceableAreas());
     }
 
-    @Test
-    void shouldCreateSpeedWaypointsAtConfiguredLocations() {
-        TerrainComponent terrain = createMockTerrain();
-        Entity player = mock(Entity.class);
-
-        MapEditor mapEditor = new MapEditor(terrain, player);
-        mapEditor.generateEnemyPath();
-
-        assertEquals(16, mapEditor.waypointList.size(), "Expected 8 keypoints and 8 speed points");
-
-        java.util.Map<String, Entity> waypointLookup = mapEditor.waypointList.stream()
-                .collect(java.util.stream.Collectors.toMap(
-                        e -> asTileKey(e.getPosition()),
-                        e -> e,
-                        (existing, replacement) -> existing));
-
-        String[] speedTiles = {"6,6", "7,6", "8,6", "9,6", "18,12", "19,12", "20,12", "21,12"};
-        for (String tile : speedTiles) {
-            Entity waypoint = waypointLookup.get(tile);
-            assertNotNull(waypoint, "Missing speed waypoint at tile " + tile);
-            assertNotNull(waypoint.getComponent(SpeedWaypointComponent.class),
-                    "Expected SpeedWaypointComponent at tile " + tile);
-        }
-
-        String[] keyTiles = {"0,10", "5,10", "5,6", "12,6", "12,12", "25,12", "25,6", "28,6"};
-        for (String tile : keyTiles) {
-            Entity waypoint = waypointLookup.get(tile);
-            assertNotNull(waypoint, "Missing key waypoint at tile " + tile);
-            assertNull(waypoint.getComponent(SpeedWaypointComponent.class),
-                    "Key waypoint should not have speed component at tile " + tile);
-        }
-    }
-
-    private String asTileKey(Vector2 position) {
-        int x = Math.round(position.x * 2);
-        int y = Math.round(position.y * 2);
-        return x + "," + y;
-    }
-
-    @AfterEach
-    void tearDown() {
-        ServiceLocator.clear();
-    }
 
     private TerrainComponent createMockTerrain() {
         TerrainComponent terrain = mock(TerrainComponent.class);

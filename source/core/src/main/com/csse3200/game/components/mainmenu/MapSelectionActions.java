@@ -28,10 +28,10 @@ public class MapSelectionActions extends UIComponent {
 
     private void onMapSelected(String mapId, Difficulty difficulty) {
         logger.info("Map selected: {}", mapId);
-        // NEW GAME with mapId passed as the 3rd arg:
         ForestGameArea.gameDifficulty = difficulty;
         ForestGameArea2.gameDifficulty = difficulty;
-        game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, mapId);
+        
+        game.setScreen(GdxGame.ScreenType.MAP_START_CUTSCENE, false, mapId);
     }
 
     private void onBack() {

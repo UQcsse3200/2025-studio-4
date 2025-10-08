@@ -20,9 +20,15 @@ import org.slf4j.LoggerFactory;
 public class MainGameActions extends Component {
   private static final Logger logger = LoggerFactory.getLogger(MainGameActions.class);
   private GdxGame game;
+  private String currentMapId;
 
   public MainGameActions(GdxGame game) {
+    this(game, null);
+  }
+  
+  public MainGameActions(GdxGame game, String mapId) {
     this.game = game;
+    this.currentMapId = mapId;
   }
 
   @Override
@@ -33,7 +39,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
     entity.getEvents().addListener("performSave", this::onPerformSave);
-    // Save As removed
+    entity.getEvents().addListener("performSaveAs", this::onPerformSaveAs);
     entity.getEvents().addListener("togglePause", this::onTogglePause);
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
@@ -123,19 +129,16 @@ public class MainGameActions extends Component {
   private void onGameOver() {
     logger.info("Game over, submitting defeat score");
     
-    // 在切换屏幕之前计算并保存最终得分
     try {
       var sessionManager = ServiceLocator.getGameSessionManager();
       if (sessionManager != null) {
-        // 提交失败得分（这会在实体还存在时计算得分）
         sessionManager.submitScoreIfNotSubmitted(false);
       }
     } catch (Exception e) {
       logger.error("Error submitting defeat score", e);
     }
     
-    // 切换到游戏结束屏幕或主菜单
-    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    game.setScreen(GdxGame.ScreenType.GAME_OVER_CUTSCENE, false, currentMapId);
   }
   
   /**
@@ -155,7 +158,7 @@ public class MainGameActions extends Component {
       logger.error("Error submitting victory score", e);
     }
     
-    game.setScreen(GdxGame.ScreenType.VICTORY);
+    game.setScreen(GdxGame.ScreenType.VICTORY, false, currentMapId);
   }
   
   private void onSave() {
@@ -165,43 +168,34 @@ public class MainGameActions extends Component {
   }
 
   private void onPerformSave() {
-    logger.info("Performing save operation with naming dialog");
+    logger.info("Performing save operation (CI sync)");
+    
     try {
-      Stage stage = ServiceLocator.getRenderService().getStage();
-      com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
-          "Save Game", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
-            @Override public void onConfirmed(String name) {
-              try {
-                var entityService = ServiceLocator.getEntityService();
-                if (entityService == null) {
-                  entity.getEvents().trigger("showSaveError");
-                  return;
-                }
-                var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
-                boolean success = saveService.saveAs(name);
-                if (success) {
-                  logger.info("Saved as '{}' successfully", name);
-                  entity.getEvents().trigger("showSaveSuccess");
-                  entity.getEvents().trigger("hideSaveUI");
-                } else {
-                  entity.getEvents().trigger("showSaveError");
-                }
-              } catch (Exception ex) {
-                logger.error("Error during named save", ex);
-                entity.getEvents().trigger("showSaveError");
-              }
-            }
-            @Override public void onCancelled() { /* no-op */ }
-          }
-      );
-      dialog.show(stage);
+      var entityService = ServiceLocator.getEntityService();
+      if (entityService != null) {
+        var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
+        boolean success = saveService.save();
+        if (success) {
+          logger.info("Manual save completed successfully");
+          entity.getEvents().trigger("showSaveSuccess");
+          // auto-close save UI after success
+          entity.getEvents().trigger("hideSaveUI");
+        } else {
+          logger.warn("Manual save failed");
+          entity.getEvents().trigger("showSaveError");
+        }
+      }
     } catch (Exception e) {
-      logger.error("Error opening SaveNameDialog", e);
+      logger.error("Error during manual save", e);
       entity.getEvents().trigger("showSaveError");
     }
   }
 
-  // Save As removed
+  private void onPerformSaveAs() {
+    logger.info("Save As requested");
+    // TODO: Implement save as functionality
+    entity.getEvents().trigger("showSaveError"); // For now, show error
+  }
 
   /**
    * Awards stars when won

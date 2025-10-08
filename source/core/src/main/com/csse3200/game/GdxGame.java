@@ -50,7 +50,7 @@ public class GdxGame extends Game {
     // Register game score service to track real-time scores
     ServiceLocator.registerGameScoreService(new com.csse3200.game.services.GameScoreService());
 
-    setScreen(ScreenType.OPENING_CUTSCENE);
+    setScreen(ScreenType.SPLASH);
   }
 
   /**
@@ -120,6 +120,8 @@ public class GdxGame extends Game {
 
   private Screen newScreen(ScreenType screenType, boolean isContinue, String saveFileName) {
     switch (screenType) {
+      case SPLASH:
+        return new SplashScreen(this);
       case MAIN_MENU:
         return new MainMenuScreen(this);
       case MAIN_GAME:
@@ -140,8 +142,14 @@ public class GdxGame extends Game {
       case OPENING_CUTSCENE:
         return new OpeningCutsceneScreen(this);
       case VICTORY:
-        return new VictoryScreen(this);
-      case MAP_SELECTION: // NEW
+        return new VictoryScreen(this, saveFileName);
+      case GAME_OVER_CUTSCENE:
+        return new GameOverCutsceneScreen(this, saveFileName);
+      case MAP_START_CUTSCENE:
+        return new MapStartCutsceneScreen(this, saveFileName);
+      case LEVEL_TRANSITION_CUTSCENE:
+        return new LevelTransitionCutsceneScreen(this, null, saveFileName);
+      case MAP_SELECTION:
         return new MapSelectionScreen(this);
       case BOOK:
         return new MainBookScreen(this);
@@ -157,7 +165,8 @@ public class GdxGame extends Game {
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
+    SPLASH, MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
+    GAME_OVER_CUTSCENE, MAP_START_CUTSCENE, LEVEL_TRANSITION_CUTSCENE,
     MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK
   }
 

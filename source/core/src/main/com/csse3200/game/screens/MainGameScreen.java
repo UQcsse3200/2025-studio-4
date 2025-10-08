@@ -122,7 +122,7 @@ public class MainGameScreen extends ScreenAdapter {
     boolean hasExistingPlayer = false;
     if (isContinue && startupArg != null) {
       logger.info("Loading specific save file: {}", startupArg);
-      boolean success = simpleSave.loadToPending(startupArg);
+      boolean success = simpleSave.loadToPending();
       if (success) {
         logger.info("Save file loaded successfully");
         hasExistingPlayer = true;
@@ -261,7 +261,7 @@ public class MainGameScreen extends ScreenAdapter {
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
             .addComponent(new PerformanceDisplay())
-            .addComponent(new MainGameActions(this.game))
+            .addComponent(new MainGameActions(this.game, this.startupArg))
             .addComponent(new SettingsMenuDisplay(this.game, true))
             .addComponent(new PauseMenuDisplay(this.game))
             .addComponent(new SaveMenuDisplay(this.game))

@@ -55,6 +55,7 @@ public class VictoryScreen implements Screen {
     
     private Image backgroundImage;
     private TextButton mainMenuButton;
+    private TextButton playAgainButton;
     private TextButton nextMapButton;
     private TextButton exitGameButton;
     private Table mainTable;
@@ -290,13 +291,23 @@ public class VictoryScreen implements Screen {
         });
         mainMenuButton.addAction(Actions.alpha(0f));
         
+        playAgainButton = new TextButton("Play Again", createButtonStyle());
+        playAgainButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                logger.info("Play Again button clicked");
+                game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, currentMapId);
+            }
+        });
+        playAgainButton.addAction(Actions.alpha(0f));
+        
         if (currentMapId == null) {
             nextMapButton = new TextButton("Next Map", createButtonStyle());
             nextMapButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
                     logger.info("Next Map button clicked - transitioning to Map Two");
-                    game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, "MapTwo");
+                    game.setScreen(GdxGame.ScreenType.LEVEL_TRANSITION_CUTSCENE, false, "MapTwo");
                 }
             });
             nextMapButton.addAction(Actions.alpha(0f));
@@ -316,6 +327,7 @@ public class VictoryScreen implements Screen {
         if (currentMapId == null) {
             buttonTable.add(nextMapButton).size(200f, 60f).pad(15f);
         }
+        buttonTable.add(playAgainButton).size(200f, 60f).pad(15f);
         buttonTable.add(exitGameButton).size(200f, 60f).pad(15f);
     }
     
@@ -375,6 +387,7 @@ public class VictoryScreen implements Screen {
             if (nextMapButton != null) {
                 nextMapButton.addAction(Actions.fadeIn(1.5f));
             }
+            playAgainButton.addAction(Actions.fadeIn(1.5f));
             exitGameButton.addAction(Actions.fadeIn(1.5f));
             buttonsShown = true;
         }

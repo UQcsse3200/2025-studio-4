@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -101,7 +102,28 @@ public class PlayerStatsDisplay extends UIComponent {
     table.add(scoreLabel).left().padTop(5f);
 
     stage.addActor(table);
+
+    applyUiScale();
   }
+
+  /**
+   * Apply UI scale from user settings
+   */
+  private void applyUiScale() {
+    UserSettings.Settings settings = UserSettings.get();
+    if (table != null) {
+      table.setTransform(true);
+
+      // Force layout validation
+      table.validate();
+
+      // Set origin to top-left corner (where the table is anchored)
+      table.setOrigin(0f, table.getHeight());
+
+      table.setScale(settings.uiScale);
+    }
+  }
+
 
   @Override
   public void draw(SpriteBatch batch)  {

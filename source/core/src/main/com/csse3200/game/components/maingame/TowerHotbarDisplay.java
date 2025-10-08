@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 
@@ -110,6 +111,20 @@ public class TowerHotbarDisplay extends UIComponent {
         table.pack();
 
         stage.addActor(table);
+        applyUiScale();
+    }
+
+    /**
+     * Apply UI scale from user settings
+     */
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+        if (table != null) {
+            table.setTransform(true);
+            table.validate();
+            table.setOrigin(0f, 0f);
+            table.setScale(settings.uiScale);
+        }
     }
 
 

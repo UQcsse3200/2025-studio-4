@@ -284,6 +284,12 @@ public class ForestGameArea extends GameArea {
         cameraControl.addComponent(new CameraZoomDragComponent());
         spawnEntity(cameraControl);
 
+        // Create background entity (renders behind everything)
+        Entity background = new Entity();
+        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/game background.jpg"));
+        background.setPosition(0, 0); // Set position at origin
+        spawnEntity(background);
+
         spawnTerrain();
 
         // Only spawn new player if one doesn't already exist

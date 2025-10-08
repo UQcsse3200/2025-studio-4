@@ -20,21 +20,30 @@ public class PauseInputComponent extends UIComponent {
     public void create() {
         super.create();
 
-        // Toggle via keyboard
+        // Toggle via keyboard (route through keyDown helper for testability)
         stage.addListener(new InputListener() {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) {
-                    togglePause();
-                    return true;
-                }
-                return false;
+                return PauseInputComponent.this.keyDown(keycode);
             }
         });
 
         // Toggle via UI buttons
         entity.getEvents().addListener("togglePause", this::togglePause);
         entity.getEvents().addListener("resume", this::resumeGame);
+    }
+
+    /**
+     * Lightweight, testable key handler mirroring stage listener behavior.
+     * Returns true if the key is handled; otherwise false.
+     */
+    public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) {
+            // Trigger event so external listeners (and our own listener) respond consistently
+            entity.getEvents().trigger("togglePause");
+            return true;
+        }
+        return false;
     }
 
     private void togglePause() {

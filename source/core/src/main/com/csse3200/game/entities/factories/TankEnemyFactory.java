@@ -1,9 +1,9 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.components.projectile.AntiProjectileShooterComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -74,7 +74,7 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius));
+            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f,0.9f,7f,1.25f, "images/towers/bone_projectile.png"));
             CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 

@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.components.Component;
@@ -26,8 +28,8 @@ public class HeroStatusPanelComponent extends Component {
     private Table card;         // 实际的卡片内容
 
     // UI 控件引用，便于更新文字
-    private Label nameLabel, hpLabel, energyLabel, levelLabel; // 移除 ultCdLabel
-    private TextButton ultBtn; // 新增 ULT 按钮引用
+    private Label nameLabel, hpLabel, energyLabel, levelLabel, costLabel; // 移除 ultCdLabel
+    private TextButton ultBtn, upgradeBtn; // 新增 ULT 按钮和升级按钮引用
 
     public HeroStatusPanelComponent(Entity hero) {
         this.hero = hero;
@@ -72,9 +74,18 @@ public class HeroStatusPanelComponent extends Component {
         energyLabel = new Label("Energy: 50/50", skin);
         levelLabel  = new Label("Lv. 1", skin);
         Label damageLabel = new Label("DMG: -", skin);
+        costLabel   = new Label("Upgrade cost: 200", skin);
 
         // ==== ULT 按钮 ====
         ultBtn = UltimateButtonComponent.createUltimateButton(hero);
+
+        // ==== 升级按钮 ====
+        TextButton.TextButtonStyle upStyle = SimpleUI.primaryButton();
+        upStyle.font = SimpleUI.font();
+        upStyle.fontColor = Color.BLACK;
+        upStyle.overFontColor = Color.BLACK;
+        upStyle.downFontColor = Color.BLACK;
+        upgradeBtn = new TextButton("Upgrade", upStyle);
 
         // 布局：头像+右侧信息
         Table row = new Table();
@@ -87,6 +98,8 @@ public class HeroStatusPanelComponent extends Component {
         card.add(hpLabel).left().row();
         card.add(damageLabel).left().row();
         card.add(energyLabel).left().row();
+        card.add(costLabel).left().row();
+        card.add(upgradeBtn).left().width(120).padTop(4).row();
         card.add(ultBtn).left().row(); // 用按钮替换原 ultCdLabel
 
         // 把卡片塞到左栏（按你黄色区域从上往下的顺序放）
@@ -117,31 +130,46 @@ public class HeroStatusPanelComponent extends Component {
         hero.getEvents().addListener("hero.level", (Integer lv) -> {
             if (lv == null) return;
             levelLabel.setText("Lv. " + lv);
+            refreshUpgradeInfo(); // 刷新升级信息
         });
 
-        // 4) 大招CD（沿用你 ULT 按钮的事件）
-        // hero.getEvents().addListener("ultimate.state", (Boolean on) -> {
-        //     if (Boolean.TRUE.equals(on)) {
-        //         ultCdLabel.setText("ULT: ACTIVE");
-        //     } else {
-        //         ultCdLabel.setText("ULT: ready");
-        //     }
-        // });
-        // hero.getEvents().addListener("ultimate.remaining", (Float sec) -> {
-        //     if (sec == null) return;
-        //     float v = Math.max(0f, sec);
-        //     if (v > 0f) {
-        //         ultCdLabel.setText(String.format("ULT: %.1fs", v));
-        //     } else {
-        //         ultCdLabel.setText("ULT: ready");
-        //     }
-        // });
+        // 4) 升级按钮事件
+        upgradeBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                hero.getEvents().trigger("requestUpgrade", findPlayer());
+                refreshUpgradeInfo();
+            }
+        });
 
+        // 5) 响应升级结果
+        hero.getEvents().addListener("upgraded", (Integer level, Object currencyType, Integer cost) -> refreshUpgradeInfo());
+        hero.getEvents().addListener("upgradeFailed", (String msg) -> refreshUpgradeInfo());
+
+        // 初始化升级信息
+        refreshUpgradeInfo();
     }
 
     @Override
     public void dispose() {
         if (root != null) root.remove(); // 移除UI
+    }
+
+    private Entity findPlayer() {
+        for (Entity e : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.currencysystem.CurrencyManagerComponent wallet = e.getComponent(com.csse3200.game.components.currencysystem.CurrencyManagerComponent.class);
+            if (wallet != null) return e;
+        }
+        return null;
+    }
+
+    private void refreshUpgradeInfo() {
+        com.csse3200.game.components.hero.HeroUpgradeComponent up = hero.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class);
+        int lvl = (up != null) ? up.getLevel() : 1;
+        int next = lvl + 1;
+        int cost = (next <= 3) ? next * 200 : 0;
+        costLabel.setText(next <= 3 ? ("Upgrade cost: " + cost) : "Already reach the max Level");
+        upgradeBtn.setDisabled(next > 3);
     }
 
     /** 生成纯色背景贴图（小工具） */

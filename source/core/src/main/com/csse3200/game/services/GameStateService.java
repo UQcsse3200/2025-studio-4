@@ -29,7 +29,7 @@ public class GameStateService {
     public GameStateService() {
         // should load from save file later
         logger.info("Loading GameStateService");
-        stars = 0;
+        stars = 10;
         heroUnlocks = new HashMap<>();
 
         heroUnlocks.put(HeroType.HERO, true);

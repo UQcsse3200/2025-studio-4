@@ -76,6 +76,9 @@ public class BossEnemyFactory {
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
+                CombatStatsComponent combatStats = boss.getComponent(CombatStatsComponent.class);
+                if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
 
@@ -132,7 +135,7 @@ public class BossEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

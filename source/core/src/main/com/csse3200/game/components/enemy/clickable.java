@@ -43,7 +43,10 @@ public class clickable extends Component{
                     entity.getComponent(CombatStatsComponent.class).addHealth(-10, DamageTypeConfig.None);
 
                     DeckComponent deck = entity.getComponent(DeckComponent.EnemyDeckComponent.class);
-                    player.getEvents().trigger("displayDeck", deck);
+
+                    if (player != null) {
+                       player.getEvents().trigger("displayDeck", deck); 
+                    }                    
                 }
             }
         }

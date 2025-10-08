@@ -71,6 +71,9 @@ public class DividerChildEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = DividerChild.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
 
@@ -131,8 +134,8 @@ public class DividerChildEnemyFactory {
                 player.getEvents().trigger("dropCurrency", drops);
             }
         }
-
-        Gdx.app.postRunnable(entity::dispose);
+        
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

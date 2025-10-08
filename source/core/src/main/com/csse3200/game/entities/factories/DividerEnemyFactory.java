@@ -74,6 +74,9 @@ public class DividerEnemyFactory {
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
+                CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
+                if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));

@@ -174,7 +174,13 @@ public class AnimationRenderComponent extends RenderComponent {
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
     batch.draw(region, pos.x, pos.y, scale.x, scale.y);
+    float lastTime = animationPlayTime;  
     animationPlayTime += timeSource.getDeltaTime();
+    if (currentAnimation.getPlayMode() == PlayMode.NORMAL &&
+        lastTime < currentAnimation.getAnimationDuration() &&
+        animationPlayTime >= currentAnimation.getAnimationDuration()) {
+        entity.getEvents().trigger("animationFinished", currentAnimationName);
+        }
   }
 
   @Override

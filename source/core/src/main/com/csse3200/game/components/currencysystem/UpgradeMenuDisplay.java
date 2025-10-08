@@ -303,7 +303,8 @@ public class UpgradeMenuDisplay extends UIComponent {
                                         "[S] Place hero\\n" +
                                         "[Hero] 1: Default weapon | 2: Fast fire, low damage | 3: High damage, slow fire\\n" +
                                         "[Engineer] 1: Place tower | 2: Place cannon | 3: Generate currency\\n" +
-                                        "[Samurai] 1: Stab | 2: Slash | 3: Spin slash";
+                                        "[Samurai] 1: Stab | 2: Slash | 3: Spin slash"+ 
+                                                "Note: Engineer structures can only be placed on roads.";
 
                         Label.LabelStyle ls = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
                 Label label = new Label(text, ls);

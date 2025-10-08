@@ -122,6 +122,7 @@ public class SettingsMenuDisplay extends UIComponent {
         rootTable.add(panel).center()
                 .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
 
+
         if (overlayMode) {
             Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
             px.setColor(new Color(0f, 0f, 0f, 0.70f));
@@ -165,6 +166,12 @@ public class SettingsMenuDisplay extends UIComponent {
             }
         } else {
             stage.addActor(rootTable);
+        }
+
+        UserSettings.Settings currentSettings = UserSettings.get();
+        if (rootTable != null) {
+            rootTable.setTransform(true);  // Enable transformation
+            rootTable.setScale(currentSettings.uiScale);
         }
     }
 
@@ -400,6 +407,17 @@ public class SettingsMenuDisplay extends UIComponent {
 
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().updateSettings();
+        }
+
+        applyUiScale(settings.uiScale);
+    }
+
+    private void applyUiScale(float scale) {
+        if (rootTable != null) {
+            rootTable.setTransform(true);
+            rootTable.validate();
+            rootTable.setOrigin(rootTable.getWidth() / 2f, rootTable.getHeight() / 2f);
+            rootTable.setScale(scale);
         }
     }
 

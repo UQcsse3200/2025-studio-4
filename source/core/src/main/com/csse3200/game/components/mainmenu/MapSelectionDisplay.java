@@ -7,7 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -236,6 +238,18 @@ public class MapSelectionDisplay extends UIComponent {
         boolean single = entries.size() <= 1;
         leftArrow.setDisabled(single);
         rightArrow.setDisabled(single);
+
+        applyUiScale();
+    }
+
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+        if (root != null) {
+            root.setTransform(true);
+            root.validate();
+            root.setOrigin(root.getWidth() / 2f, root.getHeight() / 2f);
+            root.setScale(settings.uiScale);
+        }
     }
 
     private void move(int delta) {

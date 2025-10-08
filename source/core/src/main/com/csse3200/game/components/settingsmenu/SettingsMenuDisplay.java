@@ -37,6 +37,8 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 
+import com.csse3200.game.ui.UiStyles;
+
 /**
  * Settings menu display and logic. If you bork the settings, they can be changed manually in
  * CSSE3200Game/settings.json under home directory (This is C:/users/[username] on Windows).
@@ -297,9 +299,9 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     private Table makeMenuBtns() {
-        TextButtonStyle customButtonStyle = createCustomButtonStyle();
-        TextButton backBtn = new TextButton("Back", customButtonStyle);
-        TextButton applyBtn = new TextButton("Apply", customButtonStyle);
+        var style = UiStyles.orangeButton(skin);
+        TextButton backBtn  = new TextButton("Back", style);
+        TextButton applyBtn = new TextButton("Apply", style);
 
         backBtn.addListener(new ChangeListener() {
             @Override

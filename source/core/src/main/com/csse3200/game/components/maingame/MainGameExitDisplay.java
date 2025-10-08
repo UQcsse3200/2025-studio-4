@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.UIStyleHelper;
 import com.csse3200.game.ui.leaderboard.LeaderboardController;
 import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
 import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
@@ -42,9 +43,8 @@ public class MainGameExitDisplay extends UIComponent {
     table.setFillParent(true);
 
     // Create custom button style
-    TextButtonStyle customButtonStyle = createCustomButtonStyle();
-
-    TextButton saveBtn = new TextButton("Save", customButtonStyle);
+      TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
+      TextButton saveBtn = new TextButton("Save", customButtonStyle);
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
 

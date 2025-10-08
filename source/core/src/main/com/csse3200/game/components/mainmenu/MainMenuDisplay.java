@@ -16,6 +16,7 @@ import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +49,7 @@ public class MainMenuDisplay extends UIComponent {
     stage.addActor(backgroundImage);
 
     // 创建自定义按钮样式
-    TextButtonStyle customButtonStyle = createCustomButtonStyle();
-    
+    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
     TextButton startBtn = new TextButton("New Game", customButtonStyle);
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);

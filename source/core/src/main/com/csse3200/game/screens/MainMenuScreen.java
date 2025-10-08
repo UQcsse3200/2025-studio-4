@@ -1,5 +1,6 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -31,6 +32,11 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/Main_Menu_Button_Background.png",
     "images/star.png",
     "images/sun.png",
+    "images/tough survivor.jpg",
+    "images/speed runner.jpg",
+    "images/slayer.jpg",
+    "images/perfect clear.jpg",
+    "images/participation.jpg",
     "images/name and leaderbooard background.png"
   };
   
@@ -48,10 +54,17 @@ public class MainMenuScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+    ServiceLocator.registerTimeSource(new com.csse3200.game.services.GameTime());
+    
+    // Only register AchievementService if it doesn't exist (preserve achievements across screens)
+    if (ServiceLocator.getAchievementService() == null) {
+      ServiceLocator.registerAchievementService(new com.csse3200.game.services.AchievementService());
+    }
     
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());
     }
+
 
     renderer = RenderFactory.createRenderer();
 

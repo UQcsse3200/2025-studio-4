@@ -17,6 +17,7 @@ public class LeaderboardPopup extends Window {
     private final Skin skin;
     private final LeaderboardController controller;
     private final Table listTable = new Table();
+    private final Table achievementTable = new Table();
     private final ScrollPane scroller;
     private final TextButton prevBtn, nextBtn, closeBtn, friendsBtn;
 
@@ -30,8 +31,14 @@ public class LeaderboardPopup extends Window {
         pad(0);  // 移除默认 padding，我们自己控制
         getTitleLabel().setAlignment(Align.center);
         
-        // 添加Book风格的背景图片
-        addBookStyleBackground();
+        // Set background image
+        try {
+            Texture bgTexture = ServiceLocator.getResourceService().getAsset(
+                "images/name and leaderbooard background.png", Texture.class);
+            setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+        } catch (Exception e) {
+            // If background fails to load, continue without it
+        }
 
         // 使用暗色样式的按钮
         friendsBtn = new TextButton("All", skin, "dark");
@@ -65,6 +72,9 @@ public class LeaderboardPopup extends Window {
         footer.add().expandX();
         footer.add(closeBtn).width(100).height(36).right();
 
+        // Create achievement section
+        createAchievementSection();
+        
         Table content = new Table();
         content.add(header).growX();
         content.row();
@@ -72,9 +82,12 @@ public class LeaderboardPopup extends Window {
         content.row();
         content.add(scroller).grow().minHeight(400).pad(0, 20, 0, 20);
         content.row();
+        // Add achievement section
+        content.add(achievementTable).growX().padTop(10);
+        content.row();
         content.add(footer).growX();
 
-        add(content).grow().minSize(800, 600);
+        add(content).grow().minSize(800, 640);
 
         // 事件
         closeBtn.addListener(new ChangeListener() {
@@ -204,20 +217,69 @@ public class LeaderboardPopup extends Window {
     }
     
     /**
-     * 添加Book风格的背景装饰
+     * Creates the achievement display section
      */
-    private void addBookStyleBackground() {
+    private void createAchievementSection() {
+        achievementTable.clear();
+        
+        // Title
+        Label achievementTitle = new Label("Achievements", skin, "title");
+        achievementTable.add(achievementTitle).colspan(5).padBottom(10);
+        achievementTable.row();
+        
+        // Achievement IDs and paths
+        String[] achievementIds = {
+            com.csse3200.game.services.AchievementService.TOUGH_SURVIVOR,
+            com.csse3200.game.services.AchievementService.SPEED_RUNNER,
+            com.csse3200.game.services.AchievementService.SLAYER,
+            com.csse3200.game.services.AchievementService.PERFECT_CLEAR,
+            com.csse3200.game.services.AchievementService.PARTICIPATION
+        };
+        
+        String[] achievementImages = {
+            "images/tough survivor.jpg",
+            "images/speed runner.jpg",
+            "images/slayer.jpg",
+            "images/perfect clear.jpg",
+            "images/participation.jpg"
+        };
+        
+        // Get achievement service
+        com.csse3200.game.services.AchievementService achievementService = 
+            ServiceLocator.getAchievementService();
+        
+        // Display achievements
+        for (int i = 0; i < achievementIds.length; i++) {
+            final int index = i;
+            Image achievementIcon = createAchievementIcon(
+                achievementImages[index], 
+                achievementService != null && achievementService.isUnlocked(achievementIds[index])
+            );
+            
+            achievementTable.add(achievementIcon).size(80, 80).pad(5);
+        }
+    }
+    
+    /**
+     * Creates an achievement icon, either colored (unlocked) or grayscale (locked)
+     */
+    private Image createAchievementIcon(String imagePath, boolean unlocked) {
         try {
-            // 加载自定义的排行榜背景图片
-            Texture bgTexture = ServiceLocator.getResourceService()
-                .getAsset("images/name and leaderbooard background.png", Texture.class);
-            setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+            Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
+            Image image = new Image(texture);
+            
+            if (!unlocked) {
+                // Make the image grayscale
+                image.setColor(0.5f, 0.5f, 0.5f, 0.6f);
+            } else {
+                // Unlocked achievements have golden tint
+                image.setColor(1.2f, 1.1f, 0.8f, 1f);
+            }
+            
+            return image;
         } catch (Exception e) {
-            // 如果加载失败，使用默认的Book风格背景
-            setBackground(com.csse3200.game.ui.SimpleUI.roundRect(
-                new com.badlogic.gdx.graphics.Color(1f, 0.97f, 0.88f, 0.95f),
-                new com.badlogic.gdx.graphics.Color(0.8f, 0.7f, 0.5f, 0.8f),
-                com.csse3200.game.ui.Theme.RADIUS, 2));
+            // Return empty image if texture not found
+            return new Image();
         }
     }
 }

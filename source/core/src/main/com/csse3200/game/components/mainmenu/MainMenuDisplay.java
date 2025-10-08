@@ -52,6 +52,7 @@ public class MainMenuDisplay extends UIComponent {
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
+    TextButton achievementBtn = new TextButton("Achievement", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
     TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
@@ -76,6 +77,7 @@ public class MainMenuDisplay extends UIComponent {
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);
     rankingBtn.getLabel().setColor(Color.WHITE);
+    achievementBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
 
     // Triggers an event when the button is pressed
@@ -135,6 +137,15 @@ public class MainMenuDisplay extends UIComponent {
       }
     });
 
+    achievementBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+
+        logger.debug("Achievement button clicked");
+        entity.getEvents().trigger("achievement");
+      }
+    });
+
 
     table.add().expandY().row();
     HorizontalGroup group = new HorizontalGroup();
@@ -152,6 +163,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();
+    table.add(achievementBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();

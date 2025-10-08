@@ -28,6 +28,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("settings", this::onSettings);
     entity.getEvents().addListener("book", this::onBook);
     entity.getEvents().addListener("ranking", this::onRanking);
+    entity.getEvents().addListener("achievement", this::onAchievement);
   }
 
   /**
@@ -37,7 +38,7 @@ public class MainMenuActions extends Component {
     logger.info("New Game clicked, showing name input dialog");
     showNameInputDialog();
   }
-
+  
   /**
    * Shows the name input dialog for new game.
    */
@@ -46,24 +47,21 @@ public class MainMenuActions extends Component {
     if (ServiceLocator.getPlayerNameService() == null) {
       ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
-
-    // Create skin using MinimalSkinFactory for consistent theme
-    com.badlogic.gdx.scenes.scene2d.ui.Skin skin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
     
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", skin,
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
         new NameInputDialog.NameInputCallback() {
           @Override
           public void onNameConfirmed(String name, String avatarId) {
             handleNameConfirmed(name, avatarId);
           }
-
+          
           @Override
           public void onNameCancelled() {
             handleNameCancelled();
           }
         });
-
+    
     // Get the current stage from the render service
     if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
       ServiceLocator.getRenderService().getStage().addActor(nameDialog);
@@ -74,7 +72,7 @@ public class MainMenuActions extends Component {
       game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
     }
   }
-
+  
   /**
    * Handles when player confirms their name and avatar.
    */
@@ -89,7 +87,7 @@ public class MainMenuActions extends Component {
     // Proceed to map selection
     game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }
-
+  
   /**
    * Handles when player cancels name input.
    */
@@ -148,9 +146,9 @@ public class MainMenuActions extends Component {
       logger.info("Attempting to show leaderboard popup");
       
       // Use the global leaderboard service (already registered in GdxGame)
-      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService =
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
         ServiceLocator.getLeaderboardService();
-
+      
       if (leaderboardService == null) {
         logger.error("Leaderboard service not available, registering fallback service");
         // Register a fallback service if none exists
@@ -160,10 +158,10 @@ public class MainMenuActions extends Component {
       }
       
       // Create and show leaderboard popup
-      com.csse3200.game.ui.leaderboard.LeaderboardController controller =
+      com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
         new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboardService);
-
-      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup =
+      
+      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = 
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(
           com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(), controller);
       
@@ -171,6 +169,38 @@ public class MainMenuActions extends Component {
       
     } catch (Exception e) {
       logger.error("Failed to show leaderboard", e);
+    }
+  }
+
+  /**
+   * Opens the achievement screen.
+   */
+  private void onAchievement() {
+    logger.info("Launching achievement screen");
+    showAchievementDialog();
+  }
+
+  /**
+   * Shows the achievement dialog popup.
+   */
+  private void showAchievementDialog() {
+    try {
+      // Create and show achievement dialog
+      com.csse3200.game.ui.AchievementDialog dialog =
+        new com.csse3200.game.ui.AchievementDialog(
+          "Achievements",
+          com.csse3200.game.ui.SimpleUI.windowStyle()
+        );
+
+      // Get the current stage from the render service
+      if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
+        dialog.show(ServiceLocator.getRenderService().getStage());
+      } else {
+        logger.warn("No stage available for achievement dialog");
+      }
+
+    } catch (Exception e) {
+      logger.error("Failed to show achievement dialog", e);
     }
   }
 }

@@ -109,6 +109,12 @@ public class SimplePlacementController extends Component {
         entity.getEvents().addListener("startPlacementPterodactyl", this::armPterodactyl);
         entity.getEvents().addListener("startPlacementSuperCavemen", this::armSuperCavemen);
         entity.getEvents().addListener("startPlacementTotem", this::armTotem);
+        // Add listeners for new towers
+        entity.getEvents().addListener("startPlacementCavemenVillage", this::armCavemenVillage);
+        entity.getEvents().addListener("startPlacementRaft", this::armRaft);
+        entity.getEvents().addListener("startPlacementFrozenMamoothSkull", this::armFrozenMamoothSkull);
+        entity.getEvents().addListener("startPlacementBoulderCatapult", this::armBoulderCatapult);
+        entity.getEvents().addListener("startPlacementVillageShaman", this::armVillageShaman);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
@@ -143,6 +149,27 @@ public class SimplePlacementController extends Component {
         startPlacement("totem");
     }
 
+    /** Arms the controller to start placing a Cavemen Village tower. */
+    private void armCavemenVillage() {
+        startPlacement("cavemenvillage");
+    }
+    /** Arms the controller to start placing a Raft tower. */
+    private void armRaft() {
+        startPlacement("raft");
+    }
+    /** Arms the controller to start placing a Frozen Mammoth Skull tower. */
+    private void armFrozenMamoothSkull() {
+        startPlacement("frozenmamoothskull");
+    }
+    /** Arms the controller to start placing a Boulder Catapult tower. */
+    private void armBoulderCatapult() {
+        startPlacement("bouldercatapult");
+    }
+    /** Arms the controller to start placing a Village Shaman tower. */
+    private void armVillageShaman() {
+        startPlacement("villageshaman");
+    }
+
     /**
      * Public API for UI to request a placement directly on this controller instance.
      * This avoids trying to trigger events on other entities (hotbar -> placement controller).
@@ -170,6 +197,11 @@ public class SimplePlacementController extends Component {
             case "pterodactyl" -> ghostTower = TowerFactory.createPterodactylTower();
             case "supercavemen" -> ghostTower = TowerFactory.createSuperCavemenTower();
             case "totem" -> ghostTower = TowerFactory.createTotemTower();
+            case "cavemenvillage" -> ghostTower = TowerFactory.createCavemenVillageTower();
+            case "raft" -> ghostTower = TowerFactory.createRaftTower();
+            case "frozenmamoothskull" -> ghostTower = TowerFactory.createFrozenMamoothSkullTower();
+            case "bouldercatapult" -> ghostTower = TowerFactory.createBoulderCatapultTower();
+            case "villageshaman" -> ghostTower = TowerFactory.createVillageShamanTower();
             default -> ghostTower = TowerFactory.createBoneTower();
         }
 
@@ -253,6 +285,11 @@ public class SimplePlacementController extends Component {
                 case "pterodactyl" -> stats = TowerFactory.getTowerConfig().pterodactylTower.base;
                 case "supercavemen" -> stats = TowerFactory.getTowerConfig().supercavemenTower.base;
                 case "totem" -> stats = TowerFactory.getTowerConfig().totemTower.base;
+                case "cavemenvillage" -> stats = TowerFactory.getTowerConfig().cavemenvillageTower.base;
+                case "raft" -> stats = TowerFactory.getTowerConfig().raftTower.base;
+                case "frozenmamoothskull" -> stats = TowerFactory.getTowerConfig().frozenmamoothskullTower.base;
+                case "bouldercatapult" -> stats = TowerFactory.getTowerConfig().bouldercatapultTower.base;
+                case "villageshaman" -> stats = TowerFactory.getTowerConfig().villageshamanTower.base;
                 default -> stats = TowerFactory.getTowerConfig().boneTower.base;
             }
 
@@ -279,6 +316,11 @@ public class SimplePlacementController extends Component {
                 case "pterodactyl" -> newTower = TowerFactory.createPterodactylTower();
                 case "supercavemen" -> newTower = TowerFactory.createSuperCavemenTower();
                 case "totem" -> newTower = TowerFactory.createTotemTower();
+                case "cavemenvillage" -> newTower = TowerFactory.createCavemenVillageTower();
+                case "raft" -> newTower = TowerFactory.createRaftTower();
+                case "frozenmamoothskull" -> newTower = TowerFactory.createFrozenMamoothSkullTower();
+                case "bouldercatapult" -> newTower = TowerFactory.createBoulderCatapultTower();
+                case "villageshaman" -> newTower = TowerFactory.createVillageShamanTower();
                 default -> newTower = TowerFactory.createBoneTower();
             }
 

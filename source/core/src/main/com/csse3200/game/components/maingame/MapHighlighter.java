@@ -187,6 +187,22 @@ public class MapHighlighter extends UIComponent {
             pendingEntity = towerFactory.createDinoTower();
         } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
             pendingEntity = towerFactory.createCavemenTower();
+        } else if ("Pterodactyl".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createPterodactylTower();
+        } else if ("SuperCavemen".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createSuperCavemenTower();
+        } else if ("Totem".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createTotemTower();
+        } else if ("CavemenVillage".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createCavemenVillageTower();
+        } else if ("Raft".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createRaftTower();
+        } else if ("FrozenMamoothSkull".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createFrozenMamoothSkullTower();
+        } else if ("BoulderCatapult".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createBoulderCatapultTower();
+        } else if ("VillageShaman".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createVillageShamanTower();
         } else {
             pendingEntity = towerFactory.createBoneTower();
         }

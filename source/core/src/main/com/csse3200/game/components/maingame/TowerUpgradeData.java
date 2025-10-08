@@ -95,6 +95,46 @@ public class TowerUpgradeData {
         superCavemenA.put(5, new UpgradeStats(130, 10.0f, 1.0f, 10.0f, 3500, "images/towers/supercavemen.png"));
         pathA.put("supercavemen", superCavemenA);
 
+        // Cavemen Village tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> cavemenVillageA = new HashMap<>();
+        cavemenVillageA.put(2, new UpgradeStats(40, 7.0f, 1.0f, 7.0f, 1200, "images/towers/cavemenvillage.png"));
+        cavemenVillageA.put(3, new UpgradeStats(50, 8.0f, 1.0f, 7.0f, 1500, "images/towers/cavemenvillage.png"));
+        cavemenVillageA.put(4, new UpgradeStats(65, 9.0f, 1.0f, 7.0f, 1800, "images/towers/cavemenvillage.png"));
+        cavemenVillageA.put(5, new UpgradeStats(80, 10.0f, 1.0f, 7.0f, 2100, "images/towers/cavemenvillage.png"));
+        pathA.put("cavemenvillage", cavemenVillageA);
+
+        // Raft tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> raftA = new HashMap<>();
+        raftA.put(2, new UpgradeStats(20, 4.0f, 1.0f, 5.0f, 900, "images/towers/raft.png"));
+        raftA.put(3, new UpgradeStats(28, 5.0f, 1.0f, 5.0f, 1100, "images/towers/raft.png"));
+        raftA.put(4, new UpgradeStats(36, 6.0f, 1.0f, 5.0f, 1300, "images/towers/raft.png"));
+        raftA.put(5, new UpgradeStats(45, 7.0f, 1.0f, 5.0f, 1500, "images/towers/raft.png"));
+        pathA.put("raft", raftA);
+
+        // Frozen Mammoth Skull tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> frozenMamoothSkullA = new HashMap<>();
+        frozenMamoothSkullA.put(2, new UpgradeStats(30, 5.0f, 1.0f, 6.0f, 1000, "images/towers/frozenmamoothskull.png"));
+        frozenMamoothSkullA.put(3, new UpgradeStats(40, 6.0f, 1.0f, 6.0f, 1300, "images/towers/frozenmamoothskull.png"));
+        frozenMamoothSkullA.put(4, new UpgradeStats(50, 7.0f, 1.0f, 6.0f, 1600, "images/towers/frozenmamoothskull.png"));
+        frozenMamoothSkullA.put(5, new UpgradeStats(65, 8.0f, 1.0f, 6.0f, 1900, "images/towers/frozenmamoothskull.png"));
+        pathA.put("frozenmamoothskull", frozenMamoothSkullA);
+
+        // Boulder Catapult tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> boulderCatapultA = new HashMap<>();
+        boulderCatapultA.put(2, new UpgradeStats(50, 8.0f, 1.0f, 8.0f, 1500, "images/towers/bouldercatapult.png"));
+        boulderCatapultA.put(3, new UpgradeStats(65, 9.0f, 1.0f, 8.0f, 1800, "images/towers/bouldercatapult.png"));
+        boulderCatapultA.put(4, new UpgradeStats(80, 10.0f, 1.0f, 8.0f, 2100, "images/towers/bouldercatapult.png"));
+        boulderCatapultA.put(5, new UpgradeStats(100, 12.0f, 1.0f, 8.0f, 2500, "images/towers/bouldercatapult.png"));
+        pathA.put("bouldercatapult", boulderCatapultA);
+
+        // Village Shaman tower (Path A: Damage & Range)
+        Map<Integer, UpgradeStats> villageShamanA = new HashMap<>();
+        villageShamanA.put(2, new UpgradeStats(25, 5.0f, 1.0f, 5.0f, 1000, "images/towers/villageshaman.png"));
+        villageShamanA.put(3, new UpgradeStats(35, 6.0f, 1.0f, 5.0f, 1300, "images/towers/villageshaman.png"));
+        villageShamanA.put(4, new UpgradeStats(45, 7.0f, 1.0f, 5.0f, 1600, "images/towers/villageshaman.png"));
+        villageShamanA.put(5, new UpgradeStats(60, 8.0f, 1.0f, 5.0f, 2000, "images/towers/villageshaman.png"));
+        pathA.put("villageshaman", villageShamanA);
+
         return pathA;
     }
 
@@ -153,6 +193,46 @@ public class TowerUpgradeData {
         superCavemenB.put(4, new UpgradeStats(60, 6.0f, 0.6f, 25.0f, 3000, "images/towers/supercavemen.png"));
         superCavemenB.put(5, new UpgradeStats(60, 6.0f, 0.5f, 30.0f, 3500, "images/towers/supercavemen.png"));
         pathB.put("supercavemen", superCavemenB);
+
+        // Cavemen Village tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> cavemenVillageB = new HashMap<>();
+        cavemenVillageB.put(2, new UpgradeStats(40, 6.0f, 0.8f, 8.0f, 1200, "images/towers/cavemenvillage.png"));
+        cavemenVillageB.put(3, new UpgradeStats(40, 6.0f, 0.7f, 9.0f, 1500, "images/towers/cavemenvillage.png"));
+        cavemenVillageB.put(4, new UpgradeStats(40, 6.0f, 0.6f, 10.0f, 1800, "images/towers/cavemenvillage.png"));
+        cavemenVillageB.put(5, new UpgradeStats(40, 6.0f, 0.5f, 12.0f, 2100, "images/towers/cavemenvillage.png"));
+        pathB.put("cavemenvillage", cavemenVillageB);
+
+        // Raft tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> raftB = new HashMap<>();
+        raftB.put(2, new UpgradeStats(20, 3.0f, 0.8f, 7.0f, 900, "images/towers/raft.png"));
+        raftB.put(3, new UpgradeStats(20, 3.0f, 0.7f, 8.0f, 1100, "images/towers/raft.png"));
+        raftB.put(4, new UpgradeStats(20, 3.0f, 0.6f, 9.0f, 1300, "images/towers/raft.png"));
+        raftB.put(5, new UpgradeStats(20, 3.0f, 0.5f, 10.0f, 1500, "images/towers/raft.png"));
+        pathB.put("raft", raftB);
+
+        // Frozen Mammoth Skull tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> frozenMamoothSkullB = new HashMap<>();
+        frozenMamoothSkullB.put(2, new UpgradeStats(30, 4.0f, 0.8f, 8.0f, 1000, "images/towers/frozenmamoothskull.png"));
+        frozenMamoothSkullB.put(3, new UpgradeStats(30, 4.0f, 0.7f, 9.0f, 1300, "images/towers/frozenmamoothskull.png"));
+        frozenMamoothSkullB.put(4, new UpgradeStats(30, 4.0f, 0.6f, 10.0f, 1600, "images/towers/frozenmamoothskull.png"));
+        frozenMamoothSkullB.put(5, new UpgradeStats(30, 4.0f, 0.5f, 12.0f, 1900, "images/towers/frozenmamoothskull.png"));
+        pathB.put("frozenmamoothskull", frozenMamoothSkullB);
+
+        // Boulder Catapult tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> boulderCatapultB = new HashMap<>();
+        boulderCatapultB.put(2, new UpgradeStats(50, 7.0f, 0.8f, 10.0f, 1500, "images/towers/bouldercatapult.png"));
+        boulderCatapultB.put(3, new UpgradeStats(50, 7.0f, 0.7f, 12.0f, 1800, "images/towers/bouldercatapult.png"));
+        boulderCatapultB.put(4, new UpgradeStats(50, 7.0f, 0.6f, 14.0f, 2100, "images/towers/bouldercatapult.png"));
+        boulderCatapultB.put(5, new UpgradeStats(50, 7.0f, 0.5f, 16.0f, 2500, "images/towers/bouldercatapult.png"));
+        pathB.put("bouldercatapult", boulderCatapultB);
+
+        // Village Shaman tower (Path B: Cooldown & Speed)
+        Map<Integer, UpgradeStats> villageShamanB = new HashMap<>();
+        villageShamanB.put(2, new UpgradeStats(25, 4.0f, 0.8f, 7.0f, 1000, "images/towers/villageshaman.png"));
+        villageShamanB.put(3, new UpgradeStats(25, 4.0f, 0.7f, 8.0f, 1300, "images/towers/villageshaman.png"));
+        villageShamanB.put(4, new UpgradeStats(25, 4.0f, 0.6f, 9.0f, 1600, "images/towers/villageshaman.png"));
+        villageShamanB.put(5, new UpgradeStats(25, 4.0f, 0.5f, 10.0f, 2000, "images/towers/villageshaman.png"));
+        pathB.put("villageshaman", villageShamanB);
 
         return pathB;
     }

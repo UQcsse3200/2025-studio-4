@@ -252,6 +252,22 @@ public class TowerUpgradeMenu extends UIComponent {
         if ("supercavemen".equalsIgnoreCase(key)) {
             return CurrencyType.NEUROCHIP;
         }
+        // Add new towers currency logic
+        if ("cavemenvillage".equalsIgnoreCase(key)) {
+            return CurrencyType.TITANIUM_CORE;
+        }
+        if ("raft".equalsIgnoreCase(key)) {
+            return CurrencyType.TITANIUM_CORE;
+        }
+        if ("frozenmamoothskull".equalsIgnoreCase(key)) {
+            return CurrencyType.TITANIUM_CORE;
+        }
+        if ("bouldercatapult".equalsIgnoreCase(key)) {
+            return CurrencyType.TITANIUM_CORE;
+        }
+        if ("villageshaman".equalsIgnoreCase(key)) {
+            return CurrencyType.NEUROCHIP;
+        }
         return UPGRADE_CURRENCY;
     }
 
@@ -266,6 +282,22 @@ public class TowerUpgradeMenu extends UIComponent {
         }
         if (s.equals("supercavemen")) {
             return "supercavemen";
+        }
+        // Add canonicalization for new towers
+        if (s.equals("cavemenvillage")) {
+            return "cavemenvillage";
+        }
+        if (s.equals("raft")) {
+            return "raft";
+        }
+        if (s.equals("frozenmamoothskull")) {
+            return "frozenmamoothskull";
+        }
+        if (s.equals("bouldercatapult")) {
+            return "bouldercatapult";
+        }
+        if (s.equals("villageshaman")) {
+            return "villageshaman";
         }
         return s;
     }

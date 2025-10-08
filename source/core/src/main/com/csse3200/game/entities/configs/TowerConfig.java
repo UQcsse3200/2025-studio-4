@@ -17,6 +17,16 @@ public class TowerConfig {
     public TowerWrapper supercavemenTower;
     /** Stats for the totem tower. */
     public TowerWrapper totemTower;
+    /** Stats for the cavemen village tower. */
+    public TowerWrapper cavemenvillageTower;
+    /** Stats for the raft tower. */
+    public TowerWrapper raftTower;
+    /** Stats for the frozen mammoth skull tower. */
+    public TowerWrapper frozenmamoothskullTower;
+    /** Stats for the boulder catapult tower. */
+    public TowerWrapper bouldercatapultTower;
+    /** Stats for the village shaman tower. */
+    public TowerWrapper villageshamanTower;
 
     /**
      * Inner wrapper class to match JSON structure.

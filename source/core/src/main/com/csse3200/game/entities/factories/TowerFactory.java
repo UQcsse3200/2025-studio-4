@@ -215,6 +215,136 @@ public class TowerFactory {
     }
 
     /**
+     * Creates a Cavemen Village tower entity.
+     */
+    public static Entity createCavemenVillageTower() {
+        TowerConfig.TowerStats stats = towers.cavemenvillageTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("cavemenvillage", 3, 3))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "cavemenvillage", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/cavemenvillage.png"));
+
+        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        Entity head = new Entity().addComponent(headRender);
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 3, 3);
+        return base;
+    }
+
+    /**
+     * Creates a Raft tower entity.
+     */
+    public static Entity createRaftTower() {
+        TowerConfig.TowerStats stats = towers.raftTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("raft", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "raft", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/raft.png"));
+
+        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        Entity head = new Entity().addComponent(headRender);
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a Frozen Mammoth Skull tower entity.
+     */
+    public static Entity createFrozenMamoothSkullTower() {
+        TowerConfig.TowerStats stats = towers.frozenmamoothskullTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("frozenmamoothskull", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "frozenmamoothskull", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/frozenmamoothskull.png"));
+
+        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        Entity head = new Entity().addComponent(headRender);
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a Boulder Catapult tower entity.
+     */
+    public static Entity createBoulderCatapultTower() {
+        TowerConfig.TowerStats stats = towers.bouldercatapultTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("bouldercatapult", 3, 3))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "bouldercatapult", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/bouldercatapult.png"));
+
+        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        Entity head = new Entity().addComponent(headRender);
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 3, 3);
+        return base;
+    }
+
+    /**
+     * Creates a Village Shaman tower entity.
+     */
+    public static Entity createVillageShamanTower() {
+        TowerConfig.TowerStats stats = towers.villageshamanTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("villageshaman", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "villageshaman", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/villageshaman.png"));
+
+        RotatingTextureRenderComponent headRender = new RotatingTextureRenderComponent(stats.image);
+        Entity head = new Entity().addComponent(headRender);
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headRender, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
      * Returns the loaded TowerConfig for external access (e.g., for costs).
      */
     public static TowerConfig getTowerConfig() {

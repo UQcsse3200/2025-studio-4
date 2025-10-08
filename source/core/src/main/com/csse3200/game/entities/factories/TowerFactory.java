@@ -276,18 +276,28 @@ public class TowerFactory {
                 .addComponent(new TowerStatsComponent(
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
+
+
+
+
+
+
+
+
+
+
                         stats.projectileTexture, stats.level_A, stats.level_B))
                 .addComponent(new DeckComponent.TowerDeckComponent(
                         "bank", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
-                .addComponent(new TextureRenderComponent("images/towers/bank_tower.png"));
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
         base.addComponent(new BankTowerUpgradeComponent(base,
                 CurrencyComponent.CurrencyType.METAL_SCRAP,
                 50,
                 3f
         ));
 
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/super/superlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bank/banklvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);

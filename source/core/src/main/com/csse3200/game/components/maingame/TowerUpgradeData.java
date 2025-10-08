@@ -98,8 +98,8 @@ public class TowerUpgradeData {
         pathA.put("supercavemen", superCavemenA);
 
         Map<Integer, UpgradeStats> bankA = new HashMap<>();
-        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank_tower.png"));
-        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank_tower.png"));
+        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
+        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
         pathA.put("bank", bankA);
 
         return pathA;

@@ -26,9 +26,9 @@ public class CurrencyManagerComponent extends Component {
     public void create() {
         currencies.clear(); // Ensure no leftover values from previous runs/tests
         this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
-        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 50);
-        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 50000);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 5000);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 50000);
         this.updateAllCurrencyUI();
     }
 

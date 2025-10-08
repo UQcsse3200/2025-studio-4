@@ -362,6 +362,9 @@ public class TowerComponent extends Component {
                         // rotate head to face target
                         Vector2 spawnOrigin = headEntity.getCenterPosition() != null ? headEntity.getCenterPosition() : myCenter;
                         Vector2 dir = nearest.getCenterPosition().cpy().sub(spawnOrigin);
+                        if (headRenderer != null) {
+                            headRenderer.startAnimation("fire");
+                        }
                         if (dir.len() <= 0.0001f) dir.set(1f, 0f);
                         else dir.nor();
                         if (headRenderer != null) headRenderer.setRotation(dir.angleDeg());

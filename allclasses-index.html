@@ -55,6 +55,14 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/ui/AchievementDialog.html" title="class in com.csse3200.game.ui">AchievementDialog</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A dialog for displaying player achievements.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/services/AchievementService.html" title="class in com.csse3200.game.services">AchievementService</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Service for managing player achievements.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/ai/tasks/AITaskComponent.html" title="class in com.csse3200.game.ai.tasks">AITaskComponent</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Task-based AI component.</div>
@@ -69,8 +77,17 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/audio/BackgroundMusicComponent.html" title="class in com.csse3200.game.components.audio">BackgroundMusicComponent</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/BackgroundDecorator.html" title="class in com.csse3200.game.components">BackgroundDecorator</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Component that adds floating decorative elements to the background
+ such as stars, clouds, and particles</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/audio/BackgroundMusicComponent.html" title="class in com.csse3200.game.components.audio">BackgroundMusicComponent</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/rendering/BackgroundRenderComponent.html" title="class in com.csse3200.game.rendering">BackgroundRenderComponent</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">A render component specifically for rendering a background texture that fills the entire camera viewport.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/entities/configs/BaseEntityConfig.html" title="class in com.csse3200.game.entities.configs">BaseEntityConfig</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Defines a basic set of properties stored in entities config files to be loaded by Entity Factories.</div>
@@ -589,9 +606,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/screens/MapSelectionScreen.html" title="class in com.csse3200.game.screens">MapSelectionScreen</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/ui/leaderboard/MinimalSkinFactory.html" title="class in com.csse3200.game.ui.leaderboard">MinimalSkinFactory</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">纯代码生成一个最小可用的 Skin，不依赖 uiskin.json/atlas。</div>
-</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/csse3200/game/ai/movement/MovementController.html" title="interface in com.csse3200.game.ai.movement">MovementController</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A movement controller moves something to a given a target.</div>
@@ -670,6 +685,16 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Action component for interacting with the player.</div>
 </div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="com/csse3200/game/services/PlayerAvatarService.html" title="interface in com.csse3200.game.services">PlayerAvatarService</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">玩家头像服务接口
+ 管理玩家头像的选择和获取</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/services/PlayerAvatarServiceImpl.html" title="class in com.csse3200.game.services">PlayerAvatarServiceImpl</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">玩家头像服务的实现类
+ 在内存中存储玩家头像选择</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/PlayerCombatStatsComponent.html" title="class in com.csse3200.game.components">PlayerCombatStatsComponent</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Component used to store information related to combat such as health, attack, etc.</div>
@@ -684,7 +709,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/maingame/PlayerNameDisplay.html" title="class in com.csse3200.game.components.maingame">PlayerNameDisplay</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">UI component that displays the player's name in the top-left corner of the game screen.</div>
+<div class="block">UI component that displays the player's name and avatar in the top-left corner of the game screen.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="com/csse3200/game/components/mainmenu/PlayerNameInputComponent.html" title="class in com.csse3200.game.components.mainmenu">PlayerNameInputComponent</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">

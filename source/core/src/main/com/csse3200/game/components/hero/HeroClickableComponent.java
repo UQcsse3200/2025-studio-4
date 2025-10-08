@@ -6,18 +6,16 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.ui.HeroStatsDialog;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.services.ServiceLocator;
 import com.badlogic.gdx.Input;
 
 /**
- * Left-click the hero to pop up the hero value and upgrade interface.
+ * Hero clickable component - currently disabled.
+ * Clicking the hero no longer opens any UI dialog.
+ * All hero management functions are now available in the left status panel.
  */
 public class HeroClickableComponent extends Component {
     private float clickRadius = 0.8f;
-    private HeroStatsDialog dialog; // 保证同一时间只存在一个
-
 
     //Anti-shake: Avoid opening the app immediately with the same click when placing it
     private boolean waitRelease = true;
@@ -62,17 +60,8 @@ public class HeroClickableComponent extends Component {
 
         Vector2 epos = entity.getPosition();
         if (Math.abs(worldClick.x - epos.x) <= clickRadius && Math.abs(worldClick.y - epos.y) <= clickRadius) {
-            Stage stage = ServiceLocator.getRenderService().getStage();
-
-            // If there is a window and it is still on the stage, it will be placed on top and returned
-            if (dialog != null && dialog.getStage() != null) {
-                dialog.toFront();
-                return;
-            }
-
-            // Otherwise create a new window and cache it
-            dialog = new HeroStatsDialog(entity);
-            dialog.showOn(stage);
+            // 点击英雄的逻辑已移除，现在点击英雄不会有任何反应
+            // 升级功能已移动到左侧状态栏中
         }
     }
 

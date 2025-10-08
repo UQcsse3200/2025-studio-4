@@ -15,7 +15,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.entities.configs.TowerConfig;
 import com.csse3200.game.components.towers.OrbitComponent;
-import core.src.main.com.csse3200.game.components.towers.StatsBoostComponent;
+import com.csse3200.game.components.towers.StatsBoostComponent;
 
 /**
  * Factory class for creating different types of tower entities.
@@ -319,7 +319,7 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
         // TEMPORARY: use bone tower atlas for now
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/viking/vikinglvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
@@ -352,7 +352,7 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
         // TEMPORARY: use bone tower atlas for now
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/mammoth/mammothlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
@@ -385,7 +385,7 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
         // TEMPORARY: use bone tower atlas for now
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/catapault/catapaultlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
@@ -419,7 +419,7 @@ public class TowerFactory {
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
 
         // TEMPORARY: use bone tower atlas for now
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/shaman/charmanlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);

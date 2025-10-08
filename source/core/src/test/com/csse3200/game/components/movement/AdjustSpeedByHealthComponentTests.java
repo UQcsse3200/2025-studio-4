@@ -1,116 +1,143 @@
-// package com.csse3200.game.components.movement;
+package com.csse3200.game.components.movement;
 
-// import com.csse3200.game.components.CombatStatsComponent;
-// import com.csse3200.game.entities.Entity;
-// import com.csse3200.game.entities.factories.GruntEnemyFactory;
-// import com.csse3200.game.entities.factories.PlayerFactory;
-// import com.csse3200.game.extensions.GameExtension;
-// import com.csse3200.game.input.InputService;
-// import com.csse3200.game.physics.PhysicsService;
-// import com.csse3200.game.physics.components.PhysicsMovementComponent;
-// import com.csse3200.game.rendering.RenderService;
-// import com.csse3200.game.services.ResourceService;
-// import com.csse3200.game.services.ServiceLocator;
-// import com.csse3200.game.utils.Difficulty;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.Test;
-// import org.junit.jupiter.api.extension.ExtendWith;
-// import static org.junit.jupiter.api.Assertions.*;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.physics.PhysicsService;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.services.ServiceLocator;
 
-// @ExtendWith(GameExtension.class)
-// public class AdjustSpeedByHealthComponentTests {
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-//     @BeforeEach
-//     void BeforeEach() {
-//         ServiceLocator.registerInputService(new InputService());
-//         ServiceLocator.registerPhysicsService(new PhysicsService());
-//         ServiceLocator.registerRenderService(new RenderService());
-//         ResourceService resourceService = new ResourceService();
-//         ServiceLocator.registerResourceService(resourceService);
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-//         // Load assets needed for PlayerFactory
-//         resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png", "images/divider_enemy.png"});
-//         resourceService.loadAll();
+@ExtendWith(GameExtension.class)
+public class AdjustSpeedByHealthComponentTests {
 
-//         GruntEnemyFactory.resetToDefaults();
-//     }
+    /**
+     * Creates a minimal test entity mocking a grunt enemy.
+     */
+    private Entity createMinimalTestEntity() {
+        Entity entity = new Entity();
+        entity.addComponent(new PhysicsComponent());
+        PhysicsMovementComponent moveComponent = new PhysicsMovementComponent();
+        moveComponent.maxSpeed = new Vector2((float) 0.8, (float) 0.8);
+        entity.addComponent(moveComponent);
 
-//     @Test
-//     void speedConstantHealthAboveThreshold() {
-//         // Arrange
-//         Entity target = PlayerFactory.createPlayer();
-//         java.util.List<Entity> waypoints = new java.util.ArrayList<>();
-//         waypoints.add(new Entity());
-//         Entity grunt = GruntEnemyFactory.createGruntEnemy(waypoints, target, Difficulty.EASY);
-//         // Run create() so dependencies are set
-//         grunt.create();
+        // Match grunt enemy values
+        entity.addComponent(new CombatStatsComponent(
+                50,
+                12,
+                DamageTypeConfig.None,
+                DamageTypeConfig.None
+        ));
 
-//         // Find initial values
-//         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
-//         PhysicsMovementComponent move = grunt.getComponent(PhysicsMovementComponent.class);
-//         AdjustSpeedByHealthComponent adjust = grunt.getComponent(AdjustSpeedByHealthComponent.class);
-//         float initialSpeedX = move.maxSpeed.x;
-//         float initialSpeedY = move.maxSpeed.y;
-//         int initialHealth = stats.getHealth();
+        // Match the grunt enemy values
+        entity.addComponent(new AdjustSpeedByHealthComponent()
+                .addThreshold(0.25f, 2.0f)   // Health <= 25% --> speed x 2.0
+                .addThreshold(0.5f, 1.4f)    // Health <= 50% --> speed x 1.4
+        );
 
-//         // Set health to 60% of intial value (still above thresholds)
-//         stats.setHealth((int) (initialHealth * 0.6f));
-//         adjust.update();
+        // Initialize all components
+        entity.create();
+        return entity;
+    }
 
-//         // Check speeds are unchanged
-//         assertEquals(initialSpeedX, move.maxSpeed.x, 0.00001);
-//         assertEquals(initialSpeedY, move.maxSpeed.y, 0.00001);
-//     }
+    @BeforeEach
+    void setUp() {
+        ServiceLocator.registerPhysicsService(new PhysicsService());
+    }
 
-//     @Test
-//     void speedIncreasesHealthBelowFirstThreshold() {
-//         // Arrange
-//         Entity target = PlayerFactory.createPlayer();
-//         java.util.List<Entity> waypoints = new java.util.ArrayList<>();
-//         waypoints.add(new Entity());
-//         Entity grunt = GruntEnemyFactory.createGruntEnemy(waypoints, target, Difficulty.EASY);
-//         // Run create() so dependencies are set
-//         grunt.create();
+    @AfterEach
+    void tearDown() {
+        ServiceLocator.clear();
+    }
 
-//         // Find initial values
-//         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
-//         PhysicsMovementComponent move = grunt.getComponent(PhysicsMovementComponent.class);
-//         AdjustSpeedByHealthComponent adjust = grunt.getComponent(AdjustSpeedByHealthComponent.class);
-//         float initialSpeedX = move.maxSpeed.x;
-//         float initialSpeedY = move.maxSpeed.y;
-//         int initialHealth = stats.getHealth();
+    @Test
+    void speedConstantWhenHealthAboveThreshold() {
+        Entity testEntity = createMinimalTestEntity();
 
-//         // Set health to 40% (below upper threshold only)
-//         stats.setHealth((int) (initialHealth * 0.4f));
-//         adjust.update();
+        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
+        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
+        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
 
-//         // Check speed has been increased to 1.4f as set
-//         assertEquals(1.4f, move.maxSpeed.x, 0.00001);
-//         assertEquals(1.4f, move.maxSpeed.y, 0.00001);
-//     }
+        float initialSpeed = move.maxSpeed.x;
 
-//     @Test
-//     void speedIncreasesHealthBelowSecondThreshold() {
-//         // Arrange
-//         Entity target = PlayerFactory.createPlayer();
-//         java.util.List<Entity> waypoints = new java.util.ArrayList<>();
-//         waypoints.add(new Entity());
-//         Entity grunt = GruntEnemyFactory.createGruntEnemy(waypoints, target, Difficulty.EASY);
-//         // Run create() so dependencies are set
-//         grunt.create();
+        // Health > 50% --> speed constant
+        stats.setHealth(50 * 60 / 100);
+        adjust.update();
 
-//         // Find initial values
-//         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
-//         PhysicsMovementComponent move = grunt.getComponent(PhysicsMovementComponent.class);
-//         AdjustSpeedByHealthComponent adjust = grunt.getComponent(AdjustSpeedByHealthComponent.class);
-//         int initialHealth = stats.getHealth();
+        assertEquals(initialSpeed, move.maxSpeed.x, 0.00001);
+        assertEquals(initialSpeed, move.maxSpeed.y, 0.00001);
+    }
 
-//         // Set health to 10% (below second threshold)
-//         stats.setHealth((int) (initialHealth * 0.1f));
-//         adjust.update();
+    @Test
+    void speedIncreasesWhenHealthEqualsFirstThreshold() {
+        Entity testEntity = createMinimalTestEntity();
 
-//         // Check speed has been increased to 2f as set
-//         assertEquals(2f, move.maxSpeed.x, 0.00001);
-//         assertEquals(2f, move.maxSpeed.y, 0.00001);
-//     }
-// }
+        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
+        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
+        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
+
+        // Health == 50% --> speed x 1.4
+        stats.setHealth(50 * 50 / 100);
+        adjust.update();
+
+        assertEquals(1.4f, move.maxSpeed.x, 0.00001);
+        assertEquals(1.4f, move.maxSpeed.y, 0.00001);
+    }
+
+    @Test
+    void speedIncreasesWhenHealthBelowFirstThreshold() {
+        Entity testEntity = createMinimalTestEntity();
+
+        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
+        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
+        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
+
+        // 50% > Health > 25% --> speed x 1.4
+        stats.setHealth(50 * 40 / 100);
+        adjust.update();
+
+        assertEquals(1.4f, move.maxSpeed.x, 0.00001);
+        assertEquals(1.4f, move.maxSpeed.y, 0.00001);
+    }
+
+    @Test
+    void speedIncreasesWhenHealthEqualsSecondThreshold() {
+        Entity testEntity = createMinimalTestEntity();
+
+        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
+        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
+        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
+
+        // Health == 25% --> speed x 2.0
+        stats.setHealth(50 * 25 / 100);
+        adjust.update();
+
+        assertEquals(2.0f, move.maxSpeed.x, 0.00001);
+        assertEquals(2.0f, move.maxSpeed.y, 0.00001);
+    }
+
+    @Test
+    void speedIncreasesWhenHealthBelowSecondThreshold() {
+        Entity testEntity = createMinimalTestEntity();
+
+        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
+        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
+        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
+
+        // Health < 25% --> speed x 2.0
+        stats.setHealth(50 * 10 / 100);
+        adjust.update();
+
+        assertEquals(2.0f, move.maxSpeed.x, 0.00001);
+        assertEquals(2.0f, move.maxSpeed.y, 0.00001);
+    }
+}

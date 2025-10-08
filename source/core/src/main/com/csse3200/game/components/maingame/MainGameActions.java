@@ -144,6 +144,9 @@ public class MainGameActions extends Component {
   private void onVictory() {
     logger.info("Game won, showing victory screen");
     
+    // Unlock achievements
+    unlockAchievementsOnVictory();
+    
     // 在切换屏幕之前计算并保存最终得分
     try {
       var sessionManager = ServiceLocator.getGameSessionManager();
@@ -156,6 +159,52 @@ public class MainGameActions extends Component {
     }
     
     game.setScreen(GdxGame.ScreenType.VICTORY);
+  }
+  
+  /**
+   * Unlocks achievements when the player wins the game
+   */
+  private void unlockAchievementsOnVictory() {
+    try {
+      com.csse3200.game.services.AchievementService achievementService = 
+        ServiceLocator.getAchievementService();
+      
+      if (achievementService != null) {
+        // Unlock "Perfect Clear" for winning the game
+        achievementService.unlockAchievement(
+          com.csse3200.game.services.AchievementService.PERFECT_CLEAR);
+        logger.info("Unlocked Perfect Clear achievement");
+        
+        // Check enemy defeat count for other achievements
+        int enemiesDefeated = com.csse3200.game.areas.ForestGameArea.NUM_ENEMIES_DEFEATED;
+        
+        // Unlock "Speed Runner" for defeating 5+ enemies
+        if (enemiesDefeated >= 5) {
+          achievementService.unlockAchievement(
+            com.csse3200.game.services.AchievementService.SPEED_RUNNER);
+          logger.info("Unlocked Speed Runner achievement");
+        }
+        
+        // Unlock "Slayer" for defeating 20+ enemies
+        if (enemiesDefeated >= 20) {
+          achievementService.unlockAchievement(
+            com.csse3200.game.services.AchievementService.SLAYER);
+          logger.info("Unlocked Slayer achievement");
+        }
+        
+        // Unlock "Tough Survivor" for completing the game
+        achievementService.unlockAchievement(
+          com.csse3200.game.services.AchievementService.TOUGH_SURVIVOR);
+        logger.info("Unlocked Tough Survivor achievement");
+        
+        // Unlock "Participation" for playing
+        achievementService.unlockAchievement(
+          com.csse3200.game.services.AchievementService.PARTICIPATION);
+        logger.info("Unlocked Participation achievement");
+      }
+    } catch (Exception e) {
+      logger.error("Error unlocking achievements", e);
+    }
   }
   
   private void onSave() {

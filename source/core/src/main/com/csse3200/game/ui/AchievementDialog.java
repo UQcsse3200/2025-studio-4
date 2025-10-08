@@ -37,11 +37,11 @@ public class AchievementDialog extends Dialog {
     
     // Achievement conditions/descriptions
     private static final String[] ACHIEVEMENT_CONDITIONS = {
-        "Survive 10 waves without losing any health",
-        "Complete a level in under 5 minutes",
-        "Defeat 100 enemies in a single game",
-        "Complete a level without any enemies reaching the base",
-        "Play your first game and welcome to the adventure!"
+        "Complete any wave in the game",
+        "Defeat 5 enemies in a single game",
+        "Defeat 20 enemies in a single game",
+        "Win the game",
+        "Play your first game!"
     };
     
     private TextButton closeButton;

@@ -5,11 +5,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.hero.HeroAppearanceComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.HeroConfig;
-import com.csse3200.game.entities.configs.HeroConfig2;
-import com.csse3200.game.entities.configs.HeroConfig3;
+import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -18,6 +15,8 @@ import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
 
 import java.util.LinkedHashSet;
 import com.csse3200.game.components.hero.HeroUltimateComponent;
@@ -37,64 +36,28 @@ public final class HeroFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 
-    public static void loadAssets(ResourceService rs, HeroConfig cfg, HeroConfig2 cfg2, HeroConfig3 cfg3) {
+    public static void loadAssets(ResourceService rs,
+                                  HeroConfig... configs) { // 可接收 EngineerConfig 等各种子类
         LinkedHashSet<String> textures = new LinkedHashSet<>();
-
-        if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
-            textures.add(cfg.heroTexture);
-        }
-        if (cfg.levelTextures != null) {
-            for (String s : cfg.levelTextures) {
-                if (s != null && !s.isBlank()) {
-                    textures.add(s);
-                }
+        for (HeroConfig cfg : configs) {
+            if (cfg == null) continue;
+            if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) textures.add(cfg.heroTexture);
+            if (cfg.levelTextures != null) {
+                for (String s : cfg.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
             }
-        }
-        if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) {
-            textures.add(cfg.bulletTexture);
-        }
+            if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) textures.add(cfg.bulletTexture);
 
-        if (!textures.isEmpty()) {
-            rs.loadTextures(textures.toArray(new String[0]));
-        }
-
-        // Repeat similar for cfg2 and cfg3
-        if (cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) {
-            textures.add(cfg2.heroTexture);
-        }
-        if (cfg2.levelTextures != null) {
-            for (String s : cfg2.levelTextures) {
-                if (s != null && !s.isBlank()) {
-                    textures.add(s);
-                }
+            // EngineerConfig 额外字段
+            if (cfg instanceof EngineerConfig ec) {
+                if (ec.summonTexture != null && !ec.summonTexture.isBlank()) textures.add(ec.summonTexture);
             }
-        }
-        if (cfg2.bulletTexture != null && !cfg2.bulletTexture.isBlank()) {
-            textures.add(cfg2.bulletTexture);
-        }
-
-        if (!textures.isEmpty()) {
-            rs.loadTextures(textures.toArray(new String[0]));
-        }
-
-        if (cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) {
-            textures.add(cfg3.heroTexture);
-        }
-        if (cfg3.levelTextures != null) {
-            for (String s : cfg3.levelTextures) {
-                if (s != null && !s.isBlank()) {
-                    textures.add(s);
-                }
-            }
-        }
-        if (cfg3.bulletTexture != null && !cfg3.bulletTexture.isBlank()) {
-            textures.add(cfg3.bulletTexture);
         }
 
         if (!textures.isEmpty()) {
             rs.loadTextures(textures.toArray(new String[0]));
         }
     }
+
 
     /**
      * Create a hero entity based on a {@link HeroConfig}.
@@ -166,6 +129,44 @@ public final class HeroFactory {
         e.addComponent(texture);
         return e;
     }
+
+
+    // HeroFactory.createEngineerHero(...)
+    public static Entity createEngineerHero(EngineerConfig cfg, Camera camera) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        Entity hero = new Entity()
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent().setSensor(true))
+                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
+                .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
+                // ⭐ 工程师召唤逻辑
+                .addComponent(new EngineerSummonComponent(
+                        cfg.summonCooldown,
+                        cfg.maxSummons,
+                        cfg.summonTexture,
+                        new Vector2(cfg.summonSpeed, cfg.summonSpeed)
+                ))
+                // ⭐ 额外挂上 HeroTurretAttackComponent 负责旋转（可以同时射击）
+                .addComponent(new HeroTurretAttackComponent(
+                        cfg.attackCooldown,
+                        cfg.bulletSpeed,
+                        cfg.bulletLife,
+                        cfg.bulletTexture,  // 你可以让工程师也有一套子弹贴图
+                        camera
+                ))
+                .addComponent(new HeroUpgradeComponent())
+                .addComponent(new HeroUltimateComponent())
+                .addComponent(new UltimateButtonComponent())
+                .addComponent(new HeroAppearanceComponent(cfg));
+
+        hero.setScale(1f, 1f);
+        return hero;
+    }
+
+
 }
 
 

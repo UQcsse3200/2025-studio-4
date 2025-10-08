@@ -19,6 +19,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.towers.TowerCostComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.configs.TowerConfig;
+import com.csse3200.game.entities.factories.SummonFactory;
 
 
 import java.util.ArrayList;
@@ -114,11 +115,17 @@ public class SimplePlacementController extends Component {
 
 
     /** Arms the controller to start placing a Bone tower. */
+    /**
+     * Arms the controller for bone tower placement.
+     */
     private void armBone() {
         startPlacement("bone");
     }
 
     /** Arms the controller to start placing a Dino tower. */
+    /**
+     * Arms the controller for dino tower placement.
+     */
     private void armDino() {
         startPlacement("dino");
     }
@@ -152,6 +159,8 @@ public class SimplePlacementController extends Component {
     public void requestPlacement(String type) {
         if (type == null) return;
         startPlacement(type);
+    private void armCavemen() {
+        startPlacement("cavemen");
     }
 
     /**
@@ -175,6 +184,18 @@ public class SimplePlacementController extends Component {
 
         TowerComponent tc = ghostTower.getComponent(TowerComponent.class);
         if (tc != null) tc.setActive(false);
+        if ("dino".equalsIgnoreCase(type)) {
+            ghostTower = TowerFactory.createDinoTower(selectedCurrencyType);
+        } else if ("cavemen".equalsIgnoreCase(type)) {
+            ghostTower = TowerFactory.createCavemenTower(selectedCurrencyType);
+        } else {
+            ghostTower = TowerFactory.createBoneTower(selectedCurrencyType);
+        }
+
+        TowerComponent tc = ghostTower.getComponent(TowerComponent.class);
+        if (tc != null) {
+            tc.setActive(false);
+        }
 
         ServiceLocator.getEntityService().register(ghostTower);
         System.out.println(">>> placement ON (" + type + ")");
@@ -321,6 +342,15 @@ public class SimplePlacementController extends Component {
 
 
     /** Checks if tower overlaps the fixed path. */
+
+    /**
+     * Checks if the tower would overlap the fixed path.
+     *
+     * @param tile        the base tile
+     * @param towerWidth  tower width in tiles
+     * @param towerHeight tower height in tiles
+     * @return true if tower would overlap path, false otherwise
+     */
     private boolean isTowerOnPath(GridPoint2 tile, int towerWidth, int towerHeight) {
         for (int tx = 0; tx < towerWidth; tx++) {
             for (int ty = 0; ty < towerHeight; ty++) {
@@ -331,6 +361,12 @@ public class SimplePlacementController extends Component {
     }
 
     /** Checks if a single tile is on the fixed path. */
+    /**
+     * Checks if a tile is on the fixed path.
+     *
+     * @param tile the tile to check
+     * @return true if on path, false otherwise
+     */
     private boolean isOnPath(GridPoint2 tile) {
         for (int[] p : FIXED_PATH) {
             if (p[0] == tile.x && p[1] == tile.y) return true;
@@ -339,6 +375,15 @@ public class SimplePlacementController extends Component {
     }
 
     /** Checks if a given world position is free for tower placement. */
+    /**
+     * Checks if the given position is free for tower placement.
+     *
+     * @param candidate   the world position
+     * @param towerWidth  tower width in tiles
+     * @param towerHeight tower height in tiles
+     * @param terrain     the terrain component
+     * @return true if position is free, false otherwise
+     */
     private boolean isPositionFree(Vector2 candidate, int towerWidth, int towerHeight, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
         if (all == null || candidate == null) return true;
@@ -365,6 +410,11 @@ public class SimplePlacementController extends Component {
     }
 
     /** Finds the terrain component from registered entities. */
+    /**
+     * Finds the terrain component from entities.
+     *
+     * @return the terrain component, or null if not found
+     */
     private TerrainComponent findTerrain() {
         Array<Entity> all = safeEntities();
         if (all == null) return null;
@@ -377,6 +427,11 @@ public class SimplePlacementController extends Component {
     }
 
     /** Gets a safe copy of all entities from the entity service. */
+    /**
+     * Gets a safe copy of all entities.
+     *
+     * @return array of entities, or null if unavailable
+     */
     private Array<Entity> safeEntities() {
         try {
             return ServiceLocator.getEntityService().getEntitiesCopy();
@@ -386,6 +441,9 @@ public class SimplePlacementController extends Component {
     }
 
     /** Finds the world camera from registered entities. */
+    /**
+     * Finds the world camera from entities.
+     */
     private void findWorldCamera() {
         Array<Entity> all = safeEntities();
         if (all == null) return;
@@ -400,6 +458,23 @@ public class SimplePlacementController extends Component {
     }
 
     /** Cancels current placement and disposes of the ghost tower. */
+    /**
+     * Finds the player entity (with a currency manager).
+     *
+     * @return the player entity, or null if not found
+     */
+    private Entity findPlayerEntity() {
+        Array<Entity> entities = safeEntities();
+        if (entities == null) return null;
+        for (Entity e : entities) {
+            if (e != null && e.getComponent(CurrencyManagerComponent.class) != null) return e;
+        }
+        return null;
+    }
+
+    /**
+     * Cancels the current placement and disposes of the ghost tower.
+     */
     public void cancelPlacement() {
         if (ghostTower != null) {
             ghostTower.dispose();
@@ -411,6 +486,11 @@ public class SimplePlacementController extends Component {
     }
 
     /** Returns true if tower placement mode is currently active. */
+    /**
+     * Checks if placement mode is currently active.
+     *
+     * @return true if placement is active, false otherwise
+     */
     public boolean isPlacementActive() {
         return placementActive;
     }
@@ -424,3 +504,120 @@ public class SimplePlacementController extends Component {
 // The placement controller only creates a ghost tower for preview when you click a hotbar icon.
 // It does NOT place a real tower until you click on the map and all checks (location, cost, overlap) pass.
 // If towers are being created instantly, check your UI/hotbar code for direct calls to TowerFactory.
+    /**
+     * Gets the pending tower type for placement.
+     *
+     * @return the pending tower type
+     */
+    public String getPendingType() {
+        return pendingType;
+    }
+
+    /**
+     * Sets the selected currency type for tower placement.
+     *
+     * @param currencyType the currency type to set
+     */
+    public void setSelectedCurrencyType(CurrencyType currencyType) {
+        this.selectedCurrencyType = currencyType;
+    }
+
+
+    // === 放在 SimplePlacementController 类里 ===
+
+    // 放置状态
+    private String pendingSummonTexture = null;    // 召唤物贴图
+
+    private enum Mode {NONE, TOWER, SUMMON}
+
+    private Mode mode = Mode.NONE;
+
+    private Entity ghostSummon = null;       // 召唤物幽灵
+
+    // 幽灵实体
+    private Entity ghost = null;
+
+    // 贴图传递的规格（保持可扩展，只要 texture）
+    public static class SummonSpec {
+        public final String texture;
+
+        public SummonSpec(String texture) {
+            this.texture = texture;
+        }
+    }
+
+    public void armSummon(SummonSpec spec) {
+        // 先清理任何已有放置
+        cancelPlacement();
+
+        // 进入召唤物模式
+        this.mode = Mode.SUMMON;
+        this.placementActive = true;
+        this.needRelease = true;
+        this.pendingType = "summon";
+        this.pendingSummonTexture = (spec != null && spec.texture != null && !spec.texture.isEmpty())
+                ? spec.texture : "images/engineer/Sentry.png";
+
+        // 1) 造“幽灵召唤物”：只显示，不攻击/不阻挡（工厂里你已实现 createMeleeSummonGhost）
+        this.ghostSummon = SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
+
+        // 2) 注册并初始化
+        ServiceLocator.getEntityService().register(this.ghostSummon);
+        this.ghostSummon.create();
+
+        System.out.println(">>> placement ON (summon)");
+    }
+    private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
+        if (ghostSummon == null) return;
+
+        // 计算网格、边界
+        GridPoint2 tile = new GridPoint2(
+                (int) (mouseWorld.x / terrain.getTileSize()),
+                (int) (mouseWorld.y / terrain.getTileSize())
+        );
+        GridPoint2 bounds = terrain.getMapBounds(0);
+        boolean inBounds = tile.x >= 0 && tile.y >= 0 && tile.x < bounds.x && tile.y < bounds.y;
+
+        // 只允许在路径上
+        boolean onPath = inBounds && isOnPath(tile);
+
+        // 吸附/跟随
+        Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
+
+        // 移动幽灵
+        ghostSummon.setPosition(snapPos);
+
+        // 左键落地
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (!onPath) return; // 不合法直接忽略
+            placeSummon(snapPos, tile);
+        }
+    }
+
+    private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
+        // 清理幽灵
+        if (ghostSummon != null) {
+            ghostSummon.dispose();
+            ghostSummon = null;
+        }
+
+        // 造真实召唤物（可挡路/能攻击）
+        Entity summon = SummonFactory.createMeleeSummon(
+                (pendingSummonTexture != null && !pendingSummonTexture.isEmpty())
+                        ? pendingSummonTexture : "images/engineer/Sentry.png",
+                /*colliderSensor=*/false,
+                /*scale=*/1f
+        );
+        summon.setPosition(snapPos);
+        ServiceLocator.getEntityService().register(summon);
+        summon.create();
+
+        // 退出模式并复位标志
+        placementActive = false;
+        mode = Mode.NONE;
+        pendingType = "bone"; // 可选：恢复默认塔类型
+        System.out.println(">>> SUMMON placed at " + tile);
+    }
+
+
+}

@@ -47,12 +47,24 @@ public class TowerUpgradeMenu extends UIComponent {
 
     private static final CurrencyType UPGRADE_CURRENCY = CurrencyType.METAL_SCRAP;
 
-    private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
-    private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
+    private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower;
+    private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower;
+    
+    // 防重复升级标志
+    private boolean upgradeInProgress = false;
 
     /**
      * Creates the UI for the tower upgrade menu and sets up listeners.
      */
+    public TowerUpgradeMenu() {
+        // Initialize upgrade data
+        this.pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
+        this.pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
+        
+        // Debug: Print loaded upgrade data
+        System.out.println("DEBUG: Loaded upgrade data for towers: " + pathAUpgradesPerTower.keySet());
+    }
+
     @Override
     public void create() {
         super.create();
@@ -305,26 +317,52 @@ public class TowerUpgradeMenu extends UIComponent {
      */
     private void attemptUpgrade(boolean isLevelA) {
         if (selectedTower == null || currentTowerType == null) return;
+        
+        // 防止重复升级
+        if (upgradeInProgress) {
+            System.out.println("Upgrade already in progress, ignoring duplicate request");
+            return;
+        }
+        
+        upgradeInProgress = true;
 
         TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
-        if (stats == null) return;
+        if (stats == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         int currentLevel = isLevelA ? stats.getLevel_A() : stats.getLevel_B();
-        if (currentLevel >= 5) return;
+        if (currentLevel >= 5) {
+            upgradeInProgress = false;
+            return;
+        }
         int nextLevel = currentLevel + 1;
 
         Map<Integer, UpgradeStats> upgrades = isLevelA
                 ? pathAUpgradesPerTower.get(currentTowerType)
                 : pathBUpgradesPerTower.get(currentTowerType);
-        if (upgrades == null) return;
+        if (upgrades == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         UpgradeStats upgrade = upgrades.get(nextLevel);
-        if (upgrade == null) return;
+        if (upgrade == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         Entity player = findPlayerEntity();
-        if (player == null) return;
+        if (player == null) {
+            upgradeInProgress = false;
+            return;
+        }
         CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-        if (currencyManager == null) return;
+        if (currencyManager == null) {
+            upgradeInProgress = false;
+            return;
+        }
 
         // choose currency for this tower type
         CurrencyType costCurrency = currencyForTowerType(currentTowerType);
@@ -333,7 +371,8 @@ public class TowerUpgradeMenu extends UIComponent {
         costMap.put(costCurrency, upgrade.cost);
 
         if (!currencyManager.canAffordAndSpendCurrency(costMap)) {
-            System.out.println("Not enough " + costCurrency + " for upgrade!");
+            System.out.println("Not enough " + UPGRADE_CURRENCY + " for upgrade!");
+            upgradeInProgress = false;
             return;
         }
 
@@ -387,6 +426,9 @@ public class TowerUpgradeMenu extends UIComponent {
 
         updateLabels();
         System.out.println("Upgrade successful!");
+        
+        // 重置升级标志
+        upgradeInProgress = false;
     }
 
 
@@ -442,8 +484,33 @@ public class TowerUpgradeMenu extends UIComponent {
         int nextLevelA = levelA + 1;
         int nextLevelB = levelB + 1;
 
+        // Debug: Print tower type and available upgrades
+        System.out.println("DEBUG: Tower type = '" + currentTowerType + "'");
+        System.out.println("DEBUG: Available upgrade types: " + pathAUpgradesPerTower.keySet());
+        System.out.println("DEBUG: Current levels - A: " + levelA + ", B: " + levelB);
+        System.out.println("DEBUG: Next levels - A: " + nextLevelA + ", B: " + nextLevelB);
+        
         Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(currentTowerType);
         Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(currentTowerType);
+        
+        System.out.println("DEBUG: upgradesA = " + (upgradesA != null ? "found" : "null"));
+        System.out.println("DEBUG: upgradesB = " + (upgradesB != null ? "found" : "null"));
+        
+        if (upgradesA != null) {
+            System.out.println("DEBUG: upgradesA keys: " + upgradesA.keySet());
+            System.out.println("DEBUG: upgradesA contains nextLevelA(" + nextLevelA + "): " + upgradesA.containsKey(nextLevelA));
+            if (upgradesA.containsKey(nextLevelA)) {
+                System.out.println("DEBUG: upgradesA[" + nextLevelA + "].cost = " + upgradesA.get(nextLevelA).cost);
+            }
+        }
+        
+        if (upgradesB != null) {
+            System.out.println("DEBUG: upgradesB keys: " + upgradesB.keySet());
+            System.out.println("DEBUG: upgradesB contains nextLevelB(" + nextLevelB + "): " + upgradesB.containsKey(nextLevelB));
+            if (upgradesB.containsKey(nextLevelB)) {
+                System.out.println("DEBUG: upgradesB[" + nextLevelB + "].cost = " + upgradesB.get(nextLevelB).cost);
+            }
+        }
 
         // determine currency for current tower type
         CurrencyType displayCurrency = currencyForTowerType(currentTowerType);

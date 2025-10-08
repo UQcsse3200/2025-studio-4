@@ -36,6 +36,7 @@ public class MapEditor extends InputAdapter {
     private TiledMapTile snowTile;
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
+    private java.util.Map<String, Float> speedChangeWaypoints = new java.util.LinkedHashMap<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
     public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
@@ -156,8 +157,10 @@ public class MapEditor extends InputAdapter {
         // Clear existing paths清空现有路径
         pathTiles.clear();
         keyWaypoints.clear();
+        waypointList.clear();
+        speedChangeWaypoints.clear();
 
-        // Predefined fixed path coordinates (x, y)预定义固定路径坐标 (x, y)
+        // Predefined fixed path coordinates (x, y)预定义固定路径坐标(x, y)
         int[][] fixedPath = {
                 // Start from the left
                 {0, 10}, {1, 10}, {2, 10}, {3, 10}, {4, 10},
@@ -189,43 +192,51 @@ public class MapEditor extends InputAdapter {
             createPathTile(x, y);
         }
 
-        // Define key path points定义关键路径点
-        keyWaypoints.add(new GridPoint2(0, 10));    // Start
-        keyWaypoints.add(new GridPoint2(5, 10));    // First turn
-        keyWaypoints.add(new GridPoint2(5, 6));     // Up turn completed
-        keyWaypoints.add(new GridPoint2(6, 6));
-        keyWaypoints.add(new GridPoint2(7, 6));
-        keyWaypoints.add(new GridPoint2(8, 6));
-        keyWaypoints.add(new GridPoint2(9, 6));
-        keyWaypoints.add(new GridPoint2(12, 6));    // Walk to the right completed
-        keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
-        keyWaypoints.add(new GridPoint2(18, 12));
-        keyWaypoints.add(new GridPoint2(19, 12));
-        keyWaypoints.add(new GridPoint2(20, 12));
-        keyWaypoints.add(new GridPoint2(21, 12));
-        keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
-        keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
-        keyWaypoints.add(new GridPoint2(28, 6));    // End
-        Map<String, Float> speedModifiers = Map.of(
-            "6,6", 0.5f,
-            "7,6", 0.5f,
-            "8,6", 0.5f,
-            "9,6", 0.5f,
-            "18,12", 0.5f,
-            "19,12", 0.5f,
-            "20,12", 0.5f,
-            "21,12", 0.5f
-        );
+        // Define key path points (primary turns and milestones) 定义关键路径点
+        GridPoint2[] primaryKeyPoints = {
+                new GridPoint2(0, 10),    // Start
+                new GridPoint2(5, 10),    // First turn
+                new GridPoint2(5, 6),     // Up turn completed
+                new GridPoint2(12, 6),    // Walk to the right completed
+                new GridPoint2(12, 12),   // Down turn completed
+                new GridPoint2(25, 12),   // Long distance to the right completed
+                new GridPoint2(25, 6),    // Up turn completed
+                new GridPoint2(28, 6)     // End
+        };
 
-        // Mark key path points标记关键路径点
-        for (GridPoint2 wp : keyWaypoints) {
-            String key = wp.x + "," + wp.y;
-            Float modifier = speedModifiers.get(key);
-            if (modifier == null) {
-                markKeypoint(wp);
+        java.util.Map<String, GridPoint2> keyPointLookup = new java.util.HashMap<>();
+        for (GridPoint2 keyPoint : primaryKeyPoints) {
+            keyWaypoints.add(keyPoint);
+            keyPointLookup.put(keyPoint.x + "," + keyPoint.y, keyPoint);
+        }
+
+        speedChangeWaypoints.put("6,6", 0.5f);
+        speedChangeWaypoints.put("7,6", 0.5f);
+        speedChangeWaypoints.put("8,6", 0.5f);
+        speedChangeWaypoints.put("9,6", 0.5f);
+        speedChangeWaypoints.put("18,12", 0.5f);
+        speedChangeWaypoints.put("19,12", 0.5f);
+        speedChangeWaypoints.put("20,12", 0.5f);
+        speedChangeWaypoints.put("21,12", 0.5f);
+
+        for (int[] coords : fixedPath) {
+            int x = coords[0];
+            int y = coords[1];
+            String key = x + "," + y;
+
+            GridPoint2 keyPoint = keyPointLookup.get(key);
+            Float modifier = speedChangeWaypoints.get(key);
+
+            if (keyPoint == null && modifier == null) {
+                continue;
             }
+
+            if (keyPoint != null) {
+                markKeypoint(keyPoint);
+            }
+
             Entity waypoint = new Entity();
-            waypoint.setPosition(wp.x / 2f, wp.y / 2f);
+            waypoint.setPosition(x / 2f, y / 2f);
             if (modifier != null) {
                 waypoint.addComponent(new SpeedWaypointComponent(modifier));
             }
@@ -291,6 +302,8 @@ public class MapEditor extends InputAdapter {
         snowTreeTiles.clear();
         occupiedTiles.clear();
         keyWaypoints.clear();
+        speedChangeWaypoints.clear();
+        waypointList.clear();
         snowCoords.clear();
         System.out.println("🧹 MapEditor cleaned up");
     }

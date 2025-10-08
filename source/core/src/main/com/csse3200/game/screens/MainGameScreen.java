@@ -2,6 +2,11 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -52,7 +57,9 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Main_Game_Button.png",
           "images/scrap.png",
           "images/Game_Over.png",
-          "images/Game_Victory.png"
+          "images/Game_Victory.png",
+          // Background frame overlay for in-game view
+          "images/Background3 （in game）.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -257,6 +264,21 @@ public class MainGameScreen extends ScreenAdapter {
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForTerminal();
+
+    // Add full-screen background image (frame) to the UI stage
+    try {
+      Texture bgTex = ServiceLocator.getResourceService()
+              .getAsset("images/Background3 （in game）.png", Texture.class);
+      if (bgTex != null) {
+        Image bg = new Image(new TextureRegionDrawable(new TextureRegion(bgTex)));
+        bg.setFillParent(true);
+        bg.setTouchable(Touchable.disabled);
+        stage.addActor(bg);
+        bg.toBack(); // keep it behind other UI elements
+      }
+    } catch (Exception ignored) {
+      // If asset missing, continue without background overlay
+    }
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

@@ -66,8 +66,11 @@ public class PauseMenuDisplay extends UIComponent {
         Table window = new Table(skin);
         window.defaults().pad(10f);
 
-        Label title = new Label("Paused", skin, "title");
-        
+        Label title = new Label("Paused", skin);
+        title.setFontScale(1.8f);
+        title.setColor(new Color(1f, 0.9f, 0.6f, 1f));
+        title.getStyle().fontColor = Color.valueOf("CFF2FF");
+
         // Add player info section (avatar + name)
         Table playerInfoTable = createPlayerInfoSection();
 

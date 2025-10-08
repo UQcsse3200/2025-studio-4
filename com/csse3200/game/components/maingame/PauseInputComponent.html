@@ -86,20 +86,23 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="../Component.html" title="class in com.csse3200.game.components">com.csse3200.game.components.Component</a>
-<div class="inheritance"><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">com.csse3200.game.input.InputComponent</a>
+<div class="inheritance"><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">com.csse3200.game.rendering.RenderComponent</a>
+<div class="inheritance"><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">com.csse3200.game.ui.UIComponent</a>
 <div class="inheritance">com.csse3200.game.components.maingame.PauseInputComponent</div>
+</div>
 </div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code>com.badlogic.gdx.input.GestureDetector.GestureListener</code>, <code>com.badlogic.gdx.InputProcessor</code></dd>
+<dd><code>com.badlogic.gdx.utils.Disposable</code>, <code><a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;<a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PauseInputComponent</span>
-<span class="extends-implements">extends <a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></span></div>
-<div class="block">Handles ESC / P to toggle the pause menu.</div>
+<span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
+<div class="block">ESC/P toggles pause. Freezes time and broadcasts "gamePaused"/"gameResumed"
+ so path-followers can recompute their routes safely.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,8 +111,8 @@ loadScripts(document, 'script');</script>
 <section class="field-summary" id="field-summary">
 <h2>Field Summary</h2>
 <div class="inherited-list">
-<h3 id="fields-inherited-from-class-com.csse3200.game.input.InputComponent">Fields inherited from class&nbsp;com.csse3200.game.input.<a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></h3>
-<code><a href="../../input/InputComponent.html#priority">priority</a></code></div>
+<h3 id="fields-inherited-from-class-com.csse3200.game.ui.UIComponent">Fields inherited from class&nbsp;com.csse3200.game.ui.<a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></h3>
+<code><a href="../../ui/UIComponent.html#skin">skin</a>, <a href="../../ui/UIComponent.html#stage">stage</a></code></div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../Component.html#enabled">enabled</a>, <a href="../Component.html#entity">entity</a></code></div>
@@ -139,52 +142,47 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyDown(int)" class="member-name-link">keyDown</a><wbr>(int&nbsp;keycode)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Called when the entity is created and registered.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Draw the renderable.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Z index controls rendering order within a layer.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyTyped(char)" class="member-name-link">keyTyped</a><wbr>(char&nbsp;character)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyUp(int)" class="member-name-link">keyUp</a><wbr>(int&nbsp;keycode)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mouseMoved(int,int)" class="member-name-link">mouseMoved</a><wbr>(int&nbsp;screenX,
- int&nbsp;screenY)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#scrolled(float,float)" class="member-name-link">scrolled</a><wbr>(float&nbsp;amountX,
- float&nbsp;amountY)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchDown(int,int,int,int)" class="member-name-link">touchDown</a><wbr>(int&nbsp;screenX,
- int&nbsp;screenY,
- int&nbsp;pointer,
- int&nbsp;button)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchDragged(int,int,int)" class="member-name-link">touchDragged</a><wbr>(int&nbsp;screenX,
- int&nbsp;screenY,
- int&nbsp;pointer)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#touchUp(int,int,int,int)" class="member-name-link">touchUp</a><wbr>(int&nbsp;screenX,
- int&nbsp;screenY,
- int&nbsp;pointer,
- int&nbsp;button)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keyDown(int)" class="member-name-link">keyDown</a><wbr>(int&nbsp;keycode)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Lightweight, testable key handler mirroring stage listener behavior.</div>
+</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-com.csse3200.game.input.InputComponent">Methods inherited from class&nbsp;com.csse3200.game.input.<a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></h3>
-<code><a href="../../input/InputComponent.html#create()">create</a>, <a href="../../input/InputComponent.html#dispose()">dispose</a>, <a href="../../input/InputComponent.html#fling(float,float,int)">fling</a>, <a href="../../input/InputComponent.html#getPriority()">getPriority</a>, <a href="../../input/InputComponent.html#longPress(float,float)">longPress</a>, <a href="../../input/InputComponent.html#pan(float,float,float,float)">pan</a>, <a href="../../input/InputComponent.html#panStop(float,float,int,int)">panStop</a>, <a href="../../input/InputComponent.html#pinch(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)">pinch</a>, <a href="../../input/InputComponent.html#pinchStop()">pinchStop</a>, <a href="../../input/InputComponent.html#pinchStopHandled()">pinchStopHandled</a>, <a href="../../input/InputComponent.html#setPriority(int)">setPriority</a>, <a href="../../input/InputComponent.html#tap(float,float,int,int)">tap</a>, <a href="../../input/InputComponent.html#touchDown(float,float,int,int)">touchDown</a>, <a href="../../input/InputComponent.html#zoom(float,float)">zoom</a></code></div>
+<h3 id="methods-inherited-from-class-com.csse3200.game.ui.UIComponent">Methods inherited from class&nbsp;com.csse3200.game.ui.<a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></h3>
+<code><a href="../../ui/UIComponent.html#getLayer()">getLayer</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.rendering.RenderComponent">Methods inherited from class&nbsp;com.csse3200.game.rendering.<a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></h3>
+<code><a href="../../rendering/RenderComponent.html#compareTo(com.csse3200.game.rendering.Renderable)">compareTo</a>, <a href="../../rendering/RenderComponent.html#dispose()">dispose</a>, <a href="../../rendering/RenderComponent.html#render(com.badlogic.gdx.graphics.g2d.SpriteBatch)">render</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-com.csse3200.game.components.Component">Methods inherited from class&nbsp;com.csse3200.game.components.<a href="../Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../Component.html#earlyUpdate()">earlyUpdate</a>, <a href="../Component.html#getEntity()">getEntity</a>, <a href="../Component.html#setEnabled(boolean)">setEnabled</a>, <a href="../Component.html#setEntity(com.csse3200.game.entities.Entity)">setEntity</a>, <a href="../Component.html#toString()">toString</a>, <a href="../Component.html#triggerEarlyUpdate()">triggerEarlyUpdate</a>, <a href="../Component.html#triggerUpdate()">triggerUpdate</a>, <a href="../Component.html#update()">update</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-java.lang.Comparable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html#compareTo(T)" title="class or interface in java.lang" class="external-link">compareTo</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-com.csse3200.game.rendering.Renderable">Methods inherited from interface&nbsp;com.csse3200.game.rendering.<a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></h3>
+<code><a href="../../rendering/Renderable.html#render(com.badlogic.gdx.graphics.g2d.SpriteBatch)">render</a></code></div>
 </section>
 </li>
 </ul>
@@ -211,156 +209,53 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="create()">
+<h3>create</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
+<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
+ should be made here, not in the constructor which is called before an entity is finished.</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="keyDown(int)">
 <h3>keyDown</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyDown</span><wbr><span class="parameters">(int&nbsp;keycode)</span></div>
+<div class="block">Lightweight, testable key handler mirroring stage listener behavior.
+ Returns true if the key is handled; otherwise false.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
+<h3>draw</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">RenderComponent</a></code></span></div>
+<div class="block">Draw the renderable. Should be called only by the renderer, not manually.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>keyDown</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#keyDown(int)">keyDown</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><code>InputProcessor.keyDown(int)</code></li>
-</ul>
-</dd>
+<dd><code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a></code>&nbsp;in class&nbsp;<code><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>batch</code> - Batch to render to.</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="keyUp(int)">
-<h3>keyUp</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyUp</span><wbr><span class="parameters">(int&nbsp;keycode)</span></div>
+<section class="detail" id="getZIndex()">
+<h3>getZIndex</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getZIndex</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../rendering/Renderable.html#getZIndex()">Renderable</a></code></span></div>
+<div class="block">Z index controls rendering order within a layer. Higher Z index is drawn on top.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code>keyUp</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
+<dd><code><a href="../../rendering/Renderable.html#getZIndex()">getZIndex</a></code>&nbsp;in interface&nbsp;<code><a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></code></dd>
 <dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#keyUp(int)">keyUp</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><code>InputProcessor.keyUp(int)</code></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="keyTyped(char)">
-<h3>keyTyped</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">keyTyped</span><wbr><span class="parameters">(char&nbsp;character)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>keyTyped</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#keyTyped(char)">keyTyped</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list">
-<li><code>InputProcessor.keyTyped(char)</code></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="touchDown(int,int,int,int)">
-<h3>touchDown</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touchDown</span><wbr><span class="parameters">(int&nbsp;screenX,
- int&nbsp;screenY,
- int&nbsp;pointer,
- int&nbsp;button)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>touchDown</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#touchDown(int,int,int,int)">touchDown</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><code>InputProcessor.touchDown(int, int, int, int)</code></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="touchUp(int,int,int,int)">
-<h3>touchUp</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touchUp</span><wbr><span class="parameters">(int&nbsp;screenX,
- int&nbsp;screenY,
- int&nbsp;pointer,
- int&nbsp;button)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>touchUp</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#touchUp(int,int,int,int)">touchUp</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><code>InputProcessor.touchUp(int, int, int, int)</code></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="touchDragged(int,int,int)">
-<h3>touchDragged</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">touchDragged</span><wbr><span class="parameters">(int&nbsp;screenX,
- int&nbsp;screenY,
- int&nbsp;pointer)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>touchDragged</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#touchDragged(int,int,int)">touchDragged</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><code>InputProcessor.touchDragged(int, int, int)</code></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="mouseMoved(int,int)">
-<h3>mouseMoved</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">mouseMoved</span><wbr><span class="parameters">(int&nbsp;screenX,
- int&nbsp;screenY)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>mouseMoved</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#mouseMoved(int,int)">mouseMoved</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><code>InputProcessor.mouseMoved(int, int)</code></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="scrolled(float,float)">
-<h3>scrolled</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">scrolled</span><wbr><span class="parameters">(float&nbsp;amountX,
- float&nbsp;amountY)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code>scrolled</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.InputProcessor</code></dd>
-<dt>Overrides:</dt>
-<dd><code><a href="../../input/InputComponent.html#scrolled(float,float)">scrolled</a></code>&nbsp;in class&nbsp;<code><a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="tag-list-long">
-<li><code>InputProcessor.scrolled(float, float)</code></li>
-</ul>
-</dd>
+<dd><code><a href="../../ui/UIComponent.html#getZIndex()">getZIndex</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
+<dt>Returns:</dt>
+<dd>Z index</dd>
 </dl>
 </section>
 </li>

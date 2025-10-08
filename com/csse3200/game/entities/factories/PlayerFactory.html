@@ -112,6 +112,24 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a basement entity that inherits original player attributes (health, inventory, currency).</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlayer(java.lang.String)" class="member-name-link">createPlayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create a basement entity with a custom texture.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlayer(java.lang.String,float)" class="member-name-link">createPlayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create a basement entity with a custom texture and custom scale.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createPlayer(java.lang.String,float,com.csse3200.game.components.HealthBarComponent)" class="member-name-link">createPlayer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale,
+ <a href="../../components/HealthBarComponent.html" title="class in com.csse3200.game.components">HealthBarComponent</a>&nbsp;healthBar)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Create a basement entity with custom texture, scale, and health bar configuration.</div>
+</div>
 </div>
 </div>
 </div>
@@ -134,6 +152,51 @@ loadScripts(document, 'script');</script>
 <h3>createPlayer</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlayer</span>()</div>
 <div class="block">Create a basement entity that inherits original player attributes (health, inventory, currency).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createPlayer(java.lang.String)">
+<h3>createPlayer</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath)</span></div>
+<div class="block">Create a basement entity with a custom texture.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>texturePath</code> - the path to the homebase texture</dd>
+<dt>Returns:</dt>
+<dd>a new basement entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createPlayer(java.lang.String,float)">
+<h3>createPlayer</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale)</span></div>
+<div class="block">Create a basement entity with a custom texture and custom scale.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>texturePath</code> - the path to the homebase texture</dd>
+<dd><code>scale</code> - the scale factor for the homebase (1.0 = original size)</dd>
+<dt>Returns:</dt>
+<dd>a new basement entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createPlayer(java.lang.String,float,com.csse3200.game.components.HealthBarComponent)">
+<h3>createPlayer</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createPlayer</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale,
+ <a href="../../components/HealthBarComponent.html" title="class in com.csse3200.game.components">HealthBarComponent</a>&nbsp;healthBar)</span></div>
+<div class="block">Create a basement entity with custom texture, scale, and health bar configuration.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>texturePath</code> - the path to the homebase texture</dd>
+<dd><code>scale</code> - the scale factor for the homebase (1.0 = original size)</dd>
+<dd><code>healthBar</code> - custom health bar component</dd>
+<dt>Returns:</dt>
+<dd>a new basement entity</dd>
+</dl>
 </section>
 </li>
 </ul>

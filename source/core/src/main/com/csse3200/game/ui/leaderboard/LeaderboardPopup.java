@@ -1,11 +1,13 @@
 package com.csse3200.game.ui.leaderboard;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardEntry;
 import com.csse3200.game.services.ServiceLocator;
@@ -27,6 +29,9 @@ public class LeaderboardPopup extends Window {
         setMovable(false);
         pad(0);  // 移除默认 padding，我们自己控制
         getTitleLabel().setAlignment(Align.center);
+        
+        // 添加Book风格的背景图片
+        addBookStyleBackground();
 
         // 使用暗色样式的按钮
         friendsBtn = new TextButton("All", skin, "dark");
@@ -196,5 +201,23 @@ public class LeaderboardPopup extends Window {
                 Actions.parallel(Actions.alpha(0f, 0.12f), Actions.scaleTo(0.98f, 0.98f, 0.12f)),
                 Actions.removeActor()
         ));
+    }
+    
+    /**
+     * 添加Book风格的背景装饰
+     */
+    private void addBookStyleBackground() {
+        try {
+            // 加载自定义的排行榜背景图片
+            Texture bgTexture = ServiceLocator.getResourceService()
+                .getAsset("images/name and leaderbooard background.png", Texture.class);
+            setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+        } catch (Exception e) {
+            // 如果加载失败，使用默认的Book风格背景
+            setBackground(com.csse3200.game.ui.SimpleUI.roundRect(
+                new com.badlogic.gdx.graphics.Color(1f, 0.97f, 0.88f, 0.95f),
+                new com.badlogic.gdx.graphics.Color(0.8f, 0.7f, 0.5f, 0.8f),
+                com.csse3200.game.ui.Theme.RADIUS, 2));
+        }
     }
 }

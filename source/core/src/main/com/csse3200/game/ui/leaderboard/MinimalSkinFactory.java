@@ -6,9 +6,50 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.*;
 import com.csse3200.game.ui.Theme;
 
-/** 纯代码生成一个最小可用的 Skin，使用系统统一的 Theme 配色。*/
 public final class MinimalSkinFactory {
     private MinimalSkinFactory() {}
+
+    /**
+     * Creates a Book-style rounded rectangle drawable with optional borders
+     * (Similar to SimpleUI.roundRect but adapted for our use case)
+     */
+    private static TextureRegionDrawable createRoundRect(Color fill, Color border, int r, int borderW) {
+        int pad = r + Math.max(borderW, 1);
+        int w = pad * 2 + 2;
+        int h = pad * 2 + 2;
+
+        Pixmap pm = new Pixmap(w, h, Pixmap.Format.RGBA8888);
+
+        // Transparent first
+        pm.setColor(0, 0, 0, 0);
+        pm.fill();
+
+        // 绘制填充（圆角矩形）
+        pm.setColor(fill);
+        pm.fillRectangle(pad - r, 1, 2 * r + 2, h - 2); // 中间竖条
+        pm.fillRectangle(1, pad - r, w - 2, 2 * r + 2); // 中间横条
+        pm.fillCircle(pad, pad, r);
+        pm.fillCircle(w - pad - 1, pad, r);
+        pm.fillCircle(pad, h - pad - 1, r);
+        pm.fillCircle(w - pad - 1, h - pad - 1, r);
+
+        // 绘制边框（如果有）
+        if (borderW > 0 && border != null) {
+            pm.setColor(border);
+            for (int i = 0; i < borderW; i++) {
+                int rr = r + i;
+                pm.drawRectangle(pad - rr, pad - rr, (w - 2 * (pad - rr)), (h - 2 * (pad - rr)));
+                pm.drawCircle(pad, pad, rr);
+                pm.drawCircle(w - pad - 1, pad, rr);
+                pm.drawCircle(pad, h - pad - 1, rr);
+                pm.drawCircle(w - pad - 1, h - pad - 1, rr);
+            }
+        }
+
+        Texture t = new Texture(pm);
+        pm.dispose();
+        return new TextureRegionDrawable(new TextureRegion(t));
+    }
 
     public static Skin create() {
         Skin skin = new Skin();
@@ -48,18 +89,17 @@ public final class MinimalSkinFactory {
 
         // 可复用的纯色背景
         Drawable bg      = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("bg", Color.class));
-        Drawable panel   = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("panel", Color.class));
         Drawable select  = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("selection-c", Color.class));
         
-        // 主按钮（绿色）
-        Drawable btnPrimaryUp   = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("btn-primary", Color.class));
-        Drawable btnPrimaryOver = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("btn-primary-hover", Color.class));
-        Drawable btnPrimaryDown = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("btn-primary-down", Color.class));
+        // 主按钮（绿色）- Book风格无边框圆角
+        Drawable btnPrimaryUp   = createRoundRect((Color)skin.get("btn-primary", Color.class), null, Theme.RADIUS, 0);
+        Drawable btnPrimaryOver = createRoundRect((Color)skin.get("btn-primary-hover", Color.class), null, Theme.RADIUS, 0);
+        Drawable btnPrimaryDown = createRoundRect((Color)skin.get("btn-primary-down", Color.class), null, Theme.RADIUS, 0);
         
-        // 暗色按钮
-        Drawable btnDarkUp   = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("btn-dark", Color.class));
-        Drawable btnDarkOver = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("btn-dark-hover", Color.class));
-        Drawable btnDarkDown = new TextureRegionDrawable(new TextureRegion(white)).tint((Color)skin.get("btn-dark-down", Color.class));
+        // 暗色按钮 - Book风格无边框圆角
+        Drawable btnDarkUp   = createRoundRect((Color)skin.get("btn-dark", Color.class), null, Theme.RADIUS, 0);
+        Drawable btnDarkOver = createRoundRect((Color)skin.get("btn-dark-hover", Color.class), null, Theme.RADIUS, 0);
+        Drawable btnDarkDown = createRoundRect((Color)skin.get("btn-dark-down", Color.class), null, Theme.RADIUS, 0);
 
         // Label - 默认样式
         Label.LabelStyle label = new Label.LabelStyle();
@@ -99,11 +139,12 @@ public final class MinimalSkinFactory {
         tbsDark.fontColor = Color.WHITE;
         skin.add("dark", tbsDark);
 
-        // Window - 使用完全透明的背景显示游戏场景
+        // Window - Book风格奶黄色圆角（无边框）
+        Drawable windowBg = createRoundRect((Color)skin.get("panel", Color.class), null, Theme.RADIUS, 0);
         Window.WindowStyle ws = new Window.WindowStyle();
         ws.titleFont = font;
         ws.titleFontColor = (Color)skin.get("text-title", Color.class);
-        ws.background = panel;
+        ws.background = windowBg;
         // 完全透明，显示背后的游戏背景
         ws.stageBackground = new TextureRegionDrawable(new TextureRegion(white)).tint(new Color(0, 0, 0, 0f));
         skin.add("default", ws);

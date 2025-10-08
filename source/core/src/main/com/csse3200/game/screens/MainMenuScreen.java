@@ -30,7 +30,8 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/main_menu_background.png",
     "images/Main_Menu_Button_Background.png",
     "images/star.png",
-    "images/sun.png"
+    "images/sun.png",
+    "images/name and leaderbooard background.png"
   };
   
   private static final String[] mainMenuMusic = {

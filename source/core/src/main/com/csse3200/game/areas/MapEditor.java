@@ -207,8 +207,8 @@ public class MapEditor extends InputAdapter {
             waypointList.add(waypoint);
         }
         int[][] redCircledArea = {
-            {12, 17, 5, 12}, 
-            {9,17,3,5}, 
+            {12, 17, 5, 12},
+            {9,17,3,5},
             {21,23,10,19},
                 {24,26,16,19},
                 {25,31,18,20},
@@ -224,10 +224,38 @@ public class MapEditor extends InputAdapter {
         };
 
 
+        //Invalid area
         for (int[] range : redCircledArea) {
             for (int x = range[0]; x <= range[1]; x++) {
                 for (int y = range[2]; y <= range[3]; y++) {
                     addSnow(x, y);
+                }
+            }
+        }
+
+        // water area
+        int[][] waterArea = {
+                {21,23,10,19},
+                {24,26,16,19},
+                {25,31,18,20},
+                {27,31,21,22},
+                {20,24,9,12},
+                {18,22,6,9},
+                {0,12,0,2},
+                {13,21,0,1},
+                {0,4,4,9},
+                {22,24,0,2},
+                {25,31,0,1},
+                {30,32,2,5},
+                {30,32,6,7},
+                {17,22,0,4},
+                {32,33,0,5}
+        };
+
+        // Water tile
+        for (int[] range : waterArea) {
+            for (int x = range[0]; x <= range[1]; x++) {
+                for (int y = range[2]; y <= range[3]; y++) {
                     waterTiles.add(new GridPoint2(x, y));
                 }
             }

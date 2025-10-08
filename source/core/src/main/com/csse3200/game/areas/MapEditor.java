@@ -392,13 +392,10 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         return waterTiles;
     }
 
-<<<<<<< HEAD
-=======
     @Override
     public java.util.List<Entity> getWaypointList() {
         return waypointList;
     }
 
 
->>>>>>> f93e6ed4c85373ee116782c6dc251b7e4ad7b939
 }

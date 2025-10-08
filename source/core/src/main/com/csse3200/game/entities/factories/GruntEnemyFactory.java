@@ -129,7 +129,6 @@ public class GruntEnemyFactory {
         //Eventually add point/score logic here maybe?
     }
 
-<<<<<<< HEAD
     private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
         if (waypointComponent == null || waypoint == null) {
             return;
@@ -146,9 +145,6 @@ public class GruntEnemyFactory {
         }
     }
 
-=======
-    @SuppressWarnings("unused")
->>>>>>> f93e6ed4c85373ee116782c6dc251b7e4ad7b939
     private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
         WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
         if (wc != null) {

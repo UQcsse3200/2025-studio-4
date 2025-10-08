@@ -457,14 +457,10 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private Entity spawnPlayer() {
-<<<<<<< HEAD
         // Map2 使用更大的homebase缩放 (3f) 和更大的血条
         HealthBarComponent healthBar = new HealthBarComponent(2.5f, 0.25f, 1.3f);
         Entity newPlayer = PlayerFactory.createPlayer("images/homebase2.png", 3f, healthBar);
         // 确保新玩家有钱包组件
-=======
-        Entity newPlayer = PlayerFactory.createPlayer();
->>>>>>> f93e6ed4c85373ee116782c6dc251b7e4ad7b939
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }

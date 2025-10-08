@@ -19,10 +19,12 @@ public class PlayerCombatStatsComponent extends Component {
   private static final Logger logger = LoggerFactory.getLogger(PlayerCombatStatsComponent.class);
   private int health;
   private int baseAttack;
+  private final int maxHealth;
 
   public PlayerCombatStatsComponent(int health, int baseAttack) {
     setHealth(health);
     setBaseAttack(baseAttack);
+    this.maxHealth = health;
   }
 
   /**
@@ -104,5 +106,9 @@ public class PlayerCombatStatsComponent extends Component {
   public void hit(CombatStatsComponent attacker) {
     int newHealth = getHealth() - attacker.getBaseAttack();
     setHealth(newHealth);
+  }
+
+  public int getMaxHealth() {
+    return maxHealth;
   }
 }

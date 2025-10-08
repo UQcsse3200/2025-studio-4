@@ -1,9 +1,10 @@
 package com.csse3200.game.areas;
 
+import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.utils.Difficulty;
-import com.csse3200.game.wavesystem.Wave;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
+import com.csse3200.game.wavesystem.Wave;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
 import com.csse3200.game.areas2.MapTwo.MapEditor2;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
@@ -18,6 +20,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
+import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
@@ -25,16 +28,20 @@ import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
+import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
 import com.badlogic.gdx.utils.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 
+
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
@@ -48,7 +55,7 @@ public class ForestGameArea extends GameArea {
     private List<Wave> waves;
     private int currentWaveIndex = 0;
     private Wave.WaveSpawnCallbacks spawnCallbacks;
-    
+
     public static int NUM_ENEMIES_TOTAL = 0;
     public static int NUM_ENEMIES_DEFEATED = 0;
 
@@ -68,8 +75,9 @@ public class ForestGameArea extends GameArea {
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
     private static final float WALL_WIDTH = 0.1f;
 
+
     private static final String[] forestTextureAtlases = {
-            "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", 
+            "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas",
             "images/tank_basic_spritesheet.atlas", "images/boss_basic_spritesheet.atlas"
     };
 
@@ -85,12 +93,14 @@ public class ForestGameArea extends GameArea {
     private final TerrainFactory terrainFactory;
     private Entity player;
     private boolean hasExistingPlayer = false;
-    private MapEditor mapEditor;
+    // private MapEditor mapEditor;
+    private IMapEditor mapEditor; // Use interface for flexibility
 
     // One-time prompt: Has this been displayed?
     private boolean heroHintShown = false;
 
     // Obstacle Coordinate Single Fact Source: Defined by the GameArea
+    // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
             {26, 3}, {27, 3}, {28, 3}, {29, 3},
@@ -100,15 +110,16 @@ public class ForestGameArea extends GameArea {
             {7, 25}, {2, 15},  {6, 29},
     };
 
+    // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, 
-            {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
+        {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
     };
 
     /**
      * Initialise this ForestGameArea to use the provided TerrainFactory.
      *
      * @param terrainFactory TerrainFactory used to create the terrain for the GameArea.
+     * @requires terrainFactory != null
      */
     public ForestGameArea(TerrainFactory terrainFactory) {
         super();
@@ -117,6 +128,8 @@ public class ForestGameArea extends GameArea {
 
     /**
      * Set whether this game area already has an existing player entity.
+     *
+     * @param hasExistingPlayer true if player already exists, false otherwise
      */
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
@@ -124,6 +137,7 @@ public class ForestGameArea extends GameArea {
 
     /**
      * Control whether waves should auto start during create().
+     * Useful to disable when restoring from a save to avoid duplicated spawns.
      */
     public void setAutoStartWaves(boolean autoStartWaves) {
         this.autoStartWaves = autoStartWaves;
@@ -189,7 +203,7 @@ public class ForestGameArea extends GameArea {
             logger.info("All waves completed!");
             return;
         }
-        
+
         Wave currentWave = waves.get(currentWaveIndex);
         
         // Set counters before building queue or spawning anything
@@ -211,7 +225,7 @@ public class ForestGameArea extends GameArea {
      */
     public void onWaveDefeated() {
         logger.info("Wave {} defeated!", currentWaveIndex + 1);
-        
+
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory!
@@ -246,10 +260,10 @@ public class ForestGameArea extends GameArea {
             forceStopWave();
             return;
         }
-        
+
         // Safety check: ensure services are still available
         try {
-            if (ServiceLocator.getPhysicsService() == null || 
+            if (ServiceLocator.getPhysicsService() == null ||
                 ServiceLocator.getEntityService() == null ||
                 ServiceLocator.getResourceService() == null) {
                 logger.warn("Services not available, stopping wave spawning");
@@ -289,7 +303,7 @@ public class ForestGameArea extends GameArea {
                 
                 // Double-check services are still available when task runs
                 try {
-                    if (ServiceLocator.getPhysicsService() == null || 
+                    if (ServiceLocator.getPhysicsService() == null ||
                         ServiceLocator.getEntityService() == null) {
                         logger.warn("Services disposed during spawn, stopping wave");
                         forceStopWave();
@@ -323,11 +337,11 @@ public class ForestGameArea extends GameArea {
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest"));
-        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay());
+        ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
+        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
         SimplePlacementController placementController = new SimplePlacementController();
-        ui.addComponent(placementController);
+        ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
         // Create time speed control button
@@ -346,6 +360,7 @@ public class ForestGameArea extends GameArea {
         if (!hasExistingPlayer) {
             player = spawnPlayer();
         } else {
+
             // Find existing player entity
             player = findExistingPlayer();
             if (player == null) {
@@ -361,7 +376,8 @@ public class ForestGameArea extends GameArea {
             }
         }
 
-        // Now that mapEditor is created in spawnPlayer, link it to placementController
+
+        // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
         if (mapEditor != null) {
             placementController.setMapEditor(mapEditor);
         }
@@ -380,10 +396,14 @@ public class ForestGameArea extends GameArea {
             }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
         }
 
+        // Generate biomes & placeable areas
+        //mapEditor.generateBiomesAndRivers();
+
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
                 new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+
         spawnEntity(highlighterEntity);
 
         //Tower Upgrade Menu
@@ -395,8 +415,21 @@ public class ForestGameArea extends GameArea {
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         // Add hero placement system
-        Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain, mapEditor, this::spawnHeroAt));
-        spawnEntity(placement);
+        var gameState = ServiceLocator.getGameStateService();
+        if (gameState == null) {
+            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
+        }
+        GameStateService.HeroType chosen = gameState.getSelectedHero();
+        Gdx.app.log("ForestGameArea", "chosen=" + chosen);
+
+        // 根据选择安装一个只放“指定英雄”的放置器
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
+                (chosen == GameStateService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
+
+        Entity placementEntity = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, (MapEditor)mapEditor, placeCb)
+        );
+        spawnEntity(placementEntity);
 
         playMusic();
 
@@ -412,6 +445,7 @@ public class ForestGameArea extends GameArea {
         cfg3.heroTexture = "images/hero3/Heroshoot.png";
         cfg3.bulletTexture = "images/hero3/Bullet.png";
 
+        // 一次性换肤组件，注册到 EntityService
         Entity skinSwitcher = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
         );
@@ -437,12 +471,14 @@ public class ForestGameArea extends GameArea {
         spawnEntityAt(
                 ObstacleFactory.createWall(WALL_WIDTH, worldBounds.y),
                 new GridPoint2(tileBounds.x, 0),
-                false, false);
+                false,
+                false);
         // Top
         spawnEntityAt(
                 ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
                 new GridPoint2(0, tileBounds.y),
-                false, false);
+                false,
+                false);
         // Bottom
         spawnEntityAt(
                 ObstacleFactory.createWall(worldBounds.x, WALL_WIDTH),
@@ -474,19 +510,22 @@ public class ForestGameArea extends GameArea {
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();
-        
+
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
-            newPlayer.addComponent(new CurrencyManagerComponent());
-        }
-        if (newPlayer.getComponent(com.csse3200.game.components.PlayerScoreComponent.class) == null) {
-            newPlayer.addComponent(new com.csse3200.game.components.PlayerScoreComponent());
+            newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
         // Initialize MapEditor
+        // If you want to use MapEditor2, replace the following line:
+        // mapEditor = new MapEditor(terrain, newPlayer);
+        // with:
+        // mapEditor = new com.csse3200.game.areas2.MapTwo.MapEditor2((TerrainComponent2)terrain, newPlayer);
         mapEditor = new MapEditor(terrain, newPlayer);
-        mapEditor.generateEnemyPath();
+        mapEditor.generateEnemyPath(); // Generate fixed enemy path
+        // Uncomment if crystal spawning is needed:
+        // mapEditor.spawnCrystal(); // Generate crystal
 
         return newPlayer;
     }
@@ -504,7 +543,7 @@ public class ForestGameArea extends GameArea {
      * Expose current waypoint list generated by the map editor, for save/load rebinding.
      */
     public java.util.List<Entity> getWaypointList() {
-        return (mapEditor != null) ? mapEditor.waypointList : java.util.Collections.emptyList();
+        return mapEditor != null ? mapEditor.getWaypointList() : java.util.Collections.emptyList();
     }
 
     private void spawnDrone(List<Entity> waypoints) {
@@ -573,6 +612,7 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnHeroAt(GridPoint2 cell) {
+
         HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
         if (heroCfg == null) {
             logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
@@ -606,8 +646,10 @@ public class ForestGameArea extends GameArea {
         }
 
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
         spawnEntityAt(hero, cell, true, true);
 
+        // 放置完成后的一次性提示窗口
         if (!heroHintShown) {
             com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
@@ -615,7 +657,45 @@ public class ForestGameArea extends GameArea {
         }
     }
 
+    private void spawnEngineerAt(GridPoint2 cell) {
+        // 1) 只读取工程师配置
+        EngineerConfig engCfg = FileLoader.readClass(EngineerConfig.class, "configs/engineer.json");
+        if (engCfg == null) {
+            logger.warn("Failed to load configs/engineer.json, using default EngineerConfig.");
+            engCfg = new EngineerConfig();
+        }
+
+        // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
+        ResourceService rs = ServiceLocator.getResourceService();
+        HeroFactory.loadAssets(rs, engCfg);  // 只传工程师
+        while (!rs.loadForMillis(10)) {
+            logger.info("Loading engineer assets... {}%", rs.getProgress());
+        }
+
+        // 3) 创建工程师实体（注意方法名：你现在实现的是 createEngineerHero）
+        Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
+        Entity engineer = HeroFactory.createEngineerHero(engCfg, cam);
+
+        var up = engineer.getComponent(HeroUpgradeComponent.class);
+        if (up != null) {
+            up.attachPlayer(player);
+        }
+
+        engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
+        // 4) 放置
+        spawnEntityAt(engineer, cell, true, true);
+
+        // 5) 一次性提示
+        if (!heroHintShown) {
+            var stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
+            heroHintShown = true;
+        }
+    }
+
     private void playMusic() {
+        // Route all music through AudioService to avoid overlaps across screens
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
             ServiceLocator.getAudioService().playMusic("forest_bgm", true);
@@ -687,7 +767,12 @@ public class ForestGameArea extends GameArea {
 
         super.dispose();
         if (mapEditor != null) {
-            mapEditor.cleanup();
+            // Both MapEditor and MapEditor2 have cleanup()
+            if (mapEditor instanceof MapEditor) {
+                ((MapEditor)mapEditor).cleanup();
+            } else if (mapEditor instanceof com.csse3200.game.areas2.MapTwo.MapEditor2) {
+                ((com.csse3200.game.areas2.MapTwo.MapEditor2)mapEditor).cleanup();
+            }
         }
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().stopMusic();
@@ -697,4 +782,6 @@ public class ForestGameArea extends GameArea {
         this.unloadAssets();
     }
 }
+
+
 

@@ -284,4 +284,14 @@ public class Entity {
   public String toString() {
     return String.format("Entity{id=%d}", id);
   }
+
+    /**
+     * Check if the entity is active (created and enabled).
+     *
+     * @return true if active, false otherwise
+     */
+  public boolean isActive() {
+     return created && enabled;
+  }
+
 }

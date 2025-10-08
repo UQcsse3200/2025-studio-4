@@ -42,6 +42,9 @@ public class ChainLightningComponent extends Component {
         this.chainRange = chainRange;
     }
 
+    /**
+     * Updates the chain lightning logic, finds targets, applies damage, and handles rendering.
+     */
     @Override
     public void update() {
         float dt = Gdx.graphics.getDeltaTime();
@@ -68,6 +71,10 @@ public class ChainLightningComponent extends Component {
         }
     }
 
+    /**
+     * Deals damage to each entity in the chain, with diminishing returns.
+     * @param chain The list of entities in the chain.
+     */
     private void dealDamage(List<Entity> chain) {
         float dmg = damage;
         for (Entity e : chain) {
@@ -79,6 +86,10 @@ public class ChainLightningComponent extends Component {
         }
     }
 
+    /**
+     * Creates the points for rendering the lightning chain.
+     * @param chain The list of entities in the chain.
+     */
     private void createLightningPoints(List<Entity> chain) {
         lightningPoints.clear();
         Vector2 start = entity.getCenterPosition();
@@ -89,6 +100,10 @@ public class ChainLightningComponent extends Component {
         }
     }
 
+    /**
+     * Finds the chain of targets for the lightning effect.
+     * @return List of entities in the chain.
+     */
     private List<Entity> findChainTargets() {
         List<Entity> result = new ArrayList<>();
         Entity current = findNearestEnemy(entity.getCenterPosition(), range, null);
@@ -104,6 +119,13 @@ public class ChainLightningComponent extends Component {
         return result;
     }
 
+    /**
+     * Finds the nearest valid enemy from a given position, excluding specified entities.
+     * @param from The starting position.
+     * @param searchRange The search range.
+     * @param exclude List of entities to exclude.
+     * @return The nearest enemy entity, or null if none found.
+     */
     private Entity findNearestEnemy(Vector2 from, float searchRange, List<Entity> exclude) {
         Entity closest = null;
         float minDist = Float.MAX_VALUE;
@@ -122,6 +144,11 @@ public class ChainLightningComponent extends Component {
         return closest;
     }
 
+    /**
+     * Checks if an entity is a valid enemy for chain lightning.
+     * @param e The entity to check.
+     * @return True if valid enemy, false otherwise.
+     */
     private boolean isValidEnemy(Entity e) {
         if (e == null || e == entity) return false;
         if (e.getComponent(ProjectileComponent.class) != null) return false;
@@ -133,6 +160,10 @@ public class ChainLightningComponent extends Component {
         return PhysicsLayer.contains(PhysicsLayer.NPC, cat);
     }
 
+    /**
+     * Draws the lightning chain between targets.
+     * @param batch The SpriteBatch used for rendering.
+     */
     public void draw(SpriteBatch batch) {
         if (!lightningActive || lightningPoints.size() < 2) return;
 
@@ -154,6 +185,13 @@ public class ChainLightningComponent extends Component {
         batch.begin();
     }
 
+    /**
+     * Draws a jagged line between two points for the lightning effect.
+     * @param start The start position.
+     * @param end The end position.
+     * @param segments Number of segments in the line.
+     * @param jitterAmount Amount of jitter for the jagged effect.
+     */
     private void drawJaggedLine(Vector2 start, Vector2 end, int segments, float jitterAmount) {
         Vector2 dir = new Vector2(end).sub(start);
         float segmentLength = dir.len() / segments;
@@ -168,21 +206,38 @@ public class ChainLightningComponent extends Component {
         }
     }
 
+    /**
+     * Disposes of resources used by the chain lightning component.
+     */
     @Override
     public void dispose() {
         renderer.dispose();
     }
 
-    // Attach this renderer to draw the lightning over everything
+    /**
+     * RenderComponent for drawing the chain lightning on top of all other components.
+     */
     public static class ChainLightningRenderComponent extends com.csse3200.game.rendering.RenderComponent {
         private final ChainLightningComponent lightning;
+        /**
+         * Constructs a ChainLightningRenderComponent for the given ChainLightningComponent.
+         * @param lightning The ChainLightningComponent to render.
+         */
         public ChainLightningRenderComponent(ChainLightningComponent lightning) {
             this.lightning = lightning;
         }
+        /**
+         * Gets the rendering layer for the lightning.
+         * @return The layer value.
+         */
         @Override
         public int getLayer() {
             return 9999;
         }
+        /**
+         * Draws the lightning using the provided SpriteBatch.
+         * @param batch The SpriteBatch used for rendering.
+         */
         @Override
         protected void draw(SpriteBatch batch) {
             lightning.draw(batch);

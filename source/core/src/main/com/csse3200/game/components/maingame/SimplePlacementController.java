@@ -65,6 +65,10 @@ public class SimplePlacementController extends Component {
     private com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType selectedCurrencyType =
             com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
 
+    /**
+     * Sets the selected currency type for tower placement.
+     * @param currencyType The currency type to select.
+     */
     public void setSelectedCurrencyType(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType currencyType) {
         this.selectedCurrencyType = currencyType;
     }
@@ -396,6 +400,10 @@ public class SimplePlacementController extends Component {
         }
     }
 
+    /**
+     * Finds the player entity from registered entities.
+     * @return The player entity, or null if not found.
+     */
     private Entity findPlayer() {
         Array<Entity> all = safeEntities();
         if (all == null) return null;
@@ -559,6 +567,10 @@ public class SimplePlacementController extends Component {
         public SummonSpec(String texture) { this.texture = texture; }
     }
 
+    /**
+     * Arms the controller for summon placement mode.
+     * @param spec The summon specification.
+     */
     public void armSummon(SummonSpec spec) {
         cancelPlacement();
         this.mode = Mode.SUMMON;
@@ -573,6 +585,11 @@ public class SimplePlacementController extends Component {
         System.out.println(">>> placement ON (summon)");
     }
 
+    /**
+     * Updates summon placement logic.
+     * @param terrain The terrain component.
+     * @param mouseWorld The mouse world position.
+     */
     private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
         if (ghostSummon == null) return;
         GridPoint2 tile = new GridPoint2(
@@ -590,6 +607,11 @@ public class SimplePlacementController extends Component {
         }
     }
 
+    /**
+     * Places the summon entity at the specified position and tile.
+     * @param snapPos The snapped position.
+     * @param tile The grid tile.
+     */
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
         if (ghostSummon != null) {
             ghostSummon.dispose();

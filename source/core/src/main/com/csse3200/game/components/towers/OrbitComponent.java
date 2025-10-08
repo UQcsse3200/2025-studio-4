@@ -24,6 +24,9 @@ public class OrbitComponent extends Component {
         this.angle = 0f;
     }
 
+    /**
+     * Initializes the orbit position and angle for the entity.
+     */
     @Override
     public void create() {
         if (entity == null) return;
@@ -79,6 +82,9 @@ public class OrbitComponent extends Component {
         entity.setPosition(x - centerOffset.x, y - centerOffset.y);
     }
 
+    /**
+     * Updates the orbit position of the entity each frame.
+     */
     @Override
     public void update() {
         if (entity == null) return;
@@ -122,7 +128,7 @@ public class OrbitComponent extends Component {
     }
 
     /**
-     * Update the orbit radius at runtime. Invalid values are ignored or clamped.
+     * Updates the orbit radius at runtime. Invalid values are ignored or clamped.
      *
      * @param r new radius to set (world units)
      */
@@ -134,12 +140,21 @@ public class OrbitComponent extends Component {
         this.radius = r;
     }
 
-    /** Returns the current orbit radius. */
+    /**
+     * Returns the current orbit radius.
+     *
+     * @return The orbit radius.
+     */
     public float getRadius() {
         return this.radius;
     }
 
-    // small helper
+    /**
+     * Checks if a float value is finite (not NaN or infinite).
+     *
+     * @param v The value to check.
+     * @return True if finite, false otherwise.
+     */
     private static boolean isFinite(float v) {
         return !Float.isNaN(v) && !Float.isInfinite(v);
     }

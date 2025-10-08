@@ -32,12 +32,18 @@ public class StatsBoostComponent extends Component {
     private static final float BOOST_STEP = 0.1f;
     private static final float MIN_COOLDOWN = 0.001f;
 
+    /**
+     * Initializes the component.
+     */
     @Override
     public void create() {
         super.create();
         // nothing special on create
     }
 
+    /**
+     * Updates the boost logic, applies or removes boosts to towers in range.
+     */
     @Override
     public void update() {
         if (entity == null) return;
@@ -136,6 +142,9 @@ public class StatsBoostComponent extends Component {
         }
     }
 
+    /**
+     * Disposes of the component and reverts any applied boosts.
+     */
     @Override
     public void dispose() {
         // On dispose, revert any applied boosts

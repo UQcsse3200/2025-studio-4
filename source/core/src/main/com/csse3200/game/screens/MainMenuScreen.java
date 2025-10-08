@@ -28,7 +28,12 @@ public class MainMenuScreen extends ScreenAdapter {
   private static final String[] mainMenuTextures = {
     "images/main_menu_background.png",
     "images/Main_Menu_Button_Background.png",
-    "images/star.png"
+    "images/star.png",
+    "images/tough survivor.jpg",
+    "images/speed runner.jpg",
+    "images/slayer.jpg",
+    "images/perfect clear.jpg",
+    "images/participation.jpg"
   };
   
   private static final String[] mainMenuMusic = {

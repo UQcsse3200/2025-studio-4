@@ -58,17 +58,8 @@ public class MainGameScreen extends ScreenAdapter {
           "images/scrap.png",
           "images/Game_Over.png",
           "images/Game_Victory.png",
-<<<<<<< HEAD
-          "images/profile1.png",
-          "images/profile2.png",
-          "images/profile3.png",
-          "images/profile4.png",
-          "images/name and leaderbooard background.png",
-          "images/game background.jpg"
-=======
           // Background frame overlay for in-game view
           "images/Background4.png"
->>>>>>> origin/main
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -273,8 +264,6 @@ public class MainGameScreen extends ScreenAdapter {
     Stage stage = ServiceLocator.getRenderService().getStage();
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForTerminal();
-
-    // 默认：不在世界层绘制整屏背景，避免遮挡地形
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

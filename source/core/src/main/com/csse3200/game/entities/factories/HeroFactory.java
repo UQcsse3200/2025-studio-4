@@ -21,7 +21,6 @@ import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
 
 import java.util.LinkedHashSet;
 import com.csse3200.game.components.hero.HeroUltimateComponent;
-import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
  * Factory class for creating hero entities.
@@ -105,7 +104,6 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-                .addComponent(new UltimateButtonComponent())
                 .addComponent(new HeroAppearanceComponent(cfg));
 
         // Default scale to 1x1 so the hero is visible during testing
@@ -167,7 +165,6 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-                .addComponent(new UltimateButtonComponent())
                 .addComponent(new HeroAppearanceComponent(cfg));
 
         hero.setScale(1f, 1f);
@@ -198,7 +195,7 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-                .addComponent(new UltimateButtonComponent());
+                .addComponent(new HeroAppearanceComponent(cfg));
 
         hero.setScale(1f, 1f);
 

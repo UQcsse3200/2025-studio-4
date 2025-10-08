@@ -25,7 +25,8 @@ public class HeroStatusPanelComponent extends Component {
     private Table card;         // 实际的卡片内容
 
     // UI 控件引用，便于更新文字
-    private Label nameLabel, hpLabel, energyLabel, levelLabel, ultCdLabel;
+    private Label nameLabel, hpLabel, energyLabel, levelLabel; // 移除 ultCdLabel
+    private TextButton ultBtn; // 新增 ULT 按钮引用
 
     public HeroStatusPanelComponent(Entity hero) {
         this.hero = hero;
@@ -63,8 +64,10 @@ public class HeroStatusPanelComponent extends Component {
         hpLabel     = new Label("HP: 100/100", skin);
         energyLabel = new Label("Energy: 50/50", skin);
         levelLabel  = new Label("Lv. 1", skin);
-        ultCdLabel  = new Label("ULT: ready", skin);
         Label damageLabel = new Label("DMG: -", skin);
+
+        // ==== ULT 按钮 ====
+        ultBtn = UltimateButtonComponent.createUltimateButton(hero);
 
         // 布局：头像+右侧信息
         Table row = new Table();
@@ -77,7 +80,7 @@ public class HeroStatusPanelComponent extends Component {
         card.add(hpLabel).left().row();
         card.add(damageLabel).left().row();
         card.add(energyLabel).left().row();
-        card.add(ultCdLabel).left().row();
+        card.add(ultBtn).left().row(); // 用按钮替换原 ultCdLabel
 
         // 把卡片塞到左栏（按你黄色区域从上往下的顺序放）
         root.add(card).width(220).growX();
@@ -110,22 +113,22 @@ public class HeroStatusPanelComponent extends Component {
         });
 
         // 4) 大招CD（沿用你 ULT 按钮的事件）
-        hero.getEvents().addListener("ultimate.state", (Boolean on) -> {
-            if (Boolean.TRUE.equals(on)) {
-                ultCdLabel.setText("ULT: ACTIVE");
-            } else {
-                ultCdLabel.setText("ULT: ready");
-            }
-        });
-        hero.getEvents().addListener("ultimate.remaining", (Float sec) -> {
-            if (sec == null) return;
-            float v = Math.max(0f, sec);
-            if (v > 0f) {
-                ultCdLabel.setText(String.format("ULT: %.1fs", v));
-            } else {
-                ultCdLabel.setText("ULT: ready");
-            }
-        });
+        // hero.getEvents().addListener("ultimate.state", (Boolean on) -> {
+        //     if (Boolean.TRUE.equals(on)) {
+        //         ultCdLabel.setText("ULT: ACTIVE");
+        //     } else {
+        //         ultCdLabel.setText("ULT: ready");
+        //     }
+        // });
+        // hero.getEvents().addListener("ultimate.remaining", (Float sec) -> {
+        //     if (sec == null) return;
+        //     float v = Math.max(0f, sec);
+        //     if (v > 0f) {
+        //         ultCdLabel.setText(String.format("ULT: %.1fs", v));
+        //     } else {
+        //         ultCdLabel.setText("ULT: ready");
+        //     }
+        // });
 
     }
 

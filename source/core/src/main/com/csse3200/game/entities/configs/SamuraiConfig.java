@@ -3,7 +3,7 @@ package com.csse3200.game.entities.configs;
 /**
  * Defines a basic set of properties stored in entities config files to be loaded by Entity Factories.
  */
-public class SamuraiConfig extends BaseEntityConfig {
+public class SamuraiConfig extends HeroConfig {
     public float movespeed = 220.0f;
     public float swordRadius = 0.9f;
     public float swordAngularSpeed=360.0f;

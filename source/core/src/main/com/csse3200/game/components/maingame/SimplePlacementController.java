@@ -69,6 +69,10 @@ public class SimplePlacementController extends Component {
      * Sets the selected currency type for tower placement.
      * @param currencyType The currency type to select.
      */
+    /**
+     * Sets the selected currency type for tower placement.
+     * @param currencyType The currency type to select.
+     */
     public void setSelectedCurrencyType(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType currencyType) {
         this.selectedCurrencyType = currencyType;
     }
@@ -396,6 +400,10 @@ public class SimplePlacementController extends Component {
             ServiceLocator.getEntityService().register(newTower);
             if (newTC != null && newTC.hasHead()) ServiceLocator.getEntityService().register(newTC.getHeadEntity());
 
+    /**
+     * Finds the player entity from registered entities.
+     * @return The player entity, or null if not found.
+     */
             placementActive = false;
         }
     }
@@ -559,6 +567,10 @@ public class SimplePlacementController extends Component {
     // --- Summon placement mode ---
     private String pendingSummonTexture = null;
     private enum Mode {NONE, TOWER, SUMMON}
+    /**
+     * Arms the controller for summon placement mode.
+     * @param spec The summon specification.
+     */
     private Mode mode = Mode.NONE;
     private Entity ghostSummon = null;
 
@@ -573,6 +585,11 @@ public class SimplePlacementController extends Component {
      */
     public void armSummon(SummonSpec spec) {
         cancelPlacement();
+    /**
+     * Updates summon placement logic.
+     * @param terrain The terrain component.
+     * @param mouseWorld The mouse world position.
+     */
         this.mode = Mode.SUMMON;
         this.placementActive = true;
         this.needRelease = true;
@@ -589,6 +606,11 @@ public class SimplePlacementController extends Component {
      * Updates summon placement logic.
      * @param terrain The terrain component.
      * @param mouseWorld The mouse world position.
+     */
+    /**
+     * Places the summon entity at the specified position and tile.
+     * @param snapPos The snapped position.
+     * @param tile The grid tile.
      */
     private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
         if (ghostSummon == null) return;

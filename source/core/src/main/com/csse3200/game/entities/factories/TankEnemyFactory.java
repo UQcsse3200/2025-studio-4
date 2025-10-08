@@ -72,8 +72,10 @@ public class TankEnemyFactory {
         tank
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
-
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
 
@@ -95,8 +97,8 @@ public class TankEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        //ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        //ForestGameArea.checkEnemyCount();
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -116,7 +118,7 @@ public class TankEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
 }
 
     @SuppressWarnings("unused")

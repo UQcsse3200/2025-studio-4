@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.areas.ForestGameArea;
 
 /**
  * Stores combat stats like health and base attack.
@@ -16,6 +17,8 @@ public class CombatStatsComponent extends Component {
   private int baseAttack;
   private DamageTypeConfig resistances;
   private DamageTypeConfig weaknesses;
+  private boolean isEnemy = false;
+  private boolean deathCounted = false;
 
   public CombatStatsComponent(int health, int baseAttack,
                               DamageTypeConfig resistances, DamageTypeConfig weaknesses) {
@@ -23,6 +26,10 @@ public class CombatStatsComponent extends Component {
     setBaseAttack(baseAttack);
     this.resistances = resistances;
     this.weaknesses = weaknesses;
+  }
+
+  public void setIsEnemy(boolean isEnemy) {
+    this.isEnemy = isEnemy;
   }
 
   public DamageTypeConfig getResistances() {
@@ -65,11 +72,24 @@ public class CombatStatsComponent extends Component {
     }
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
-      if (this.health == 0) {
-        // Keep both to be compatible with existing listeners in different branches
+      if (this.health == 0 && !deathCounted) {
+        deathCounted = true; // Prevent double-counting
+        
+        // Increment enemy defeat counter if this is an enemy
+        if (isEnemy) {
+          ForestGameArea.NUM_ENEMIES_DEFEATED++;
+          logger.info("Enemy defeated! {}/{}", 
+                     ForestGameArea.NUM_ENEMIES_DEFEATED, 
+                     ForestGameArea.NUM_ENEMIES_TOTAL);
+          
+          // Check if wave is complete
+          ForestGameArea.checkEnemyCount();
+        }
+        
+        // Trigger death events
         entity.getEvents().trigger("death");
         entity.getEvents().trigger("entityDeath");
-        entity.getEvents().trigger("setDead", true); // optional flag some systems expect
+        entity.getEvents().trigger("setDead", true);
       }
     }
   }

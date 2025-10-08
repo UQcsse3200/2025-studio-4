@@ -72,6 +72,9 @@ public class DividerEnemyFactory {
         divider
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new clickable(clickRadius));
+                CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
+                if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));
@@ -98,8 +101,8 @@ public class DividerEnemyFactory {
     private static void destroyEnemy(Entity entity, Entity target, GameArea area) {
         if (entity == null) return;
 
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        //ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        //ForestGameArea.checkEnemyCount();
 
         final Vector2 pos = entity.getPosition().cpy();
         final Vector2[] offsets = new Vector2[]{

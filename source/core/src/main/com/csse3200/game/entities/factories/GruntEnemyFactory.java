@@ -75,6 +75,9 @@ public class GruntEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = grunt.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
 
@@ -98,8 +101,8 @@ public class GruntEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        //ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        //ForestGameArea.checkEnemyCount();
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -119,7 +122,7 @@ public class GruntEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

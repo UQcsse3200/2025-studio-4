@@ -175,12 +175,19 @@ public class ForestGameArea extends GameArea {
         }
         
         Wave currentWave = waves.get(currentWaveIndex);
+        
+        // Set counters before building queue or spawning anything
         NUM_ENEMIES_TOTAL = currentWave.getTotalEnemies();
         NUM_ENEMIES_DEFEATED = 0;
         spawnDelay = currentWave.getSpawnDelay();
         
+        logger.info("Starting Wave {} with {} enemies (Total: {}, Defeated: {})", 
+                    currentWave.getWaveNumber(), 
+                    NUM_ENEMIES_TOTAL,
+                    NUM_ENEMIES_TOTAL,
+                    NUM_ENEMIES_DEFEATED);
+        
         enemySpawnQueue = currentWave.buildSpawnQueue(spawnCallbacks);
-        logger.info("Starting Wave {} with {} enemies", currentWave.getWaveNumber(), NUM_ENEMIES_TOTAL);
     }
 
     /**

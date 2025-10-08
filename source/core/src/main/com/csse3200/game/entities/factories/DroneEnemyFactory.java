@@ -73,6 +73,9 @@ public class DroneEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = drone.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
 
@@ -99,8 +102,8 @@ public class DroneEnemyFactory {
      * @param entity The drone entity to destroy
      */
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        //ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+        //ForestGameArea.checkEnemyCount();
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -118,8 +121,7 @@ public class DroneEnemyFactory {
                 psc.addPoints(points);
             }
         }
-
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

@@ -50,6 +50,7 @@ public class MainMenuScreen extends ScreenAdapter {
     ServiceLocator.registerResourceService(new ResourceService());
     ServiceLocator.registerEntityService(new EntityService());
     ServiceLocator.registerRenderService(new RenderService());
+    ServiceLocator.registerTimeSource(new com.csse3200.game.services.GameTime());
     
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());

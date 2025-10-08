@@ -267,8 +267,6 @@ public class MainGameScreen extends ScreenAdapter {
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-    // 默认：不在世界层绘制整屏背景，避免遮挡地形
-
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))
             .addComponent(new PerformanceDisplay())

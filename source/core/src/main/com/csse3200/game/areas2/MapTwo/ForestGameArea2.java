@@ -277,6 +277,12 @@ public class ForestGameArea2 extends GameArea2 {
         cameraControl.addComponent(new CameraZoomDragComponent());
         spawnEntity(cameraControl);
         
+        // Create background entity (renders behind everything)
+        Entity background = new Entity();
+        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/game background.jpg"));
+        background.setPosition(0, 0); // Set position at origin
+        spawnEntity(background);
+        
         // 设置areas2的默认缩放为1.8f
         setCameraZoom(1.69f);
         

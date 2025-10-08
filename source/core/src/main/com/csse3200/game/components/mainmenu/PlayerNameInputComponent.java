@@ -1,10 +1,13 @@
 package com.csse3200.game.components.mainmenu;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.PlayerNameServiceImpl;
 import com.csse3200.game.ui.UIComponent;
@@ -50,24 +53,31 @@ public class PlayerNameInputComponent extends UIComponent {
     }
     
     private void createUIElements() {
-        // 获取皮肤
-        Skin skin = ServiceLocator.getResourceService().getAsset("flat-earth/skin/flat-earth-ui.json", Skin.class);
+        // 使用 MinimalSkinFactory 创建统一风格的皮肤
+        Skin skin = com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create();
         
-        // 标题
-        titleLabel = new Label("Enter Your Name", skin, "title");
-        titleLabel.setColor(Color.WHITE);
+        // 标题 - 使用温暖的棕色字体（Book风格）
+        Label.LabelStyle titleStyle = new Label.LabelStyle(
+            skin.getFont("default"), 
+            new com.badlogic.gdx.graphics.Color(0.17f, 0.14f, 0.09f, 1f)); // #2c2416 棕色
+        titleLabel = new Label("Enter Your Name", titleStyle);
+        titleLabel.setFontScale(1.5f); // 加大标题字体
         
-        // 说明文字
-        instructionLabel = new Label("Please enter your name for the leaderboard:", skin);
-        instructionLabel.setColor(Color.LIGHT_GRAY);
+        // 说明文字 - 使用柔和的棕色
+        Label.LabelStyle instructionStyle = new Label.LabelStyle(
+            skin.getFont("default"), 
+            new com.badlogic.gdx.graphics.Color(0.4f, 0.35f, 0.25f, 1f));
+        instructionLabel = new Label("Please enter your name for the leaderboard:", instructionStyle);
         
-        // 姓名输入框
-        nameField = new TextField("", skin);
+        // 姓名输入框 - 使用Book风格
+        TextField.TextFieldStyle fieldStyle = createBookStyleTextFieldStyle(skin);
+        nameField = new TextField("", fieldStyle);
         nameField.setMessageText("Your Name");
         nameField.setMaxLength(20); // 限制姓名长度
         
-        // 确认按钮
-        confirmButton = new TextButton("Start Game", skin);
+        // 确认按钮 - 使用Book的绿色按钮风格
+        TextButton.TextButtonStyle buttonStyle = createBookStyleButtonStyle(skin);
+        confirmButton = new TextButton("Start Game", buttonStyle);
         confirmButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -76,12 +86,67 @@ public class PlayerNameInputComponent extends UIComponent {
         });
     }
     
+    /**
+     * 创建Book风格的文本输入框样式
+     */
+    private TextField.TextFieldStyle createBookStyleTextFieldStyle(Skin skin) {
+        TextField.TextFieldStyle style = new TextField.TextFieldStyle();
+        style.font = skin.getFont("default");
+        style.fontColor = new Color(0.17f, 0.14f, 0.09f, 1f); // #2c2416 棕色
+        style.background = com.csse3200.game.ui.SimpleUI.roundRect(
+            new Color(1f, 1f, 0.95f, 1f),
+            new Color(0.7f, 0.6f, 0.4f, 0.8f),
+            5, 1); // 浅奶黄色带边框
+        style.focusedBackground = com.csse3200.game.ui.SimpleUI.roundRect(
+            new Color(1f, 0.98f, 0.9f, 1f),
+            new Color(0.16f, 0.64f, 0.35f, 0.9f),
+            5, 2); // 聚焦时绿色边框
+        style.cursor = com.csse3200.game.ui.SimpleUI.solid(new Color(0.17f, 0.14f, 0.09f, 1f));
+        style.selection = com.csse3200.game.ui.SimpleUI.solid(new Color(0.16f, 0.64f, 0.35f, 0.5f)); // 绿色选择
+        style.messageFontColor = new Color(0.5f, 0.45f, 0.35f, 0.7f);
+        return style;
+    }
+    
+    /**
+     * 创建Book风格的按钮样式（绿色）
+     */
+    private TextButton.TextButtonStyle createBookStyleButtonStyle(Skin skin) {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = skin.getFont("default");
+        style.fontColor = Color.WHITE;
+        // Book的绿色按钮：#2aa35a (普通), #35cc70 (悬停), #228a4a (按下)
+        style.up = com.csse3200.game.ui.SimpleUI.roundRect(
+            new Color(0.16f, 0.64f, 0.35f, 1f), null, 8, 0);
+        style.over = com.csse3200.game.ui.SimpleUI.roundRect(
+            new Color(0.21f, 0.80f, 0.44f, 1f), null, 8, 0);
+        style.down = com.csse3200.game.ui.SimpleUI.roundRect(
+            new Color(0.13f, 0.54f, 0.29f, 1f), null, 8, 0);
+        return style;
+    }
+    
     private void layoutElements() {
         table.center();
         
-        table.add(titleLabel).padBottom(20).row();
-        table.add(instructionLabel).padBottom(15).row();
-        table.add(nameField).width(300).height(40).padBottom(20).row();
+        // 使用自定义的背景图片
+        try {
+            Texture bgTexture = ServiceLocator.getResourceService()
+                .getAsset("images/name and leaderbooard background.png", Texture.class);
+            table.setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+        } catch (Exception e) {
+            // 如果加载失败，使用默认的Book风格背景
+            table.setBackground(com.csse3200.game.ui.SimpleUI.roundRect(
+                new com.badlogic.gdx.graphics.Color(1f, 0.97f, 0.88f, 0.95f),
+                new com.badlogic.gdx.graphics.Color(0.8f, 0.7f, 0.5f, 0.8f),
+                com.csse3200.game.ui.Theme.RADIUS, 2));
+        }
+        
+        // 增加内边距以匹配Book风格
+        float padding = com.csse3200.game.ui.Theme.PAD * 2;
+        table.pad(padding);
+        
+        table.add(titleLabel).padBottom(com.csse3200.game.ui.Theme.PAD).row();
+        table.add(instructionLabel).padBottom(com.csse3200.game.ui.Theme.PAD).row();
+        table.add(nameField).width(300).height(40).padBottom(com.csse3200.game.ui.Theme.PAD).row();
         table.add(confirmButton).width(200).height(50);
         
         table.pack();

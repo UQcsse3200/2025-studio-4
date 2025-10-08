@@ -32,14 +32,18 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
+    // Sets background to dark theme color (matching system theme)
+    // Using Theme.WINDOW_BG color: #0c1116
+    Gdx.gl.glClearColor(12f/255f, 17f/255f, 22f/255f, 1);
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
 
     // Register player name service
     ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameServiceImpl());
+    
+    // Register player avatar service
+    ServiceLocator.registerPlayerAvatarService(new com.csse3200.game.services.PlayerAvatarServiceImpl());
     
     // Register global leaderboard service - ensures consistency across all screens
     ServiceLocator.registerLeaderboardService(
@@ -50,6 +54,9 @@ public class GdxGame extends Game {
     
     // Register game score service to track real-time scores
     ServiceLocator.registerGameScoreService(new com.csse3200.game.services.GameScoreService());
+    
+    // Register global achievement service - persists across all screens
+    ServiceLocator.registerAchievementService(new com.csse3200.game.services.AchievementService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }

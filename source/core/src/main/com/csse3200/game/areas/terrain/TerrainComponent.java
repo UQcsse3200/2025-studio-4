@@ -69,8 +69,15 @@ public class TerrainComponent extends RenderComponent implements ITerrainCompone
 
   @Override
   public void draw(SpriteBatch batch) {
+    // End the batch before rendering the tilemap, then restart it
+    // This is necessary because TiledMapRenderer manages its own SpriteBatch
+    batch.end();
+    
     tiledMapRenderer.setView(camera);
     tiledMapRenderer.render();
+    
+    // Restart the batch for other renderables
+    batch.begin();
   }
 
   @Override

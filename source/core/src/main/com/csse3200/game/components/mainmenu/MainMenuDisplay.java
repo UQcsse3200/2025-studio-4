@@ -54,6 +54,7 @@ public class MainMenuDisplay extends UIComponent {
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
+    TextButton storyBtn = new TextButton("Story", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
     TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
@@ -78,6 +79,7 @@ public class MainMenuDisplay extends UIComponent {
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);
     rankingBtn.getLabel().setColor(Color.WHITE);
+    storyBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
 
     // Triggers an event when the button is pressed
@@ -131,9 +133,16 @@ public class MainMenuDisplay extends UIComponent {
     bookBtn.addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent changeEvent, Actor actor) {
-
         logger.debug("Book button clicked");
         entity.getEvents().trigger("book");
+      }
+    });
+
+    storyBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Story button clicked");
+        entity.getEvents().trigger("story");
       }
     });
 
@@ -152,6 +161,8 @@ public class MainMenuDisplay extends UIComponent {
     table.add(settingsBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();
+    table.add(storyBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();

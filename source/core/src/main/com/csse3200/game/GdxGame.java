@@ -162,6 +162,8 @@ public class GdxGame extends Game {
         return new BookScreen(this, BookPage.ENEMY_PAGE);
       case TOWER_BOOK:
         return new BookScreen(this, BookPage.TOWER_PAGE);
+      case STORY_BOOK:
+        return new StoryBookScreen(this);
       default:
         return null;
     }
@@ -170,7 +172,7 @@ public class GdxGame extends Game {
   public enum ScreenType {
     SPLASH, MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
     GAME_OVER_CUTSCENE, MAP_START_CUTSCENE, LEVEL_TRANSITION_CUTSCENE,
-    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, UPGRADES
+    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, STORY_BOOK, UPGRADES
   }
 
   /**

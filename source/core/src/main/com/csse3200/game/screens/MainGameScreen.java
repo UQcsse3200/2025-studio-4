@@ -265,20 +265,24 @@ public class MainGameScreen extends ScreenAdapter {
     InputComponent inputComponent =
             ServiceLocator.getInputService().getInputFactory().createForTerminal();
 
-    // Add full-screen background image (frame) to the UI stage
+    // World-layer background entity (behind terrain), avoids covering the map.
     try {
-      Texture bgTex = ServiceLocator.getResourceService()
-              .getAsset("images/Background4.png", Texture.class);
-      if (bgTex != null) {
-        Image bg = new Image(new TextureRegionDrawable(new TextureRegion(bgTex)));
-        bg.setFillParent(true);
-        bg.setTouchable(Touchable.disabled);
-        stage.addActor(bg);
-        bg.toBack(); // keep it behind other UI elements
-      }
-    } catch (Exception ignored) {
-      // If asset missing, continue without background overlay
-    }
+      com.csse3200.game.entities.Entity bgEntity = new com.csse3200.game.entities.Entity();
+      // Use full virtual world size: match renderer's camera viewport
+      float w = renderer.getCamera().getEntity().getScale().x;
+      float h = renderer.getCamera().getEntity().getScale().y;
+      if (w <= 0f || h <= 0f) { w = 32f; h = 24f; }
+      bgEntity.setPosition(0f, 0f).setScale(w, h);
+      com.csse3200.game.rendering.TextureRenderComponent trc =
+              new com.csse3200.game.rendering.TextureRenderComponent("images/Background4.png") {
+                @Override public int getLayer() { return 0; } // draw before world layer(1)
+                @Override public float getZIndex() { return -1_000_000f; } // always at back
+              };
+      bgEntity.addComponent(trc);
+      // Extremely low zIndex so it draws before terrain and entities
+      bgEntity.getEvents().addListener("preRender", () -> {});
+      ServiceLocator.getEntityService().register(bgEntity);
+    } catch (Exception ignored) {}
 
     Entity ui = new Entity();
     ui.addComponent(new InputDecorator(stage, 10))

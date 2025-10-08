@@ -259,6 +259,8 @@ public class BeamAttackComponent extends Component {
      * RenderComponent for drawing the beam on top of all other components.
      */
     public static class BeamRenderComponent extends com.csse3200.game.rendering.RenderComponent {
+        private final BeamAttackComponent beam;
+
         /**
          * Constructs a BeamRenderComponent for the given BeamAttackComponent.
          * @param beam The BeamAttackComponent to render.

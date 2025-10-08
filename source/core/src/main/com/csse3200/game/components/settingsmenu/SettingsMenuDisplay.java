@@ -404,12 +404,20 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
 
         UserSettings.set(settings, true);
+        Gdx.graphics.setVSync(settings.vsync);
+        Gdx.graphics.setForegroundFPS(settings.fps);
 
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().updateSettings();
         }
 
         applyUiScale(settings.uiScale);
+
+        if (ServiceLocator.getEntityService() != null) {
+            for (var entity : ServiceLocator.getEntityService().getEntities()) {
+                entity.getEvents().trigger("settingsApplied", settings);
+            }
+        }
     }
 
     private void applyUiScale(float scale) {

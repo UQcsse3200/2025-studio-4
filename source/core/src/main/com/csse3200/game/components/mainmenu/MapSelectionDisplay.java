@@ -30,6 +30,7 @@ public class MapSelectionDisplay extends UIComponent {
     private String thumbTexMap1;
     private String thumbTexMap2;
     private Table root;
+    private Table bottomBar;
 
     private final List<MapEntry> entries = new ArrayList<>();
     private int currentIndex = 0;
@@ -196,7 +197,7 @@ public class MapSelectionDisplay extends UIComponent {
         stage.addActor(root);
 
         // Separate bottom bar anchored to the bottom (prevents crowding)
-        Table bottomBar = new Table();
+        bottomBar = new Table();
         bottomBar.setFillParent(true);
         bottomBar.bottom().padBottom(28f);
         bottomBar.add(backBtn).width(170f).height(56f).padRight(60f).left().expandX();
@@ -219,6 +220,12 @@ public class MapSelectionDisplay extends UIComponent {
             root.validate();
             root.setOrigin(root.getWidth() / 2f, root.getHeight() / 2f);
             root.setScale(settings.uiScale);
+        }
+        if (bottomBar != null) {
+            bottomBar.setTransform(true);
+            bottomBar.validate();
+            bottomBar.setOrigin(bottomBar.getWidth() / 2f, 0f);  // Bottom-center origin
+            bottomBar.setScale(settings.uiScale);
         }
     }
 

@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIStyleHelper;
 import com.csse3200.game.ui.leaderboard.LeaderboardController;
@@ -104,7 +105,26 @@ public class MainGameExitDisplay extends UIComponent {
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
 
     stage.addActor(table);
+    applyUiScale();
   }
+
+    /**
+     * Apply UI scale from user settings
+     */
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+        if (table != null) {
+            table.setTransform(true);
+
+            // Force layout validation
+            table.validate();
+
+            // Set origin to top-right corner (where the table is anchored)
+            table.setOrigin(table.getWidth(), table.getHeight());
+
+            table.setScale(settings.uiScale);
+        }
+    }
 
   @Override
   public void draw(SpriteBatch batch) {

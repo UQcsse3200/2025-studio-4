@@ -198,6 +198,7 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
+    gameStateService = null;
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
     playerNameService = null;

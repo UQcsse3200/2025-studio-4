@@ -40,9 +40,6 @@ public class PhysicsEngine implements Disposable {
   }
 
   public void update() {
-    // Updating physics isn't as easy as triggering an update every frame. Each frame could take a
-    // different amount of time to run, but physics simulations are only stable if computed at a
-    // consistent frame rate! See: https://gafferongames.com/post/fix_your_timestep/
     float deltaTime = timeSource.getDeltaTime();
     float maxTime = Math.min(deltaTime, MAX_UPDATE_TIME);
     accumulator += maxTime;
@@ -50,6 +47,14 @@ public class PhysicsEngine implements Disposable {
     // Depending on how much time has passed, we may compute 0 or more physics steps in one go. If
     // we need to catch up, we'll compute multiple in a row before getting to rendering.
     while (accumulator >= PHYSICS_TIMESTEP) {
+      if (world == null) {
+        logger.warn("Attempted to step physics but world == null. Skipping step.");
+        break;
+      }
+      if (world.isLocked()) {
+        logger.warn("World is locked; skipping physics step to avoid concurrent modification.");
+        break;
+      }
       world.step(PHYSICS_TIMESTEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
       accumulator -= PHYSICS_TIMESTEP;
     }

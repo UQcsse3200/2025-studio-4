@@ -77,19 +77,34 @@ public class SwitchableTextureRenderComponent extends RenderComponent {
     @Override
     protected void draw(SpriteBatch batch) {
         if (entity == null || currentTexture == null) return;
-        
+
         Vector2 pos = entity.getPosition();
         Vector2 size = entity.getScale();
         float w = (size == null ? 1f : size.x);
         float h = (size == null ? 1f : size.y);
-        
-        // Temporarily apply the tint color (with alpha), then restore old color
+
+        // pivot at center for clean rotation
+        float ox = w * 0.5f;
+        float oy = h * 0.5f;
+
         Color old = batch.getColor();
         batch.setColor(tint);
-        
-        // Draw texture at (x, y) with width and height from entity scale
-        batch.draw(currentTexture, pos.x, pos.y, w, h);
-        
+
+        // use the rotation-capable overload
+        batch.draw(
+                currentTexture,
+                pos.x, pos.y,
+                ox, oy,               // origin (pivot)
+                w, h,                 // size in world units
+                1f, 1f,               // extra scale
+                rotationDeg,          // rotation
+                0, 0,
+                currentTexture.getWidth(),
+                currentTexture.getHeight(),
+                false, false
+        );
+
         batch.setColor(old);
     }
+
 }

@@ -263,12 +263,13 @@ public class BookDisplay extends UIComponent {
 
         // --- NAME ---
         String name = stats.get(DeckComponent.StatType.NAME);
-        if (name != null) {
-            Label nameLabel = new Label(name, skin, "large");
-            nameLabel.setFontScale(stageWidth * 0.001f);
-            rightTable.add(nameLabel).center();
-            rightTable.row().padTop(stageHeight * 0.01f);
+        if (name == null || name.isEmpty()) {
+            name = "Unknown";
         }
+        Label nameLabel = new Label(name, skin, "large");
+        nameLabel.setFontScale(stageWidth * 0.001f);
+        rightTable.add(nameLabel).center();
+        rightTable.row().padTop(stageHeight * 0.01f);
 
         // --- LORE ---
         String lore = stats.get(DeckComponent.StatType.LORE);

@@ -129,12 +129,20 @@ public class EnemyFactory {
   ) {
     Entity e = createBaseEnemy(target, speed, waypoints, waypointIndex);
 
-    // Load atlas directly (consistent with existing project pattern)
-    FileHandle fh = com.badlogic.gdx.Gdx.files.internal(atlasPath);
-    if (!fh.exists()) {
-      throw new GdxRuntimeException("Atlas file not found at: " + fh.path());
+    // Prefer ResourceService-managed assets; fallback to direct file loading
+    com.csse3200.game.services.ResourceService rs =
+            com.csse3200.game.services.ServiceLocator.getResourceService();
+    TextureAtlas atlas = null;
+    if (rs != null) {
+      atlas = rs.getAsset(atlasPath, TextureAtlas.class);
     }
-    TextureAtlas atlas = new TextureAtlas(fh);
+    if (atlas == null) {
+      FileHandle fh = com.badlogic.gdx.Gdx.files.internal(atlasPath);
+      if (!fh.exists()) {
+        throw new GdxRuntimeException("Atlas file not found at: " + fh.path());
+      }
+      atlas = new TextureAtlas(fh);
+    }
 
     AnimationRenderComponent anim = new AnimationRenderComponent(atlas);
 

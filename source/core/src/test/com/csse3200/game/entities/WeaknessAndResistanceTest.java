@@ -69,7 +69,7 @@ public class WeaknessAndResistanceTest {
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
         stats.setWeaknesses(DamageTypeConfig.Fire);
         stats.addHealth(-10, DamageTypeConfig.Fire);
-        assertEquals(30, stats.getHealth());
+        assertEquals(5, stats.getHealth());
     }
 
     @Test
@@ -82,6 +82,6 @@ public class WeaknessAndResistanceTest {
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
         stats.setResistances(DamageTypeConfig.Electricity);
         stats.addHealth(-10, DamageTypeConfig.Electricity);
-        assertEquals(45, stats.getHealth());
+        assertEquals(20, stats.getHealth());
     }
 }

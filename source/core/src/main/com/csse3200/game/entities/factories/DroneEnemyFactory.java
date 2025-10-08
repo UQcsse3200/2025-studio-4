@@ -21,7 +21,7 @@ public class DroneEnemyFactory {
     // Default drone configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 50;
+    private static final int DEFAULT_HEALTH = 25;
     private static final int DEFAULT_DAMAGE = 10;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
@@ -29,7 +29,7 @@ public class DroneEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 100;
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,8 +71,6 @@ public class DroneEnemyFactory {
         drone.addComponent(waypointComponent);
 
         drone
-            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
@@ -139,6 +137,7 @@ public class DroneEnemyFactory {
      * @param drone The drone entity to update
      * @param newSpeed The new speed vector
      */
+    @SuppressWarnings("unused")
     private static void updateSpeed(Entity drone, Vector2 newSpeed) {
         WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
         if (dwc != null) {

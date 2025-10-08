@@ -8,7 +8,6 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.TowerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.RotatingAnimationRenderComponent;
-import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
 /**

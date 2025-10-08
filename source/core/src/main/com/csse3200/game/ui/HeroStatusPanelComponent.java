@@ -20,6 +20,7 @@ import com.csse3200.game.services.ServiceLocator;
  */
 public class HeroStatusPanelComponent extends Component {
     private final Entity hero; // 建议把英雄实体传进来；如果你们用 SelectedHeroService，也可以从那取
+    private final String heroName; // 英雄名字
     private Stage stage;
     private Table root;         // 贴到 Stage 的根Table（只负责定位）
     private Table card;         // 实际的卡片内容
@@ -30,6 +31,12 @@ public class HeroStatusPanelComponent extends Component {
 
     public HeroStatusPanelComponent(Entity hero) {
         this.hero = hero;
+        this.heroName = "Hero"; // 默认名字
+    }
+
+    public HeroStatusPanelComponent(Entity hero, String heroName) {
+        this.hero = hero;
+        this.heroName = heroName;
     }
 
     @Override
@@ -60,7 +67,7 @@ public class HeroStatusPanelComponent extends Component {
 
 
         // ==== 文本 ====
-        nameLabel   = new Label("Samurai", skin);
+        nameLabel   = new Label(heroName, skin); // 使用传入的英雄名字
         hpLabel     = new Label("HP: 100/100", skin);
         energyLabel = new Label("Energy: 50/50", skin);
         levelLabel  = new Label("Lv. 1", skin);

@@ -559,7 +559,7 @@ public class ForestGameArea extends GameArea {
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
         hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
 
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(hero));
+        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(hero, "Hero"));
         spawnEntity(heroStatusUI);
 
         spawnEntityAt(hero, cell, true, true);
@@ -601,10 +601,14 @@ public class ForestGameArea extends GameArea {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 放置
+        // 4) 创建状态栏UI
+        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(engineer, "Engineer"));
+        spawnEntity(heroStatusUI);
+
+        // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
 
-        // 5) 一次性提示
+        // 6) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
@@ -641,10 +645,14 @@ public class ForestGameArea extends GameArea {
         }
         samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 5) 放置
+        // 5) 创建状态栏UI
+        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(samurai, "Samurai"));
+        spawnEntity(heroStatusUI);
+
+        // 6) 放置
         spawnEntityAt(samurai, cell, true, true);
 
-        // 6) 一次性提示
+        // 7) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(samurai).showOnceOn(stage);

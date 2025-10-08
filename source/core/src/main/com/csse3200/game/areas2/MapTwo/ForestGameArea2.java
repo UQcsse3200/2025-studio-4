@@ -140,23 +140,23 @@ public class ForestGameArea2 extends GameArea2 {
         
         waves = new ArrayList<>();
         
-        // Wave 1:
-        waves.add(new Wave(1, 6, 6, 0, 0, 0, 2.0f, waypointLists));
-        
-        // Wave 2:
-        waves.add(new Wave(2, 16, 6, 2, 0, 0, 1.5f, waypointLists));
-        
-        // Wave 3:
-        waves.add(new Wave(3, 6, 6, 10, 0, 0, 1.0f, waypointLists));
-        
-        // Wave 4:
-        waves.add(new Wave(4, 10, 10, 6, 0, 2, 0.75f, waypointLists));
-        
-        // Wave 5:
-        waves.add(new Wave(5, 20, 20, 10, 1, 2, 0.5f, waypointLists));
+        // Wave 1: Basic introduction
+        waves.add(new Wave(1, 6, 6, 0, 0, 0, 0, 2.0f, waypointLists));
 
-        // Wave 6:
-        waves.add(new Wave(6, 30, 20, 16, 2, 4, 0.5f, waypointLists));
+        // Wave 2: Introduce speeders
+        waves.add(new Wave(2, 16, 6, 2, 0, 0, 3, 1.5f, waypointLists));
+
+        // Wave 3: More tanks and speeders
+        waves.add(new Wave(3, 6, 6, 10, 0, 0, 4, 1.0f, waypointLists));
+
+        // Wave 4: Dividers appear
+        waves.add(new Wave(4, 10, 10, 6, 0, 2, 3, 0.75f, waypointLists));
+
+        // Wave 5: Final challenge
+        waves.add(new Wave(5, 20, 20, 10, 1, 2, 5, 0.5f, waypointLists));
+
+        // Wave 6: Ultimate test
+        waves.add(new Wave(6, 30, 20, 16, 2, 4, 8, 0.5f, waypointLists));
     }
 
     private void initializeSpawnCallbacks() {
@@ -165,7 +165,8 @@ public class ForestGameArea2 extends GameArea2 {
             this::spawnGrunt,
             this::spawnTank,
             this::spawnBoss,
-            this::spawnDivider
+            this::spawnDivider,
+            this::spawnSpeeder
         );
     }
 
@@ -564,6 +565,13 @@ public class ForestGameArea2 extends GameArea2 {
         Entity divider = DividerEnemyFactoryLevel2.createDividerEnemy(waypoints, this, player, gameDifficulty);
         spawnEntityAt(divider, spawnPos, true, true);
         logger.debug("Spawned divider at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
+    }
+
+    private void spawnSpeeder(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity speeder = SpeederEnemyFactory.createSpeederEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(speeder, spawnPos, true, true);
+        logger.debug("Spawned speeder at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
     /**

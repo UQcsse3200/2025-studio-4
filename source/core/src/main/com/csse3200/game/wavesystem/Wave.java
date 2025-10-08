@@ -23,6 +23,7 @@ public class Wave {
     private final int numTanks;
     private final int numBosses;
     private final int numDividers;
+    private final int numSpeeders;
     private final float spawnDelay; // Delay between enemy spawns in this wave
     private final List<List<Entity>> waypointLists; // List of waypoint entity paths for different spawn points
     
@@ -34,11 +35,12 @@ public class Wave {
      * @param numTanks Number of tank enemies
      * @param numBosses Number of boss enemies
      * @param numDividers Number of divider enemies
+     * @param numSpeeders Number of speeder enemies
      * @param spawnDelay Delay between spawns
      * @param waypointLists List of waypoint entity paths - enemies will cycle through these spawn points
      */
     public Wave(int waveNumber, int numDrones, int numGrunts, int numTanks, 
-                int numBosses, int numDividers, float spawnDelay,
+                int numBosses, int numDividers, int numSpeeders, float spawnDelay,
                 List<List<Entity>> waypointLists) {
         this.waveNumber = waveNumber;
         this.numDrones = numDrones;
@@ -46,6 +48,7 @@ public class Wave {
         this.numTanks = numTanks;
         this.numBosses = numBosses;
         this.numDividers = numDividers;
+        this.numSpeeders = numSpeeders;
         this.spawnDelay = spawnDelay;
         this.waypointLists = waypointLists;
         
@@ -91,7 +94,14 @@ public class Wave {
             queue.add(() -> spawnCallbacks.spawnDivider.accept(waypoints));
             waypointIndex++;
         }
-        
+
+        // Add speeders - continue cycling
+        for (int i = 0; i < numSpeeders; i++) {
+            final List<Entity> waypoints = waypointLists.get(waypointIndex % waypointLists.size());
+            queue.add(() -> spawnCallbacks.spawnSpeeder.accept(waypoints));
+            waypointIndex++;
+        }
+
         // Add bosses (usually last) - continue cycling
         for (int i = 0; i < numBosses; i++) {
             final List<Entity> waypoints = waypointLists.get(waypointIndex % waypointLists.size());
@@ -106,7 +116,7 @@ public class Wave {
      * Gets the total number of enemies in this wave.
      */
     public int getTotalEnemies() {
-        return numDrones + numGrunts + numTanks + numBosses + (numDividers * 4);
+        return numDrones + numGrunts + numTanks + numBosses + (numDividers * 4) + numSpeeders;
     }
     
     public int getWaveNumber() { 
@@ -131,17 +141,20 @@ public class Wave {
         public final Consumer<List<Entity>> spawnTank;
         public final Consumer<List<Entity>> spawnBoss;
         public final Consumer<List<Entity>> spawnDivider;
-        
+        public final Consumer<List<Entity>> spawnSpeeder;
+
         public WaveSpawnCallbacks(Consumer<List<Entity>> spawnDrone, 
                                   Consumer<List<Entity>> spawnGrunt, 
                                   Consumer<List<Entity>> spawnTank, 
                                   Consumer<List<Entity>> spawnBoss, 
-                                  Consumer<List<Entity>> spawnDivider) {
+                                  Consumer<List<Entity>> spawnDivider,
+                                  Consumer<List<Entity>> spawnSpeeder) {
             this.spawnDrone = spawnDrone;
             this.spawnGrunt = spawnGrunt;
             this.spawnTank = spawnTank;
             this.spawnBoss = spawnBoss;
             this.spawnDivider = spawnDivider;
+            this.spawnSpeeder = spawnSpeeder;
         }
     }
 }

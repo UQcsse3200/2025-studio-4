@@ -196,7 +196,7 @@ public class MapEditor extends InputAdapter {
         keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
-        keyWaypoints.add(new GridPoint2(29, 6));    // End
+        keyWaypoints.add(new GridPoint2(32, 6));    // End - extended past base to ensure enemies reach it
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {

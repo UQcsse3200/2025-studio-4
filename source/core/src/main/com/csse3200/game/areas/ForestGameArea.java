@@ -143,20 +143,20 @@ public class ForestGameArea extends GameArea {
         
         waves = new ArrayList<>();
         
-        // Wave 1:
-        waves.add(new Wave(1, 5, 1, 0, 0, 0, 3.0f, waypointLists));
-        
-        // Wave 2:
-        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2.0f, waypointLists));
-        
-        // Wave 3:
-        waves.add(new Wave(3, 10, 5, 2, 0, 0, 1.5f, waypointLists));
-        
-        // Wave 4:
-        waves.add(new Wave(4, 10, 6, 3, 0, 1, 1.0f, waypointLists));
-        
-        // Wave 5:
-        waves.add(new Wave(5, 15, 10, 5, 1, 2, 0.5f, waypointLists));
+        // Wave 1: Basic enemies
+        waves.add(new Wave(1, 5, 1, 0, 0, 0, 0, 3.0f, waypointLists));
+
+        // Wave 2: Introduce speeders
+        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2, 2.0f, waypointLists));
+
+        // Wave 3: More variety
+        waves.add(new Wave(3, 10, 5, 2, 0, 0, 3, 2.0f, waypointLists));
+
+        // Wave 4: Dividers appear
+        waves.add(new Wave(4, 8, 6, 3, 0, 1, 2, 1.5f, waypointLists));
+
+        // Wave 5: Final wave with boss
+        waves.add(new Wave(5, 10, 8, 4, 1, 1, 4, 1.2f, waypointLists));
 }
 
     private void initializeSpawnCallbacks() {
@@ -165,7 +165,8 @@ public class ForestGameArea extends GameArea {
             this::spawnGrunt,
             this::spawnTank,
             this::spawnBoss,
-            this::spawnDivider
+            this::spawnDivider,
+            this::spawnSpeeder
         );
     }
 
@@ -532,6 +533,13 @@ public class ForestGameArea extends GameArea {
         Entity divider = DividerEnemyFactory.createDividerEnemy(waypoints, this, player, gameDifficulty);
         spawnEntityAt(divider, spawnPos, true, true);
         logger.debug("Spawned divider at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
+    }
+
+    private void spawnSpeeder(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity speeder = SpeederEnemyFactory.createSpeederEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(speeder, spawnPos, true, true);
+        logger.debug("Spawned speeder at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
     /**

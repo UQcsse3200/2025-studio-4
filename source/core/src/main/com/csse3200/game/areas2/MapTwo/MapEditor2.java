@@ -150,8 +150,8 @@ public class MapEditor2 extends InputAdapter {
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
         keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints.add(new GridPoint2(6, 36));    // End
-        
+        keyWaypoints.add(new GridPoint2(6, 38));    // End - extended past base to ensure enemies reach it
+
         // 新增的5个关键点
         keyWaypoints2.add(new GridPoint2(27, 5));    // 新坐标5
         keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
@@ -160,7 +160,7 @@ public class MapEditor2 extends InputAdapter {
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
         keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 36));    // End
+        keyWaypoints2.add(new GridPoint2(6, 38));    // End - extended past base to ensure enemies reach it
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {

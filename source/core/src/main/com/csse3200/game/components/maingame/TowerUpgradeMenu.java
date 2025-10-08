@@ -17,9 +17,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.InputAdapter;
 
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.components.TowerComponent;
-import com.csse3200.game.components.TowerStatsComponent;
-import com.csse3200.game.components.TowerCostComponent;
+
+import com.csse3200.game.components.towers.TowerComponent;
+import com.csse3200.game.components.towers.TowerCostComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
+import com.csse3200.game.components.towers.OrbitComponent;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -63,13 +65,16 @@ public class TowerUpgradeMenu extends UIComponent {
         System.out.println("DEBUG: Loaded upgrade data for towers: " + pathAUpgradesPerTower.keySet());
     }
 
+    /**
+     * Creates the upgrade menu UI and sets up listeners.
+     */
     @Override
     public void create() {
         super.create();
 
         rootTable = new Table();
         rootTable.setFillParent(true);
-        rootTable.bottom().right().pad(20);
+        rootTable.bottom().right().pad(20); // restore outer padding so menu is offset from edges
         rootTable.setVisible(false);
 
         // Background
@@ -82,10 +87,10 @@ public class TowerUpgradeMenu extends UIComponent {
 
         Container<Table> container = new Container<>();
         container.setBackground(backgroundDrawable);
-        container.pad(15);
+        container.pad(15); // restore inner padding
 
         Label title = new Label("Tower Upgrades", skin, "title");
-        title.setColor(Color.GOLD);
+        title.setColor(Color.WHITE);
 
         // Path A
         Table pathATable = new Table(skin);
@@ -142,13 +147,15 @@ public class TowerUpgradeMenu extends UIComponent {
 
                 // --- Calculate total spent ---
                 int totalSpent = 0;
-                CurrencyType refundCurrencyType = CurrencyType.METAL_SCRAP; // Only refund METAL_SCRAP
+                // Use canonical tower type for refund currency and upgrades
+                String towerTypeKey = canonicalTowerType(towerComp.getType());
+                CurrencyType refundCurrencyType = currencyForTowerType(towerTypeKey);
 
-                // Base cost
+                // Base cost (uses chosen currency)
                 totalSpent += costComp.getCostForCurrency(refundCurrencyType);
 
                 // Path A upgrades
-                Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerComp.getType().toLowerCase());
+                Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerTypeKey);
                 int levelA = statsComp.getLevel_A();
                 for (int lvl = 2; lvl <= levelA; lvl++) {
                     if (upgradesA != null && upgradesA.containsKey(lvl)) {
@@ -157,7 +164,7 @@ public class TowerUpgradeMenu extends UIComponent {
                 }
 
                 // Path B upgrades
-                Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerComp.getType().toLowerCase());
+                Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerTypeKey);
                 int levelB = statsComp.getLevel_B();
                 for (int lvl = 2; lvl <= levelB; lvl++) {
                     if (upgradesB != null && upgradesB.containsKey(lvl)) {
@@ -165,10 +172,10 @@ public class TowerUpgradeMenu extends UIComponent {
                     }
                 }
 
-                // Refund 75% of total spent
-                currencyManager.refundCurrency(
-                    Map.of(refundCurrencyType, totalSpent), 0.75f
-                );
+                // Refund 75% of total spent — use EnumMap for compatibility
+                Map<CurrencyType, Integer> refundMap = new EnumMap<>(CurrencyType.class);
+                refundMap.put(refundCurrencyType, totalSpent);
+                currencyManager.refundCurrency(refundMap, 0.75f);
 
                 // Remove the tower's head entity if present
                 if (towerComp.hasHead()) {
@@ -186,7 +193,9 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         });
 
-        rootTable.add(container);
+        // Replace the original add call so the container is anchored bottom-right of the stage
+        rootTable.add(container).expand().bottom().right().pad(20); // restore previous padding/placement
+
         stage.addActor(rootTable);
 
         // Button listeners
@@ -228,7 +237,12 @@ public class TowerUpgradeMenu extends UIComponent {
      */
     public void setSelectedTower(Entity tower, String towerType) {
         this.selectedTower = tower;
-        this.currentTowerType = towerType.toLowerCase(); // normalize
+        // Defensive: fallback to TowerComponent type if towerType is null
+        if (towerType == null && tower != null) {
+            TowerComponent tc = tower.getComponent(TowerComponent.class);
+            towerType = tc != null ? tc.getType() : "";
+        }
+        this.currentTowerType = canonicalTowerType(towerType);
         rootTable.setVisible(tower != null);
         updateLabels();
     }
@@ -246,6 +260,47 @@ public class TowerUpgradeMenu extends UIComponent {
     }
 
     /**
+     * Helper: choose upgrade/refund currency per tower type.
+     *
+     * @param towerType The tower type string.
+     * @return The currency type for upgrades/refunds.
+     */
+    private static CurrencyType currencyForTowerType(String towerType) {
+        String key = canonicalTowerType(towerType);
+        if (key == null || key.isEmpty()) return UPGRADE_CURRENCY;
+        if ("pteradactyl".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("totem".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("supercavemen".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
+        if ("cavemenvillage".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("raft".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("frozenmamoothskull".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("bouldercatapult".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("villageshaman".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
+        return UPGRADE_CURRENCY;
+    }
+
+    /**
+     * Helper: canonicalizes the tower type string.
+     *
+     * @param towerType The tower type string.
+     * @return The canonical tower type string.
+     */
+    private static String canonicalTowerType(String towerType) {
+        if (towerType == null) return "";
+        String s = towerType.trim().toLowerCase();
+        if (s.isEmpty()) return "";
+        if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) return "pteradactyl";
+        if (s.equals("totem")) return "totem";
+        if (s.equals("supercavemen")) return "supercavemen";
+        if (s.equals("cavemenvillage")) return "cavemenvillage";
+        if (s.equals("raft")) return "raft";
+        if (s.equals("frozenmamoothskull")) return "frozenmamoothskull";
+        if (s.equals("bouldercatapult")) return "bouldercatapult";
+        if (s.equals("villageshaman")) return "villageshaman";
+        return s;
+    }
+
+    /**
      * Sets up the content of an upgrade button with the cost and icon.
      *
      * @param button The button to set up.
@@ -253,8 +308,30 @@ public class TowerUpgradeMenu extends UIComponent {
      */
     private void setupButtonContent(TextButton button, int cost) {
         Table content = new Table(skin);
+        // Ensure button text cleared before replacing children
+        button.setText("");
         Image scrapIcon = new Image(new TextureRegionDrawable(
                 new TextureRegion(new Texture(CurrencyType.METAL_SCRAP.getTexturePath()))));
+        Label costLabel = new Label(String.valueOf(cost), skin);
+        content.add(scrapIcon).size(24, 24).padRight(5);
+        content.add(costLabel);
+        button.clearChildren();
+        button.add(content).expand().fill();
+    }
+
+    /**
+     * Overload: show currency icon based on currency type.
+     *
+     * @param button The button to set up.
+     * @param cost The cost to display.
+     * @param currency The currency type.
+     */
+    private void setupButtonContent(TextButton button, int cost, CurrencyType currency) {
+        Table content = new Table(skin);
+        // Ensure button text cleared before replacing children
+        button.setText("");
+        String texPath = currency != null ? currency.getTexturePath() : CurrencyType.METAL_SCRAP.getTexturePath();
+        Image scrapIcon = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(texPath))));
         Label costLabel = new Label(String.valueOf(cost), skin);
         content.add(scrapIcon).size(24, 24).padRight(5);
         content.add(costLabel);
@@ -316,11 +393,14 @@ public class TowerUpgradeMenu extends UIComponent {
             return;
         }
 
+        // choose currency for this tower type
+        CurrencyType costCurrency = currencyForTowerType(currentTowerType);
+
         Map<CurrencyType, Integer> costMap = new EnumMap<>(CurrencyType.class);
-        costMap.put(UPGRADE_CURRENCY, upgrade.cost);
+        costMap.put(costCurrency, upgrade.cost);
 
         if (!currencyManager.canAffordAndSpendCurrency(costMap)) {
-            System.out.println("Not enough " + UPGRADE_CURRENCY + " for upgrade!");
+            System.out.println("Not enough " + costCurrency + " for upgrade!");
             upgradeInProgress = false;
             return;
         }
@@ -348,14 +428,26 @@ public class TowerUpgradeMenu extends UIComponent {
 
         if (highestUpgrades != null) {
             UpgradeStats levelData = highestUpgrades.get(highestLevel);
-            if (levelData != null && levelData.imagePath != null) {
+            if (levelData != null && levelData.atlasPath != null) {
                 TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
                 if (towerComp != null) {
-                    towerComp.changeHeadTexture(levelData.imagePath);
+                    towerComp.changeHeadTexture(levelData.atlasPath, currentLevel);
                     System.out.println("Tower texture set from path " +
                             (levelA >= levelB ? "A" : "B") +
                             " at level " + highestLevel +
-                            ": " + levelData.imagePath);
+                            ": " + levelData.atlasPath);
+                }
+            }
+        }
+
+        // If this tower has an orbiting head, update its orbit radius to match the new range
+        TowerComponent towerCompForOrbit = selectedTower.getComponent(TowerComponent.class);
+        if (towerCompForOrbit != null && towerCompForOrbit.hasHead()) {
+            Entity head = towerCompForOrbit.getHeadEntity();
+            if (head != null) {
+                com.csse3200.game.components.towers.OrbitComponent orbit = head.getComponent(com.csse3200.game.components.towers.OrbitComponent.class);
+                if (orbit != null) {
+                    orbit.setRadius(stats.getRange());
                 }
             }
         }
@@ -366,7 +458,6 @@ public class TowerUpgradeMenu extends UIComponent {
         // 重置升级标志
         upgradeInProgress = false;
     }
-
 
 
     /**
@@ -403,6 +494,15 @@ public class TowerUpgradeMenu extends UIComponent {
         if (selectedTower == null || currentTowerType == null) return;
 
         TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
+        if (stats == null) {
+            // clear/disable UI if stats missing
+            pathALevelLabel.setText("Level: 0");
+            pathBLevelLabel.setText("Level: 0");
+            pathAButton.setDisabled(true);
+            pathBButton.setDisabled(true);
+            return;
+        }
+
         int levelA = stats.getLevel_A();
         int levelB = stats.getLevel_B();
 
@@ -440,6 +540,9 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         }
 
+        // determine currency for current tower type
+        CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
+
         // --- Path A button ---
         pathAButton.clearChildren();
         if (levelA >= 5) {
@@ -448,7 +551,7 @@ public class TowerUpgradeMenu extends UIComponent {
             pathAButton.setDisabled(true);
         } else {
             int costA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
-            setupButtonContent(pathAButton, costA);
+            setupButtonContent(pathAButton, costA, displayCurrency);
             pathAButton.setDisabled(false);
         }
 
@@ -460,10 +563,12 @@ public class TowerUpgradeMenu extends UIComponent {
             pathBButton.setDisabled(true);
         } else {
             int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
-            setupButtonContent(pathBButton, costB);
+            setupButtonContent(pathBButton, costB, displayCurrency);
             pathBButton.setDisabled(false);
         }
 
     }
 
+    // Remove manual updateUpgradeData and handleUpgradeA/B for supercavemen.
+    // The upgrade menu uses the upgrade maps, so supercavemen upgrades will now work automatically.
 }

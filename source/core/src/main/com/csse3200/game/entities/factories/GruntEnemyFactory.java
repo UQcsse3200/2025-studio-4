@@ -21,7 +21,7 @@ public class GruntEnemyFactory {
     // Default grunt configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 75;
+    private static final int DEFAULT_HEALTH = 50;
     private static final int DEFAULT_DAMAGE = 12;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
@@ -29,7 +29,7 @@ public class GruntEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 150;
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,6 @@ public class GruntEnemyFactory {
         grunt.addComponent(waypointComponent);
 
         grunt
-            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
@@ -126,6 +125,7 @@ public class GruntEnemyFactory {
         //Eventually add point/score logic here maybe?
     }
 
+    @SuppressWarnings("unused")
     private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
         WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
         if (wc != null) {

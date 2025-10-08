@@ -1,0 +1,16 @@
+caveman_lvl3.png
+size:4096,4096
+repeat:none
+fire
+index:1
+bounds:2,2,580,960
+offsets:640,700,2000,2000
+fire
+index:2
+bounds:684,2,680,1100
+offsets:640,620,2000,2000
+idle
+index:1
+bounds:1366,2,580,901
+offsets:7,15,592,922
+

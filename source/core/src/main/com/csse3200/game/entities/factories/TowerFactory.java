@@ -292,8 +292,9 @@ public class TowerFactory {
 
         RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(bankAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("idle", 1f, Animation.PlayMode.LOOP);
         headAnim.startAnimation("idle");
+        headAnim.setBaseRotation(0f);
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new Vector2(0f, 0f), 0.01f);
@@ -324,9 +325,10 @@ public class TowerFactory {
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("idle", 0.3f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
         headAnim.startAnimation("idle");
+        headAnim.setBaseRotation(0f);
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
@@ -417,12 +419,26 @@ public class TowerFactory {
                         "villageshaman", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+
         // TEMPORARY: use bone tower atlas for now
         com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/shaman/charmanlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
+
+        // Add ChainLightningComponent to head
+        core.src.main.com.csse3200.game.components.towers.ChainLightningComponent chainLightning =
+                new core.src.main.com.csse3200.game.components.towers.ChainLightningComponent(
+                        stats.range,         // range
+                        stats.damage,        // damage
+                        stats.cooldown,      // cooldown
+                        4,                   // maxChains
+                        3.0f                 // chainRange
+                );
+        head.addComponent(chainLightning)
+            .addComponent(new core.src.main.com.csse3200.game.components.towers.ChainLightningComponent.ChainLightningRenderComponent(chainLightning));
+
         headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
         headAnim.startAnimation("idle");

@@ -141,19 +141,22 @@ public class ForestGameArea2 extends GameArea2 {
         waves = new ArrayList<>();
         
         // Wave 1:
-        waves.add(new Wave(1, 5, 0, 0, 0, 0, 3.0f, waypointLists));
+        waves.add(new Wave(1, 6, 6, 0, 0, 0, 2.0f, waypointLists));
         
         // Wave 2:
-        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2.0f, waypointLists));
+        waves.add(new Wave(2, 16, 6, 2, 0, 0, 1.5f, waypointLists));
         
         // Wave 3:
-        waves.add(new Wave(3, 10, 5, 2, 0, 0, 2.0f, waypointLists));
+        waves.add(new Wave(3, 6, 6, 10, 0, 0, 1.0f, waypointLists));
         
         // Wave 4:
-        waves.add(new Wave(4, 8, 6, 3, 0, 1, 1.5f, waypointLists));
+        waves.add(new Wave(4, 10, 10, 6, 0, 2, 0.75f, waypointLists));
         
         // Wave 5:
-        waves.add(new Wave(5, 10, 8, 4, 1, 1, 1.2f, waypointLists));
+        waves.add(new Wave(5, 20, 20, 10, 1, 2, 0.5f, waypointLists));
+
+        // Wave 6:
+        waves.add(new Wave(6, 30, 20, 16, 2, 4, 0.5f, waypointLists));
     }
 
     private void initializeSpawnCallbacks() {

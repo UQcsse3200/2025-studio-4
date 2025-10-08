@@ -52,7 +52,7 @@ public class DividerEnemyFactoryTest {
         assertNotNull(stats);
         assertEquals(150, stats.getHealth());
         assertEquals(5, stats.getBaseAttack());
-        assertEquals(DamageTypeConfig.None, stats.getResistances());
+        assertEquals(DamageTypeConfig.Electricity, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.75f, 0.75f), DividerEnemyFactory.getSpeed());
     }
@@ -77,7 +77,7 @@ public class DividerEnemyFactoryTest {
         assertEquals(DamageTypeConfig.Electricity, DividerEnemyFactory.getResistance());
         // Setting resistance to null should default to None
         DividerEnemyFactory.setResistance(null);
-        assertEquals(DamageTypeConfig.None, DividerEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.Electricity, DividerEnemyFactory.getResistance());
     }
 
     @Test
@@ -159,7 +159,7 @@ public class DividerEnemyFactoryTest {
         DividerEnemyFactory.resetToDefaults();
 
         // Verify the values have actually been reset to default values
-        assertEquals(DamageTypeConfig.None, DividerEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.Electricity, DividerEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, DividerEnemyFactory.getWeakness());
         assertEquals(new Vector2(0.75f, 0.75f), DividerEnemyFactory.getSpeed());
         assertEquals("images/divider_enemy.png", DividerEnemyFactory.getTexturePath());
@@ -177,7 +177,7 @@ public class DividerEnemyFactoryTest {
         assertNotNull(stats);
         assertEquals(600, stats.getHealth());
         assertEquals(20, stats.getBaseAttack());
-        assertEquals(DamageTypeConfig.None, stats.getResistances());
+        assertEquals(DamageTypeConfig.Electricity, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.75f, 0.75f), DividerEnemyFactory.getSpeed());
     }

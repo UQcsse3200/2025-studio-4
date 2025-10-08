@@ -69,7 +69,7 @@ public class TankFactoryTest {
         assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getResistance());
         // Setting resistance to null should default to None
         TankEnemyFactory.setResistance(null);
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.Fire, TankEnemyFactory.getResistance());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TankFactoryTest {
         assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getWeakness());
         // Setting weakness to null should default to None
         TankEnemyFactory.setWeakness(null);
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getWeakness());
+        assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getWeakness());
     }
 
     @Test
@@ -151,8 +151,8 @@ public class TankFactoryTest {
         TankEnemyFactory.resetToDefaults();
 
         // Verify the values have actually been reset to default values
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getResistance());
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getWeakness());
+        assertEquals(DamageTypeConfig.Fire, TankEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getWeakness());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
         assertEquals("images/tank_enemy.png", TankEnemyFactory.getTexturePath());
         assertEquals("Tank Enemy", TankEnemyFactory.getDisplayName());

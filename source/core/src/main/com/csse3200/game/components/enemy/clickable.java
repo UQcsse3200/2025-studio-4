@@ -40,7 +40,7 @@ public class clickable extends Component{
                 // Check if click is close to enemy
                 if (Math.abs(worldClickPos.x - (entityPos.x + clickRadius/2)) < clickRadius &&
                     Math.abs(worldClickPos.y - (entityPos.y + clickRadius)) < clickRadius) {
-                    entity.getComponent(CombatStatsComponent.class).addHealth(-25, DamageTypeConfig.None);
+                    entity.getComponent(CombatStatsComponent.class).addHealth(-10, DamageTypeConfig.None);
 
                     DeckComponent deck = entity.getComponent(DeckComponent.EnemyDeckComponent.class);
                     player.getEvents().trigger("displayDeck", deck);

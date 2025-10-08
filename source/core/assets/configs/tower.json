@@ -98,7 +98,7 @@
       "neurochipCost": 0,
       "projectileSpeed": 0.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/crystalk.png",
+      "projectileTexture": "images/towers/projectile animations/crystal.png",
       "image": "images/towers/totem.png"
     }
   },

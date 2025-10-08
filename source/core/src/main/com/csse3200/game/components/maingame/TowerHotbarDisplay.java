@@ -102,17 +102,20 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(villageshamanBtn, "villageshaman");
         addPlacementListener(superCavemenBtn, "supercavemen");
 
-        // Grid with almost no gaps
+        // Grid with visually balanced tiles
         Table buttonTable = new Table();
-        float BUTTON_W = screenWidth * 0.07f;    // slightly narrower
-        float BUTTON_H = screenHeight * 0.10f;   // consistent height
-        float BUTTON_PAD = screenWidth * 0.0015f; // very tight gap
+
+        // Slightly narrower but taller tiles for better proportions
+        float BUTTON_W = screenWidth * 0.072f;   // small reduction in width
+        float BUTTON_H = screenHeight * 0.112f;  // slightly taller
+        float BUTTON_PAD = screenWidth * 0.001f; // tight gap
         buttonTable.defaults().pad(BUTTON_PAD).center();
 
         for (int i = 0; i < allButtons.length; i++) {
             buttonTable.add(allButtons[i]).size(BUTTON_W, BUTTON_H);
             if ((i + 1) % 3 == 0) buttonTable.row();
         }
+
 
         // Layout
         Table content = new Table();
@@ -126,7 +129,10 @@ public class TowerHotbarDisplay extends UIComponent {
         container.setActor(content);
 
         // Slightly narrower width for perfect map fit
-        rootTable.add(container).width(screenWidth * 0.232f);
+        // Keep width perfect, allow more height for taller tiles
+        rootTable.add(container)
+                .width(screenWidth * 0.232f)
+                .height(screenHeight * 0.55f); // was auto, now fills 70% of screen height
         stage.addActor(rootTable);
 
         // Input setup

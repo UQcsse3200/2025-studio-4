@@ -19,51 +19,57 @@ public class LeaderboardPopup extends Window {
     private final TextButton prevBtn, nextBtn, closeBtn, friendsBtn;
 
     public LeaderboardPopup(Skin skin, LeaderboardController controller) {
-        super("Leaderboard", skin);
+        super("", skin);  // 空标题，我们自定义标题栏
         this.skin = skin;
         this.controller = controller;
 
         setModal(true);
         setMovable(false);
-        pad(16);
+        pad(0);  // 移除默认 padding，我们自己控制
         getTitleLabel().setAlignment(Align.center);
 
-        friendsBtn = new TextButton("All", skin);
-        closeBtn = new TextButton("Close", skin);
-        prevBtn = new TextButton("< Prev", skin);
-        nextBtn = new TextButton("Next >", skin);
+        // 使用暗色样式的按钮
+        friendsBtn = new TextButton("All", skin, "dark");
+        closeBtn = new TextButton("Close", skin);  // 主按钮样式
+        prevBtn = new TextButton("< Prev", skin, "dark");
+        nextBtn = new TextButton("Next >", skin, "dark");
 
+        // 标题栏
         Table header = new Table();
+        header.pad(16, 20, 12, 20);
         header.add(new Label("Leaderboard", skin, "title")).expandX().left();
-        header.add(friendsBtn).right();
+        header.add(friendsBtn).width(100).height(36).right();
 
-        Table headerRow = new Table(skin);
-        headerRow.add(new Label("#", skin)).width(40).left();
-        headerRow.add(new Label("Player", skin)).expandX().left().padLeft(8);
-        headerRow.add(new Label("Score", skin)).width(120).right();
-        headerRow.add(new Label("Time", skin)).width(160).right();
+        // 表头行 - 使用 header 样式
+        Table headerRow = new Table();
+        headerRow.pad(8, 20, 8, 20);
+        headerRow.add(new Label("#", skin, "header")).width(50).left();
+        headerRow.add(new Label("Player", skin, "header")).expandX().left().padLeft(8);
+        headerRow.add(new Label("Score", skin, "header")).width(100).right();
+        headerRow.add(new Label("Time", skin, "header")).width(160).right();
 
         scroller = new ScrollPane(listTable, skin);
         scroller.setFadeScrollBars(false);
         scroller.setScrollingDisabled(true, false);
 
+        // 底部按钮栏
         Table footer = new Table();
-        footer.add(prevBtn).left().padRight(8);
-        footer.add(nextBtn).left().padRight(8);
+        footer.pad(12, 20, 16, 20);
+        footer.add(prevBtn).width(100).height(36).left().padRight(8);
+        footer.add(nextBtn).width(100).height(36).left().padRight(8);
         footer.add().expandX();
-        footer.add(closeBtn).right();
+        footer.add(closeBtn).width(100).height(36).right();
 
         Table content = new Table();
-        content.defaults().pad(6);
         content.add(header).growX();
         content.row();
-        content.add(headerRow).growX().padTop(6);
+        content.add(headerRow).growX();
         content.row();
-        content.add(scroller).grow().minHeight(360);
+        content.add(scroller).grow().minHeight(400).pad(0, 20, 0, 20);
         content.row();
         content.add(footer).growX();
 
-        add(content).grow().minSize(720, 540);
+        add(content).grow().minSize(800, 600);
 
         // 事件
         closeBtn.addListener(new ChangeListener() {
@@ -121,26 +127,31 @@ public class LeaderboardPopup extends Window {
     private Table buildRow(LeaderboardEntry e, LeaderboardEntry me) {
         boolean isMe = (me != null && me.playerId.equals(e.playerId));
         Table row = new Table(skin);
-        row.pad(4);
+        row.pad(10, 0, 10, 0);  // 增加行高
 
         Label rank = new Label(String.valueOf(e.rank), skin);
         Label name = new Label(e.displayName + (isMe ? " (You)" : ""), skin);
         Label score = new Label(String.valueOf(e.score), skin);
         Label time = new Label(formatTime(e.achievedAtMs), skin);
 
+        // 使用奖牌图标标记前三名
         if (e.rank == 1) rank.setText("🥇 " + e.rank);
         else if (e.rank == 2) rank.setText("🥈 " + e.rank);
         else if (e.rank == 3) rank.setText("🥉 " + e.rank);
 
-        if (isMe) row.setBackground("selection"); // 需要在 skin 里有 selection
+        // 高亮自己的排名
+        if (isMe) {
+            row.setBackground("selection");
+            name.setStyle(new Label.LabelStyle(name.getStyle().font, com.badlogic.gdx.graphics.Color.WHITE));
+        }
 
         // 添加头像显示
         Image avatarImage = createAvatarImage(e.avatarId);
         
-        row.add(rank).width(40).left();
+        row.add(rank).width(50).left();
         row.add(avatarImage).size(32, 32).padLeft(8);
-        row.add(name).expandX().left().padLeft(8);
-        row.add(score).width(120).right();
+        row.add(name).expandX().left().padLeft(12);
+        row.add(score).width(100).right();
         row.add(time).width(160).right();
 
         return row;

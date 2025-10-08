@@ -111,11 +111,11 @@ public class PauseMenuDisplay extends UIComponent {
         Texture pauseTex = ServiceLocator.getResourceService()
                 .getAsset("images/pause_button.png", Texture.class);
         pauseIcon = new Image(pauseTex);
-        Table topLeft = new Table();
-        topLeft.setFillParent(true);
-        topLeft.top().left().pad(12f);
-        topLeft.add(pauseIcon).size(48f, 48f);
-        stage.addActor(topLeft);
+        Table topRight = new Table();
+        topRight.setFillParent(true);
+        topRight.top().right();
+        topRight.add(pauseIcon).size(48f, 48f).padTop(12f).padRight(150f);
+        stage.addActor(topRight);
 
         
         pauseIcon.addListener(new ChangeListener() {

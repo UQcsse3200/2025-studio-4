@@ -3,6 +3,7 @@ package com.csse3200.game.screens;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.BackgroundDecorator;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
@@ -28,7 +29,8 @@ public class MainMenuScreen extends ScreenAdapter {
   private static final String[] mainMenuTextures = {
     "images/main_menu_background.png",
     "images/Main_Menu_Button_Background.png",
-    "images/star.png"
+    "images/star.png",
+    "images/sun.png"
   };
   
   private static final String[] mainMenuMusic = {
@@ -129,6 +131,12 @@ public class MainMenuScreen extends ScreenAdapter {
   private void createUI() {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
+    
+    // Add background decorations (stars and clouds)
+    Entity backgroundDecorations = new Entity();
+    backgroundDecorations.addComponent(new BackgroundDecorator());
+    ServiceLocator.getEntityService().register(backgroundDecorations);
+    
     Entity ui = new Entity();
     ui.addComponent(new MainMenuDisplay())
         .addComponent(new InputDecorator(stage, 10))

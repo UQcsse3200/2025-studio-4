@@ -31,8 +31,9 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
+    // Sets background to dark theme color (matching system theme)
+    // Using Theme.WINDOW_BG color: #0c1116
+    Gdx.gl.glClearColor(12f/255f, 17f/255f, 22f/255f, 1);
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());

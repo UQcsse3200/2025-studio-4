@@ -136,14 +136,21 @@ public class MainMenuActions extends Component {
    */
   private void showLeaderboard() {
     try {
+      logger.info("Attempting to show leaderboard popup");
+      
       // Use the global leaderboard service (already registered in GdxGame)
       com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
         ServiceLocator.getLeaderboardService();
       
       if (leaderboardService == null) {
-        logger.error("Leaderboard service not available");
-        return;
+        logger.error("Leaderboard service not available, registering fallback service");
+        // Register a fallback service if none exists
+        ServiceLocator.registerLeaderboardService(
+          new com.csse3200.game.services.leaderboard.SessionLeaderboardService("player-001"));
+        leaderboardService = ServiceLocator.getLeaderboardService();
       }
+      
+      logger.info("Leaderboard service found: {}", leaderboardService.getClass().getSimpleName());
       
       // Create and show leaderboard popup
       com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
@@ -153,7 +160,15 @@ public class MainMenuActions extends Component {
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(
           com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(), controller);
       
-      popup.showOn(ServiceLocator.getRenderService().getStage());
+      // Get the stage and show the popup
+      var stage = ServiceLocator.getRenderService().getStage();
+      if (stage == null) {
+        logger.error("Render service stage not available");
+        return;
+      }
+      
+      logger.info("Showing leaderboard popup on stage");
+      popup.showOn(stage);
       
     } catch (Exception e) {
       logger.error("Failed to show leaderboard", e);

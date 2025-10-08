@@ -30,6 +30,7 @@ class SessionLeaderboardServiceTest {
         assertEquals(1000, entries.get(0).score);
         assertEquals(1, entries.get(0).rank);
         assertEquals(TEST_PLAYER_ID, entries.get(0).playerId);
+        assertEquals("avatar_1", entries.get(0).avatarId); // 默认头像
     }
     
     @Test
@@ -107,5 +108,23 @@ class SessionLeaderboardServiceTest {
         assertEquals(2, entries.size());
         assertEquals(1000, entries.get(0).score);
         assertEquals(500, entries.get(1).score);
+    }
+    
+    @Test
+    void testAvatarIntegration() {
+        // Test that avatar information is included in leaderboard entries
+        leaderboardService.submitScore(1000);
+        
+        var entries = leaderboardService.getEntries(
+            new LeaderboardService.LeaderboardQuery(0, 10, false)
+        );
+        
+        assertEquals(1, entries.size());
+        assertNotNull(entries.get(0).avatarId);
+        assertEquals("avatar_1", entries.get(0).avatarId); // 默认头像
+        
+        var myBest = leaderboardService.getMyBest();
+        assertNotNull(myBest.avatarId);
+        assertEquals("avatar_1", myBest.avatarId);
     }
 }

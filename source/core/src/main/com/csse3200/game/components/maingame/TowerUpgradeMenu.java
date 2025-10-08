@@ -65,6 +65,9 @@ public class TowerUpgradeMenu extends UIComponent {
         System.out.println("DEBUG: Loaded upgrade data for towers: " + pathAUpgradesPerTower.keySet());
     }
 
+    /**
+     * Creates the upgrade menu UI and sets up listeners.
+     */
     @Override
     public void create() {
         super.create();
@@ -256,7 +259,12 @@ public class TowerUpgradeMenu extends UIComponent {
         return rootTable.hit(stageCoords.x, stageCoords.y, true) != null;
     }
 
-    // Helper: choose upgrade/refund currency per tower type
+    /**
+     * Helper: choose upgrade/refund currency per tower type.
+     *
+     * @param towerType The tower type string.
+     * @return The currency type for upgrades/refunds.
+     */
     private static CurrencyType currencyForTowerType(String towerType) {
         String key = canonicalTowerType(towerType);
         if (key == null || key.isEmpty()) return UPGRADE_CURRENCY;
@@ -271,6 +279,12 @@ public class TowerUpgradeMenu extends UIComponent {
         return UPGRADE_CURRENCY;
     }
 
+    /**
+     * Helper: canonicalizes the tower type string.
+     *
+     * @param towerType The tower type string.
+     * @return The canonical tower type string.
+     */
     private static String canonicalTowerType(String towerType) {
         if (towerType == null) return "";
         String s = towerType.trim().toLowerCase();
@@ -305,7 +319,13 @@ public class TowerUpgradeMenu extends UIComponent {
         button.add(content).expand().fill();
     }
 
-    // Overload: show currency icon based on currency type
+    /**
+     * Overload: show currency icon based on currency type.
+     *
+     * @param button The button to set up.
+     * @param cost The cost to display.
+     * @param currency The currency type.
+     */
     private void setupButtonContent(TextButton button, int cost, CurrencyType currency) {
         Table content = new Table(skin);
         // Ensure button text cleared before replacing children

@@ -80,6 +80,8 @@ public class CurrencyGeneratorComponent extends Component {
 
     /**
      * Gets a safe copy of all entities from the entity service.
+     *
+     * @return Array of entities, or null if retrieval fails.
      */
     private Array<Entity> safeEntities() {
         try {
@@ -92,7 +94,7 @@ public class CurrencyGeneratorComponent extends Component {
     /**
      * Gets the current currency type being generated.
      *
-     * @return The currency type
+     * @return The currency type.
      */
     public CurrencyType getCurrencyType() {
         return currencyType;
@@ -101,7 +103,7 @@ public class CurrencyGeneratorComponent extends Component {
     /**
      * Sets the currency type to generate.
      *
-     * @param currencyType The new currency type
+     * @param currencyType The new currency type.
      */
     public void setCurrencyType(CurrencyType currencyType) {
         this.currencyType = currencyType;
@@ -110,7 +112,7 @@ public class CurrencyGeneratorComponent extends Component {
     /**
      * Gets the amount of currency generated per interval.
      *
-     * @return The currency amount
+     * @return The currency amount.
      */
     public int getCurrencyAmount() {
         return currencyAmount;
@@ -119,7 +121,7 @@ public class CurrencyGeneratorComponent extends Component {
     /**
      * Sets the amount of currency generated per interval.
      *
-     * @param currencyAmount The new currency amount
+     * @param currencyAmount The new currency amount.
      */
     public void setCurrencyAmount(int currencyAmount) {
         this.currencyAmount = currencyAmount;
@@ -128,7 +130,7 @@ public class CurrencyGeneratorComponent extends Component {
     /**
      * Gets the generation interval in seconds.
      *
-     * @return The generation interval
+     * @return The generation interval.
      */
     public float getGenerationInterval() {
         return generationInterval;
@@ -137,7 +139,7 @@ public class CurrencyGeneratorComponent extends Component {
     /**
      * Sets the generation interval in seconds.
      *
-     * @param generationInterval The new generation interval
+     * @param generationInterval The new generation interval.
      */
     public void setGenerationInterval(float generationInterval) {
         this.generationInterval = generationInterval;

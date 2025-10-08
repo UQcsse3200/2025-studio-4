@@ -36,6 +36,9 @@ public class BeamAttackComponent extends Component {
         this.cooldown = cooldown;
     }
 
+    /**
+     * Updates the beam attack logic, finds a target, and applies damage if cooldown is met.
+     */
     @Override
     public void update() {
         // If assigned target is invalid, try to find a new one (keeps component usable standalone)
@@ -63,15 +66,25 @@ public class BeamAttackComponent extends Component {
         }
     }
 
-    // External API: allow other code to set/clear the beam target
+    /**
+     * Sets the target entity for the beam.
+     * @param e The entity to target.
+     */
     public void setTarget(Entity e) {
         this.target = e;
     }
 
+    /**
+     * Clears the current beam target.
+     */
     public void clearTarget() {
         this.target = null;
     }
 
+    /**
+     * Draws the beam between the tower and its target.
+     * @param batch The SpriteBatch used for rendering.
+     */
     public void draw(SpriteBatch batch) {
         if (target == null || batch == null) return;
 
@@ -153,7 +166,11 @@ public class BeamAttackComponent extends Component {
         batch.begin();
     }
 
-
+    /**
+     * Checks if the given enemy is within range of the beam.
+     * @param enemy The enemy entity.
+     * @return True if in range, false otherwise.
+     */
     private boolean isInRange(Entity enemy) {
         Vector2 c1 = centerSafe(enemy);
         Vector2 c2 = centerSafe(entity);
@@ -162,12 +179,9 @@ public class BeamAttackComponent extends Component {
     }
 
     /**
-     * Consider an entity a valid enemy if:
-     *  - it is not a projectile
-     *  - it has CombatStatsComponent
-     *  - it has a hitbox and NPC category bits
-     *
-     * This mirrors TowerComponent's targeting checks so enemies are detected reliably.
+     * Determines if an entity is a valid enemy for targeting.
+     * @param e The entity to check.
+     * @return True if valid enemy, false otherwise.
      */
     private boolean isValidEnemy(Entity e) {
         if (e == null) return false;
@@ -184,8 +198,8 @@ public class BeamAttackComponent extends Component {
     }
 
     /**
-     * Find nearest valid NPC enemy by scanning registered entities.
-     * Only considers entities passing isValidEnemy().
+     * Finds the nearest valid enemy within range.
+     * @return The nearest enemy entity, or null if none found.
      */
     private Entity findNearestEnemy() {
         List<Entity> all = new ArrayList<>();
@@ -217,6 +231,11 @@ public class BeamAttackComponent extends Component {
         return closest;
     }
 
+    /**
+     * Safely gets the center position of an entity.
+     * @param e The entity.
+     * @return The center position as Vector2, or null if unavailable.
+     */
     private Vector2 centerSafe(Entity e) {
         try {
             Vector2 c = e.getCenterPosition();
@@ -227,23 +246,39 @@ public class BeamAttackComponent extends Component {
         }
     }
 
+    /**
+     * Disposes of resources used by the beam attack component.
+     */
     @Override
     public void dispose() {
         shapeRenderer.dispose();
         super.dispose();
     }
 
-    // Add this inner class at the end of BeamAttackComponent
+    /**
+     * RenderComponent for drawing the beam on top of all other components.
+     */
     public static class BeamRenderComponent extends com.csse3200.game.rendering.RenderComponent {
-        private final BeamAttackComponent beam;
+        /**
+         * Constructs a BeamRenderComponent for the given BeamAttackComponent.
+         * @param beam The BeamAttackComponent to render.
+         */
         public BeamRenderComponent(BeamAttackComponent beam) {
             this.beam = beam;
         }
+        /**
+         * Gets the rendering layer for the beam.
+         * @return The layer value.
+         */
         @Override
         public int getLayer() {
             // Return a very high layer so the beam is rendered on top of all other components
             return 9999;
         }
+        /**
+         * Draws the beam using the provided SpriteBatch.
+         * @param batch The SpriteBatch used for rendering.
+         */
         @Override
         protected void draw(SpriteBatch batch) {
             beam.draw(batch);

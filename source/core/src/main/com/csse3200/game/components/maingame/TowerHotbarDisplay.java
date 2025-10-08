@@ -27,6 +27,9 @@ public class TowerHotbarDisplay extends UIComponent {
     private SimplePlacementController placementController;
     private Skin hotbarSkin;
 
+    /**
+     * Creates the UI for the tower hotbar and sets up listeners.
+     */
     @Override
     public void create() {
         super.create();
@@ -145,6 +148,11 @@ public class TowerHotbarDisplay extends UIComponent {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
+    /**
+     * Adds a placement listener to a hotbar button for the specified tower type.
+     * @param button The ImageButton to add the listener to.
+     * @param towerType The tower type string.
+     */
     private void addPlacementListener(ImageButton button, String towerType) {
         button.addListener(new ChangeListener() {
             @Override
@@ -166,11 +174,20 @@ public class TowerHotbarDisplay extends UIComponent {
         });
     }
 
+    /**
+     * Capitalizes the first letter of a string.
+     * @param str The string to capitalize.
+     * @return The capitalized string.
+     */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
+    /**
+     * Handles placement event triggering for a tower type.
+     * @param eventName The event name to trigger.
+     */
     private void handlePlacement(String eventName) {
         if (placementController != null && placementController.isPlacementActive()) {
             placementController.cancelPlacement();
@@ -179,9 +196,16 @@ public class TowerHotbarDisplay extends UIComponent {
         entity.getEvents().trigger(eventName);
     }
 
+    /**
+     * Draws the hotbar UI component. (No custom drawing needed.)
+     * @param batch The SpriteBatch used for rendering.
+     */
     @Override
     public void draw(SpriteBatch batch) {}
 
+    /**
+     * Disposes of resources used by the hotbar display.
+     */
     @Override
     public void dispose() {
         rootTable.clear();

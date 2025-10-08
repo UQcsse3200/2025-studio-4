@@ -243,62 +243,28 @@ public class TowerUpgradeMenu extends UIComponent {
     private static CurrencyType currencyForTowerType(String towerType) {
         String key = canonicalTowerType(towerType);
         if (key == null) return UPGRADE_CURRENCY;
-        if ("pteradactyl".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        if ("totem".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        if ("supercavemen".equalsIgnoreCase(key)) {
-            return CurrencyType.NEUROCHIP;
-        }
-        // Add new towers currency logic
-        if ("cavemenvillage".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        if ("raft".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        if ("frozenmamoothskull".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        if ("bouldercatapult".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        if ("villageshaman".equalsIgnoreCase(key)) {
-            return CurrencyType.NEUROCHIP;
-        }
+        if ("pteradactyl".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("totem".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("supercavemen".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
+        if ("cavemenvillage".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("raft".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("frozenmamoothskull".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("bouldercatapult".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("villageshaman".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
         return UPGRADE_CURRENCY;
     }
 
     private static String canonicalTowerType(String towerType) {
         if (towerType == null) return "";
         String s = towerType.toLowerCase().trim();
-        if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) {
-            return "pteradactyl";
-        }
-        if (s.equals("totem")) {
-            return "totem";
-        }
-        if (s.equals("supercavemen")) {
-            return "supercavemen";
-        }
-        // Add canonicalization for new towers
-        if (s.equals("cavemenvillage")) {
-            return "cavemenvillage";
-        }
-        if (s.equals("raft")) {
-            return "raft";
-        }
-        if (s.equals("frozenmamoothskull")) {
-            return "frozenmamoothskull";
-        }
-        if (s.equals("bouldercatapult")) {
-            return "bouldercatapult";
-        }
-        if (s.equals("villageshaman")) {
-            return "villageshaman";
-        }
+        if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) return "pteradactyl";
+        if (s.equals("totem")) return "totem";
+        if (s.equals("supercavemen")) return "supercavemen";
+        if (s.equals("cavemenvillage")) return "cavemenvillage";
+        if (s.equals("raft")) return "raft";
+        if (s.equals("frozenmamoothskull")) return "frozenmamoothskull";
+        if (s.equals("bouldercatapult")) return "bouldercatapult";
+        if (s.equals("villageshaman")) return "villageshaman";
         return s;
     }
 

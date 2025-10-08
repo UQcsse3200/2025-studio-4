@@ -139,7 +139,10 @@ public class SimplePlacementController extends Component {
         entity.getEvents().addListener("startPlacementSuperCavemen", this::armSuperCavemen);
         entity.getEvents().addListener("startPlacementTotem", this::armTotem);
         entity.getEvents().addListener("startPlacementBank", this::armBank);
-        entity.getEvents().addListener("startPlacementRaft", this::armRaft); // Add raft event
+        entity.getEvents().addListener("startPlacementRaft", this::armRaft);
+        entity.getEvents().addListener("startPlacementFrozenmamoothskull", this::armFrozenmamoothskull);
+        entity.getEvents().addListener("startPlacementBouldercatapult", this::armBouldercatapult);
+        entity.getEvents().addListener("startPlacementVillageshaman", this::armVillageshaman);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
 
@@ -184,6 +187,15 @@ public class SimplePlacementController extends Component {
         startPlacement("raft");
     }
 
+    /** Arms the controller to start placing a FrozenMamoothSkull tower. */
+    private void armFrozenmamoothskull() { startPlacement("frozenmamoothskull"); }
+
+    /** Arms the controller to start placing a BoulderCatapult tower. */
+    private void armBouldercatapult() { startPlacement("bouldercatapult"); }
+
+    /** Arms the controller to start placing a VillageShaman tower. */
+    private void armVillageshaman() { startPlacement("villageshaman"); }
+
     /**
      * Public API for UI to request a placement directly on this controller instance.
      * This avoids trying to trigger events on other entities (hotbar -> placement controller).
@@ -206,6 +218,7 @@ public class SimplePlacementController extends Component {
         needRelease = true;
 
         switch (type.toLowerCase()) {
+            case "bone" -> ghostTower = TowerFactory.createBoneTower();
             case "dino" -> ghostTower = TowerFactory.createDinoTower();
             case "cavemen" -> ghostTower = TowerFactory.createCavemenTower();
             case "pterodactyl" -> ghostTower = TowerFactory.createPterodactylTower();
@@ -213,6 +226,9 @@ public class SimplePlacementController extends Component {
             case "totem" -> ghostTower = TowerFactory.createTotemTower();
             case "bank" -> ghostTower = TowerFactory.createBankTower();
             case "raft" -> ghostTower = TowerFactory.createRaftTower();
+            case "frozenmamoothskull" -> ghostTower = TowerFactory.createFrozenmamoothskullTower();
+            case "bouldercatapult" -> ghostTower = TowerFactory.createBouldercatapultTower();
+            case "villageshaman" -> ghostTower = TowerFactory.createVillageshamanTower();
             default -> ghostTower = TowerFactory.createBoneTower();
         }
 
@@ -298,12 +314,17 @@ public class SimplePlacementController extends Component {
             // Get cost from TowerConfig
             TowerConfig.TowerStats stats = null;
             switch (pendingType.toLowerCase()) {
+                case "bone" -> stats = TowerFactory.getTowerConfig().boneTower.base;
                 case "dino" -> stats = TowerFactory.getTowerConfig().dinoTower.base;
                 case "cavemen" -> stats = TowerFactory.getTowerConfig().cavemenTower.base;
                 case "pterodactyl" -> stats = TowerFactory.getTowerConfig().pterodactylTower.base;
                 case "supercavemen" -> stats = TowerFactory.getTowerConfig().supercavemenTower.base;
                 case "totem" -> stats = TowerFactory.getTowerConfig().totemTower.base;
                 case "bank" -> stats = TowerFactory.getTowerConfig().bankTower.base;
+                case "raft" -> stats = TowerFactory.getTowerConfig().raftTower.base;
+                case "frozenmamoothskull" -> stats = TowerFactory.getTowerConfig().frozenmamoothskullTower.base;
+                case "bouldercatapult" -> stats = TowerFactory.getTowerConfig().bouldercatapultTower.base;
+                case "villageshaman" -> stats = TowerFactory.getTowerConfig().villageshamanTower.base;
                 default -> stats = TowerFactory.getTowerConfig().boneTower.base;
             }
 
@@ -325,6 +346,7 @@ public class SimplePlacementController extends Component {
             // Create new tower entity
             Entity newTower;
             switch (pendingType.toLowerCase()) {
+                case "bone" -> newTower = TowerFactory.createBoneTower();
                 case "dino" -> newTower = TowerFactory.createDinoTower();
                 case "cavemen" -> newTower = TowerFactory.createCavemenTower();
                 case "pterodactyl" -> newTower = TowerFactory.createPterodactylTower();
@@ -332,6 +354,9 @@ public class SimplePlacementController extends Component {
                 case "totem" -> newTower = TowerFactory.createTotemTower();
                 case "bank" -> newTower = TowerFactory.createBankTower();
                 case "raft" -> newTower = TowerFactory.createRaftTower();
+                case "frozenmamoothskull" -> newTower = TowerFactory.createFrozenmamoothskullTower();
+                case "bouldercatapult" -> newTower = TowerFactory.createBouldercatapultTower();
+                case "villageshaman" -> newTower = TowerFactory.createVillageshamanTower();
                 default -> newTower = TowerFactory.createBoneTower();
             }
 

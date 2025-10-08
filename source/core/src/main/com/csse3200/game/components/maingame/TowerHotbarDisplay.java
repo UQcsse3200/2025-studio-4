@@ -63,22 +63,27 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
         TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank_tower.png")));
-        TextureRegionDrawable raftImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/rafticon.png")));
+        TextureRegionDrawable boneAtlasImage = boneImage; // Use bone icon for new towers
 
         // Create buttons
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
-        ImageButton pteroBtn = new ImageButton(pteroImage); // pterodactyl slot
-        ImageButton totemBtn = new ImageButton(totemImage); // totem slot
-        ImageButton bankBtn = new ImageButton(bankImage); // bank slot
+        ImageButton pteroBtn = new ImageButton(pteroImage);
+        ImageButton totemBtn = new ImageButton(totemImage);
+        ImageButton bankBtn = new ImageButton(bankImage);
+        ImageButton raftBtn = new ImageButton(boneAtlasImage);
+        ImageButton frozenmamoothskullBtn = new ImageButton(boneAtlasImage);
+        ImageButton bouldercatapultBtn = new ImageButton(boneAtlasImage);
+        ImageButton villageshamanBtn = new ImageButton(boneAtlasImage);
         ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
-        ImageButton raftBtn = new ImageButton(raftImage); // raft slot
         ImageButton placeholderBtn = new ImageButton(placeholderImage);
 
         // Only include allowed towers in the hotbar
         ImageButton[] allButtons = {
-                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn, superCavemenBtn, raftBtn, placeholderBtn
+            boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
+            raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
+            superCavemenBtn, placeholderBtn
         };
 
         // Add listeners for all tower types
@@ -87,9 +92,12 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(cavemenBtn, "cavemen");
         addPlacementListener(pteroBtn, "pterodactyl");
         addPlacementListener(totemBtn, "totem");
-        addPlacementListener(superCavemenBtn, "supercavemen");
         addPlacementListener(bankBtn, "bank");
         addPlacementListener(raftBtn, "raft");
+        addPlacementListener(frozenmamoothskullBtn, "frozenmamoothskull");
+        addPlacementListener(bouldercatapultBtn, "bouldercatapult");
+        addPlacementListener(villageshamanBtn, "villageshaman");
+        addPlacementListener(superCavemenBtn, "supercavemen");
 
         // Button grid
         Table buttonTable = new Table();

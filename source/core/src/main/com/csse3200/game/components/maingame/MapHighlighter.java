@@ -197,6 +197,12 @@ public class MapHighlighter extends UIComponent {
             pendingEntity = towerFactory.createBankTower();
         } else if ("Raft".equalsIgnoreCase(pendingType)) {
             pendingEntity = towerFactory.createRaftTower();
+        } else if ("Frozenmamoothskull".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createFrozenmamoothskullTower();
+        } else if ("Bouldercatapult".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createBouldercatapultTower();
+        } else if ("Villageshaman".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createVillageshamanTower();
         } else {
             pendingEntity = towerFactory.createBoneTower();
         }

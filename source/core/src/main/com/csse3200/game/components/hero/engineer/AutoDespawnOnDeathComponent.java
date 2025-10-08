@@ -6,14 +6,14 @@ import com.csse3200.game.components.Component;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Used for summons/turrets: automatically and safely removes the entity once its HP reaches 0 (one-time only).
+ * 血量<=0 时自动安全移除（仅一次）。在下一帧执行 dispose，避免回调/物理步内销毁。
+ * 额外：在销毁前触发 "despawn" 事件，方便统一计数处理。
  */
 public class AutoDespawnOnDeathComponent extends Component {
     private final AtomicBoolean scheduled = new AtomicBoolean(false);
 
     @Override
     public void create() {
-        // Compatible with all three death-related events triggered in CombatStatsComponent
         entity.getEvents().addListener("death", this::onDeath);
         entity.getEvents().addListener("entityDeath", this::onDeath);
         entity.getEvents().addListener("setDead", (Boolean dead) -> {
@@ -22,11 +22,14 @@ public class AutoDespawnOnDeathComponent extends Component {
     }
 
     private void onDeath() {
-        // One-time safety check: ensure it only runs once
         if (!scheduled.compareAndSet(false, true)) return;
 
-        // Schedule safe removal in the next frame
-        // (avoids disposing during callback or physics step)
+        // 先广播 despawn（用于 SummonOwnerComponent 统一 -1）
+        if (entity != null) {
+            entity.getEvents().trigger("despawn");
+        }
+
+        // 下一帧安全移除
         Gdx.app.postRunnable(() -> {
             if (entity != null) entity.dispose();
         });

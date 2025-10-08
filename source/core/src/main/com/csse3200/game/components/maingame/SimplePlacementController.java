@@ -15,6 +15,8 @@ import com.csse3200.game.components.TowerComponent;
 import com.csse3200.game.components.TowerCostComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
+import com.csse3200.game.components.hero.engineer.SummonOwnerComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.TowerFactory;
 import com.csse3200.game.services.ServiceLocator;
@@ -497,25 +499,32 @@ public class SimplePlacementController extends Component {
     }
 
     /**
-     * Checks whether there is already a turret occupying the given tile.
+     * Checks whether there is already a summon occupying the given tile.
      * <p>
-     * Determines occupancy by looking for entities that have a
-     * {@link com.csse3200.game.components.hero.engineer.TurretAttackComponent}.
+     * Determines occupancy by checking for any entity that represents a summon,
+     * including turrets, melee summons, or currency generators.
+     * A summon is identified if it has a {@link com.csse3200.game.components.hero.engineer.SummonOwnerComponent}
+     * or an {@link com.csse3200.game.components.hero.engineer.OwnerComponent}.
      * </p>
      *
      * @param tile    The tile position to check.
      * @param terrain Reference to the terrain component (used for tile size).
-     * @return {@code true} if a turret exists on that tile; otherwise {@code false}.
+     * @return {@code true} if any summon entity exists on that tile; otherwise {@code false}.
      */
-    private boolean hasTurretOnTile(GridPoint2 tile, TerrainComponent terrain) {
+    private boolean hasSummonOnTile(GridPoint2 tile, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
         if (all == null) return false;
         float tileSize = terrain.getTileSize();
 
         for (Entity e : all) {
             if (e == null) continue;
-            if (e.getComponent(com.csse3200.game.components.hero.engineer.TurretAttackComponent.class) == null)
-                continue;
+
+            // 🔍 判断是否是召唤物：带有 SummonOwnerComponent 或 OwnerComponent
+            boolean isSummon =
+                    e.getComponent(com.csse3200.game.components.hero.engineer.SummonOwnerComponent.class) != null
+                            || e.getComponent(com.csse3200.game.components.hero.engineer.OwnerComponent.class) != null;
+
+            if (!isSummon) continue;
 
             Vector2 p = e.getPosition();
             if (p == null) continue;
@@ -524,12 +533,14 @@ public class SimplePlacementController extends Component {
                     (int) (p.x / tileSize),
                     (int) (p.y / tileSize)
             );
+
             if (etile.x == tile.x && etile.y == tile.y) {
-                return true; // Found turret on same tile
+                return true; // ✅ Found summon on same tile
             }
         }
         return false;
     }
+
 
     /**
      * Updates summon placement preview each frame.
@@ -567,7 +578,7 @@ public class SimplePlacementController extends Component {
             if (!onPath) return;
 
             // Prevent overlapping turrets on same tile
-            if (hasTurretOnTile(tile, terrain)) return;
+            if (hasSummonOnTile(tile, terrain)) return;
 
             // Finalize summon placement
             placeSummon(snapPos, tile);
@@ -585,75 +596,95 @@ public class SimplePlacementController extends Component {
      * @param tile    The tile coordinate of placement.
      */
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
-        // Remove the placement ghost
+        // ★★★ 方案A关键：生成前询问是否允许 ★★★
+        String typeToPlace = pendingType; // 保存原类型，避免下方重置后日志打印错
+        if (!requestCanSpawn(typeToPlace)) {
+            if (ghostSummon != null) {
+                ghostSummon.dispose();
+                ghostSummon = null;
+            }
+            placementActive = false;
+            mode = Mode.NONE;
+            pendingType = "bone";
+            System.out.println(">>> summon blocked by cap at " + tile + " type=" + typeToPlace);
+            return;
+        }
+
+        // 清理幽灵
         if (ghostSummon != null) {
             ghostSummon.dispose();
             ghostSummon = null;
         }
 
-        if ("turret".equals(pendingType)) {
-            // === Turret summon branch ===
-            // Example: turret shooting in multiple directions (expandable)
+        EngineerSummonComponent owner = findEngineerOwner();
+
+        if ("turret".equals(typeToPlace)) {
             Vector2[] dirs = new Vector2[]{
-                    new Vector2(-1, 0) // Left (add more directions as needed)
+                    new Vector2(-1, 0) // 例子：朝左；可扩展多方向
             };
 
-            // Optional: phase offsets to avoid simultaneous firing
-            float[] phaseShift = new float[]{0f, 0.25f, 0.50f, 0.75f};
-
-            for (int i = 0; i < dirs.length; i++) {
-                Vector2 d = dirs[i].nor();
+            for (Vector2 d : dirs) {
                 Entity t = SummonFactory.createDirectionalTurret(
-                        pendingSummonTexture,
-                        1f,          // Scale
-                        1.0f,        // Attack interval (example value)
-                        d            // Firing direction
+                        pendingSummonTexture, 1f, 1.0f, d.nor()
                 );
-
-                // Optionally apply cooldown offset if supported by turret component
-                // e.g. t.getComponent(TurretShootComponent.class).setInitialCooldown(phaseShift[i]);
-
+                t.addComponent(new SummonOwnerComponent(owner, typeToPlace));
                 t.setPosition(snapPos);
                 ServiceLocator.getEntityService().register(t);
                 t.create();
             }
 
-        } else if ("currencyBot".equals(pendingType)) {
-            // === Currency generator bot branch ===
-            Entity owner = findPlayerEntity(); // Automatically find the player
+        } else if ("currencyBot".equals(typeToPlace)) {
+            Entity player = findPlayerEntity();
 
             Entity bot = SummonFactory.createCurrencyBot(
-                    pendingSummonTexture,     // Texture
-                    1f,                       // Scale
-                    owner,                    // Owner (player)
-                    CurrencyType.METAL_SCRAP, // Currency type
-                    300,                      // Amount generated per cycle
-                    2f                        // Generation interval (seconds)
+                    pendingSummonTexture,
+                    1f,
+                    player,
+                    CurrencyType.METAL_SCRAP,
+                    300,
+                    2f
             );
-
+            bot.addComponent(new SummonOwnerComponent(owner, typeToPlace));
             bot.setPosition(snapPos);
             ServiceLocator.getEntityService().register(bot);
             bot.create();
             System.out.println(">>> currencyBot placed at " + tile);
 
         } else {
-            // === Default branch (melee summon / barrier) ===
+            // melee / barrier
             Entity summon = SummonFactory.createMeleeSummon(
-                    pendingSummonTexture,
-                    false,
-                    1f
+                    pendingSummonTexture, false, 1f
             );
+            summon.addComponent(new SummonOwnerComponent(owner, typeToPlace));
             summon.setPosition(snapPos);
             ServiceLocator.getEntityService().register(summon);
             summon.create();
         }
 
-        // Reset placement state
         placementActive = false;
         mode = Mode.NONE;
-        pendingType = "bone"; // Reset type
-        System.out.println(">>> turret (multi-directional) placed at " + tile);
+        pendingType = "bone";
+        System.out.println(">>> summon placed at " + tile + " type=" + typeToPlace);
     }
 
+    private boolean requestCanSpawn(String type) {
+        EngineerSummonComponent owner = findEngineerOwner();
+        if (owner == null) return true; // 没找到工程师就放行（按需改为 false）
+        final boolean[] allow = { true };
+        owner.getEntity().getEvents().trigger("summon:canSpawn?", type, allow);
+        return allow[0];
+    }
+
+    // ==== 工具：找到工程师组件（作为 Owner） ====
+    private EngineerSummonComponent findEngineerOwner() {
+        var all = ServiceLocator.getEntityService().getEntitiesCopy();
+        if (all == null) return null;
+        for (var e : all) {
+            if (e == null) continue;
+            EngineerSummonComponent c = e.getComponent(EngineerSummonComponent.class);
+            if (c != null) return c;
+        }
+        return null;
+    }
 
 }

@@ -10,65 +10,32 @@ import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Engineer Summon Component (Implementation Plan A):
- * <p>
- * Handles summoning logic for the Engineer hero using LibGDX's {@link InputMultiplexer}
- * to directly intercept keyboard inputs.
- * This approach avoids conflicts with the project’s {@code InputService} or UI layers.
- * </p>
- *
- * <ul>
- *   <li>Listens to numeric keys (1–3) to summon different robots/turrets.</li>
- *   <li>Uses {@link SimplePlacementController} for placement handling.</li>
- *   <li>Manages cooldown and summon count limits.</li>
- * </ul>
+ * 工程师召唤组件（方案A：事件拦截）
+ * - 键位触发 armSummon（1/2/3）
+ * - 放置“前”通过事件询问是否允许（summon:canSpawn?）
+ * - 召唤物生成后/死亡后通过事件维护数量（summon:spawned / summon:died）
+ * - HUD 监听 summonAliveChanged(alive, max) 实时显示
  */
 public class EngineerSummonComponent extends Component {
-    /**
-     * Cooldown duration (in seconds) between summons.
-     */
-    private final float cooldownSec;
+    private final float cooldownSec;         // 召唤CD（秒）
+    private final int maxSummons;            // 全局上限
+    private final String summonTexture;      // 默认贴图（可不用）
+    private final Vector2 summonSpeed;       // 默认速度（可不用）
 
-    /**
-     * Maximum number of active summons allowed simultaneously.
-     */
-    private final int maxSummons;
+    private float cd = 0f;                   // CD计时
+    private int alive = 0;                   // 当前总存活
 
-    /**
-     * Path to the summon’s texture (used for preview/ghost rendering).
-     */
-    private final String summonTexture;
+    // （可选）类型上限：不需要可清空
+    private final Map<String, Integer> typeCaps = new HashMap<>();
+    // 每类型已存活数
+    private final Map<String, Integer> aliveByType = new HashMap<>();
 
-    /**
-     * Initial summon speed or spawn offset, depending on implementation.
-     */
-    private final Vector2 summonSpeed;
-
-    /**
-     * Remaining cooldown time.
-     */
-    private float cd = 0f;
-
-    /**
-     * Current number of active summons.
-     */
-    private int alive = 0;
-
-    /**
-     * Input listener for Plan A.
-     * <p>Note: This is a plain {@link InputAdapter}, not the project’s custom InputComponent.</p>
-     */
     private InputAdapter qAdapter;
 
-    /**
-     * Constructs the summon component.
-     *
-     * @param cooldownSec   Cooldown time (seconds) between summoning actions.
-     * @param maxSummons    Maximum number of simultaneous active summons.
-     * @param summonTexture Default summon texture path.
-     * @param summonSpeed   Summon’s initial speed vector.
-     */
     public EngineerSummonComponent(float cooldownSec, int maxSummons,
                                    String summonTexture, Vector2 summonSpeed) {
         this.cooldownSec = cooldownSec;
@@ -81,70 +48,102 @@ public class EngineerSummonComponent extends Component {
     public void create() {
         super.create();
 
-        // 1) Create an InputAdapter that intercepts numeric keys (1–3)
-        qAdapter = new InputAdapter() {
-            @Override
-            public boolean keyDown(int keycode) {
-                // Prevent summoning during cooldown or when at max capacity
-                if (cd > 0f) return true;
-                if (alive >= maxSummons) return true;
 
-                // Find placement controller (responsible for placing summons on the map)
-                var ctrl = findPlacementController();
-                if (ctrl == null) return false;
+        // melee 不做限制则不写
 
-                // Key bindings for different summon types
-                if (keycode == Input.Keys.NUM_1) {
-                    ctrl.armSummon(new SimplePlacementController.SummonSpec(
-                            "images/engineer/Sentry.png", "melee"
-                    ));
-                    return true;
-                } else if (keycode == Input.Keys.NUM_2) {
-                    ctrl.armSummon(new SimplePlacementController.SummonSpec(
-                            "images/engineer/Turret.png", "turret"
-                    ));
-                    return true;
-                } else if (keycode == Input.Keys.NUM_3) {
-                    ctrl.armSummon(new SimplePlacementController.SummonSpec(
-                            "images/engineer/Currency_tower.png",  // Currency generator robot texture
-                            "currencyBot"                          // Custom type identifier
-                    ));
-                    return true;
-                }
+        // ① 放置前询问：Placement 发出 "summon:canSpawn?"
+        entity.getEvents().addListener("summon:canSpawn?", (String type, boolean[] allow) -> {
+            if (!canPlace(type)) allow[0] = false;
+        });
 
-                return false;
-            }
-        };
+        // ② 召唤物生成后 +1
+        entity.getEvents().addListener("summon:spawned", (Entity e, String type) -> onSummonSpawned(type));
 
-        // 2) Attach the InputAdapter to the global multiplexer at the front (index = 0)
-        attachToMultiplexer(qAdapter);
+        // ③ 召唤物死亡/移除后 -1
+        entity.getEvents().addListener("summon:died", (Entity e, String type) -> onSummonDied(type));
+
+        // 键盘适配器（你的 Plan A）
+        attachToMultiplexer(qAdapter = makeKeyAdapter());
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        // 3) Remove the adapter from the multiplexer on disposal to prevent memory leaks
         detachFromMultiplexer(qAdapter);
         qAdapter = null;
     }
 
     @Override
     public void update() {
-        // Update cooldown timer
         float dt = ServiceLocator.getTimeSource().getDeltaTime();
         if (cd > 0f) cd -= dt;
     }
 
-    // ===== Utility: Attach/Detach InputAdapter from the global InputMultiplexer =====
+    // ===== 键盘监听 =====
+    private InputAdapter makeKeyAdapter() {
+        return new InputAdapter() {
+            @Override
+            public boolean keyDown(int keycode) {
+                if (cd > 0f) return true; // 在CD内，吞掉按键
+                var ctrl = findPlacementController();
+                if (ctrl == null) return false;
 
-    /**
-     * Attaches an InputAdapter to the global LibGDX InputMultiplexer.
-     * The adapter is placed at index 0 to ensure it receives key events first.
-     */
+                String type = null;
+                String tex = null;
+
+                if (keycode == Input.Keys.NUM_1) {
+                    type = "melee";
+                    tex = "images/engineer/Sentry.png";
+                } else if (keycode == Input.Keys.NUM_2) {
+                    type = "turret";
+                    tex = "images/engineer/Turret.png";
+                } else if (keycode == Input.Keys.NUM_3) {
+                    type = "currencyBot";
+                    tex = "images/engineer/Currency_tower.png";
+                } else {
+                    return false;
+                }
+
+                // 这里只负责“切到放置模式”；真正生成时，Placement 会再通过事件问可不可以
+                ctrl.armSummon(new SimplePlacementController.SummonSpec(tex, type));
+                return true;
+            }
+        };
+    }
+
+    // ===== 能否放置（按照全局上限 + 类型上限） =====
+    private boolean canPlace(String type) {
+        if (alive >= maxSummons) return false;
+        Integer cap = typeCaps.get(type);
+        if (cap != null) {
+            int cur = aliveByType.getOrDefault(type, 0);
+            if (cur >= cap) return false;
+        }
+        return true;
+    }
+
+    // ===== 计数 + HUD 通知 =====
+    public void onSummonSpawned(String type) {
+        alive++;
+        aliveByType.put(type, aliveByType.getOrDefault(type, 0) + 1);
+        cd = cooldownSec;
+        entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+    }
+
+    public void onSummonDied(String type) {
+        if (alive > 0) alive--;
+        if (type != null) {
+            int cur = aliveByType.getOrDefault(type, 0);
+            aliveByType.put(type, Math.max(0, cur - 1));
+        }
+        entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+    }
+
+    // ===== LibGDX multiplexer 工具 =====
     private static void attachToMultiplexer(InputAdapter adapter) {
         var cur = Gdx.input.getInputProcessor();
         if (cur instanceof InputMultiplexer mux) {
-            mux.addProcessor(0, adapter); // Highest priority
+            mux.addProcessor(0, adapter);
         } else {
             InputMultiplexer mux = new InputMultiplexer();
             mux.addProcessor(adapter);
@@ -153,10 +152,6 @@ public class EngineerSummonComponent extends Component {
         }
     }
 
-    /**
-     * Detaches the InputAdapter from the global InputMultiplexer.
-     * Ensures cleanup when the entity is destroyed or disabled.
-     */
     private static void detachFromMultiplexer(InputAdapter adapter) {
         var cur = Gdx.input.getInputProcessor();
         if (cur instanceof InputMultiplexer mux && adapter != null) {
@@ -164,14 +159,7 @@ public class EngineerSummonComponent extends Component {
         }
     }
 
-    // ===== Utility: Find the placement controller for summons =====
-
-    /**
-     * Searches all entities in the game for a {@link SimplePlacementController} instance.
-     * Used to initiate the summon placement process.
-     *
-     * @return The first found {@link SimplePlacementController}, or {@code null} if none exist.
-     */
+    // ===== 工具：找到 PlacementController =====
     private SimplePlacementController findPlacementController() {
         var all = ServiceLocator.getEntityService().getEntitiesCopy();
         if (all == null) return null;
@@ -181,24 +169,5 @@ public class EngineerSummonComponent extends Component {
             if (c != null) return c;
         }
         return null;
-    }
-
-    // ===== Optional: Callbacks for summon lifecycle =====
-
-    /**
-     * Called when a new summon is spawned.
-     * Increments active summon count and triggers cooldown.
-     */
-    public void onSummonSpawned() {
-        alive++;
-        cd = cooldownSec;
-    }
-
-    /**
-     * Called when a summon dies or is destroyed.
-     * Decrements the active summon count.
-     */
-    public void onSummonDied() {
-        if (alive > 0) alive--;
     }
 }

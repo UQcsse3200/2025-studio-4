@@ -66,7 +66,6 @@ public final class HeroFactory {
     }
 
 
-
     /**
      * Create a hero entity based on a {@link HeroConfig}.
      * <p>
@@ -105,7 +104,6 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-                .addComponent(new UltimateButtonComponent())
                 .addComponent(new HeroAppearanceComponent(cfg));
 
         // Default scale to 1x1 so the hero is visible during testing
@@ -288,9 +286,6 @@ public final class HeroFactory {
 
         return hero;
     }
-
-
-
 
 
 }

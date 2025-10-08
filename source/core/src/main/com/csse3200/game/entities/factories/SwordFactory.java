@@ -4,7 +4,6 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
 import com.csse3200.game.components.hero.samurai.SwordAppearanceComponent;
 import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
-import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
 import com.csse3200.game.components.hero.samurai.SwordLevelSyncComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -15,24 +14,39 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 
-
 /**
- * Factory for creating the Samurai's sword child entity.
- * Responsibility: visuals + physics + orbit motion (no damage logic here).
+ * Factory class for creating the Samurai's sword entity.
+ * <p>
+ * The sword is treated as a separate orbiting entity attached to the Samurai.
+ * It handles its own visual rendering, rotation physics, and collision-based
+ * attack logic. The sword can jab (thrust forward) and deal periodic damage
+ * to enemies within range.
+ * </p>
  */
 public final class SwordFactory {
     private SwordFactory() {
+        // Prevent instantiation (utility class)
     }
 
     /**
-     * Create a sword that orbits around the owner like a windmill blade.
+     * Creates a sword entity that orbits around its owner like a rotating blade.
+     * <p>
+     * This version allows detailed configuration of sword behavior, including
+     * angular speed, sprite alignment, jab timing, and hit cooldown.
+     * </p>
      *
-     * @param owner                  the samurai (used to compute orbit center)
-     * @param swordTexture           path to sword texture
-     * @param radius                 orbit radius where the HANDLE sits (world units)
-     * @param angularSpeedDeg        angular speed in degrees per second (CCW positive)
-     * @param spriteForwardOffsetDeg sprite default facing: right=0, up=90, left=180, down=270
-     * @param centerToHandle         distance from sprite center to the HANDLE along forward dir (usually negative)
+     * @param owner                  The Samurai entity that owns the sword.
+     * @param swordTexture           Path to the sword’s texture.
+     * @param radius                 Orbit radius where the sword handle sits (in world units).
+     * @param cfg                    The {@link SamuraiConfig} containing hero stats and settings.
+     * @param angularSpeedDeg        Angular speed in degrees per second (counterclockwise positive).
+     * @param spriteForwardOffsetDeg Default facing direction for the sword sprite:
+     *                               → = 0°, ↑ = 90°, ← = 180°, ↓ = 270°.
+     * @param centerToHandle         Distance from the sprite’s center to its handle
+     *                               along the forward direction (usually negative).
+     * @param damage                 Base damage dealt by the sword.
+     * @param hitCooldown            Cooldown between hitting the same target (in seconds).
+     * @return A configured sword entity orbiting the Samurai.
      */
     public static Entity createSword(Entity owner,
                                      String swordTexture,
@@ -41,40 +55,55 @@ public final class SwordFactory {
                                      float angularSpeedDeg,
                                      float spriteForwardOffsetDeg,
                                      float centerToHandle,
-                                     int damage,           // 新增：伤害值
-                                     float hitCooldown) {  // 新增：同一目标间隔（秒），如0.15f
+                                     int damage,
+                                     float hitCooldown) {
 
         Entity sword = new Entity()
+                // === Physics and collision setup ===
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent())
                 .addComponent(new HitboxComponent()
                         .setLayer(PhysicsLayer.PLAYER_ATTACK)
-                        .setSensor(true))
+                        .setSensor(true)) // Sensor: detects collisions but doesn’t apply physics forces
+                // === Rendering ===
                 .addComponent(new RotatingTextureRenderComponent(swordTexture))
                 .addComponent(new SwordAppearanceComponent(owner, cfg))
-                .addComponent(new SwordJabPhysicsComponent(owner, /*restRadius=*/radius)
+                // === Movement and orbiting physics ===
+                .addComponent(new SwordJabPhysicsComponent(owner, radius)
                         .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                         .setCenterToHandle(centerToHandle)
-                        .setJabParams(0.18f, 0.8f)       // 时间/距离
-                        .setJabCooldown(0.05f))
-                // ✅ 关键：给剑一个“伤害是多少”的组件
+                        .setJabParams(0.18f, 0.8f)     // Jab duration/distance (tweak for animation feel)
+                        .setJabCooldown(0.05f))        // Minimum interval between jabs
+                // === Combat logic ===
                 .addComponent(new CombatStatsComponent(
-                        10, damage,
+                        10, damage,                   // Health, Attack Power
                         DamageTypeConfig.None,
                         DamageTypeConfig.None))
-                // ✅ 关键：把“碰撞”转成“对 NPC 造成伤害”
                 .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown))
+                // === Level sync ===
                 .addComponent(new SwordLevelSyncComponent(owner, cfg));
 
         return sword;
     }
 
-
     /**
-     * Overload with common defaults (forward=0°, centerToHandle=-0.25).
-     */
-    /**
-     * Overload with defaults: forward=0°, centerToHandle=-0.25, damage=20, hitCooldown=0.2s
+     * Overloaded helper method that creates a sword with common default parameters.
+     * <p>
+     * Defaults:
+     * <ul>
+     *   <li>{@code spriteForwardOffsetDeg = 0°}</li>
+     *   <li>{@code centerToHandle = -0.25f}</li>
+     *   <li>{@code damage = 10}</li>
+     *   <li>{@code hitCooldown = 0.2s}</li>
+     * </ul>
+     * </p>
+     *
+     * @param owner           The Samurai entity that owns the sword.
+     * @param cfg             The {@link SamuraiConfig} with stats and texture paths.
+     * @param swordTexture    Path to the sword’s texture.
+     * @param radius          Orbit radius around the Samurai.
+     * @param angularSpeedDeg Angular speed in degrees per second.
+     * @return A sword entity configured with default combat and animation values.
      */
     public static Entity createSword(Entity owner,
                                      SamuraiConfig cfg,
@@ -87,11 +116,11 @@ public final class SwordFactory {
                 radius,
                 cfg,
                 angularSpeedDeg,
-                0f,       // spriteForwardOffsetDeg
-                -0.25f,   // centerToHandle
-                10,       // 默认伤害（按需改）
-                0.2f      // 默认对同一目标的命中间隔（秒）
+                0f,        // Sprite forward offset (facing right)
+                -0.25f,    // Distance from sprite center to handle
+                10,        // Default damage
+                0.2f       // Default hit cooldown (seconds)
         );
     }
-
 }
+

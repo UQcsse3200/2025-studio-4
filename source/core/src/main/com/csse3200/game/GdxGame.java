@@ -52,6 +52,9 @@ public class GdxGame extends Game {
     
     // Register game score service to track real-time scores
     ServiceLocator.registerGameScoreService(new com.csse3200.game.services.GameScoreService());
+    
+    // Register global achievement service - persists across all screens
+    ServiceLocator.registerAchievementService(new com.csse3200.game.services.AchievementService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }

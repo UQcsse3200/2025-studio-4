@@ -60,7 +60,7 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Game_Victory.png",
           "images/homebase1.png",
           "images/homebase2.png",
-          "images/basement.png"
+          "images/basement.png",
           "images/Background4.png"
   };
 

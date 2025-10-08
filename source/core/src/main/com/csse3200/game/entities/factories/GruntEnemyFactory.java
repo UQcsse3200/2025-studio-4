@@ -22,7 +22,7 @@ public class GruntEnemyFactory {
     // Default grunt configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 75;
+    private static final int DEFAULT_HEALTH = 50;
     private static final int DEFAULT_DAMAGE = 12;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
@@ -30,7 +30,7 @@ public class GruntEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 150;
     private static final float SPEED_EPSILON = 0.001f;
@@ -75,7 +75,6 @@ public class GruntEnemyFactory {
         applySpeedModifier(grunt, waypointComponent, waypoints.get(idx));
 
         grunt
-            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
@@ -130,6 +129,7 @@ public class GruntEnemyFactory {
         //Eventually add point/score logic here maybe?
     }
 
+<<<<<<< HEAD
     private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
         if (waypointComponent == null || waypoint == null) {
             return;
@@ -146,6 +146,9 @@ public class GruntEnemyFactory {
         }
     }
 
+=======
+    @SuppressWarnings("unused")
+>>>>>>> f93e6ed4c85373ee116782c6dc251b7e4ad7b939
     private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
         WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
         if (wc != null) {

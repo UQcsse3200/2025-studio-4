@@ -2,10 +2,12 @@ package com.csse3200.game.ui;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +50,17 @@ public class AchievementDialog extends Dialog {
     
     public AchievementDialog(String title, WindowStyle windowStyle) {
         super(title, windowStyle);
+        
+        // Set background image
+        try {
+            Texture bgTexture = ServiceLocator.getResourceService().getAsset(
+                "images/name and leaderbooard background.png", Texture.class);
+            setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+        } catch (Exception e) {
+            // If background fails to load, continue without it
+            logger.warn("Failed to load achievement dialog background", e);
+        }
+        
         createContent();
     }
     
@@ -61,11 +74,11 @@ public class AchievementDialog extends Dialog {
         
         // Layout the dialog
         Table contentTable = getContentTable();
-        contentTable.pad(20);
+        contentTable.pad(15);
         
         // Title
         Label titleLabel = new Label("Achievements", SimpleUI.title());
-        contentTable.add(titleLabel).padBottom(20);
+        contentTable.add(titleLabel).padBottom(15);
         contentTable.row();
         
         // Create scroll pane for achievements
@@ -74,19 +87,19 @@ public class AchievementDialog extends Dialog {
         scrollPane.setFadeScrollBars(false);
         scrollPane.setScrollingDisabled(true, false);
         
-        contentTable.add(scrollPane).width(600).height(400).padBottom(20);
+        contentTable.add(scrollPane).width(520).height(340).padBottom(15);
         contentTable.row();
         
         // Close button
-        contentTable.add(closeButton).width(120).height(40);
+        contentTable.add(closeButton).width(100).height(35);
         
         // Set dialog size and position
-        setSize(650, 550);
+        setSize(560, 470);
     }
     
     private Table createAchievementTable() {
         Table table = new Table();
-        table.defaults().pad(10);
+        table.defaults().pad(8);
         
         // Display achievements in a grid (2 columns)
         for (int i = 0; i < ACHIEVEMENT_IMAGES.length; i++) {
@@ -97,7 +110,7 @@ public class AchievementDialog extends Dialog {
                 i
             );
             
-            table.add(achievementCard).width(250).height(150);
+            table.add(achievementCard).width(220).height(130);
             
             // Start new row after every 2 achievements
             if ((i + 1) % 2 == 0) {
@@ -111,7 +124,7 @@ public class AchievementDialog extends Dialog {
     private Table createAchievementCard(String imagePath, String name, String condition, int index) {
         Table card = new Table();
         card.setBackground(SimpleUI.solid(new Color(0.2f, 0.2f, 0.2f, 0.8f)));
-        card.pad(10);
+        card.pad(8);
         
         try {
             // Load achievement image
@@ -119,7 +132,7 @@ public class AchievementDialog extends Dialog {
             Image achievementImage = new Image(texture);
             
             // Add image
-            card.add(achievementImage).width(200).height(100).padBottom(5);
+            card.add(achievementImage).width(180).height(85).padBottom(4);
             card.row();
             
             // Add achievement name

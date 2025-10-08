@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.ui.UiStyles;
 
 public class PauseMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(PauseMenuDisplay.class);
@@ -71,12 +72,11 @@ public class PauseMenuDisplay extends UIComponent {
         Table playerInfoTable = createPlayerInfoSection();
 
         // Create custom button style
-        TextButtonStyle customButtonStyle = createCustomButtonStyle();
-
-        TextButton resumeBtn = new TextButton("Resume", customButtonStyle);
-        TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
-        TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
-        TextButton quitBtn = new TextButton("Quit to Main Menu", customButtonStyle);
+        var style = UiStyles.orangeButton(skin);
+        TextButton resumeBtn   = new TextButton("Resume", style);
+        TextButton settingsBtn = new TextButton("Settings", style);
+        TextButton rankingBtn  = new TextButton("Ranking", style);
+        TextButton quitBtn     = new TextButton("Quit to Main Menu", style);
 
         resumeBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {

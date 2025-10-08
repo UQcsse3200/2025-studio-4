@@ -18,6 +18,11 @@ public class ResourceService implements Disposable {
   private static final Logger logger = LoggerFactory.getLogger(ResourceService.class);
   private final AssetManager assetManager;
 
+  /** Small, safe set of shared UI textures you likely want loaded in most screens. */
+  public static final String[] DEFAULT_UI_TEXTURES = {
+          "images/Main_Menu_Button_Background.png"
+  };
+
   public ResourceService() {
     this(new AssetManager());
   }
@@ -32,7 +37,7 @@ public class ResourceService implements Disposable {
   }
 
   /**
-   * Load an asset from a file.
+   * Load an asset from a file (lazy-load if missing).
    * @param filename Asset path
    * @param type     Class to load into
    * @param <T>      Type of class to load into
@@ -40,7 +45,6 @@ public class ResourceService implements Disposable {
    * @see AssetManager#get(String, Class)
    */
   public <T> T getAsset(String filename, Class<T> type) {
-    // 如果请求的资源尚未加载，尝试即时加载该单个资源
     try {
       if (!assetManager.isLoaded(filename, type)) {
         logger.debug("Lazily loading asset: {}", filename);
@@ -49,10 +53,19 @@ public class ResourceService implements Disposable {
       }
       return assetManager.get(filename, type);
     } catch (Exception e) {
-      // 保持原行为，但提供更可读的日志
       logger.error("Asset not loaded or failed to load: {}", filename);
       throw e;
     }
+  }
+
+  /**
+   * Return an asset only if already loaded, otherwise null (no lazy-load).
+   */
+  public <T> T getOrNull(String filename, Class<T> type) {
+    if (assetManager.isLoaded(filename, type)) {
+      return assetManager.get(filename, type);
+    }
+    return null;
   }
 
   /**
@@ -180,6 +193,13 @@ public class ResourceService implements Disposable {
    */
   public void loadMusic(String[] musicNames) {
     loadAssets(musicNames, Music.class);
+  }
+
+  /**
+   * Convenience: preload common UI textures (orange button, etc.).
+   */
+  public void loadDefaultUiTextures() {
+    loadTextures(DEFAULT_UI_TEXTURES);
   }
 
   public void unloadAssets(String[] assetNames) {

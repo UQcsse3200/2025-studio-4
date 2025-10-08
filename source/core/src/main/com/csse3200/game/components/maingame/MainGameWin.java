@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,8 @@ public class MainGameWin extends UIComponent {
     table.setFillParent(true);
 
     // Create custom button style
-    TextButtonStyle customButtonStyle = createCustomButtonStyle();
+    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
+
 
     TextButton mainMenuBtn = new TextButton("You Won!", customButtonStyle);
 

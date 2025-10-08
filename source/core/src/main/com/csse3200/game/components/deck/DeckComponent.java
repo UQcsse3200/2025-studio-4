@@ -3,7 +3,7 @@ package com.csse3200.game.components.deck;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.TowerStatsComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
 import java.util.LinkedHashMap;

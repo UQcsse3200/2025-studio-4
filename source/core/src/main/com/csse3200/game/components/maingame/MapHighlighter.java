@@ -10,11 +10,10 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.areas.terrain.TerrainComponent;
+import com.csse3200.game.areas.terrain.ITerrainComponent;
 import com.csse3200.game.components.CameraComponent;
-import com.csse3200.game.components.TowerComponent;
-import com.csse3200.game.components.TowerStatsComponent;
-import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+import com.csse3200.game.components.towers.TowerComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
@@ -28,7 +27,7 @@ import com.csse3200.game.ui.UIComponent;
  * shows tower attack ranges when a tower is selected.
  */
 public class MapHighlighter extends UIComponent {
-    private final TerrainComponent terrain;
+    private final ITerrainComponent terrain;
     private final ShapeRenderer shapeRenderer;
     private final SimplePlacementController placementController;
     private final TowerFactory towerFactory;
@@ -43,7 +42,7 @@ public class MapHighlighter extends UIComponent {
      * @param placementController the placement controller
      * @param towerFactory the tower factory
      */
-    public MapHighlighter(TerrainComponent terrain,
+    public MapHighlighter(ITerrainComponent terrain,
                           SimplePlacementController placementController,
                           TowerFactory towerFactory) {
         this.terrain = terrain;
@@ -58,12 +57,20 @@ public class MapHighlighter extends UIComponent {
     @Override
     public void update() {
         if (Gdx.input.justTouched()) {
-            // if the ui is touched, ignore for tower selection
+            Vector2 clickWorld = getWorldClickPosition();
+
+            // If clicking on tower upgrade menu itself, ignore
             if (towerUpgradeMenu != null && towerUpgradeMenu.isTouched(Gdx.input.getX(), Gdx.input.getY())) {
                 return;
             }
 
-            Vector2 clickWorld = getWorldClickPosition();
+            // If placement is active, don't open upgrade menu
+            if (placementController != null && placementController.isPlacementActive()) {
+                // Only show placement preview / range if click is on map
+                return;
+            }
+
+            // Normal tower selection when not placing
             boolean towerFound = false;
             boolean enemyFound = false;
             Entity player = findPlayerEntity();
@@ -79,9 +86,9 @@ public class MapHighlighter extends UIComponent {
                     Vector2 pos = e.getPosition();
                     float tileSize = terrain.getTileSize();
 
-                    // Check if click lands inside this tower's footprint
                     if (clickWorld.x >= pos.x && clickWorld.x <= pos.x + tower.getWidth() * tileSize &&
                             clickWorld.y >= pos.y && clickWorld.y <= pos.y + tower.getHeight() * tileSize) {
+
                         selectedTower = e;
                         player.getEvents().trigger("displayDeck", deck);
                         if (towerUpgradeMenu != null) {
@@ -89,7 +96,6 @@ public class MapHighlighter extends UIComponent {
                             String towerType = towerComp != null ? towerComp.getType() : "";
                             towerUpgradeMenu.setSelectedTower(selectedTower, towerType);
                         }
-
                         towerFound = true;
                         break;
                     }
@@ -111,15 +117,15 @@ public class MapHighlighter extends UIComponent {
                 }
             }
 
-            //if no tower was found at click location, deselect the current one
             if (!towerFound) {
                 selectedTower = null;
-                if  (towerUpgradeMenu != null) {
+                if (towerUpgradeMenu != null) {
                     towerUpgradeMenu.setSelectedTower(null, "");
                 }
             }
         }
     }
+
 
 
     /**
@@ -178,23 +184,49 @@ public class MapHighlighter extends UIComponent {
         Entity pendingEntity;
         String pendingType = placementController.getPendingType();
         if ("Dino".equalsIgnoreCase(pendingType)) {
-            pendingEntity = towerFactory.createDinoTower(CurrencyType.METAL_SCRAP);
+            pendingEntity = towerFactory.createDinoTower();
         } else if ("Cavemen".equalsIgnoreCase(pendingType)) {
-            pendingEntity = towerFactory.createCavemenTower(CurrencyType.METAL_SCRAP);
+            pendingEntity = towerFactory.createCavemenTower();
+        } else if ("Pterodactyl".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createPterodactylTower();
+        } else if ("SuperCavemen".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createSuperCavemenTower();
+        } else if ("Totem".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createTotemTower();
+        } else if ("Bank".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createBankTower();
+        } else if ("Raft".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createRaftTower();
+        } else if ("Frozenmamoothskull".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createFrozenmamoothskullTower();
+        } else if ("Bouldercatapult".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createBouldercatapultTower();
+        } else if ("Villageshaman".equalsIgnoreCase(pendingType)) {
+            pendingEntity = towerFactory.createVillageshamanTower();
         } else {
-            pendingEntity = towerFactory.createBoneTower(CurrencyType.METAL_SCRAP);
+            pendingEntity = towerFactory.createBoneTower();
         }
         TowerComponent placingTower = pendingEntity.getComponent(TowerComponent.class);
         int towerWidth = placingTower != null ? placingTower.getWidth() : 2;
         int towerHeight = placingTower != null ? placingTower.getHeight() : 2;
 
-        // Fill tiles with green (free) or red (blocked)
+        boolean isRaft = "Raft".equalsIgnoreCase(pendingType);
+        int[][] waterTiles = null;
+        if (isRaft && placementController != null) {
+            waterTiles = placementController.getWaterTiles();
+        }
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (int x = 0; x < mapBounds.x; x++) {
             for (int y = 0; y < mapBounds.y; y++) {
                 Vector2 worldPos = terrain.tileToWorldPosition(x, y);
-                boolean valid = isTileFree(x, y, entities);
-
+                boolean valid;
+                if (isRaft) {
+                    valid = isTileWater(x, y, waterTiles, towerWidth, towerHeight, mapBounds);
+                } else {
+                    // For all other towers: valid if not on invalid tiles and not overlapping towers
+                    valid = isTileFree(x, y, entities);
+                }
                 shapeRenderer.setColor(valid ? new Color(0, 1, 0, 0.2f) : new Color(1, 0, 0, 0.2f));
                 shapeRenderer.rect(worldPos.x, worldPos.y, tileSize, tileSize);
             }
@@ -235,6 +267,29 @@ public class MapHighlighter extends UIComponent {
     }
 
     /**
+     * Checks if a tile is a valid raft placement (all footprint tiles must be water).
+     */
+    private boolean isTileWater(int tileX, int tileY, int[][] waterTiles, int towerWidth, int towerHeight, GridPoint2 mapBounds) {
+        if (waterTiles == null) return false;
+        for (int dx = 0; dx < towerWidth; dx++) {
+            for (int dy = 0; dy < towerHeight; dy++) {
+                int tx = tileX + dx;
+                int ty = tileY + dy;
+                if (tx < 0 || ty < 0 || tx >= mapBounds.x || ty >= mapBounds.y) return false;
+                boolean found = false;
+                for (int[] p : waterTiles) {
+                    if (p[0] == tx && p[1] == ty) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Draws the attack range of the currently selected tower.
      */
     private void drawSelectedTowerRange() {
@@ -267,11 +322,11 @@ public class MapHighlighter extends UIComponent {
     private boolean isTileFree(int tileX, int tileY, Array<Entity> entities) {
         if (entities == null) return true;
 
-        // Check fixed path tiles
+        // Check invalid tiles (path, barrier, snowtree, snow, etc)
         if (placementController != null) {
-            int[][] path = placementController.getFixedPath();
-            if (path != null) {
-                for (int[] p : path) {
+            int[][] invalid = placementController.getFixedPath();
+            if (invalid != null) {
+                for (int[] p : invalid) {
                     if (p[0] == tileX && p[1] == tileY) return false;
                 }
             }

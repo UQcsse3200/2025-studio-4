@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.PlayerAvatarService;
@@ -77,8 +78,23 @@ public class PlayerNameDisplay extends UIComponent {
         
         stage.addActor(table);
         logger.debug("Player name display added: Player: {}", playerName);
+
+        applyUiScale();
     }
-    
+
+    /**
+     * Apply UI scale from user settings
+     */
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+        if (table != null) {
+            table.setTransform(true);
+            table.validate();
+            table.setOrigin(0f, table.getHeight());
+            table.setScale(settings.uiScale);
+        }
+    }
+
     @Override
     public void draw(com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {
         // draw is handled by the stage

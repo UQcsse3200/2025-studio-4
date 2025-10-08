@@ -11,8 +11,26 @@ public class TowerConfig {
     public TowerWrapper dinoTower;
     /** Stats for the cavemen tower. */
     public TowerWrapper cavemenTower;
+    /** Stats for the pteradactyl tower. */
+    public TowerWrapper pterodactylTower;
+    /** Stats for the super cavemen tower. */
+    public TowerWrapper supercavemenTower;
+    /** Stats for the totem tower. */
+    public TowerWrapper totemTower;
+    /** Stats for the bank tower. */
+    public TowerWrapper bankTower;
+    /** Stats for the raft tower. */
+    public TowerWrapper raftTower;
+    /** Stats for the frozen mammoth skull tower. */
+    public TowerWrapper frozenmamoothskullTower;
+    /** Stats for the boulder catapult tower. */
+    public TowerWrapper bouldercatapultTower;
+    /** Stats for the village shaman tower. */
+    public TowerWrapper villageshamanTower;
 
-    /** Stats for the advanced tower. */
+    /**
+     * Inner wrapper class to match JSON structure.
+     */
     public static class TowerWrapper {
         public TowerStats base;
         public String name;
@@ -45,4 +63,5 @@ public class TowerConfig {
         public int level_A;
         public int level_B;
     }
+
 }

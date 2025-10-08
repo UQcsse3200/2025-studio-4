@@ -294,6 +294,7 @@ public class TowerFactory {
         Entity head = new Entity().addComponent(headAnim);
         headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
         headAnim.startAnimation("idle");
+        headAnim.setBaseRotation(0f);
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new Vector2(0f, 0f), 0.01f);
@@ -327,6 +328,7 @@ public class TowerFactory {
         headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
         headAnim.startAnimation("idle");
+        headAnim.setBaseRotation(0f);
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);

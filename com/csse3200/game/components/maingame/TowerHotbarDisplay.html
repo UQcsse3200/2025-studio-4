@@ -102,11 +102,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TowerHotbarDisplay</span>
 <span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
 <div class="block">UI component that displays a hotbar for selecting and placing towers.
- <p>
- Provides buttons for different tower types (Bone, Dino, Cavemen). When a button
- is clicked, the corresponding placement event is triggered, or the current
- placement is cancelled if one is active.
- </p></div>
+ Dynamically resizes, tightly packed, and fits neatly beside the map.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -149,17 +145,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Creates the hotbar UI with tower selection buttons.</div>
+<div class="block">Creates the UI for the tower hotbar and sets up listeners.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Disposes of UI elements when no longer needed.</div>
+<div class="block">Disposes of resources used by the hotbar display.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)" class="member-name-link">draw</a><wbr>(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Rendering is handled by the stage, so nothing is drawn directly here.</div>
+<div class="block">Draws the hotbar UI component.</div>
 </div>
 </div>
 </div>
@@ -211,12 +207,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block">Creates the hotbar UI with tower selection buttons.
- <p>
- Each button triggers an event that tells <a href="SimplePlacementController.html" title="class in com.csse3200.game.components.maingame"><code>SimplePlacementController</code></a>
- to begin placement of the corresponding tower type. If a placement is already
- active, clicking a button will cancel it instead.
- </p></div>
+<div class="block">Creates the UI for the tower hotbar and sets up listeners.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../../ui/UIComponent.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></code></dd>
@@ -227,12 +218,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">
 <h3>draw</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">draw</span><wbr><span class="parameters">(com.badlogic.gdx.graphics.g2d.SpriteBatch&nbsp;batch)</span></div>
-<div class="block">Rendering is handled by the stage, so nothing is drawn directly here.</div>
+<div class="block">Draws the hotbar UI component. (No custom drawing needed.)</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../rendering/RenderComponent.html#draw(com.badlogic.gdx.graphics.g2d.SpriteBatch)">draw</a></code>&nbsp;in class&nbsp;<code><a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>batch</code> - sprite batch (unused)</dd>
+<dd><code>batch</code> - The SpriteBatch used for rendering.</dd>
 </dl>
 </section>
 </li>
@@ -240,7 +231,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block">Disposes of UI elements when no longer needed.</div>
+<div class="block">Disposes of resources used by the hotbar display.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>dispose</code>&nbsp;in interface&nbsp;<code>com.badlogic.gdx.utils.Disposable</code></dd>

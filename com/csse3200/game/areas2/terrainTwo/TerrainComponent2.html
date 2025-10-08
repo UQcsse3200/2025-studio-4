@@ -94,11 +94,12 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code>com.badlogic.gdx.utils.Disposable</code>, <code><a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;<a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>&gt;</code></dd>
+<dd><code>com.badlogic.gdx.utils.Disposable</code>, <code><a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></code>, <code><a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Comparable.html" title="class or interface in java.lang" class="external-link">Comparable</a>&lt;<a href="../../rendering/Renderable.html" title="interface in com.csse3200.game.rendering">Renderable</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TerrainComponent2</span>
-<span class="extends-implements">extends <a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
+<span class="extends-implements">extends <a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a>
+implements <a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></span></div>
 <div class="block">Render a tiled terrain for a given tiled map and orientation. A terrain is a map of tiles that
  shows the 'ground' in the game. Enabling/disabling this component will show/hide the terrain.</div>
 </section>
@@ -237,6 +238,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="tileToWorldPosition(com.badlogic.gdx.math.GridPoint2)">
 <h3>tileToWorldPosition</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">tileToWorldPosition</span><wbr><span class="parameters">(com.badlogic.gdx.math.GridPoint2&nbsp;tilePos)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../areas/terrain/ITerrainComponent.html#tileToWorldPosition(com.badlogic.gdx.math.GridPoint2)">tileToWorldPosition</a></code>&nbsp;in interface&nbsp;<code><a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -244,24 +249,40 @@ loadScripts(document, 'script');</script>
 <h3>tileToWorldPosition</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.Vector2</span>&nbsp;<span class="element-name">tileToWorldPosition</span><wbr><span class="parameters">(int&nbsp;x,
  int&nbsp;y)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../areas/terrain/ITerrainComponent.html#tileToWorldPosition(int,int)">tileToWorldPosition</a></code>&nbsp;in interface&nbsp;<code><a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getTileSize()">
 <h3>getTileSize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getTileSize</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../areas/terrain/ITerrainComponent.html#getTileSize()">getTileSize</a></code>&nbsp;in interface&nbsp;<code><a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getMapBounds(int)">
 <h3>getMapBounds</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.math.GridPoint2</span>&nbsp;<span class="element-name">getMapBounds</span><wbr><span class="parameters">(int&nbsp;layer)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../areas/terrain/ITerrainComponent.html#getMapBounds(int)">getMapBounds</a></code>&nbsp;in interface&nbsp;<code><a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></code></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getMap()">
 <h3>getMap</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">com.badlogic.gdx.maps.tiled.TiledMap</span>&nbsp;<span class="element-name">getMap</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../../areas/terrain/ITerrainComponent.html#getMap()">getMap</a></code>&nbsp;in interface&nbsp;<code><a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></code></dd>
+</dl>
 </section>
 </li>
 <li>

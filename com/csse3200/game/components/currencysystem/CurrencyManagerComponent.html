@@ -94,10 +94,8 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">CurrencyManagerComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Manages the player's currencies within the game.
-
  This component keeps track of different types of currencies (e.g., metal scraps)
- and provides methods to add, subtract, and retrieve amounts of each type.
-
+ and provides methods to add, subtract, and retrieve amounts of each type.*
  Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value</div>
 </section>
 <section class="summary">
@@ -174,7 +172,8 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refundCurrency(java.util.Map,float)" class="member-name-link">refundCurrency</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap,
  float&nbsp;refundRate)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.</div>
+<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.*
+ Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCurrencyAmount(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">setCurrencyAmount</a><wbr>(<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
@@ -279,7 +278,7 @@ loadScripts(document, 'script');</script>
  And add event listeners to handle on collect action.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>entity</code> - </dd>
+<dd><code>entity</code> - the currency entity to add</dd>
 </dl>
 </section>
 </li>
@@ -300,8 +299,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canAffordAndSpendCurrency</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap)</span></div>
 <div class="block">Checks if the player has enough currency to cover the specified cost,
  and if so, deducts the amount and returns true. Otherwise, returns false
- and does not deduct anything.
-
+ and does not deduct anything.*
  Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -317,8 +315,7 @@ loadScripts(document, 'script');</script>
 <h3>refundCurrency</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refundCurrency</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;costMap,
  float&nbsp;refundRate)</span></div>
-<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.
-
+<div class="block">Refunds a portion of the tower’s cost according to the specified refund rate.*
  Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)</div>
 <dl class="notes">
 <dt>Parameters:</dt>

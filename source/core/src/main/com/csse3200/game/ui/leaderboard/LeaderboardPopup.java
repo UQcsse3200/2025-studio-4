@@ -15,6 +15,7 @@ public class LeaderboardPopup extends Window {
     private final Skin skin;
     private final LeaderboardController controller;
     private final Table listTable = new Table();
+    private final Table achievementTable = new Table();
     private final ScrollPane scroller;
     private final TextButton prevBtn, nextBtn, closeBtn, friendsBtn;
 
@@ -53,6 +54,9 @@ public class LeaderboardPopup extends Window {
         footer.add().expandX();
         footer.add(closeBtn).right();
 
+        // Create achievement section
+        createAchievementSection();
+        
         Table content = new Table();
         content.defaults().pad(6);
         content.add(header).growX();
@@ -61,9 +65,12 @@ public class LeaderboardPopup extends Window {
         content.row();
         content.add(scroller).grow().minHeight(360);
         content.row();
+        // Add achievement section
+        content.add(achievementTable).growX().padTop(10);
+        content.row();
         content.add(footer).growX();
 
-        add(content).grow().minSize(720, 540);
+        add(content).grow().minSize(720, 640);
 
         // 事件
         closeBtn.addListener(new ChangeListener() {
@@ -185,5 +192,72 @@ public class LeaderboardPopup extends Window {
                 Actions.parallel(Actions.alpha(0f, 0.12f), Actions.scaleTo(0.98f, 0.98f, 0.12f)),
                 Actions.removeActor()
         ));
+    }
+    
+    /**
+     * Creates the achievement display section
+     */
+    private void createAchievementSection() {
+        achievementTable.clear();
+        
+        // Title
+        Label achievementTitle = new Label("Achievements", skin, "title");
+        achievementTable.add(achievementTitle).colspan(5).padBottom(10);
+        achievementTable.row();
+        
+        // Achievement IDs and paths
+        String[] achievementIds = {
+            com.csse3200.game.services.AchievementService.TOUGH_SURVIVOR,
+            com.csse3200.game.services.AchievementService.SPEED_RUNNER,
+            com.csse3200.game.services.AchievementService.SLAYER,
+            com.csse3200.game.services.AchievementService.PERFECT_CLEAR,
+            com.csse3200.game.services.AchievementService.PARTICIPATION
+        };
+        
+        String[] achievementImages = {
+            "images/tough survivor.jpg",
+            "images/speed runner.jpg",
+            "images/slayer.jpg",
+            "images/perfect clear.jpg",
+            "images/participation.jpg"
+        };
+        
+        // Get achievement service
+        com.csse3200.game.services.AchievementService achievementService = 
+            ServiceLocator.getAchievementService();
+        
+        // Display achievements
+        for (int i = 0; i < achievementIds.length; i++) {
+            final int index = i;
+            Image achievementIcon = createAchievementIcon(
+                achievementImages[index], 
+                achievementService != null && achievementService.isUnlocked(achievementIds[index])
+            );
+            
+            achievementTable.add(achievementIcon).size(80, 80).pad(5);
+        }
+    }
+    
+    /**
+     * Creates an achievement icon, either colored (unlocked) or grayscale (locked)
+     */
+    private Image createAchievementIcon(String imagePath, boolean unlocked) {
+        try {
+            Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
+            Image image = new Image(texture);
+            
+            if (!unlocked) {
+                // Make the image grayscale
+                image.setColor(0.5f, 0.5f, 0.5f, 0.6f);
+            } else {
+                // Unlocked achievements have golden tint
+                image.setColor(1.2f, 1.1f, 0.8f, 1f);
+            }
+            
+            return image;
+        } catch (Exception e) {
+            // Return empty image if texture not found
+            return new Image();
+        }
     }
 }

@@ -45,6 +45,9 @@ public class ServiceLocator {
   
   // Game Score Service
   private static GameScoreService gameScoreService;
+  
+  // Achievement Service
+  private static AchievementService achievementService;
 
   // --- Getters ---
   public static EntityService getEntityService() {
@@ -102,6 +105,10 @@ public class ServiceLocator {
   
   public static GameScoreService getGameScoreService() {
     return gameScoreService;
+  }
+  
+  public static AchievementService getAchievementService() {
+    return achievementService;
   }
 
   // --- Registrations ---
@@ -176,6 +183,11 @@ public class ServiceLocator {
     logger.debug("Registering game score service {}", service);
     gameScoreService = service;
   }
+  
+  public static void registerAchievementService(AchievementService service) {
+    logger.debug("Registering achievement service {}", service);
+    achievementService = service;
+  }
 
   // --- Teardown ---
   public static void clear() {
@@ -193,6 +205,7 @@ public class ServiceLocator {
     playerAvatarService = null;
     gameSessionManager = null;
     gameScoreService = null;
+    achievementService = null;
   }
 
   private ServiceLocator() {

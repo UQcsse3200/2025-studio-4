@@ -23,8 +23,8 @@ public class TankEnemyFactory {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 100;
     private static final int DEFAULT_DAMAGE = 15;
-    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
-    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.Fire;
+    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Electricity;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.6f, 0.6f);
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";

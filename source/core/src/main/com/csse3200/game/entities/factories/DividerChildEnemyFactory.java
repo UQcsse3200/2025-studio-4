@@ -26,7 +26,7 @@ public class DividerChildEnemyFactory {
     private static final int DEFAULT_DAMAGE = 20;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(2f, 2f);
+    private static final Vector2 DEFAULT_SPEED = new Vector2(1.5f, 1.5f);
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;

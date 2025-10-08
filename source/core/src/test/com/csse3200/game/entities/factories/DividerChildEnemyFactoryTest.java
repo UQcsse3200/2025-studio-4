@@ -51,7 +51,7 @@ public class DividerChildEnemyFactoryTest {
         assertEquals(20, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
-        assertEquals(new Vector2(2f, 2f), DividerChildEnemyFactory.getSpeed());
+        assertEquals(new Vector2(1.5f, 1.5f), DividerChildEnemyFactory.getSpeed());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class DividerChildEnemyFactoryTest {
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, DividerChildEnemyFactory.getResistance());
         assertEquals(DamageTypeConfig.None, DividerChildEnemyFactory.getWeakness());
-        assertEquals(new Vector2(2f, 2f), DividerChildEnemyFactory.getSpeed());
+        assertEquals(new Vector2(1.5f, 1.5f), DividerChildEnemyFactory.getSpeed());
         assertEquals("images/divider_enemy.png", DividerChildEnemyFactory.getTexturePath());
         assertEquals("Divider Child Enemy", DividerChildEnemyFactory.getDisplayName());
     }
@@ -176,7 +176,7 @@ public class DividerChildEnemyFactoryTest {
         assertEquals(20, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
-        assertEquals(new Vector2(2f, 2f), DividerChildEnemyFactory.getSpeed());
+        assertEquals(new Vector2(1.5f, 1.5f), DividerChildEnemyFactory.getSpeed());
     }
 
     @Test

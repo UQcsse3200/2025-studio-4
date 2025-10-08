@@ -24,7 +24,7 @@ public class DroneEnemyFactory {
     private static final int DEFAULT_HEALTH = 25;
     private static final int DEFAULT_DAMAGE = 10;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
-    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Fire;
     private static final Vector2 DEFAULT_SPEED = new Vector2(1.2f, 1.2f);
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";

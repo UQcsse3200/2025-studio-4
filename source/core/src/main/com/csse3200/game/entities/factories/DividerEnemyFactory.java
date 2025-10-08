@@ -27,7 +27,7 @@ public class DividerEnemyFactory {
     // 默认配置（按需调整）
     private static final int DEFAULT_HEALTH = 150;
     private static final int DEFAULT_DAMAGE = 5;
-    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.Electricity;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.75f, 0.75f);
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";

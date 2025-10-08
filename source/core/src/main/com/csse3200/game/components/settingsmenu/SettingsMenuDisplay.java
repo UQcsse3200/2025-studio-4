@@ -54,17 +54,14 @@ public class SettingsMenuDisplay extends UIComponent {
     private Slider soundVolumeSlider;
     private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
     private SelectBox<String> difficultySelect;
-    private SelectBox<String> languageSelect;
     private SelectBox<String> heroWeaponSelect;
     private SelectBox<String> heroEffectSelect;
     private boolean overlayMode = false;
 
-    private Image backgroundImage;    // main-menu background (hidden in overlay mode)
-    private Image dimImage;           // semi-transparent dim layer for overlay
-    private Texture dimTexHandle;     // generated 1x1 texture; disposed in dispose()
-
+    private Image backgroundImage;
+    private Image dimImage;
+    private Texture dimTexHandle;
     private Texture panelTexHandle;
-
     private Stack overlayStack;
 
     public SettingsMenuDisplay(GdxGame game) {
@@ -86,10 +83,8 @@ public class SettingsMenuDisplay extends UIComponent {
 
     private void addActors() {
         if (!overlayMode) {
-            backgroundImage =
-                    new Image(
-                            ServiceLocator.getResourceService()
-                                    .getAsset("images/main_menu_background.png", Texture.class));
+            backgroundImage = new Image(ServiceLocator.getResourceService()
+                    .getAsset("images/main_menu_background.png", Texture.class));
             backgroundImage.setFillParent(true);
             stage.addActor(backgroundImage);
         }
@@ -122,7 +117,6 @@ public class SettingsMenuDisplay extends UIComponent {
         rootTable.add(panel).center()
                 .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
 
-
         if (overlayMode) {
             Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
             px.setColor(new Color(0f, 0f, 0f, 0.70f));
@@ -135,23 +129,17 @@ public class SettingsMenuDisplay extends UIComponent {
             overlayStack.setFillParent(true);
             overlayStack.add(dimImage);
             overlayStack.add(rootTable);
-
             stage.addActor(overlayStack);
             overlayStack.toFront();
-
             overlayStack.setVisible(false);
 
-            entity.getEvents().addListener("showSettingsOverlay", () -> {
-                if (overlayStack != null) overlayStack.setVisible(true);
-            });
-            entity.getEvents().addListener("hideSettingsOverlay", () -> {
-                if (overlayStack != null) overlayStack.setVisible(false);
-            });
+            entity.getEvents().addListener("showSettingsOverlay", () -> overlayStack.setVisible(true));
+            entity.getEvents().addListener("hideSettingsOverlay", () -> overlayStack.setVisible(false));
 
             stage.addListener(new InputListener() {
                 @Override
                 public boolean keyDown(InputEvent event, int keycode) {
-                    if (overlayStack == null || !overlayStack.isVisible()) return false;
+                    if (!overlayStack.isVisible()) return false;
                     if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) {
                         entity.getEvents().trigger("hideSettingsOverlay");
                         entity.getEvents().trigger("showPauseUI");
@@ -161,16 +149,14 @@ public class SettingsMenuDisplay extends UIComponent {
                 }
             });
 
-            if (backgroundImage != null) {
-                backgroundImage.setVisible(false);
-            }
+            if (backgroundImage != null) backgroundImage.setVisible(false);
         } else {
             stage.addActor(rootTable);
         }
 
         UserSettings.Settings currentSettings = UserSettings.get();
         if (rootTable != null) {
-            rootTable.setTransform(true);  // Enable transformation
+            rootTable.setTransform(true);
             rootTable.setScale(currentSettings.uiScale);
         }
     }
@@ -283,44 +269,14 @@ public class SettingsMenuDisplay extends UIComponent {
         table.add(heroEffectLabel).right().padRight(15f);
         table.add(heroEffectSelect).left();
 
-        uiScaleSlider.addListener(
-                (Event event) -> {
-                    float value = uiScaleSlider.getValue();
-                    uiScaleValue.setText(String.format("%.2fx", value));
-                    return true;
-                });
-
-        musicVolumeSlider.addListener(
-                (Event event) -> {
-                    float value = musicVolumeSlider.getValue();
-                    musicVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    if (ServiceLocator.getAudioService() != null) {
-                        ServiceLocator.getAudioService().setMusicVolume(value);
-                    }
-                    return true;
-                });
-
-        soundVolumeSlider.addListener(
-                (Event event) -> {
-                    float value = soundVolumeSlider.getValue();
-                    soundVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    if (ServiceLocator.getAudioService() != null) {
-                        ServiceLocator.getAudioService().setSoundVolume(value);
-                    }
-                    return true;
-                });
-
         return table;
     }
 
     private StringDecorator<DisplayMode> getActiveMode(Array<StringDecorator<DisplayMode>> modes) {
         DisplayMode active = Gdx.graphics.getDisplayMode();
-
         for (StringDecorator<DisplayMode> stringMode : modes) {
             DisplayMode mode = stringMode.object;
-            if (active.width == mode.width
-                    && active.height == mode.height
-                    && active.refreshRate == mode.refreshRate) {
+            if (active.width == mode.width && active.height == mode.height && active.refreshRate == mode.refreshRate) {
                 return stringMode;
             }
         }
@@ -330,11 +286,9 @@ public class SettingsMenuDisplay extends UIComponent {
     private Array<StringDecorator<DisplayMode>> getDisplayModes(Monitor monitor) {
         DisplayMode[] displayModes = Gdx.graphics.getDisplayModes(monitor);
         Array<StringDecorator<DisplayMode>> arr = new Array<>();
-
         for (DisplayMode displayMode : displayModes) {
             arr.add(new StringDecorator<>(displayMode, this::prettyPrint));
         }
-
         return arr;
     }
 
@@ -344,42 +298,31 @@ public class SettingsMenuDisplay extends UIComponent {
 
     private Table makeMenuBtns() {
         TextButtonStyle customButtonStyle = createCustomButtonStyle();
-
         TextButton backBtn = new TextButton("Back", customButtonStyle);
         TextButton applyBtn = new TextButton("Apply", customButtonStyle);
 
-        float buttonWidth = 150f;
-        float buttonHeight = 50f;
+        backBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                if (overlayMode) {
+                    entity.getEvents().trigger("hideSettingsOverlay");
+                    entity.getEvents().trigger("showPauseUI");
+                } else {
+                    exitMenu();
+                }
+            }
+        });
 
-        backBtn.getLabel().setColor(Color.WHITE);
-        applyBtn.getLabel().setColor(Color.WHITE);
-
-        backBtn.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Back button clicked");
-                        if (overlayMode) {
-                            entity.getEvents().trigger("hideSettingsOverlay");
-                            entity.getEvents().trigger("showPauseUI");
-                        } else {
-                            exitMenu();
-                        }
-                    }
-                });
-
-        applyBtn.addListener(
-                new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Apply button clicked");
-                        applyChanges();
-                    }
-                });
+        applyBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+                applyChanges();
+            }
+        });
 
         Table table = new Table();
-        table.add(backBtn).size(buttonWidth, buttonHeight).expandX().left().pad(0f, 15f, 15f, 0f);
-        table.add(applyBtn).size(buttonWidth, buttonHeight).expandX().right().pad(0f, 0f, 15f, 15f);
+        table.add(backBtn).size(150f, 50f).expandX().left().pad(0f, 15f, 15f, 0f);
+        table.add(applyBtn).size(150f, 50f).expandX().right().pad(0f, 0f, 15f, 15f);
         return table;
     }
 
@@ -387,29 +330,45 @@ public class SettingsMenuDisplay extends UIComponent {
         UserSettings.Settings settings = UserSettings.get();
 
         Integer fpsVal = parseOrNull(fpsText.getText());
-        if (fpsVal != null) {
-            settings.fps = fpsVal;
-        }
+        if (fpsVal != null) settings.fps = fpsVal;
         settings.fullscreen = fullScreenCheck.isChecked();
         settings.uiScale = uiScaleSlider.getValue();
         settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
         settings.vsync = vsyncCheck.isChecked();
-
         settings.musicVolume = musicVolumeSlider.getValue();
         settings.soundVolume = soundVolumeSlider.getValue();
-
         settings.difficulty = difficultySelect.getSelected();
-        
         settings.heroWeapon = heroWeaponSelect.getSelected().toLowerCase();
         settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
 
         UserSettings.set(settings, true);
 
+        DisplayMode selectedMode = displayModeSelect.getSelected().object;
+        if (settings.fullscreen) {
+            Gdx.graphics.setFullscreenMode(selectedMode);
+        } else {
+            Gdx.graphics.setWindowedMode(selectedMode.width, selectedMode.height);
+        }
+
+        Gdx.graphics.setVSync(settings.vsync);
+        Gdx.graphics.setForegroundFPS(settings.fps);
+
         if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().setMusicVolume(settings.musicVolume);
+            ServiceLocator.getAudioService().setSoundVolume(settings.soundVolume);
             ServiceLocator.getAudioService().updateSettings();
         }
 
         applyUiScale(settings.uiScale);
+
+        if (ServiceLocator.getEntityService() != null) {
+            for (var entity : ServiceLocator.getEntityService().getEntities()) {
+                entity.getEvents().trigger("settingsApplied", settings);
+            }
+        }
+
+        logger.info("Settings applied (fullscreen={}, {}x{}, fps={}, scale={})",
+                settings.fullscreen, selectedMode.width, selectedMode.height, settings.fps, settings.uiScale);
     }
 
     private void applyUiScale(float scale) {
@@ -440,49 +399,36 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     @Override
-    protected void draw(SpriteBatch batch) {
-    }
+    protected void draw(SpriteBatch batch) {}
 
     @Override
     public void update() {
         stage.act(ServiceLocator.getTimeSource().getDeltaTime());
     }
 
-    /**
-     * Create title label using Arial Black font
-     */
     private Label createTitleLabel() {
         BitmapFont arialBlackFont = skin.getFont("arial_black");
         Label titleLabel = new Label("Settings", new Label.LabelStyle(arialBlackFont, Color.WHITE));
         titleLabel.setFontScale(1.5f);
-        titleLabel.setColor(Color.WHITE);
         return titleLabel;
     }
 
-    /**
-     * Create custom button style using button background image
-     */
     private TextButtonStyle createCustomButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
-
         style.font = skin.getFont("segoe_ui");
 
         Texture buttonTexture = ServiceLocator.getResourceService()
                 .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
-
         NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-
         NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
         pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-
         NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
         hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
 
         style.up = new NinePatchDrawable(buttonPatch);
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
-
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
@@ -498,14 +444,8 @@ public class SettingsMenuDisplay extends UIComponent {
     @Override
     public void dispose() {
         if (overlayStack != null) overlayStack.clear();
-        if (dimTexHandle != null) {
-            dimTexHandle.dispose();
-            dimTexHandle = null;
-        }
-        if (panelTexHandle != null) {
-            panelTexHandle.dispose();
-            panelTexHandle = null;
-        }
+        if (dimTexHandle != null) dimTexHandle.dispose();
+        if (panelTexHandle != null) panelTexHandle.dispose();
         super.dispose();
     }
 }

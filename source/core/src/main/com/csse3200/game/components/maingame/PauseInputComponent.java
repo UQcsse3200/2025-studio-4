@@ -1,84 +1,87 @@
 package com.csse3200.game.components.maingame;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.badlogic.gdx.utils.Array;
 
 /**
- * Handles ESC key toggling of pause state.
- * - Shows/hides PauseMenuDisplay via events.
- * - Broadcasts gamePaused/gameResumed to all entities so AI/physics can re-sync.
- *   (This avoids touching EntityService internals.)
+ * ESC/P toggles pause. Freezes time and broadcasts "gamePaused"/"gameResumed"
+ * so path-followers can recompute their routes safely.
  */
 public class PauseInputComponent extends UIComponent {
-    private static final Logger logger = LoggerFactory.getLogger(PauseInputComponent.class);
-
     private boolean paused = false;
 
     @Override
-    public void update() {
-        super.update();
+    public void create() {
+        super.create();
 
-        // ESC toggle
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            if (paused) {
-                resume();
-            } else {
-                pause();
+        // Toggle via keyboard
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) {
+                    togglePause();
+                    return true;
+                }
+                return false;
             }
-        }
+        });
+
+        // Toggle via UI buttons
+        entity.getEvents().addListener("togglePause", this::togglePause);
+        entity.getEvents().addListener("resume", this::resumeGame);
     }
 
-    private void pause() {
-        if (paused) return;
+    private void togglePause() {
+        if (paused) resumeGame();
+        else pauseGame();
+    }
+
+    private void pauseGame() {
         paused = true;
-        logger.info("Game paused");
 
-        // Show pause overlay
-        entity.getEvents().trigger("showPauseUI");
-
-        // Let every entity know we paused (AI can stop steering, physics can sleep, etc.)
-        EntityService es = ServiceLocator.getEntityService();
-        if (es != null) {
-            Array<Entity> all = es.getEntities();
-            for (Entity e : all) {
-                e.getEvents().trigger("gamePaused");
-            }
+        // Freeze the simulation (everything that uses GameTime’s delta stops)
+        GameTime time = ServiceLocator.getTimeSource();
+        if (time != null) {
+            try { time.setTimeScale(0f); } catch (Throwable ignored) {}
         }
+
+        // Tell everyone we paused (AI can stash state if needed)
+        broadcast("gamePaused");
+
+        // Show overlay
+        entity.getEvents().trigger("showPauseUI");
     }
 
-    private void resume() {
-        if (!paused) return;
+    private void resumeGame() {
         paused = false;
-        logger.info("Game resumed");
 
-        // Hide pause overlay
+        // Restore time
+        GameTime time = ServiceLocator.getTimeSource();
+        if (time != null) {
+            try { time.setTimeScale(1f); } catch (Throwable ignored) {}
+        }
+
+        // Hide overlay first
         entity.getEvents().trigger("hidePauseUI");
 
-        // Let every entity know we resumed (AI can reacquire paths/targets, wake bodies, etc.)
-        EntityService es = ServiceLocator.getEntityService();
-        if (es != null) {
-            Array<Entity> all = es.getEntities();
-            for (Entity e : all) {
-                e.getEvents().trigger("gameResumed");
-            }
+        // Tell everyone we resumed so AI can REPATH from current tile
+        broadcast("gameResumed");
+    }
+
+    private void broadcast(String event) {
+        if (ServiceLocator.getEntityService() == null) return;
+        Array<Entity> all = ServiceLocator.getEntityService().getEntities();
+        for (int i = 0; i < all.size; i++) {
+            all.get(i).getEvents().trigger(event);
         }
     }
 
-    @Override
-    protected void draw(SpriteBatch batch) {
-        // No direct drawing; stage handles UI
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-    }
+    @Override protected void draw(com.badlogic.gdx.graphics.g2d.SpriteBatch batch) {}
+    @Override public float getZIndex() { return 200f; }
 }

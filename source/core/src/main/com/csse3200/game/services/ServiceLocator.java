@@ -28,7 +28,7 @@ public class ServiceLocator {
   private static GdxGame gameService;
   private static GameStateService gameStateService;
 
-  // NEW: centralised audio service
+    // NEW: centralised audio service
   private static AudioService audioService;
 
   // Leaderboard
@@ -43,34 +43,34 @@ public class ServiceLocator {
   // Game Score Service
   private static GameScoreService gameScoreService;
 
-  // --- Getters ---
+    // --- Getters ---
   public static EntityService getEntityService() {
     return entityService;
   }
 
-  public static RenderService getRenderService() {
-    return renderService;
-  }
+    public static RenderService getRenderService() {
+        return renderService;
+    }
 
-  public static PhysicsService getPhysicsService() {
-    return physicsService;
-  }
+    public static PhysicsService getPhysicsService() {
+        return physicsService;
+    }
 
-  public static GameTime getTimeSource() {
-    return timeSource;
-  }
+    public static GameTime getTimeSource() {
+        return timeSource;
+    }
 
-  public static InputService getInputService() {
-    return inputService;
-  }
+    public static InputService getInputService() {
+        return inputService;
+    }
 
-  public static ResourceService getResourceService() {
-    return resourceService;
-  }
+    public static ResourceService getResourceService() {
+        return resourceService;
+    }
 
-  public static GdxGame getGameService() {
-    return gameService;
-  }
+    public static GdxGame getGameService() {
+        return gameService;
+    }
 
   public static GameStateService getGameStateService() {
     return gameStateService;
@@ -81,7 +81,7 @@ public class ServiceLocator {
     return audioService;
   }
 
-  public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
+    public static com.csse3200.game.services.leaderboard.LeaderboardService getLeaderboardService() {
     return leaderboardService;
   }
 
@@ -108,35 +108,35 @@ public class ServiceLocator {
     renderService = service;
   }
 
-  public static void registerPhysicsService(PhysicsService service) {
-    logger.debug("Registering physics service {}", service);
-    physicsService = service;
-  }
+    public static void registerPhysicsService(PhysicsService service) {
+        logger.debug("Registering physics service {}", service);
+        physicsService = service;
+    }
 
-  public static void registerTimeSource(GameTime source) {
-    logger.debug("Registering time source {}", source);
-    timeSource = source;
-  }
+    public static void registerTimeSource(GameTime source) {
+        logger.debug("Registering time source {}", source);
+        timeSource = source;
+    }
 
-  public static void registerInputService(InputService source) {
-    logger.debug("Registering input service {}", source);
-    inputService = source;
-  }
+    public static void registerInputService(InputService source) {
+        logger.debug("Registering input service {}", source);
+        inputService = source;
+    }
 
-  public static void registerResourceService(ResourceService source) {
-    logger.debug("Registering resource service {}", source);
-    resourceService = source;
-  }
+    public static void registerResourceService(ResourceService source) {
+        logger.debug("Registering resource service {}", source);
+        resourceService = source;
+    }
 
-  public static void registerGameService(GdxGame source) {
-    logger.debug("Registering game service {}", source);
-    gameService = source;
-  }
+    public static void registerGameService(GdxGame source) {
+        logger.debug("Registering game service {}", source);
+        gameService = source;
+    }
 
-  public static void registerGameStateService(GameStateService source) {
-    logger.debug("Registering game state service {}", source);
-    gameStateService = source;
-  }
+    public static void registerGameStateService(GameStateService source) {
+        logger.debug("Registering game state service {}", source);
+        gameStateService = source;
+    }
 
   // NEW: Audio registration
   public static void registerAudioService(AudioService source) {
@@ -174,7 +174,6 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
-    gameStateService = null; // ensure state service is cleared
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
     playerNameService = null;
@@ -182,7 +181,7 @@ public class ServiceLocator {
     gameScoreService = null;
   }
 
-  private ServiceLocator() {
-    throw new IllegalStateException("Instantiating static util class");
-  }
+    private ServiceLocator() {
+        throw new IllegalStateException("Instantiating static util class");
+    }
 }

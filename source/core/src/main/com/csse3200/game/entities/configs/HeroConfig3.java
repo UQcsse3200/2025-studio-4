@@ -10,7 +10,7 @@ package com.csse3200.game.entities.configs;
  * Values can be loaded from JSON via {@code FileLoader}.
  * </p>
  */
-public class HeroConfig3 extends BaseEntityConfig {
+public class HeroConfig3 extends HeroConfig {
   /** Movement speed in pixels per second */
   public float moveSpeed = 220f;
 

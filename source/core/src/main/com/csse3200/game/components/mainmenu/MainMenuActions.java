@@ -49,7 +49,8 @@ public class MainMenuActions extends Component {
     }
     
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", 
+        com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(),
         new NameInputDialog.NameInputCallback() {
           @Override
           public void onNameConfirmed(String name, String avatarId) {
@@ -92,9 +93,9 @@ public class MainMenuActions extends Component {
    * Handles when player cancels name input.
    */
   private void handleNameCancelled() {
-    logger.info("Name input cancelled, proceeding to map selection with default name");
-    // Proceed to map selection with default name
-    game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
+    logger.info("Name input cancelled, returning to main menu");
+    // Return to main menu - dialog will close automatically
+    // No need to change screen since we're already on main menu
   }
 
 

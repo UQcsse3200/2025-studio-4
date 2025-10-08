@@ -332,6 +332,7 @@ public class TowerComponent extends Component {
             }
         }
 
+        // Disable update logic for totem towers
         if ("totem".equalsIgnoreCase(type)) return;
 
         // SuperCavemen behaviour: assign nearest enemy to head's BeamAttackComponent and rotate head

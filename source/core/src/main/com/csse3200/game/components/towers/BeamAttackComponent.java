@@ -54,6 +54,8 @@ public class BeamAttackComponent extends Component {
                     try {
                         int newHealth = Math.max(0, stats.getHealth() - (int)damage);
                         stats.setHealth(newHealth);
+                        // Play laser sound effect when attacking
+                        ServiceLocator.getAudioService().playSound("laser");
                     } catch (Exception ignored) {}
                 }
                 attackTimer = 0f;
@@ -71,58 +73,86 @@ public class BeamAttackComponent extends Component {
     }
 
     public void draw(SpriteBatch batch) {
-        // Nothing to draw if no target or batch not available
         if (target == null || batch == null) return;
 
         Vector2 start = centerSafe(entity);
         Vector2 end = centerSafe(target);
         if (start == null || end == null) return;
 
-        // If start and end are essentially identical, draw a small indicator instead
-        final boolean samePoint = start.epsilonEquals(end, 0.001f);
-
-        // Snapshot coordinates so we don't reference mutable positions later.
-        final float sx = start.x;
-        final float sy = start.y;
-        final float ex = end.x;
-        final float ey = end.y;
-
-        // Immediate draw using ShapeRenderer aligned to the batch projection matrix.
-        try {
-            batch.end();
-
-            // Align ShapeRenderer with the batch projection so coordinates match
-            shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
-            Gdx.gl.glEnable(GL20.GL_BLEND);
-            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-            // Draw a visible, filled red beam (thicker for clarity)
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(Color.RED);
-
-            float beamWidth = 0.45f; // increased thickness for visibility
-            if (!samePoint) {
-                shapeRenderer.rectLine(sx, sy, ex, ey, beamWidth);
-            } else {
-                shapeRenderer.circle(sx, sy, beamWidth * 1.2f, 16);
-            }
-
-            // Remove pink endpoint highlighting
-            // shapeRenderer.setColor(new Color(1f, 0.6f, 0.6f, 1f));
-            // float endpointRadius = beamWidth * 1.1f;
-            // shapeRenderer.circle(sx, sy, endpointRadius, 12);
-            // shapeRenderer.circle(ex, ey, endpointRadius, 12);
-
-            shapeRenderer.end();
-            Gdx.gl.glDisable(GL20.GL_BLEND);
-        } catch (Exception drawEx) {
-            Gdx.app.error("BeamAttack", "Error drawing beam: " + drawEx.getMessage(), drawEx);
-        } finally {
-            try {
-                batch.begin();
-            } catch (Exception ignored) {}
+        // --- Start beam closer to the center of the tower ---
+        Vector2 dir = new Vector2(end).sub(start);
+        if (dir.len() > 0.01f) {
+            dir.nor();
+            // Tweak these values to move the beam start further away from the center:
+            float offset = Math.min(range * 0.15f, 0.25f); // Increase multiplier or max for further away
+            start.add(dir.scl(offset));
         }
+
+        float sx = start.x, sy = start.y, ex = end.x, ey = end.y;
+        boolean samePoint = start.epsilonEquals(end, 0.001f);
+
+        batch.end();
+        shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        // Fixed beam width for focused look
+        float beamWidth = 0.2f;
+
+        // Layer 1: Core white (minimized)
+        Color coreWhite = new Color(1f, 1f, 1f, 0.5f);
+
+        // Layer 2: Mid red-white
+        Color midRedWhite = new Color(1f, 0.5f, 0.5f, 0.7f);
+
+        // Layer 3: Bright, opaque red (dominant)
+        Color brightRed = new Color(1f, 0f, 0f, 1f);
+
+        // Layer 4: Outer red glow (slightly translucent for edge)
+        Color outerRed = new Color(1f, 0.1f, 0.1f, 0.7f);
+
+        // Draw from outer to inner for best fade effect
+        if (!samePoint) {
+            // Outer glow
+            shapeRenderer.setColor(outerRed);
+            shapeRenderer.rectLine(sx, sy, ex, ey, beamWidth * 2.0f);
+
+            // Bright red (opaque, dominant)
+            shapeRenderer.setColor(brightRed);
+            shapeRenderer.rectLine(sx, sy, ex, ey, beamWidth * 1.2f);
+
+            // Mid red-white
+            shapeRenderer.setColor(midRedWhite);
+            shapeRenderer.rectLine(sx, sy, ex, ey, beamWidth * 0.7f);
+
+            // Core white (minimized)
+            shapeRenderer.setColor(coreWhite);
+            shapeRenderer.rectLine(sx, sy, ex, ey, beamWidth * 0.3f);
+        } else {
+            // Outer glow
+            shapeRenderer.setColor(outerRed);
+            shapeRenderer.circle(sx, sy, beamWidth * 2.0f, 16);
+
+            // Bright red (opaque, dominant)
+            shapeRenderer.setColor(brightRed);
+            shapeRenderer.circle(sx, sy, beamWidth * 1.2f, 16);
+
+            // Mid red-white
+            shapeRenderer.setColor(midRedWhite);
+            shapeRenderer.circle(sx, sy, beamWidth * 0.7f, 16);
+
+            // Core white (minimized)
+            shapeRenderer.setColor(coreWhite);
+            shapeRenderer.circle(sx, sy, beamWidth * 0.3f, 16);
+        }
+
+        shapeRenderer.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+        batch.begin();
     }
+
 
     private boolean isInRange(Entity enemy) {
         Vector2 c1 = centerSafe(enemy);
@@ -208,6 +238,11 @@ public class BeamAttackComponent extends Component {
         private final BeamAttackComponent beam;
         public BeamRenderComponent(BeamAttackComponent beam) {
             this.beam = beam;
+        }
+        @Override
+        public int getLayer() {
+            // Return a very high layer so the beam is rendered on top of all other components
+            return 9999;
         }
         @Override
         protected void draw(SpriteBatch batch) {

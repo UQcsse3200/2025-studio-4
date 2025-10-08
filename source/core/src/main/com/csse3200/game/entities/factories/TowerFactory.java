@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.components.deck.DeckComponent;
-import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
 import com.csse3200.game.components.towers.CurrencyGeneratorComponent;
 import com.csse3200.game.components.towers.*;
 import com.csse3200.game.entities.Entity;
@@ -16,7 +15,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.entities.configs.TowerConfig;
 import com.csse3200.game.components.towers.OrbitComponent;
-import com.csse3200.game.components.towers.StatsBoostComponent;
+import core.src.main.com.csse3200.game.components.towers.StatsBoostComponent;
 
 /**
  * Factory class for creating different types of tower entities.
@@ -243,7 +242,7 @@ public class TowerFactory {
                         "totem", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"))
-                .addComponent(new StatsBoostComponent(stats.range)); // <-- Add this line
+                .addComponent(new StatsBoostComponent()); // <-- Fix: call with no arguments
 
         com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/totem/totemlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
@@ -276,33 +275,160 @@ public class TowerFactory {
                 .addComponent(new TowerStatsComponent(
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
-
-
-
-
-
-
-
-
-
-
                         stats.projectileTexture, stats.level_A, stats.level_B))
                 .addComponent(new DeckComponent.TowerDeckComponent(
                         "bank", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
-                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
-        base.addComponent(new BankTowerUpgradeComponent(base,
-                CurrencyComponent.CurrencyType.METAL_SCRAP,
-                50,
-                3f
-        ));
+                // Set the floor image to match other towers
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"))
+                .addComponent(new CurrencyGeneratorComponent(
+                        CurrencyComponent.CurrencyType.METAL_SCRAP,
+                        50,
+                        3f
+                ));
 
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bank/banklvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        // Use the correct bank tower atlas for head animation
+        com.badlogic.gdx.graphics.g2d.TextureAtlas bankAtlas = rs.getAsset("images/towers/bank/banklvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
-        RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(cavemanAtlas);
+        RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(bankAtlas);
         Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.startAnimation("idle");
+
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a raft tower entity (same as bone tower for now).
+     */
+    public static Entity createRaftTower() {
+        TowerConfig.TowerStats stats = towers.raftTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("raft", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "raft", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+        // TEMPORARY: use bone tower atlas for now
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
+        Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle");
+
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a frozen mammoth skull tower entity (same as bone tower for now).
+     */
+    public static Entity createFrozenmamoothskullTower() {
+        TowerConfig.TowerStats stats = towers.frozenmamoothskullTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("frozenmamoothskull", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "frozenmamoothskull", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+        // TEMPORARY: use bone tower atlas for now
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
+        Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle");
+
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a boulder catapult tower entity (same as bone tower for now).
+     */
+    public static Entity createBouldercatapultTower() {
+        TowerConfig.TowerStats stats = towers.bouldercatapultTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("bouldercatapult", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "bouldercatapult", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+        // TEMPORARY: use bone tower atlas for now
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
+        Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle");
+
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
+
+        scaleToFootprint(base, head, 2, 2);
+        return base;
+    }
+
+    /**
+     * Creates a village shaman tower entity (same as bone tower for now).
+     */
+    public static Entity createVillageshamanTower() {
+        TowerConfig.TowerStats stats = towers.villageshamanTower.base;
+
+        Entity base = new Entity()
+                .addComponent(new TowerComponent("villageshaman", 2, 2))
+                .addComponent(new TowerStatsComponent(
+                        1, stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.projectileLife,
+                        stats.projectileTexture, stats.level_A, stats.level_B))
+                .addComponent(new DeckComponent.TowerDeckComponent(
+                        "villageshaman", stats.damage, stats.range, stats.cooldown,
+                        stats.projectileSpeed, stats.image))
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+        // TEMPORARY: use bone tower atlas for now
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/bones/bonelvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+
+        RotatingAnimationRenderComponent headAnim =
+                new RotatingAnimationRenderComponent(cavemanAtlas);
+        Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
+        headAnim.startAnimation("idle");
+
+        base.getComponent(TowerComponent.class)
+                .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
 
         scaleToFootprint(base, head, 2, 2);
         return base;

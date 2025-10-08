@@ -84,12 +84,12 @@
       "level_A": 1,
       "level_B": 1,
       "damage": 0,
-      "range": 4.0,
+      "range": 3.0,
       "cooldown": 0,
       "metalScrapCost": 0,
       "titaniumCoreCost": 150,
       "neurochipCost": 0,
-      "projectileSpeed": 5.0,
+      "projectileSpeed": 0.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/zap.png",
       "image": "images/towers/totem.png"
@@ -109,6 +109,70 @@
       "projectileLife": 0,
       "projectileTexture": "",
       "image": "images/towers/bank_tower.png"
+    }
+  },
+  "raftTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 15,
+      "range": 3.0,
+      "cooldown": 1.5,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 250,
+      "neurochipCost": 0,
+      "projectileSpeed": 5.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "image": "images/towers/archer.png"
+    }
+  },
+  "frozenmamoothskullTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 22,
+      "range": 4.0,
+      "cooldown": 1.3,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 300,
+      "neurochipCost": 0,
+      "projectileSpeed": 6.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "image": "images/towers/frozenmamoothskull.png"
+    }
+  },
+  "bouldercatapultTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 40,
+      "range": 7.0,
+      "cooldown": 2.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 500,
+      "neurochipCost": 0,
+      "projectileSpeed": 8.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "image": "images/towers/bouldercatapult.png"
+    }
+  },
+  "villageshamanTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 18,
+      "range": 3.5,
+      "cooldown": 1.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 350,
+      "projectileSpeed": 5.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "image": "images/towers/villageshaman.png"
     }
   }
 }

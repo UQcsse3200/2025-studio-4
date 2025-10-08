@@ -36,6 +36,7 @@ public class MapEditor extends InputAdapter {
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
+    private java.util.List<GridPoint2> waterTiles = new java.util.ArrayList<>();
 
     public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
@@ -221,23 +222,20 @@ public class MapEditor extends InputAdapter {
                 {30,31,2,5},
                 {30,31,6,7},
         };
-        
+
+
         for (int[] range : redCircledArea) {
-            int startX = range[0];
-            int endX = range[1];
-            int startY = range[2];
-            int endY = range[3];
-            
-            System.out.println("🔴InvalidTiles: x=" + startX + "-" + endX + ", y=" + startY + "-" + endY);
-            
-            for (int x = startX; x <= endX; x++) {
-                for (int y = startY; y <= endY; y++) {
+            for (int x = range[0]; x <= range[1]; x++) {
+                for (int y = range[2]; y <= range[3]; y++) {
                     addSnow(x, y);
+                    waterTiles.add(new GridPoint2(x, y));
                 }
             }
         }
 
-       // generatePlaceableAreas();
+
+
+        // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());
         System.out.println("✅ Snow coordinates number=" + snowCoords.size());
@@ -332,6 +330,13 @@ public class MapEditor extends InputAdapter {
             String key = p[0] + "," + p[1];
             snowTreeTiles.put(key, new GridPoint2(p[0], p[1]));
         }
+    }
+
+    /**
+     * Returns a list of water tiles (red circled area) for raft tower placement.
+     */
+    public java.util.List<GridPoint2> getWaterTiles() {
+        return waterTiles;
     }
 
 

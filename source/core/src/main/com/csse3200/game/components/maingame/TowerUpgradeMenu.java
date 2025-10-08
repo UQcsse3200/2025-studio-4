@@ -16,7 +16,6 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.InputAdapter;
 
-import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
 import com.csse3200.game.entities.Entity;
 
 import com.csse3200.game.components.towers.TowerComponent;
@@ -244,25 +243,28 @@ public class TowerUpgradeMenu extends UIComponent {
     private static CurrencyType currencyForTowerType(String towerType) {
         String key = canonicalTowerType(towerType);
         if (key == null) return UPGRADE_CURRENCY;
-        if ("pteradactyl".equalsIgnoreCase(key)) {
-            return CurrencyType.TITANIUM_CORE;
-        }
-        // Totem uses METAL_SCRAP (default)
+        if ("pteradactyl".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("totem".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("supercavemen".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
+        if ("cavemenvillage".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("raft".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("frozenmamoothskull".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("bouldercatapult".equalsIgnoreCase(key)) return CurrencyType.TITANIUM_CORE;
+        if ("villageshaman".equalsIgnoreCase(key)) return CurrencyType.NEUROCHIP;
         return UPGRADE_CURRENCY;
     }
 
     private static String canonicalTowerType(String towerType) {
         if (towerType == null) return "";
         String s = towerType.toLowerCase().trim();
-        if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) {
-            return "pteradactyl";
-        }
-        if (s.equals("totem")) {
-            return "totem";
-        }
-        if (s.equals("supercavemen")) {
-            return "supercavemen";
-        }
+        if (s.equals("pteradactyl") || s.equals("pterodactyl") || s.startsWith("ptero")) return "pteradactyl";
+        if (s.equals("totem")) return "totem";
+        if (s.equals("supercavemen")) return "supercavemen";
+        if (s.equals("cavemenvillage")) return "cavemenvillage";
+        if (s.equals("raft")) return "raft";
+        if (s.equals("frozenmamoothskull")) return "frozenmamoothskull";
+        if (s.equals("bouldercatapult")) return "bouldercatapult";
+        if (s.equals("villageshaman")) return "villageshaman";
         return s;
     }
 
@@ -388,13 +390,6 @@ public class TowerUpgradeMenu extends UIComponent {
 
         updateLabels();
         System.out.println("Upgrade successful!");
-
-        if ("bank".equalsIgnoreCase(currentTowerType)) {
-            BankTowerUpgradeComponent bankUpgrade = selectedTower.getComponent(BankTowerUpgradeComponent.class);
-            if (bankUpgrade != null) {
-                bankUpgrade.applyUpgrade(isLevelA ? "A" : "B", nextLevel);
-            }
-        }
     }
 
 

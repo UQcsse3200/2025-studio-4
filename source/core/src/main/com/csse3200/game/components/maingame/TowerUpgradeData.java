@@ -102,36 +102,34 @@ public class TowerUpgradeData {
         bankA.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
         pathA.put("bank", bankA);
 
-        // Raft tower (same as bone for now)
+
         Map<Integer, UpgradeStats> raftA = new HashMap<>();
-        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/bones/bonelvl2"));
-        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/bones/bonelvl3"));
-        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/bones/bonelvl4"));
-        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/bones/bonelvl4"));
+        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/viking/vikinglvl2"));
+        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/viking/vikinglvl3"));
+        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/viking/vikinglvl4"));
+        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/viking/vikinglvl4"));
         pathA.put("raft", raftA);
 
-        // Frozen Mammoth Skull tower (same as bone for now)
         Map<Integer, UpgradeStats> frozenA = new HashMap<>();
-        frozenA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/bones/bonelvl2"));
-        frozenA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/bones/bonelvl3"));
-        frozenA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/bones/bonelvl4"));
-        frozenA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/bones/bonelvl4"));
+        frozenA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/mammoth/mammothlvl2"));
+        frozenA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/mammoth/mammothlvl3"));
+        frozenA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/mammoth/mammothlvl4"));
+        frozenA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/mammoth/mammothlvl4"));
         pathA.put("frozenmamoothskull", frozenA);
 
-        // Boulder Catapult tower (same as bone for now)
         Map<Integer, UpgradeStats> boulderA = new HashMap<>();
-        boulderA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/bones/bonelvl2"));
-        boulderA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/bones/bonelvl3"));
-        boulderA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/bones/bonelvl4"));
-        boulderA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/bones/bonelvl4"));
+        boulderA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/catapault/catapaultlvl2"));
+        boulderA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/catapault/catapaultlvl3"));
+        boulderA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/catapault/catapaultlvl4"));
+        boulderA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/catapault/catapaultlvl4"));
         pathA.put("bouldercatapult", boulderA);
 
         // Village Shaman tower (same as bone for now)
         Map<Integer, UpgradeStats> shamanA = new HashMap<>();
-        shamanA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/bones/bonelvl2"));
-        shamanA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/bones/bonelvl3"));
-        shamanA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/bones/bonelvl4"));
-        shamanA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/bones/bonelvl4"));
+        shamanA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/shaman/charmanlvl2"));
+        shamanA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/shaman/charmanlvl3"));
+        shamanA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/shaman/charmanlvl4"));
+        shamanA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/shaman/charmanlvl4"));
         pathA.put("villageshaman", shamanA);
 
         return pathA;
@@ -193,36 +191,32 @@ public class TowerUpgradeData {
         superCavemenB.put(5, new UpgradeStats(60, 6.0f, 0.5f, 30.0f, 3500, "images/towers/super/superlvl4"));
         pathB.put("supercavemen", superCavemenB);
 
-        // Raft tower (same as bone for now)
         Map<Integer, UpgradeStats> raftB = new HashMap<>();
-        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
-        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
-        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
-        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/viking/vikinglvl2"));
+        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/viking/vikinglvl2"));
+        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/viking/vikinglvl3"));
+        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/viking/vikinglvl4"));
         pathB.put("raft", raftB);
 
-        // Frozen Mammoth Skull tower (same as bone for now)
         Map<Integer, UpgradeStats> frozenB = new HashMap<>();
-        frozenB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
-        frozenB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
-        frozenB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
-        frozenB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        frozenB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/mammoth/mammothlvl2"));
+        frozenB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/mammoth/mammothlvl2"));
+        frozenB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/mammoth/mammothlvl3"));
+        frozenB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/mammoth/mammothlvl4"));
         pathB.put("frozenmamoothskull", frozenB);
 
-        // Boulder Catapult tower (same as bone for now)
         Map<Integer, UpgradeStats> boulderB = new HashMap<>();
-        boulderB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
-        boulderB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
-        boulderB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
-        boulderB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        boulderB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/catapault/catapaultlvl2"));
+        boulderB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/catapault/catapaultlvl3"));
+        boulderB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/catapault/catapaultlvl4"));
+        boulderB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/catapault/catapaultlvl4"));
         pathB.put("bouldercatapult", boulderB);
 
-        // Village Shaman tower (same as bone for now)
         Map<Integer, UpgradeStats> shamanB = new HashMap<>();
-        shamanB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
-        shamanB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
-        shamanB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
-        shamanB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        shamanB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/shaman/charmanlvl2"));
+        shamanB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/shaman/charmanlvl3"));
+        shamanB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/shaman/charmanlvl4"));
+        shamanB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/shaman/charmanlvl4"));
         pathB.put("villageshaman", shamanB);
 
         return pathB;

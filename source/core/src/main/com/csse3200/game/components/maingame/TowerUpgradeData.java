@@ -1,5 +1,7 @@
 package com.csse3200.game.components.maingame;
 
+import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,6 +97,11 @@ public class TowerUpgradeData {
         superCavemenA.put(5, new UpgradeStats(130, 10.0f, 1.0f, 10.0f, 3500, "images/towers/super/superlvl4"));
         pathA.put("supercavemen", superCavemenA);
 
+        Map<Integer, UpgradeStats> bankA = new HashMap<>();
+        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank_tower.png"));
+        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank_tower.png"));
+        pathA.put("bank", bankA);
+
         return pathA;
     }
 
@@ -153,6 +160,11 @@ public class TowerUpgradeData {
         superCavemenB.put(4, new UpgradeStats(60, 6.0f, 0.6f, 25.0f, 3000, "images/towers/super/superlvl4"));
         superCavemenB.put(5, new UpgradeStats(60, 6.0f, 0.5f, 30.0f, 3500, "images/towers/super/superlvl4"));
         pathB.put("supercavemen", superCavemenB);
+
+        Map<Integer, UpgradeStats> bankB = new HashMap<>();
+        bankB.put(2, new UpgradeStats(0, 0, 5f, 0, 300, "images/bank_tower.png")); // cooldown decrease
+        bankB.put(3, new UpgradeStats(0, 0, 2.5f, 0, 600, "images/bank_tower.png"));
+        pathB.put("bank", bankB);
 
         return pathB;
     }

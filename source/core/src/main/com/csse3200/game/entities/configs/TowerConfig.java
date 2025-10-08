@@ -17,6 +17,8 @@ public class TowerConfig {
     public TowerWrapper supercavemenTower;
     /** Stats for the totem tower. */
     public TowerWrapper totemTower;
+    /** Stats for the bank tower. */
+    public TowerWrapper bankTower;
 
     /**
      * Inner wrapper class to match JSON structure.

@@ -2,7 +2,7 @@ package com.csse3200.game.areas;
 
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
-import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.components.maingame.*;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
@@ -22,7 +22,6 @@ import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
@@ -30,7 +29,6 @@ import com.csse3200.game.entities.configs.HeroConfig3;
 import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.components.maingame.MapHighlighter;
 import com.badlogic.gdx.graphics.Camera;
 
 import com.badlogic.gdx.utils.Timer;
@@ -42,6 +40,7 @@ import java.util.List;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
+import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
 /**
@@ -85,7 +84,7 @@ public class ForestGameArea extends GameArea {
             "sounds/book_opening.mp3",
             "sounds/book_closing.mp3",
     };
-    private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+    private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
     private final TerrainFactory terrainFactory;
@@ -319,6 +318,16 @@ public class ForestGameArea extends GameArea {
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
+
+        /*
+        // Difficulty label UI
+        Entity difficultyUi = new Entity()
+                .addComponent(new DifficultyDisplay()); // your custom component
+        spawnEntity(difficultyUi);
+
+        // Send the chosen difficulty so it shows immediately
+        difficultyUi.getEvents().trigger("setDifficulty", gameDifficulty.name());
+        */
 
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
@@ -642,8 +651,8 @@ public class ForestGameArea extends GameArea {
     private void playMusic() {
         // Route all music through AudioService to avoid overlaps across screens
         if (ServiceLocator.getAudioService() != null) {
-            ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
-            ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+            ServiceLocator.getAudioService().registerMusic("new_menutheme", backgroundMusic);
+            ServiceLocator.getAudioService().playMusic("new_menutheme", true);
             ServiceLocator.getAudioService().setMusicVolume(0.3f);
         } else {
             Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
@@ -714,9 +723,9 @@ public class ForestGameArea extends GameArea {
             }
         }
         if (ServiceLocator.getAudioService() != null) {
-            ServiceLocator.getAudioService().stopMusic();
+            //ServiceLocator.getAudioService().stopMusic();
         } else {
-            ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+            //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
     }

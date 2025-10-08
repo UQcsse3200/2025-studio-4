@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -32,6 +33,9 @@ public class MainBookDisplay extends UIComponent {
             "images/book/towers_book.png",
             "images/book/hologram.png"
     };
+
+    private Table contentTable;
+    private Table exitTable;
 
     /**
      * Constructs the main book display UI component.
@@ -57,6 +61,30 @@ public class MainBookDisplay extends UIComponent {
         this.renderBackGround();
         this.renderContentList();
         this.renderExitButton();
+        //applyUiScale();
+    }
+
+    /**
+     * Apply UI scale from user settings
+     */
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+
+        // Scale content table (center buttons)
+        if (contentTable != null) {
+            contentTable.setTransform(true);
+            contentTable.validate();
+            contentTable.setOrigin(contentTable.getWidth() / 2f, contentTable.getHeight() / 2f);
+            contentTable.setScale(settings.uiScale);
+        }
+
+        // Scale exit table (top-right)
+        if (exitTable != null) {
+            exitTable.setTransform(true);
+            exitTable.validate();
+            exitTable.setOrigin(exitTable.getWidth(), exitTable.getHeight());
+            exitTable.setScale(settings.uiScale);
+        }
     }
 
     /** Renders the main background image of the book menu. */

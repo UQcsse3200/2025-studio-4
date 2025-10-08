@@ -1,143 +1,114 @@
 package com.csse3200.game.components.movement;
 
-import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.entities.factories.GruntEnemyFactory;
+import com.csse3200.game.entities.factories.PlayerFactory;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.input.InputService;
 import com.csse3200.game.physics.PhysicsService;
-import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.physics.components.PhysicsMovementComponent;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-
-import org.junit.jupiter.api.AfterEach;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.ArrayList;
+import java.util.List;
 
 @ExtendWith(GameExtension.class)
-public class AdjustSpeedByHealthComponentTests {
-
-    /**
-     * Creates a minimal test entity mocking a grunt enemy.
-     */
-    private Entity createMinimalTestEntity() {
-        Entity entity = new Entity();
-        entity.addComponent(new PhysicsComponent());
-        PhysicsMovementComponent moveComponent = new PhysicsMovementComponent();
-        moveComponent.maxSpeed = new Vector2((float) 0.8, (float) 0.8);
-        entity.addComponent(moveComponent);
-
-        // Match grunt enemy values
-        entity.addComponent(new CombatStatsComponent(
-                50,
-                12,
-                DamageTypeConfig.None,
-                DamageTypeConfig.None
-        ));
-
-        // Match the grunt enemy values
-        entity.addComponent(new AdjustSpeedByHealthComponent()
-                .addThreshold(0.25f, 2.0f)   // Health <= 25% --> speed x 2.0
-                .addThreshold(0.5f, 1.4f)    // Health <= 50% --> speed x 1.4
-        );
-
-        // Initialize all components
-        entity.create();
-        return entity;
-    }
+class AdjustSpeedByHealthComponentTest {
+    private Entity grunt;
+    private CombatStatsComponent stats;
+    private WaypointComponent waypointComponent;
+    private float initialHealth;
 
     @BeforeEach
     void setUp() {
+        // Register core services
+        ServiceLocator.registerInputService(new InputService());
         ServiceLocator.registerPhysicsService(new PhysicsService());
-    }
+        ServiceLocator.registerRenderService(new RenderService());
 
-    @AfterEach
-    void tearDown() {
-        ServiceLocator.clear();
-    }
+        // Time service required by the ChaseTask
+        ServiceLocator.registerTimeSource(new GameTime());
+        ResourceService resourceService = new ResourceService();
+        ServiceLocator.registerResourceService(resourceService);
+        resourceService.loadTextureAtlases(new String[]{"images/grunt_basic_spritesheet.atlas"});
+        resourceService.loadAll();
 
-    @Test
-    void speedConstantWhenHealthAboveThreshold() {
-        Entity testEntity = createMinimalTestEntity();
+        // Create player and waypoints
+        Entity player = PlayerFactory.createPlayer();
+        List<Entity> waypoints = new ArrayList<>();
+        Entity waypoint = new Entity();
+        waypoint.setPosition(0f, 0f);
+        waypoints.add(waypoint);
 
-        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
-        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
-        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
+        // Create grunt
+        grunt = GruntEnemyFactory.createGruntEnemy(waypoints, player, Difficulty.EASY);
+        grunt.create();
 
-        float initialSpeed = move.maxSpeed.x;
-
-        // Health > 50% --> speed constant
-        stats.setHealth(50 * 60 / 100);
-        adjust.update();
-
-        assertEquals(initialSpeed, move.maxSpeed.x, 0.00001);
-        assertEquals(initialSpeed, move.maxSpeed.y, 0.00001);
-    }
-
-    @Test
-    void speedIncreasesWhenHealthEqualsFirstThreshold() {
-        Entity testEntity = createMinimalTestEntity();
-
-        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
-        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
-        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
-
-        // Health == 50% --> speed x 1.4
-        stats.setHealth(50 * 50 / 100);
-        adjust.update();
-
-        assertEquals(1.4f, move.maxSpeed.x, 0.00001);
-        assertEquals(1.4f, move.maxSpeed.y, 0.00001);
+        // Get components and initial health value after grunt creation
+        stats = grunt.getComponent(CombatStatsComponent.class);
+        waypointComponent = grunt.getComponent(WaypointComponent.class);
+        initialHealth = stats.getHealth();
     }
 
     @Test
-    void speedIncreasesWhenHealthBelowFirstThreshold() {
-        Entity testEntity = createMinimalTestEntity();
+    void testSpeedSameWhenHealthAboveFirstThreshold() {
+        // Set health to 90% of the original value
+        stats.setHealth((int) (initialHealth * 0.9f));
 
-        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
-        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
-        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
-
-        // 50% > Health > 25% --> speed x 1.4
-        stats.setHealth(50 * 40 / 100);
-        adjust.update();
-
-        assertEquals(1.4f, move.maxSpeed.x, 0.00001);
-        assertEquals(1.4f, move.maxSpeed.y, 0.00001);
+        float expectedSpeed = 0.8f;
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().x, 0.0001);
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().y, 0.0001);
     }
 
     @Test
-    void speedIncreasesWhenHealthEqualsSecondThreshold() {
-        Entity testEntity = createMinimalTestEntity();
+    void testSpeedIncreasesWhenHealthEqualsFirstThreshold() {
+        // Set health to 50% of the original value
+        stats.setHealth((int) (initialHealth * 0.50f));
+        grunt.update();
 
-        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
-        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
-        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
-
-        // Health == 25% --> speed x 2.0
-        stats.setHealth(50 * 25 / 100);
-        adjust.update();
-
-        assertEquals(2.0f, move.maxSpeed.x, 0.00001);
-        assertEquals(2.0f, move.maxSpeed.y, 0.00001);
+        float expectedSpeed = 1.4f;
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().x, 0.0001);
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().y, 0.0001);
     }
 
     @Test
-    void speedIncreasesWhenHealthBelowSecondThreshold() {
-        Entity testEntity = createMinimalTestEntity();
+    void testSpeedIncreasesWhenHealthBelowFirstThreshold() {
+        // Set health to 40% of the initial value
+        stats.setHealth((int) (initialHealth * 0.40f));
+        grunt.update();
 
-        CombatStatsComponent stats = testEntity.getComponent(CombatStatsComponent.class);
-        PhysicsMovementComponent move = testEntity.getComponent(PhysicsMovementComponent.class);
-        AdjustSpeedByHealthComponent adjust = testEntity.getComponent(AdjustSpeedByHealthComponent.class);
+        float expectedSpeed = 1.4f;
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().x, 0.0001);
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().y, 0.0001);
+    }
 
-        // Health < 25% --> speed x 2.0
-        stats.setHealth(50 * 10 / 100);
-        adjust.update();
+    @Test
+    void testSpeedIncreasesWhenHealthEqualsSecondThreshold() {
+        // Set health to 25% of the initial value
+        stats.setHealth((int) (initialHealth * 0.25f));
+        grunt.update();
 
-        assertEquals(2.0f, move.maxSpeed.x, 0.00001);
-        assertEquals(2.0f, move.maxSpeed.y, 0.00001);
+        float expectedSpeed = 2.0f;
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().x, 0.0001);
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().y, 0.0001);
+    }
+
+    @Test
+    void testSpeedIncreasesWhenHealthBelowSecondThreshold() {
+        // Set health to 10% of the initial value
+        stats.setHealth((int) (initialHealth * 0.10f));
+        grunt.update();
+
+        float expectedSpeed = 2.0f;
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().x, 0.0001);
+        assertEquals(expectedSpeed, waypointComponent.getSpeed().y, 0.0001);
     }
 }

@@ -67,7 +67,7 @@ public class GruntEnemyFactory {
         "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
-        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, new Vector2(speed));
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         grunt.addComponent(waypointComponent);
@@ -140,7 +140,7 @@ public class GruntEnemyFactory {
     }
 
     @SuppressWarnings("unused")
-    private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
+    public static void updateSpeed(Entity grunt, Vector2 newSpeed) {
         WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
         if (wc != null) {
             wc.incrementPriorityTaskCount();

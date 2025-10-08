@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
@@ -111,6 +112,7 @@ public class UpgradeMenuDisplay extends UIComponent {
                 .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
 
         stage.addActor(rootTable);
+        stage.addActor(makeInstructionBanner());
     }
 
     private Table makeHeroCard(GameStateService.HeroType heroType, String heroName, Image heroImage, Integer heroCost) {
@@ -285,6 +287,42 @@ public class UpgradeMenuDisplay extends UIComponent {
     protected void draw(SpriteBatch batch) {
         // draw stage
     }
+    /**
+     +     * 在屏幕底部生成一条带半透明背景的操作说明横幅。
+     +     */
+    private Table makeInstructionBanner() {
+                // 使用现有主菜单按钮底图做一个半透明背景
+                        Texture buttonTexture = ServiceLocator.getResourceService()
+                                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+                NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+                NinePatchDrawable bg = new NinePatchDrawable(patch);
+                bg = bg.tint(new Color(0, 0, 0, 0.45f)); // 半透明黑
+
+        // Instructions (English)
+                         String text =
+                                        "[S] Place hero\\n" +
+                                        "[Hero] 1: Default weapon | 2: Fast fire, low damage | 3: High damage, slow fire\\n" +
+                                        "[Engineer] 1: Place tower | 2: Place cannon | 3: Generate currency\\n" +
+                                        "[Samurai] 1: Stab | 2: Slash | 3: Spin slash";
+
+                        Label.LabelStyle ls = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
+                Label label = new Label(text, ls);
+                label.setAlignment(Align.center);
+                label.setWrap(true);
+
+                        // 包一层容器，设置背景与内边距
+                        Table banner = new Table();
+                banner.setBackground(bg);
+                banner.pad(10f, 16f, 10f, 16f);
+                banner.add(label).width(Math.min(Gdx.graphics.getWidth() * 0.9f, 980f)).center();
+
+                        // 再包一层全屏表，定位到底部
+                                Table root = new Table();
+                root.setFillParent(true);
+                root.bottom().padBottom(12f);
+                root.add(banner).center();
+                return root;
+            }
 
     private void exitMenu() {
         game.setScreen(GdxGame.ScreenType.MAP_SELECTION);

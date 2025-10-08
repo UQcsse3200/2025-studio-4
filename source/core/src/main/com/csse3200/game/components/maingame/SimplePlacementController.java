@@ -364,7 +364,8 @@ public class SimplePlacementController extends Component {
     private void safeDispose(Entity e) {
         try {
             e.dispose();  // 你们的 Entity.dispose() 通常会从 EntityService 注销
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
     }
 
     /**
@@ -383,7 +384,7 @@ public class SimplePlacementController extends Component {
 
         placementActive = false;
         needRelease = false;
-        mode = Mode.NONE;           // ★ 重要：复位模式
+        mode = Mode.NONE;
         pendingType = "bone";
         System.out.println(">>> placement OFF");
     }
@@ -416,24 +417,43 @@ public class SimplePlacementController extends Component {
     }
 
 
-    // === 放在 SimplePlacementController 类里 ===
+    // === Inside the SimplePlacementController class ===
 
-    // 放置状态
-    private String pendingSummonTexture = null;    // 召唤物贴图
+    /**
+     * Pending summon texture (used for preview/ghost rendering).
+     */
+    private String pendingSummonTexture = null;
 
+    /**
+     * Placement mode (NONE = inactive, TOWER = placing tower, SUMMON = placing summon).
+     */
     private enum Mode {NONE, TOWER, SUMMON}
 
+    /**
+     * Current placement mode.
+     */
     private Mode mode = Mode.NONE;
 
-    private Entity ghostSummon = null;       // 召唤物幽灵
+    /**
+     * Temporary ghost entity for summon placement preview.
+     */
+    private Entity ghostSummon = null;
 
-    // 幽灵实体
+    /**
+     * Generic placement ghost (used for towers, etc.).
+     */
     private Entity ghost = null;
 
-    // 贴图传递的规格（保持可扩展，只要 texture）
+    /**
+     * Specification for a summon being placed.
+     * <p>
+     * Holds data such as the summon’s texture and type. Designed to be
+     * easily extended (e.g., to include attack range, stats, or cost).
+     * </p>
+     */
     public static class SummonSpec {
-        public final String texture;
-        public final String type; // "melee" / "turret"
+        public final String texture; // Texture for the summon
+        public final String type;    // Summon type: "melee", "turret", "currencyBot", etc.
 
         public SummonSpec(String texture, String type) {
             this.texture = texture;
@@ -441,25 +461,35 @@ public class SimplePlacementController extends Component {
         }
     }
 
-
+    /**
+     * Arms the system for summon placement (e.g., when the player presses 1–3).
+     * <p>
+     * Initializes placement mode, creates a ghost summon for visual preview,
+     * and registers it to the world for rendering and following the mouse.
+     * </p>
+     *
+     * @param spec Summon specification (texture + type)
+     */
     public void armSummon(SummonSpec spec) {
-        cancelPlacement();
+        cancelPlacement(); // Cancel any previous placement action
 
         this.mode = Mode.SUMMON;
         this.placementActive = true;
         this.needRelease = true;
-        this.pendingType = spec.type; // 保存类型
+        this.pendingType = spec.type;
         this.pendingSummonTexture = (spec.texture != null && !spec.texture.isEmpty())
                 ? spec.texture : "images/engineer/Sentry.png";
 
+        // Create the ghost entity based on summon type
         if ("turret".equals(spec.type)) {
-            // 炮台幽灵（这里可以直接用路障的幽灵代替，也可以做单独的 createTurretGhost）
+            // Use melee summon ghost as placeholder for turret preview
             this.ghostSummon = SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
         } else {
-            // 默认路障幽灵
+            // Default ghost for melee or other summon types
             this.ghostSummon = SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
         }
 
+        // Register the ghost entity so it appears in the world
         ServiceLocator.getEntityService().register(this.ghostSummon);
         this.ghostSummon.create();
 
@@ -467,7 +497,15 @@ public class SimplePlacementController extends Component {
     }
 
     /**
-     * 该瓦片上是否已有炮台（按 TurretAttackComponent 判断）
+     * Checks whether there is already a turret occupying the given tile.
+     * <p>
+     * Determines occupancy by looking for entities that have a
+     * {@link com.csse3200.game.components.hero.engineer.TurretAttackComponent}.
+     * </p>
+     *
+     * @param tile    The tile position to check.
+     * @param terrain Reference to the terrain component (used for tile size).
+     * @return {@code true} if a turret exists on that tile; otherwise {@code false}.
      */
     private boolean hasTurretOnTile(GridPoint2 tile, TerrainComponent terrain) {
         Array<Entity> all = safeEntities();
@@ -487,16 +525,27 @@ public class SimplePlacementController extends Component {
                     (int) (p.y / tileSize)
             );
             if (etile.x == tile.x && etile.y == tile.y) {
-                return true;
+                return true; // Found turret on same tile
             }
         }
         return false;
     }
 
+    /**
+     * Updates summon placement preview each frame.
+     * <p>
+     * Moves the summon ghost to follow the mouse cursor,
+     * snaps it to tile positions, and handles placement on left click.
+     * Summons can only be placed on path tiles.
+     * </p>
+     *
+     * @param terrain    Terrain reference (for tile conversion).
+     * @param mouseWorld Current mouse position in world coordinates.
+     */
     private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
         if (ghostSummon == null) return;
 
-        // 计算网格、边界
+        // Compute grid coordinates from mouse position
         GridPoint2 tile = new GridPoint2(
                 (int) (mouseWorld.x / terrain.getTileSize()),
                 (int) (mouseWorld.y / terrain.getTileSize())
@@ -504,58 +553,65 @@ public class SimplePlacementController extends Component {
         GridPoint2 bounds = terrain.getMapBounds(0);
         boolean inBounds = tile.x >= 0 && tile.y >= 0 && tile.x < bounds.x && tile.y < bounds.y;
 
-        // 只允许在路径上
+        // Only allow placement on path tiles
         boolean onPath = inBounds && isOnPath(tile);
 
-        // 吸附/跟随
+        // Snap ghost to tile position if in bounds, otherwise follow mouse
         Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
 
-        // 移动幽灵
+        // Move ghost summon
         ghostSummon.setPosition(snapPos);
 
-        // 左键落地
-        // 左键落地
+        // Left click → place summon
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             if (!onPath) return;
 
-            // 新增：瓦片占位检测
-            if (hasTurretOnTile(tile, terrain)) {
-                return;
-            }
+            // Prevent overlapping turrets on same tile
+            if (hasTurretOnTile(tile, terrain)) return;
+
+            // Finalize summon placement
             placeSummon(snapPos, tile);
         }
-
     }
 
-
+    /**
+     * Finalizes summon placement and spawns the actual entity in the world.
+     * <p>
+     * Depending on {@code pendingType}, this method creates a turret, currency bot,
+     * or melee summon. Ghosts are destroyed once placement is confirmed.
+     * </p>
+     *
+     * @param snapPos The world position where the summon is placed.
+     * @param tile    The tile coordinate of placement.
+     */
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
+        // Remove the placement ghost
         if (ghostSummon != null) {
             ghostSummon.dispose();
             ghostSummon = null;
         }
 
         if ("turret".equals(pendingType)) {
-            // 四向同时射击
+            // === Turret summon branch ===
+            // Example: turret shooting in multiple directions (expandable)
             Vector2[] dirs = new Vector2[]{
-                    new Vector2(-1, 0), // 左
-
+                    new Vector2(-1, 0) // Left (add more directions as needed)
             };
 
-            // 可选：给每个炮台一个起始冷却偏移，避免同帧齐射卡顿
+            // Optional: phase offsets to avoid simultaneous firing
             float[] phaseShift = new float[]{0f, 0.25f, 0.50f, 0.75f};
 
             for (int i = 0; i < dirs.length; i++) {
                 Vector2 d = dirs[i].nor();
                 Entity t = SummonFactory.createDirectionalTurret(
                         pendingSummonTexture,
-                        1f,          // 缩放
-                        1.0f,        // 攻击间隔（你原来的值）
-                        d            // 射击方向
+                        1f,          // Scale
+                        1.0f,        // Attack interval (example value)
+                        d            // Firing direction
                 );
 
-                // 如果 DirectionalTurret 支持设置起始冷却（可选）
-                // 例如 t.getComponent(TurretShootComponent.class).setInitialCooldown(phaseShift[i]);
-                // 没有就删掉这段注释
+                // Optionally apply cooldown offset if supported by turret component
+                // e.g. t.getComponent(TurretShootComponent.class).setInitialCooldown(phaseShift[i]);
 
                 t.setPosition(snapPos);
                 ServiceLocator.getEntityService().register(t);
@@ -563,24 +619,25 @@ public class SimplePlacementController extends Component {
             }
 
         } else if ("currencyBot".equals(pendingType)) {
-            // === 产币机器人分支 ===
-            Entity owner = findPlayerEntity(); // ✅ 改成自动查找玩家
+            // === Currency generator bot branch ===
+            Entity owner = findPlayerEntity(); // Automatically find the player
 
             Entity bot = SummonFactory.createCurrencyBot(
-                    pendingSummonTexture,     // 贴图
-                    1f,                       // 缩放比例
-                    owner,                    // ★ 归属玩家
-                    CurrencyType.METAL_SCRAP, // ★ 币种（可改）
-                    300,                        // ★ 每次产币量
-                    2f                      // ★ 间隔秒
+                    pendingSummonTexture,     // Texture
+                    1f,                       // Scale
+                    owner,                    // Owner (player)
+                    CurrencyType.METAL_SCRAP, // Currency type
+                    300,                      // Amount generated per cycle
+                    2f                        // Generation interval (seconds)
             );
 
             bot.setPosition(snapPos);
             ServiceLocator.getEntityService().register(bot);
             bot.create();
             System.out.println(">>> currencyBot placed at " + tile);
+
         } else {
-            // 原有近战/路障逻辑
+            // === Default branch (melee summon / barrier) ===
             Entity summon = SummonFactory.createMeleeSummon(
                     pendingSummonTexture,
                     false,
@@ -591,10 +648,11 @@ public class SimplePlacementController extends Component {
             summon.create();
         }
 
+        // Reset placement state
         placementActive = false;
         mode = Mode.NONE;
-        pendingType = "bone";
-        System.out.println(">>> turret(四向) placed at " + tile);
+        pendingType = "bone"; // Reset type
+        System.out.println(">>> turret (multi-directional) placed at " + tile);
     }
 
 

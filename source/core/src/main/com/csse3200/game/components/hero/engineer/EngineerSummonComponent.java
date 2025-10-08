@@ -7,29 +7,68 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.maingame.SimplePlacementController;
-import com.csse3200.game.components.maingame.SummonPlacementController;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * 工程师召唤组件（方案A：使用 LibGDX InputMultiplexer 直连键盘事件）。
- * - 在 Multiplexer 的 index=0 注入一个 InputAdapter，优先捕获 Q。
- * - 不依赖项目自定义的 InputService，避免被 UI/Stage 吃掉事件。
+ * Engineer Summon Component (Implementation Plan A):
+ * <p>
+ * Handles summoning logic for the Engineer hero using LibGDX's {@link InputMultiplexer}
+ * to directly intercept keyboard inputs.
+ * This approach avoids conflicts with the project’s {@code InputService} or UI layers.
+ * </p>
+ *
+ * <ul>
+ *   <li>Listens to numeric keys (1–3) to summon different robots/turrets.</li>
+ *   <li>Uses {@link SimplePlacementController} for placement handling.</li>
+ *   <li>Manages cooldown and summon count limits.</li>
+ * </ul>
  */
 public class EngineerSummonComponent extends Component {
+    /**
+     * Cooldown duration (in seconds) between summons.
+     */
     private final float cooldownSec;
+
+    /**
+     * Maximum number of active summons allowed simultaneously.
+     */
     private final int maxSummons;
+
+    /**
+     * Path to the summon’s texture (used for preview/ghost rendering).
+     */
     private final String summonTexture;
+
+    /**
+     * Initial summon speed or spawn offset, depending on implementation.
+     */
     private final Vector2 summonSpeed;
 
+    /**
+     * Remaining cooldown time.
+     */
     private float cd = 0f;
+
+    /**
+     * Current number of active summons.
+     */
     private int alive = 0;
 
     /**
-     * 方案A使用的输入监听器（注意：不是项目的 InputComponent）
+     * Input listener for Plan A.
+     * <p>Note: This is a plain {@link InputAdapter}, not the project’s custom InputComponent.</p>
      */
     private InputAdapter qAdapter;
 
+    /**
+     * Constructs the summon component.
+     *
+     * @param cooldownSec   Cooldown time (seconds) between summoning actions.
+     * @param maxSummons    Maximum number of simultaneous active summons.
+     * @param summonTexture Default summon texture path.
+     * @param summonSpeed   Summon’s initial speed vector.
+     */
     public EngineerSummonComponent(float cooldownSec, int maxSummons,
                                    String summonTexture, Vector2 summonSpeed) {
         this.cooldownSec = cooldownSec;
@@ -42,17 +81,19 @@ public class EngineerSummonComponent extends Component {
     public void create() {
         super.create();
 
-        // 1) 创建一个 InputAdapter，只拦截 Q 键
-        // Q 键监听
+        // 1) Create an InputAdapter that intercepts numeric keys (1–3)
         qAdapter = new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
+                // Prevent summoning during cooldown or when at max capacity
                 if (cd > 0f) return true;
                 if (alive >= maxSummons) return true;
 
+                // Find placement controller (responsible for placing summons on the map)
                 var ctrl = findPlacementController();
                 if (ctrl == null) return false;
 
+                // Key bindings for different summon types
                 if (keycode == Input.Keys.NUM_1) {
                     ctrl.armSummon(new SimplePlacementController.SummonSpec(
                             "images/engineer/Sentry.png", "melee"
@@ -65,8 +106,8 @@ public class EngineerSummonComponent extends Component {
                     return true;
                 } else if (keycode == Input.Keys.NUM_3) {
                     ctrl.armSummon(new SimplePlacementController.SummonSpec(
-                            "images/engineer/Currency_tower.png",  // 放一张你的机器人贴图
-                            "currencyBot"                       // 新增类型标识
+                            "images/engineer/Currency_tower.png",  // Currency generator robot texture
+                            "currencyBot"                          // Custom type identifier
                     ));
                     return true;
                 }
@@ -75,30 +116,35 @@ public class EngineerSummonComponent extends Component {
             }
         };
 
-
-        // 3) 把 qAdapter 插到全局 Multiplexer 的最前面（index=0）
+        // 2) Attach the InputAdapter to the global multiplexer at the front (index = 0)
         attachToMultiplexer(qAdapter);
     }
 
     @Override
     public void dispose() {
         super.dispose();
-        // 4) 记得从 Multiplexer 中移除监听器，避免泄漏/重复回调
+        // 3) Remove the adapter from the multiplexer on disposal to prevent memory leaks
         detachFromMultiplexer(qAdapter);
         qAdapter = null;
     }
 
     @Override
     public void update() {
+        // Update cooldown timer
         float dt = ServiceLocator.getTimeSource().getDeltaTime();
         if (cd > 0f) cd -= dt;
     }
 
-    // ===== 工具方法：挂/卸 Multiplexer =====
+    // ===== Utility: Attach/Detach InputAdapter from the global InputMultiplexer =====
+
+    /**
+     * Attaches an InputAdapter to the global LibGDX InputMultiplexer.
+     * The adapter is placed at index 0 to ensure it receives key events first.
+     */
     private static void attachToMultiplexer(InputAdapter adapter) {
         var cur = Gdx.input.getInputProcessor();
         if (cur instanceof InputMultiplexer mux) {
-            mux.addProcessor(0, adapter); // 放最前
+            mux.addProcessor(0, adapter); // Highest priority
         } else {
             InputMultiplexer mux = new InputMultiplexer();
             mux.addProcessor(adapter);
@@ -107,6 +153,10 @@ public class EngineerSummonComponent extends Component {
         }
     }
 
+    /**
+     * Detaches the InputAdapter from the global InputMultiplexer.
+     * Ensures cleanup when the entity is destroyed or disabled.
+     */
     private static void detachFromMultiplexer(InputAdapter adapter) {
         var cur = Gdx.input.getInputProcessor();
         if (cur instanceof InputMultiplexer mux && adapter != null) {
@@ -114,9 +164,14 @@ public class EngineerSummonComponent extends Component {
         }
     }
 
-    // ===== 你已有的方法：寻找放置控制器 =====
-    // import com.csse3200.game.components.maingame.SimplePlacementController;
+    // ===== Utility: Find the placement controller for summons =====
 
+    /**
+     * Searches all entities in the game for a {@link SimplePlacementController} instance.
+     * Used to initiate the summon placement process.
+     *
+     * @return The first found {@link SimplePlacementController}, or {@code null} if none exist.
+     */
     private SimplePlacementController findPlacementController() {
         var all = ServiceLocator.getEntityService().getEntitiesCopy();
         if (all == null) return null;
@@ -128,14 +183,22 @@ public class EngineerSummonComponent extends Component {
         return null;
     }
 
-    // =====（可选）供生成逻辑回调调用：维护冷却与计数 =====
+    // ===== Optional: Callbacks for summon lifecycle =====
+
+    /**
+     * Called when a new summon is spawned.
+     * Increments active summon count and triggers cooldown.
+     */
     public void onSummonSpawned() {
         alive++;
         cd = cooldownSec;
     }
 
+    /**
+     * Called when a summon dies or is destroyed.
+     * Decrements the active summon count.
+     */
     public void onSummonDied() {
         if (alive > 0) alive--;
     }
 }
-

@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas2.terrainTwo.TerrainComponent2;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.areas.IMapEditor;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     /** Initialize keypoint tiles初始化关键点瓦片 */
     private void initializeKeypointTile() {
         try {
-            Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/path_keypoint.png", Texture.class);
+            Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
             // Avoid blurring when zooming
             keypointTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
@@ -96,7 +97,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     /** Initialize path tiles初始化路径瓦片 */
     private void initializePathTile() {
         try {
-            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
+            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
             // Avoid blurring when zooming避免放大时模糊
             pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
@@ -145,28 +146,53 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
         keyWaypoints.add(new GridPoint2(5, 0));     // Start
+        keyWaypoints.add(new GridPoint2(5, 2));
+        keyWaypoints.add(new GridPoint2(5, 3));
+        keyWaypoints.add(new GridPoint2(5, 4));
+        keyWaypoints.add(new GridPoint2(5, 5));
         keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
+        keyWaypoints.add(new GridPoint2(7, 10));
+        keyWaypoints.add(new GridPoint2(8, 10));
+        keyWaypoints.add(new GridPoint2(9, 10));
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints.add(new GridPoint2(6, 36));    // End
+        keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints.add(new GridPoint2(5, 32));    // End
         
         // 新增的5个关键点
-        keyWaypoints2.add(new GridPoint2(27, 5));    // 新坐标5
+        keyWaypoints2.add(new GridPoint2(28, 6));    // 新坐标5
         keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
         keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 36));    // End
+        keyWaypoints2.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints2.add(new GridPoint2(5, 32));    // End
+
+        Map<String, Float> speedModifiers = Map.of(
+            "5,2", 0.5f,
+            "5,3", 0.5f,
+            "5,4", 0.5f,
+            "5,5", 0.5f,
+            "7,10", 0.5f,
+            "8,10", 0.5f,
+            "9,10", 0.5f,
+            "10,10", 0.5f
+        );
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
-            markKeypoint(wp);
+            String key = wp.x + "," + wp.y;
+            Float modifier = speedModifiers.get(key);
+            if (modifier == null) {
+                markKeypoint(wp);
+            }
             Entity waypoint = new Entity();
-            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypoint.setPosition(wp.x / 2f, wp.y / 2f);
+            if (modifier != null) {
+                waypoint.addComponent(new SpeedWaypointComponent(modifier));
+            }
             waypointList.add(waypoint);
         }
 
@@ -186,7 +212,10 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         
         // 重新标记关键点，确保它们不被路径瓦片覆盖
         for (GridPoint2 wp : keyWaypoints) {
-            markKeypoint(wp);
+            String key = wp.x + "," + wp.y;
+            if (!speedModifiers.containsKey(key)) {
+                markKeypoint(wp);
+            }
         }
         
         // 重新标记第二组关键点，确保它们不被路径瓦片覆盖
@@ -208,6 +237,23 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
                 {25,31,0,1},
                 {30,31,2,5},
                 {30,31,6,7},
+                {0, 8, 12, 22},
+                {9, 13, 18, 22},
+                {10, 14, 7, 9},
+                {9, 11, 28, 30},
+                {13, 17, 31, 33},
+                {28, 34, 31, 35},
+                {22, 28, 14, 23},
+                {22,23,0,32},
+                {21,21,0,10},
+                {20,21,16,23},
+                {24,24,0,4},
+                {24,23,13,16},
+                {24,26,28,39},
+                {27,27,38,43},
+                {24,23,13,16},
+                {0,39,0,5},
+                {39,39,0,39}
         };
         
         for (int[] range : redCircledArea) {

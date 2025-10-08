@@ -1,5 +1,6 @@
 package com.csse3200.game.areas;
 
+import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.*;
@@ -69,7 +70,7 @@ public class ForestGameArea extends GameArea {
 
     private static ForestGameArea currentGameArea;
 
-    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(31, 6);
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(30, 6);
     private static final float WALL_WIDTH = 0.1f;
 
 
@@ -490,9 +491,11 @@ public class ForestGameArea extends GameArea {
     }
 
     private Entity spawnPlayer() {
-        Entity newPlayer = PlayerFactory.createPlayer();
-
-        if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
+        // Map1 使用标准homebase缩放 (1.88f) 和较小的血条
+        HealthBarComponent healthBar = new HealthBarComponent(1.4f, 0.15f, 0.8f);
+        Entity newPlayer = PlayerFactory.createPlayer("images/homebase1.png", 1.88f, healthBar);
+        // 确保新玩家有钱包组件
+       if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
 

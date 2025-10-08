@@ -428,8 +428,8 @@ public class TowerFactory {
         Entity head = new Entity().addComponent(headAnim);
 
         // Add ChainLightningComponent to head
-        core.src.main.com.csse3200.game.components.towers.ChainLightningComponent chainLightning =
-                new core.src.main.com.csse3200.game.components.towers.ChainLightningComponent(
+        com.csse3200.game.components.towers.ChainLightningComponent chainLightning =
+                new com.csse3200.game.components.towers.ChainLightningComponent(
                         stats.range,         // range
                         stats.damage,        // damage
                         stats.cooldown,      // cooldown
@@ -437,7 +437,7 @@ public class TowerFactory {
                         3.0f                 // chainRange
                 );
         head.addComponent(chainLightning)
-            .addComponent(new core.src.main.com.csse3200.game.components.towers.ChainLightningComponent.ChainLightningRenderComponent(chainLightning));
+            .addComponent(new com.csse3200.game.components.towers.ChainLightningComponent.ChainLightningRenderComponent(chainLightning));
 
         headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);

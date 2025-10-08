@@ -58,7 +58,9 @@ public class MainGameScreen extends ScreenAdapter {
           "images/scrap.png",
           "images/Game_Over.png",
           "images/Game_Victory.png",
-          // Background frame overlay for in-game view
+          "images/homebase1.png",
+          "images/homebase2.png",
+          "images/basement.png",
           "images/Background4.png"
   };
 

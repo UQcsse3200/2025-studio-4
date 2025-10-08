@@ -35,6 +35,7 @@ import java.util.List;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
 import com.csse3200.game.components.CameraZoomDragComponent;
+import com.csse3200.game.areas.IMapEditor;
 
 
 /**
@@ -81,7 +82,7 @@ public class ForestGameArea2 extends GameArea2 {
     private final TerrainFactory2 terrainFactory;
     private Entity player;
     private boolean hasExistingPlayer = false;
-    private MapEditor2 mapEditor;
+    private IMapEditor mapEditor; // Use interface for compatibility
 
     // One-time prompt: Has this been displayed?
     private boolean heroHintShown = false;
@@ -264,6 +265,7 @@ public class ForestGameArea2 extends GameArea2 {
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
         ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
+
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
@@ -288,7 +290,6 @@ public class ForestGameArea2 extends GameArea2 {
         if (!hasExistingPlayer) {
             player = spawnPlayer();
         } else {
-
             // Find existing player entity
             player = findExistingPlayer();
             if (player == null) {
@@ -301,13 +302,10 @@ public class ForestGameArea2 extends GameArea2 {
             }
         }
 
-
         // ✅ Now that mapEditor is created in spawnPlayer, link it to placementController
-        // Note: SimplePlacementController expects MapEditor, but we have MapEditor2
-        // We need to cast or create a wrapper - for now, comment out until we create compatible version
-        // if (mapEditor != null) {
-        //     placementController.setMapEditor(mapEditor);
-        // }
+        if (mapEditor != null) {
+            placementController.setMapEditor(mapEditor);
+        }
 
         registerBarrierAndSpawn(BARRIER_COORDS);
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
@@ -339,8 +337,18 @@ public class ForestGameArea2 extends GameArea2 {
         Entity upgradeUI = new Entity().addComponent(towerUpgradeMenu);
         spawnEntity(upgradeUI);
 
+        // --- ADD: MapHighlighter for tower placement preview ---
+        com.csse3200.game.components.maingame.MapHighlighter mapHighlighter =
+            new com.csse3200.game.components.maingame.MapHighlighter(
+                terrain, // TerrainComponent2 implements ITerrainComponent
+                placementController,
+                new com.csse3200.game.entities.factories.TowerFactory()
+            );
+        Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+        spawnEntity(highlighterEntity);
+
         //Link the upgrade menu to the map highlighter
-        // mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
+        mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         // Add hero placement system
         // Note: HeroPlacementComponent expects TerrainComponent and MapEditor, but we have TerrainComponent2 and MapEditor2
@@ -369,6 +377,23 @@ public class ForestGameArea2 extends GameArea2 {
         com.csse3200.game.services.ServiceLocator.getEntityService().
                 register(skinSwitcher);
 
+        // --- ADD: MapHighlighter for tower placement preview ---
+        com.csse3200.game.components.maingame.MapHighlighter mapHighlighter2 =
+            new com.csse3200.game.components.maingame.MapHighlighter(
+                terrain, // TerrainComponent2 implements ITerrainComponent
+                placementController,
+                new com.csse3200.game.entities.factories.TowerFactory()
+            );
+        Entity highlighterEntity2 = new Entity().addComponent(mapHighlighter2);
+        spawnEntity(highlighterEntity2);
+
+        //Tower Upgrade Menu
+        TowerUpgradeMenu towerUpgradeMenu2 = new TowerUpgradeMenu();
+        Entity upgradeUI2 = new Entity().addComponent(towerUpgradeMenu2);
+        spawnEntity(upgradeUI2);
+
+        //Link the upgrade menu to the map highlighter
+        mapHighlighter2.setTowerUpgradeMenu(towerUpgradeMenu2);
     }
 
     private void spawnTerrain() {
@@ -409,7 +434,6 @@ public class ForestGameArea2 extends GameArea2 {
 //Register to MapEditor's invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
-        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createBarrier(), new GridPoint2(p[0], p[1]), true, false);
@@ -419,11 +443,8 @@ public class ForestGameArea2 extends GameArea2 {
         }
     }
 
-    //注册雪树到 MapEditor 的 invalidTiles，并在地图上生成雪树障碍物。
-    //Register snowtrees to MapEditor's invalidTiles and generate snowtree obstacles on the map.
     private void registerSnowTreeAndSpawn(int[][] coords) {
         if (coords == null) return;
-        // 如果 mapEditor 还未创建，先缓存到本地生成；MapEditor 在 spawnPlayer() 中创建后再注册
         for (int[] p : coords) {
             if (p == null || p.length != 2) continue;
             spawnEntityAt(ObstacleFactory.createSnowTree(), new GridPoint2(p[0], p[1]), true, false);
@@ -435,18 +456,15 @@ public class ForestGameArea2 extends GameArea2 {
 
     private Entity spawnPlayer() {
         Entity newPlayer = PlayerFactory.createPlayer();
-        // 确保新玩家有钱包组件
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
 
-        // Initialize MapEditor2
+        // Initialize MapEditor2 as IMapEditor
         mapEditor = new MapEditor2(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
-        // Uncomment if crystal spawning is needed:
-        // mapEditor.spawnCrystal(); // Generate crystal
 
         return newPlayer;
     }
@@ -464,33 +482,29 @@ public class ForestGameArea2 extends GameArea2 {
      * Expose current waypoint list generated by the map editor, for save/load rebinding.
      */
     public java.util.List<Entity> getWaypointList() {
-        return (mapEditor != null) ? mapEditor.waypointList : java.util.Collections.emptyList();
+        return mapEditor != null ? mapEditor.getWaypointList() : java.util.Collections.emptyList();
     }
 
     private void spawnSingleDrone() {
-        //NUM_ENEMIES_TOTAL++;
-        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.waypointList, player, gameDifficulty);
+        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
         spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
         logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleGrunt() {
-        //NUM_ENEMIES_TOTAL++;
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.waypointList, player, gameDifficulty);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
         spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
         logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleTank() {
-        //NUM_ENEMIES_TOTAL++;
-        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.waypointList, player, gameDifficulty);
+        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
         spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
         logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleBoss() {
-        //NUM_ENEMIES_TOTAL++;
-        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.waypointList, player, gameDifficulty);
+        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
         spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
         logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
@@ -687,7 +701,10 @@ public class ForestGameArea2 extends GameArea2 {
     public void dispose() {
         super.dispose();
         if (mapEditor != null) {
-            mapEditor.cleanup();
+            // Both MapEditor and MapEditor2 have cleanup()
+            if (mapEditor instanceof com.csse3200.game.areas2.MapTwo.MapEditor2) {
+                ((com.csse3200.game.areas2.MapTwo.MapEditor2)mapEditor).cleanup();
+            }
         }
         if (ServiceLocator.getAudioService() != null) {
             //ServiceLocator.getAudioService().stopMusic();

@@ -15,6 +15,7 @@ import com.csse3200.game.ui.UIComponent;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Color;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,8 +72,9 @@ public class SaveMenuDisplay extends UIComponent {
         Label title = new Label("Save Game", skin, "title");
 
         // Create custom button style
-        TextButtonStyle customButtonStyle = createCustomButtonStyle();
-        
+        TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
+
+
         // Status label for save feedback
         statusLabel = new Label("", skin);
         statusLabel.setColor(Color.GREEN);

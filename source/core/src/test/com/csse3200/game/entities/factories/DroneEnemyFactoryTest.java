@@ -44,7 +44,7 @@ public class DroneEnemyFactoryTest {
         Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(50, stats.getHealth());
+        assertEquals(25, stats.getHealth());
         assertEquals(10, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
@@ -168,7 +168,7 @@ public class DroneEnemyFactoryTest {
         Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(200, stats.getHealth());
+        assertEquals(100, stats.getHealth());
         assertEquals(40, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());

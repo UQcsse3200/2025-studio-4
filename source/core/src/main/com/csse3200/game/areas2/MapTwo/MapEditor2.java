@@ -10,13 +10,14 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas2.terrainTwo.TerrainComponent2;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.areas.IMapEditor;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class MapEditor2 extends InputAdapter {
+public class MapEditor2 extends InputAdapter implements IMapEditor {
     private TerrainComponent2 terrain;
 
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
@@ -368,6 +369,7 @@ public class MapEditor2 extends InputAdapter {
         System.out.println("🧹 MapEditor cleaned up");
     }
 
+    @Override
     public Map<String, GridPoint2> getInvalidTiles() {
         invalidTiles.clear();
         // 包含所有无效区域：障碍物、雪树、雪地、路径瓦片
@@ -411,6 +413,7 @@ public class MapEditor2 extends InputAdapter {
      * Register the coordinates of the obstacles for getInvalidTiles() to return uniformly
      * coords: int[][]，Each element is {x, y}
      */
+    @Override
     public void registerBarrierCoords(int[][] coords) {
         if (coords == null) return;
         for (int[] p : coords) {
@@ -424,6 +427,7 @@ public class MapEditor2 extends InputAdapter {
      * Register the snow tree coordinates for getInvalidTiles() to return uniformly
      * coords: int[][]，Each element is {x, y}
      */
+    @Override
     public void registerSnowTreeCoords(int[][] coords) {
         if (coords == null) return;
         for (int[] p : coords) {
@@ -433,5 +437,16 @@ public class MapEditor2 extends InputAdapter {
         }
     }
 
-    
+    @Override
+    public java.util.List<GridPoint2> getWaterTiles() {
+        // If you have a waterTiles list, return it here. Otherwise, return an empty list.
+        // Example:
+        return new java.util.ArrayList<>(); // Replace with your actual water tiles if available
+    }
+
+    @Override
+    public java.util.List<Entity> getWaypointList() {
+        return waypointList;
+    }
+
 }

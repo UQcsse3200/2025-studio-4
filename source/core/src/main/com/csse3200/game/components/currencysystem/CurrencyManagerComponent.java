@@ -10,16 +10,14 @@ import java.util.*;
 
 /**
  * Manages the player's currencies within the game.
- *
  * This component keeps track of different types of currencies (e.g., metal scraps)
- * and provides methods to add, subtract, and retrieve amounts of each type.
- *
+ * and provides methods to add, subtract, and retrieve amounts of each type.*
  * Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value
  */
 public class CurrencyManagerComponent extends Component {
     public static final String SOUND_PATH = "sounds/add_currency.ogg";
-    private Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
-    private List<Entity> currencyEntityList = new ArrayList<>();
+    private final Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
+    private final List<Entity> currencyEntityList = new ArrayList<>();
 
     /**
      * Define initial values for each currency type at game start.
@@ -27,11 +25,15 @@ public class CurrencyManagerComponent extends Component {
     @Override
     public void create() {
         currencies.clear(); // Ensure no leftover values from previous runs/tests
-        this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
-        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 100000);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 300);
-        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 50);
-        this.updateAllCurrencyUI();
+        if (this.entity != null) {
+            this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
+        }
+        this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 50);
+        this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
+        if (this.entity != null) {
+            this.updateAllCurrencyUI();
+        }
     }
 
     /**
@@ -78,7 +80,7 @@ public class CurrencyManagerComponent extends Component {
      * Add the Currency entity to the list if it is not already present.
      * And add event listeners to handle on collect action.
      *
-     * @param entity
+     * @param entity the currency entity to add
      */
     public void addCurrencyEntity(Entity entity) {
         if (!currencyEntityList.contains(entity)){
@@ -103,13 +105,16 @@ public class CurrencyManagerComponent extends Component {
     private void updateCurrencyUI(CurrencyType type) {
         final String updateCurrencyUIEvent = "updateCurrencyUI";
         int amount = getCurrencyAmount(type);
-        this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+        if (this.entity != null) {
+            this.entity.getEvents().trigger(updateCurrencyUIEvent, type, amount);
+        }
     }
 
     /**
      * Update UI rendering for all currency types
      */
     private void updateAllCurrencyUI() {
+        if (this.entity == null) return;
         for (CurrencyType type : CurrencyType.values()) {
             updateCurrencyUI(type);
         }
@@ -140,8 +145,7 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
-     * Add specified currencies when triggered on enemy's death
-     *
+     * Add specified currencies when triggered on enemy's death*
      * Usage: playerEntity.getEvents().trigger("dropCurrency", dropsMap)
      *
      * @param drops a map of {@link CurrencyType} to the amount to drop for each type
@@ -157,8 +161,7 @@ public class CurrencyManagerComponent extends Component {
     /**
      * Checks if the player has enough currency to cover the specified cost,
      * and if so, deducts the amount and returns true. Otherwise, returns false
-     * and does not deduct anything.
-     *
+     * and does not deduct anything.*
      * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).canAffordAndSpendCurrency(costMap)
      *
      * @param costMap a map of {@link CurrencyType} to the required amount for each type
@@ -181,8 +184,7 @@ public class CurrencyManagerComponent extends Component {
     }
 
     /**
-     * Refunds a portion of the tower’s cost according to the specified refund rate.
-     *
+     * Refunds a portion of the tower’s cost according to the specified refund rate.*
      * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)
      *
      * @param costMap a map of {@link CurrencyType} to the required amount for each type
@@ -196,3 +198,4 @@ public class CurrencyManagerComponent extends Component {
         });
     }
 }
+

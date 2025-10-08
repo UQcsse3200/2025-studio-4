@@ -19,6 +19,13 @@ import org.slf4j.LoggerFactory;
 public class MapSelectionScreen extends ScreenAdapter {
     private static final Logger logger = LoggerFactory.getLogger(MapSelectionScreen.class);
 
+    private static final String[] PRELOAD_TEXTURES = new String[] {
+            // Background used by menu screens
+            "images/main_menu_background.png",
+            // 🔶 Orange button texture used by UIStyleHelper.orangeButtonStyle()
+            "images/Main_Menu_Button_Background.png"
+    };
+
     private final GdxGame game;
     private Stage stage;
 
@@ -30,34 +37,41 @@ public class MapSelectionScreen extends ScreenAdapter {
     public void show() {
         logger.debug("Initialising MapSelectionScreen services");
 
-        // Core services
-        ServiceLocator.registerRenderService(new RenderService());
-        ServiceLocator.registerEntityService(new EntityService());
-        ServiceLocator.registerInputService(new InputService());
-        ServiceLocator.registerResourceService(new ResourceService());
+        // --- Core services (register only if not present to avoid clobbering) ---
+        if (ServiceLocator.getRenderService() == null) {
+            ServiceLocator.registerRenderService(new RenderService());
+        }
+        if (ServiceLocator.getEntityService() == null) {
+            ServiceLocator.registerEntityService(new EntityService());
+        }
+        if (ServiceLocator.getInputService() == null) {
+            ServiceLocator.registerInputService(new InputService());
+        }
+        if (ServiceLocator.getResourceService() == null) {
+            ServiceLocator.registerResourceService(new ResourceService());
+        }
 
-        // PRELOAD shared background (same as other menu screens)
-        String[] textures = {"images/main_menu_background.png"};
-        ServiceLocator.getResourceService().loadTextures(textures);
+        // Preload required textures so UIStyleHelper can fetch them safely
+        ServiceLocator.getResourceService().loadTextures(PRELOAD_TEXTURES);
         ServiceLocator.getResourceService().loadAll();
 
-        // Stage (no custom renderer/RenderFactory needed)
+        // Stage (simple stage via RenderService, consistent with other menus)
         stage = new Stage();
         ServiceLocator.getRenderService().setStage(stage);
 
-        // UI entity (display + actions)
+        // UI Entity (view + actions)
         Entity ui = new Entity()
-                .addComponent(new MapSelectionDisplay())
+                .addComponent(new MapSelectionDisplay())   // handles layout & button placement
                 .addComponent(new MapSelectionActions(game));
         ServiceLocator.getEntityService().register(ui);
 
-        // Route input to Stage via InputService (matches your project pattern)
+        // Route input to the stage
         ServiceLocator.getInputService().register(new InputDecorator(stage, 10));
     }
 
     @Override
     public void render(float delta) {
-        // Update ECS + Stage, then draw
+        // Update ECS (drives the display) then draw the stage
         ServiceLocator.getEntityService().update();
         stage.act(delta > 0 ? delta : Gdx.graphics.getDeltaTime());
         stage.draw();
@@ -71,22 +85,21 @@ public class MapSelectionScreen extends ScreenAdapter {
     }
 
     @Override
-    public void hide() {
-        // optional: keep Stage alive between show/hide cycles if your screens reuse services
-    }
-
-    @Override
     public void dispose() {
         logger.debug("Disposing MapSelectionScreen");
-        // Dispose in a safe order
+
         if (stage != null) {
             stage.dispose();
             stage = null;
         }
-        ServiceLocator.getRenderService().dispose();
-        ServiceLocator.getEntityService().dispose();
-        // NOTE: your InputService likely has no dispose(); do not call it
-        //ServiceLocator.getResourceService().dispose();
-        //ServiceLocator.clear();
+
+        // Dispose only what we created in show(); other global services are shared
+        if (ServiceLocator.getRenderService() != null) {
+            ServiceLocator.getRenderService().dispose();
+        }
+        if (ServiceLocator.getEntityService() != null) {
+            ServiceLocator.getEntityService().dispose();
+        }
+        // Intentionally not clearing InputService/ResourceService here (shared across screens)
     }
 }

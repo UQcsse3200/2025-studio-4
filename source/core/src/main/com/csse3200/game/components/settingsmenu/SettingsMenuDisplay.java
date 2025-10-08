@@ -122,6 +122,7 @@ public class SettingsMenuDisplay extends UIComponent {
         rootTable.add(panel).center()
                 .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
 
+
         if (overlayMode) {
             Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
             px.setColor(new Color(0f, 0f, 0f, 0.70f));
@@ -166,6 +167,12 @@ public class SettingsMenuDisplay extends UIComponent {
         } else {
             stage.addActor(rootTable);
         }
+
+        UserSettings.Settings currentSettings = UserSettings.get();
+        if (rootTable != null) {
+            rootTable.setTransform(true);  // Enable transformation
+            rootTable.setScale(currentSettings.uiScale);
+        }
     }
 
     private Table makeSettingsTable() {
@@ -197,10 +204,10 @@ public class SettingsMenuDisplay extends UIComponent {
         soundVolumeSlider.setValue(settings.soundVolume);
         Label soundVolumeValue = new Label(String.format("%.0f%%", settings.soundVolume * 100), skin);
 
-        Label difficultyLabel = new Label("Difficulty:", skin);
-        difficultySelect = new SelectBox<>(skin);
-        difficultySelect.setItems("Easy", "Normal", "Hard");
-        difficultySelect.setSelected(settings.difficulty);
+        //Label difficultyLabel = new Label("Difficulty:", skin);
+        //difficultySelect = new SelectBox<>(skin);
+        //difficultySelect.setItems("Easy", "Normal", "Hard");
+        //difficultySelect.setSelected(settings.difficulty);
 
         Label displayModeLabel = new Label("Resolution:", skin);
         displayModeSelect = new SelectBox<>(skin);
@@ -255,9 +262,9 @@ public class SettingsMenuDisplay extends UIComponent {
         table.add(soundVolumeLabel).right().padRight(15f);
         table.add(soundVolumeTable).left();
 
-        table.row().padTop(10f);
-        table.add(difficultyLabel).right().padRight(15f);
-        table.add(difficultySelect).left();
+        //table.row().padTop(10f);
+        //table.add(difficultyLabel).right().padRight(15f);
+        //table.add(difficultySelect).left();
 
         table.row().padTop(10f);
         table.add(displayModeLabel).right().padRight(15f);
@@ -287,9 +294,9 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    if (ServiceLocator.getAudioService() != null) {
-                        ServiceLocator.getAudioService().setMusicVolume(value);
-                    }
+                    //if (ServiceLocator.getAudioService() != null) {
+                    //    ServiceLocator.getAudioService().setMusicVolume(value);
+                    //}
                     return true;
                 });
 
@@ -297,9 +304,9 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = soundVolumeSlider.getValue();
                     soundVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    if (ServiceLocator.getAudioService() != null) {
-                        ServiceLocator.getAudioService().setSoundVolume(value);
-                    }
+                    //if (ServiceLocator.getAudioService() != null) {
+                    //    ServiceLocator.getAudioService().setSoundVolume(value);
+                    //}
                     return true;
                 });
 
@@ -391,15 +398,34 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.musicVolume = musicVolumeSlider.getValue();
         settings.soundVolume = soundVolumeSlider.getValue();
 
-        settings.difficulty = difficultySelect.getSelected();
-        
+        //settings.difficulty = difficultySelect.getSelected();
+
         settings.heroWeapon = heroWeaponSelect.getSelected().toLowerCase();
         settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
 
         UserSettings.set(settings, true);
+        Gdx.graphics.setVSync(settings.vsync);
+        Gdx.graphics.setForegroundFPS(settings.fps);
 
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().updateSettings();
+        }
+
+        applyUiScale(settings.uiScale);
+
+        if (ServiceLocator.getEntityService() != null) {
+            for (var entity : ServiceLocator.getEntityService().getEntities()) {
+                entity.getEvents().trigger("settingsApplied", settings);
+            }
+        }
+    }
+
+    private void applyUiScale(float scale) {
+        if (rootTable != null) {
+            rootTable.setTransform(true);
+            rootTable.validate();
+            rootTable.setOrigin(rootTable.getWidth() / 2f, rootTable.getHeight() / 2f);
+            rootTable.setScale(scale);
         }
     }
 

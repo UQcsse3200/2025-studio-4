@@ -7,6 +7,7 @@ import com.csse3200.game.components.book.BookPage;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.*;
 // NEW: Map selection screen
+import com.csse3200.game.screens.MapSelectionScreen;
 
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
@@ -36,7 +37,7 @@ public class GdxGame extends Game {
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
-    
+
     // Register player name service
     ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameServiceImpl());
     
@@ -129,7 +130,7 @@ public class GdxGame extends Game {
         if (ServiceLocator.getGameSessionManager() != null) {
           ServiceLocator.getGameSessionManager().startNewSession();
         }
-        
+
         // Start score tracking for new game
         if (ServiceLocator.getGameScoreService() != null) {
           ServiceLocator.getGameScoreService().startNewGame();
@@ -151,6 +152,8 @@ public class GdxGame extends Game {
         return new LevelTransitionCutsceneScreen(this, null, saveFileName);
       case MAP_SELECTION:
         return new MapSelectionScreen(this);
+      case UPGRADES:
+        return new UpgradeScreen(this);
       case BOOK:
         return new MainBookScreen(this);
       case CURRENCY_BOOK:
@@ -167,7 +170,7 @@ public class GdxGame extends Game {
   public enum ScreenType {
     SPLASH, MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
     GAME_OVER_CUTSCENE, MAP_START_CUTSCENE, LEVEL_TRANSITION_CUTSCENE,
-    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK
+    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, UPGRADES
   }
 
   /**

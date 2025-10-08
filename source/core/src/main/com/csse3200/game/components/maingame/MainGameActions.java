@@ -45,7 +45,6 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
     entity.getEvents().addListener("showRanking", this::onShowRanking);
-    entity.getEvents().addListener("awardStars", this::awardStars);
   }
 
   private boolean isPaused = false;

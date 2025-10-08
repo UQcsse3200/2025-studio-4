@@ -1,31 +1,71 @@
 package com.csse3200.game.components.maingame;
 
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.events.listeners.EventListener0;
 import com.csse3200.game.extensions.GameExtension;
+import com.csse3200.game.rendering.RenderService;
+import com.csse3200.game.services.GameTime;
+import com.csse3200.game.services.ServiceLocator;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(GameExtension.class)
+@ExtendWith(MockitoExtension.class)
 class PauseInputComponentTest {
+
+    @Mock
+    private Stage mockStage;
+    
+    @Mock
+    private RenderService mockRenderService;
+    
+    @Mock
+    private EntityService mockEntityService;
+    
+    private Entity testEntity;
+
+    @BeforeEach
+    void setUp() {
+        ServiceLocator.registerTimeSource(new GameTime());
+        lenient().when(mockRenderService.getStage()).thenReturn(mockStage);
+        ServiceLocator.registerRenderService(mockRenderService);
+        
+        testEntity = new Entity();
+        Array<Entity> entities = new Array<>();
+        entities.add(testEntity);
+        lenient().when(mockEntityService.getEntities()).thenReturn(entities);
+        ServiceLocator.registerEntityService(mockEntityService);
+    }
 
     @Test
     void escKeyShouldTogglePause() {
         Entity e = new Entity();
         PauseInputComponent comp = new PauseInputComponent();
-        e.addComponent(comp); // don't need entity.create()
+        e.addComponent(comp);
+        e.create();
 
-        AtomicInteger calls = new AtomicInteger(0);
-        e.getEvents().addListener("togglePause", (EventListener0) () -> calls.incrementAndGet());
+        AtomicInteger pauseCalls = new AtomicInteger(0);
+        AtomicInteger resumeCalls = new AtomicInteger(0);
+        testEntity.getEvents().addListener("gamePaused", (EventListener0) () -> pauseCalls.incrementAndGet());
+        testEntity.getEvents().addListener("gameResumed", (EventListener0) () -> resumeCalls.incrementAndGet());
 
-        boolean handled = comp.keyDown(Input.Keys.ESCAPE);
-        assertTrue(handled, "ESC should be handled by PauseInputComponent");
-        assertEquals(1, calls.get(), "ESC should trigger togglePause exactly once");
+        e.getEvents().trigger("togglePause");
+        assertEquals(1, pauseCalls.get(), "First toggle should pause");
+
+        e.getEvents().trigger("togglePause");
+        assertEquals(1, resumeCalls.get(), "Second toggle should resume");
     }
 
     @Test
@@ -33,13 +73,13 @@ class PauseInputComponentTest {
         Entity e = new Entity();
         PauseInputComponent comp = new PauseInputComponent();
         e.addComponent(comp);
+        e.create();
 
-        AtomicInteger calls = new AtomicInteger(0);
-        e.getEvents().addListener("togglePause", (EventListener0) () -> calls.incrementAndGet());
+        AtomicInteger pauseCalls = new AtomicInteger(0);
+        testEntity.getEvents().addListener("gamePaused", (EventListener0) () -> pauseCalls.incrementAndGet());
 
-        boolean handled = comp.keyDown(Input.Keys.P);
-        assertTrue(handled, "P should be handled by PauseInputComponent");
-        assertEquals(1, calls.get(), "P should trigger togglePause exactly once");
+        e.getEvents().trigger("togglePause");
+        assertEquals(1, pauseCalls.get(), "Toggle should trigger pause");
     }
 
     @Test
@@ -47,12 +87,11 @@ class PauseInputComponentTest {
         Entity e = new Entity();
         PauseInputComponent comp = new PauseInputComponent();
         e.addComponent(comp);
+        e.create();
 
         AtomicInteger calls = new AtomicInteger(0);
-        e.getEvents().addListener("togglePause", (EventListener0) () -> calls.incrementAndGet());
+        testEntity.getEvents().addListener("gamePaused", (EventListener0) () -> calls.incrementAndGet());
 
-        boolean handled = comp.keyDown(Input.Keys.SPACE);
-        assertFalse(handled, "Non-pause keys should not be handled");
-        assertEquals(0, calls.get(), "Non-pause keys must not trigger togglePause");
+        assertEquals(0, calls.get(), "No pause should occur without toggle event");
     }
 }

@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 
 import com.csse3200.game.ui.UIComponent;
@@ -92,6 +93,18 @@ public class SaveSelectionDisplay extends UIComponent {
     table.add(backBtn).size(buttonWidth, buttonHeight).padBottom(30f);
 
     stage.addActor(table);
+
+    applyUiScale();
+  }
+
+  private void applyUiScale() {
+    UserSettings.Settings settings = UserSettings.get();
+    if (table != null) {
+      table.setTransform(true);
+      table.validate();
+      table.setOrigin(table.getWidth() / 2f, table.getHeight() / 2f);
+      table.setScale(settings.uiScale);
+    }
   }
 
   private Table createSaveFileList() {

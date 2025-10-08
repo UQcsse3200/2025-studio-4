@@ -44,7 +44,7 @@ public class TankFactoryTest {
         Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(150, stats.getHealth());
+        assertEquals(100, stats.getHealth());
         assertEquals(15, stats.getBaseAttack());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
@@ -167,7 +167,7 @@ public class TankFactoryTest {
         Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(600, stats.getHealth());
+        assertEquals(400, stats.getHealth());
         assertEquals(60, stats.getBaseAttack());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }

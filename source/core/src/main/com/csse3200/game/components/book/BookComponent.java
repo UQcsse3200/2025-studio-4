@@ -84,8 +84,9 @@ public class BookComponent {
                     TowerConfig.TowerWrapper wrapper = (TowerConfig.TowerWrapper) field.get(towerConfig);
                     TowerConfig.TowerStats baseStats = wrapper.base;
 
+                    String safeName = (wrapper.name == null || wrapper.name.isEmpty()) ? "Unknown" : wrapper.name;
                     decks.add(new TowerBookDeckComponent(
-                            wrapper.name,
+                            safeName,
                             baseStats.damage,
                             baseStats.range,
                             baseStats.cooldown,

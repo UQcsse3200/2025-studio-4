@@ -1,5 +1,4 @@
 package com.csse3200.game.screens;
-import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.math.Vector2;
@@ -85,8 +84,15 @@ public class MainGameScreen extends ScreenAdapter {
     this.startupArg = saveFileName; // mapId when new game, save name when continue
 
     ServiceLocator.registerGameService(game);
-    ServiceLocator.registerLeaderboardService(
-            new InMemoryLeaderboardService("player-001"));
+    
+    // 只有在排行榜服务不存在时才注册新的服务，避免覆盖历史数据
+    if (ServiceLocator.getLeaderboardService() == null) {
+      ServiceLocator.registerLeaderboardService(
+              new com.csse3200.game.services.leaderboard.SessionLeaderboardService("player-001"));
+      logger.info("Registered new leaderboard service");
+    } else {
+      logger.info("Using existing leaderboard service to preserve history");
+    }
 
     logger.debug("Initialising main game screen services (Continue: {}, Save/Arg: {})", isContinue, saveFileName);
 
@@ -268,7 +274,8 @@ public class MainGameScreen extends ScreenAdapter {
             .addComponent(new MainGameWin())
             .addComponent(new Terminal())
             .addComponent(inputComponent)
-            .addComponent(new TerminalDisplay());
+            .addComponent(new TerminalDisplay())
+            .addComponent(new com.csse3200.game.components.maingame.PlayerNameDisplay());
 
     ServiceLocator.getEntityService().register(ui);
     ui.addComponent(new com.csse3200.game.ui.leaderboard.LeaderboardUI());

@@ -7,6 +7,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.SpeedWaypointComponent;
@@ -76,7 +77,7 @@ public class TankEnemyFactory {
             .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
-
+            .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
@@ -111,6 +112,12 @@ public class TankEnemyFactory {
             PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
             if (psc != null) {
                 psc.addPoints(points);
+            }
+
+            // Track kill for ranking component
+            com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+            if (prc != null) {
+                prc.addKill();
             }
 
             // Drop currency upon defeating enemy

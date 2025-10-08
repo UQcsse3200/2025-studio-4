@@ -17,6 +17,7 @@ import java.util.*;
  * Trigger "updateCurrencyUI" with current currency amount not the added or subtracted value
  */
 public class CurrencyManagerComponent extends Component {
+    public static final String SOUND_PATH = "sounds/add_currency.ogg";
     private Map<CurrencyType, Integer> currencies = new EnumMap<>(CurrencyType.class);
     private List<Entity> currencyEntityList = new ArrayList<>();
 
@@ -43,14 +44,14 @@ public class CurrencyManagerComponent extends Component {
         currencies.put(type, currencies.getOrDefault(type, 0) + amount);
     }
 
-  /**
-   * Sets the amount of a currency type directly and updates UI.
-   * Value will be clamped to >= 0.
-   */
-  public void setCurrencyAmount(CurrencyType type, int amount) {
-    currencies.put(type, Math.max(0, amount));
-    updateCurrencyUI(type);
-  }
+    /**
+     * Sets the amount of a currency type directly and updates UI.
+     * Value will be clamped to >= 0.
+     */
+    public void setCurrencyAmount(CurrencyType type, int amount) {
+        currencies.put(type, Math.max(0, amount));
+        updateCurrencyUI(type);
+    }
 
     /**
      * Subtracts a specified amount of the given currency type.
@@ -122,7 +123,7 @@ public class CurrencyManagerComponent extends Component {
         CurrencyType type = entity.getComponent(CurrencyComponent.class).getType();
         int value = entity.getComponent(CurrencyComponent.class).getValue();
         this.addCurrencyAmount(type, value);
-        playCollectCurrencySound(type); // Play collecting sound
+        playCurrencySound(type.getCollectSoundPath()); // Play collecting sound
         this.updateCurrencyUI(type);
         this.currencyEntityList.remove(entity);
     }
@@ -130,12 +131,12 @@ public class CurrencyManagerComponent extends Component {
     /**
      * Plays the collection sound associated with the given currency type.
      *
-     * @param type the {@link CurrencyType} whose collect sound should be played
+     * @param soundPath the sound should be played
      */
-    private void playCollectCurrencySound(CurrencyType type) {
+    private void playCurrencySound(String soundPath) {
         ServiceLocator.getResourceService()
-                .getAsset(type.getCollectSoundPath(), Sound.class)
-                .play(1.0f);
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
     }
 
     /**
@@ -150,6 +151,7 @@ public class CurrencyManagerComponent extends Component {
             this.addCurrencyAmount(type, value);
             this.updateCurrencyUI(type);
         });
+        playCurrencySound(SOUND_PATH);
     }
 
     /**

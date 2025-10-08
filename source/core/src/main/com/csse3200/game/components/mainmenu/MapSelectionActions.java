@@ -18,6 +18,7 @@ public class MapSelectionActions extends UIComponent {
         super.create();
         entity.getEvents().addListener("mapSelected", this::onMapSelected);
         entity.getEvents().addListener("backToMainMenu", this::onBack);
+        entity.getEvents().addListener("toUpgradeMenu", this::onUpgrades);
     }
 
     @Override
@@ -32,5 +33,9 @@ public class MapSelectionActions extends UIComponent {
     private void onBack() {
         logger.debug("Back to main menu");
         game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    }
+
+    private void onUpgrades() {
+        game.setScreen(GdxGame.ScreenType.UPGRADES);
     }
 }

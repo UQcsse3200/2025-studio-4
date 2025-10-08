@@ -29,7 +29,6 @@ public class MapSelectionDisplay extends UIComponent {
     private static final String THUMB_TEX = "images/Main_Game_Button.png"; // fallback
     private String thumbTexMap1;
     private String thumbTexMap2;
-
     private Table root;
 
     private final List<MapEntry> entries = new ArrayList<>();

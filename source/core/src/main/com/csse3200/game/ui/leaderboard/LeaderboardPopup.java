@@ -1,5 +1,6 @@
 package com.csse3200.game.ui.leaderboard;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -91,6 +92,9 @@ public class LeaderboardPopup extends Window {
                 Actions.scaleTo(1.03f, 1.03f, 0.06f),
                 Actions.scaleTo(1f, 1f, 0.06f)
         ));
+        
+        // 确保弹窗可见
+        setVisible(true);
     }
 
     private void refreshList() {
@@ -98,7 +102,14 @@ public class LeaderboardPopup extends Window {
         var items = controller.loadPage();
         var me = controller.getMyBest();
 
-        for (LeaderboardEntry e : items) listTable.add(buildRow(e, me)).growX().row();
+        if (items.isEmpty()) {
+            // Show a message when no entries exist
+            Label noEntriesLabel = new Label("No rankings yet. Play a game to get on the leaderboard!", skin);
+            noEntriesLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
+            listTable.add(noEntriesLabel).growX().pad(20);
+        } else {
+            for (LeaderboardEntry e : items) listTable.add(buildRow(e, me)).growX().row();
+        }
 
         prevBtn.setDisabled(controller.isFirstPage());
         nextBtn.setDisabled(items.size() < 20); // 简化版
@@ -123,12 +134,32 @@ public class LeaderboardPopup extends Window {
 
         if (isMe) row.setBackground("selection"); // 需要在 skin 里有 selection
 
+        // 添加头像显示
+        Image avatarImage = createAvatarImage(e.avatarId);
+        
         row.add(rank).width(40).left();
+        row.add(avatarImage).size(32, 32).padLeft(8);
         row.add(name).expandX().left().padLeft(8);
         row.add(score).width(120).right();
         row.add(time).width(160).right();
 
         return row;
+    }
+    
+    private Image createAvatarImage(String avatarId) {
+        try {
+            // 获取头像服务
+            if (ServiceLocator.getPlayerAvatarService() != null) {
+                String imagePath = ServiceLocator.getPlayerAvatarService().getAvatarImagePath(avatarId);
+                Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
+                return new Image(texture);
+            }
+        } catch (Exception e) {
+            // 如果加载失败，使用默认头像
+        }
+        
+        // 返回默认头像或占位符
+        return new Image(); // 空图片作为占位符
     }
 
     private String formatTime(long ms) {

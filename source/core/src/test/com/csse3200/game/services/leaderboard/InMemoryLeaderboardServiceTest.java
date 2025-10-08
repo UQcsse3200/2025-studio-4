@@ -28,6 +28,7 @@ class InMemoryLeaderboardServiceTest {
         assertEquals(1, entries.size());
         assertEquals(1000, entries.get(0).score);
         assertEquals(1, entries.get(0).rank);
+        assertEquals("avatar_1", entries.get(0).avatarId); // 默认头像
     }
     
     @Test

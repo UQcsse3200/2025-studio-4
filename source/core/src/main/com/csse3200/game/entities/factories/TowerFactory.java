@@ -292,7 +292,7 @@ public class TowerFactory {
 
         RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(bankAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("idle", 1f, Animation.PlayMode.LOOP);
         headAnim.startAnimation("idle");
         headAnim.setBaseRotation(0f);
 
@@ -325,7 +325,7 @@ public class TowerFactory {
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
         Entity head = new Entity().addComponent(headAnim);
-        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.addAnimation("idle", 0.3f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
         headAnim.startAnimation("idle");
         headAnim.setBaseRotation(0f);

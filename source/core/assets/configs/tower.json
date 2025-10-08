@@ -43,7 +43,7 @@
       "neurochipCost": 0,
       "projectileSpeed": 6.0,
       "projectileLife": 4,
-      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "projectileTexture": "images/towers/projectile animations/caveman bullet.png",
       "image": "images/towers/cavemen.png"
     }
   },
@@ -91,7 +91,7 @@
       "neurochipCost": 0,
       "projectileSpeed": 0.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "projectileTexture": "images/towers/projectile animations/crystalk.png",
       "image": "images/towers/totem.png"
     }
   },
@@ -123,7 +123,7 @@
       "neurochipCost": 0,
       "projectileSpeed": 5.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "projectileTexture": "images/towers/projectile animations/raftproj.png",
       "image": "images/towers/archer.png"
     }
   },
@@ -139,7 +139,7 @@
       "neurochipCost": 0,
       "projectileSpeed": 6.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "projectileTexture": "images/towers/projectile animations/icecube.png",
       "image": "images/towers/frozenmamoothskull.png"
     }
   },
@@ -155,7 +155,7 @@
       "neurochipCost": 0,
       "projectileSpeed": 8.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/zap.png",
+      "projectileTexture": "images/towers/projectile animations/rockcatapault.png",
       "image": "images/towers/bouldercatapult.png"
     }
   },

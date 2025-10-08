@@ -492,25 +492,25 @@ public class ForestGameArea2 extends GameArea2 {
 
     private void spawnSingleDrone() {
         Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(drone, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleGrunt() {
         Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(grunt, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleTank() {
         Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(tank, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 
     private void spawnSingleBoss() {
         Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
+        spawnEntityAt(boss, new GridPoint2(5, 0), true, true);
         logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
     }
 

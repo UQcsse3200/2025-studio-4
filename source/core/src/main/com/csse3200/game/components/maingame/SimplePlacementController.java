@@ -19,7 +19,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.towers.TowerCostComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.configs.TowerConfig;
-
+import com.csse3200.game.entities.factories.SummonFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,12 +58,16 @@ public class SimplePlacementController extends Component {
 
     /** Reference to the map editor for checking invalid tiles. */
     private MapEditor mapEditor;
-
-    /** Static 2D array storing fixed path tiles to prevent tower placement. */
     private static int[][] FIXED_PATH = {};
-
-    /** Static 2D array storing water tiles for raft tower placement. */
     private static int[][] WATER_TILES = {};
+
+    // --- Currency selection for placement ---
+    private com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType selectedCurrencyType =
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
+
+    public void setSelectedCurrencyType(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType currencyType) {
+        this.selectedCurrencyType = currencyType;
+    }
 
     /**
      * Sets the map editor instance used to check invalid tiles.
@@ -145,7 +149,6 @@ public class SimplePlacementController extends Component {
         entity.getEvents().addListener("startPlacementVillageshaman", this::armVillageshaman);
         System.out.println(">>> SimplePlacementController ready; minSpacing=" + minSpacing);
     }
-
 
     /** Arms the controller to start placing a Bone tower. */
     private void armBone() {
@@ -250,21 +253,27 @@ public class SimplePlacementController extends Component {
     @Override
     public void update() {
         if (camera == null) findWorldCamera();
-        if (!placementActive || camera == null || ghostTower == null) return;
+        if (!placementActive || camera == null) return;
+
+        TerrainComponent terrain = findTerrain();
+        if (terrain == null) return;
+
+        Vector3 mousePos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
+        camera.unproject(mousePos3D);
+        Vector2 mouseWorld = new Vector2(mousePos3D.x, mousePos3D.y);
+
+        if (mode == Mode.SUMMON) {
+            updateSummonPlacement(terrain, mouseWorld);
+            return;
+        }
+
+        if (ghostTower == null) return;
 
         // Wait for left-click release
         if (needRelease) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT)) needRelease = false;
             return;
         }
-
-        // Get mouse world position
-        Vector3 mousePos3D = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
-        camera.unproject(mousePos3D);
-        Vector2 mouseWorld = new Vector2(mousePos3D.x, mousePos3D.y);
-
-        TerrainComponent terrain = findTerrain();
-        if (terrain == null) return;
 
         TowerComponent ghostTC = ghostTower.getComponent(TowerComponent.class);
         int towerWidth = ghostTC != null ? ghostTC.getWidth() : 1;
@@ -533,6 +542,70 @@ public class SimplePlacementController extends Component {
         }
         return false;
     }
+
+    // --- Summon placement mode ---
+    private String pendingSummonTexture = null;
+    private enum Mode {NONE, TOWER, SUMMON}
+    private Mode mode = Mode.NONE;
+    private Entity ghostSummon = null;
+
+    public static class SummonSpec {
+        public final String texture;
+        public SummonSpec(String texture) { this.texture = texture; }
+    }
+
+    public void armSummon(SummonSpec spec) {
+        cancelPlacement();
+        this.mode = Mode.SUMMON;
+        this.placementActive = true;
+        this.needRelease = true;
+        this.pendingType = "summon";
+        this.pendingSummonTexture = (spec != null && spec.texture != null && !spec.texture.isEmpty())
+                ? spec.texture : "images/engineer/Sentry.png";
+        this.ghostSummon = com.csse3200.game.entities.factories.SummonFactory.createMeleeSummonGhost(this.pendingSummonTexture, 1f);
+        com.csse3200.game.services.ServiceLocator.getEntityService().register(this.ghostSummon);
+        this.ghostSummon.create();
+        System.out.println(">>> placement ON (summon)");
+    }
+
+    private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
+        if (ghostSummon == null) return;
+        GridPoint2 tile = new GridPoint2(
+                (int) (mouseWorld.x / terrain.getTileSize()),
+                (int) (mouseWorld.y / terrain.getTileSize())
+        );
+        GridPoint2 bounds = terrain.getMapBounds(0);
+        boolean inBounds = tile.x >= 0 && tile.y >= 0 && tile.x < bounds.x && tile.y < bounds.y;
+        boolean onPath = inBounds && isOnPath(tile);
+        Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
+        ghostSummon.setPosition(snapPos);
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+            if (!onPath) return;
+            placeSummon(snapPos, tile);
+        }
+    }
+
+    private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
+        if (ghostSummon != null) {
+            ghostSummon.dispose();
+            ghostSummon = null;
+        }
+        Entity summon = com.csse3200.game.entities.factories.SummonFactory.createMeleeSummon(
+                (pendingSummonTexture != null && !pendingSummonTexture.isEmpty())
+                        ? pendingSummonTexture : "images/engineer/Sentry.png",
+                false,
+                1f
+        );
+        summon.setPosition(snapPos);
+        com.csse3200.game.services.ServiceLocator.getEntityService().register(summon);
+        summon.create();
+        placementActive = false;
+        mode = Mode.NONE;
+        pendingType = "bone";
+        System.out.println(">>> SUMMON placed at " + tile);
+    }
+
+
 }
 
 // The placement controller only creates a ghost tower for preview when you click a hotbar icon.

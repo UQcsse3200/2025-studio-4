@@ -33,6 +33,9 @@ public class GameOverScreen extends UIComponent {
 
   public void addActors() {
     try {
+      // 提交当前游戏得分到排行榜（即使游戏失败也记录得分）
+      submitCurrentScore();
+      
       // Remove existing UI if present
       if (table != null && table.getStage() != null) {
         table.remove();
@@ -145,6 +148,36 @@ public class GameOverScreen extends UIComponent {
     
     return style;
   }
+
+  /**
+   * 提交当前游戏得分到排行榜（通过会话管理器防止重复提交）
+   */
+  private void submitCurrentScore() {
+    try {
+      // 使用会话管理器防止重复提交
+      com.csse3200.game.services.GameSessionManager sessionManager = 
+        ServiceLocator.getGameSessionManager();
+      
+      if (sessionManager == null) {
+        logger.error("Game session manager not available");
+        return;
+      }
+      
+      // 尝试提交得分（如果本次会话还未提交）
+      // 现在使用GameScoreService获取真实得分
+      boolean submitted = sessionManager.submitScoreIfNotSubmitted(false); // false = 游戏失败
+      
+      if (submitted) {
+        logger.info("Successfully submitted game over score to leaderboard");
+      } else {
+        logger.info("Score already submitted for this session, skipping duplicate submission");
+      }
+      
+    } catch (Exception e) {
+      logger.error("Failed to submit game over score to leaderboard", e);
+    }
+  }
+  
 
   @Override
   public void dispose() {

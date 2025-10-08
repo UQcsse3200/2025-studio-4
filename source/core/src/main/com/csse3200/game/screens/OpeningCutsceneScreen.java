@@ -70,11 +70,11 @@ public class OpeningCutsceneScreen implements Screen {
     private float lastClickTime = 0f;
     private float clickTimeout = 1f; // 1 second timeout between clicks
     private Label skipLabel;
-    private boolean skipPressed = false;
     
     // Fonts for cleanup
     private BitmapFont scrollFont;
     private BitmapFont skipFont;
+    
     
     public OpeningCutsceneScreen(GdxGame game) {
         this(game, BACKGROUND_OPTIONS[0]);
@@ -323,19 +323,6 @@ public class OpeningCutsceneScreen implements Screen {
         }
     }
     
-    private void skipCutscene() {
-        if (skipPressed) {
-            return; // Prevent multiple skip calls
-        }
-        skipPressed = true;
-        logger.info("Opening cutscene skipped by user");
-        
-        // Immediately fade out and transition
-        stage.addAction(Actions.sequence(
-            Actions.fadeOut(0.5f),
-            Actions.run(() -> cutsceneFinished = true)
-        ));
-    }
     
     private void transitionToMainMenu() {
         logger.info("Opening cutscene finished, transitioning to main menu");

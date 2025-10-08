@@ -14,7 +14,6 @@ import java.util.Map;
 /**
  * A UI component for displaying detailed deck info (tower/enemy stats)
  * when an entity with a {@link DeckComponent} is clicked.
- *
  * Usage:
  *      // Example inside TowerComponent or EnemyComponent click handler
  *      playerEntity.getEvents().trigger("displayDeck", towerEntity.getComponent(DeckComponent.class));
@@ -23,6 +22,10 @@ public class DeckDisplay extends UIComponent {
     private Table table;
     private DeckComponent deck;
 
+    /**
+     * Initializes this UI component, creating the UI table and registering listeners
+     * for deck display and clear events.
+     */
     @Override
     public void create() {
         super.create();
@@ -31,6 +34,10 @@ public class DeckDisplay extends UIComponent {
         entity.getEvents().addListener("clearDeck", this::hide);
     }
 
+    /**
+     * Updates the deck UI each frame. If the underlying deck stats change,
+     * the display is refreshed.
+     */
     @Override
     public void update() {
         if (deck != null) {
@@ -42,6 +49,9 @@ public class DeckDisplay extends UIComponent {
         }
     }
 
+    /**
+     * Adds the table actor to the stage and positions it.
+     */
     private void addActors() {
         table = new Table();
         table.top().right();
@@ -52,8 +62,14 @@ public class DeckDisplay extends UIComponent {
     }
 
     /**
-     * Render a deck’s info in the UI.
-     * @param deck the deck data from a tower or enemy
+     * Renders a deck’s information in the UI. This includes:
+     * <ul>
+     *   <li>The deck image (if {@link DeckComponent.StatType#TEXTURE_PATH} is present)</li>
+     *   <li>The name of the entity (as a large title)</li>
+     *   <li>Other stats with associated icons or text values</li>
+     * </ul>
+     *
+     * @param deck the {@link DeckComponent} containing the stats to display
      */
     public void displayDeck(DeckComponent deck) {
         if (deck == null) {
@@ -120,7 +136,7 @@ public class DeckDisplay extends UIComponent {
     }
 
     /**
-     * Hide the deck UI
+     * Hides the deck UI by clearing the table and removing the current deck reference.
      */
     public void hide() {
         table.clear();
@@ -132,6 +148,10 @@ public class DeckDisplay extends UIComponent {
         // Stage handles drawing
     }
 
+    /**
+     * Disposes of this component by clearing and removing the table.
+     * Ensures that UI resources are properly cleaned up when the component is no longer needed.
+     */
     @Override
     public void dispose() {
         super.dispose();

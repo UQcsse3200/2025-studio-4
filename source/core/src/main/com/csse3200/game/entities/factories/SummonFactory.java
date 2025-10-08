@@ -100,7 +100,7 @@ public final class SummonFactory {
                 .addComponent(new HitboxComponent()
                         .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new TextureRenderComponent(texturePath))
-                .addComponent(new CombatStatsComponent(20, 15, resistance, weakness))
+                .addComponent(new CombatStatsComponent(20, 25, resistance, weakness))
                 .addComponent(new AutoDespawnOnDeathComponent()); // ✅ Auto-despawn on death
 
         var phys = turret.getComponent(PhysicsComponent.class);

@@ -16,8 +16,8 @@ public class GameStateService {
     private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
 
     public enum HeroType {
-        HERO,       // 普通英雄
-        ENGINEER,    // 工程师
+        HERO,
+        ENGINEER,
         SAMURAI
     }
 
@@ -29,7 +29,7 @@ public class GameStateService {
     public GameStateService() {
         // should load from save file later
         logger.info("Loading GameStateService");
-        stars = 0;
+        stars = 10;
         heroUnlocks = new HashMap<>();
 
         heroUnlocks.put(HeroType.HERO, true);

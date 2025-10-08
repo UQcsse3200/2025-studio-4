@@ -503,7 +503,8 @@ public class SimplePlacementController extends Component {
      * <p>
      * Determines occupancy by checking for any entity that represents a summon,
      * including turrets, melee summons, or currency generators.
-     * A summon is identified if it has a {@link com.csse3200.game.components.hero.engineer.SummonOwnerComponent}
+     * A summon is identified if it has either a
+     * {@link com.csse3200.game.components.hero.engineer.SummonOwnerComponent}
      * or an {@link com.csse3200.game.components.hero.engineer.OwnerComponent}.
      * </p>
      *
@@ -519,7 +520,8 @@ public class SimplePlacementController extends Component {
         for (Entity e : all) {
             if (e == null) continue;
 
-            // 🔍 判断是否是召唤物：带有 SummonOwnerComponent 或 OwnerComponent
+            // 🔍 Check whether the entity represents a summon:
+            // It must have either SummonOwnerComponent or OwnerComponent
             boolean isSummon =
                     e.getComponent(com.csse3200.game.components.hero.engineer.SummonOwnerComponent.class) != null
                             || e.getComponent(com.csse3200.game.components.hero.engineer.OwnerComponent.class) != null;
@@ -529,11 +531,13 @@ public class SimplePlacementController extends Component {
             Vector2 p = e.getPosition();
             if (p == null) continue;
 
+            // Convert summon’s position to tile coordinates
             GridPoint2 etile = new GridPoint2(
                     (int) (p.x / tileSize),
                     (int) (p.y / tileSize)
             );
 
+            // If a summon occupies the same tile, mark as occupied
             if (etile.x == tile.x && etile.y == tile.y) {
                 return true; // ✅ Found summon on same tile
             }
@@ -541,22 +545,22 @@ public class SimplePlacementController extends Component {
         return false;
     }
 
-
     /**
      * Updates summon placement preview each frame.
      * <p>
-     * Moves the summon ghost to follow the mouse cursor,
-     * snaps it to tile positions, and handles placement on left click.
-     * Summons can only be placed on path tiles.
+     * Moves the summon "ghost" (preview entity) to follow the mouse cursor,
+     * snapping it to tile positions if valid, and handles placement when
+     * the player left-clicks. Summons can only be placed on path tiles,
+     * and overlapping placement on the same tile is prevented.
      * </p>
      *
-     * @param terrain    Terrain reference (for tile conversion).
-     * @param mouseWorld Current mouse position in world coordinates.
+     * @param terrain    The terrain reference (for tile conversion).
+     * @param mouseWorld The current mouse position in world coordinates.
      */
     private void updateSummonPlacement(TerrainComponent terrain, Vector2 mouseWorld) {
         if (ghostSummon == null) return;
 
-        // Compute grid coordinates from mouse position
+        // Convert mouse position to grid coordinates
         GridPoint2 tile = new GridPoint2(
                 (int) (mouseWorld.x / terrain.getTileSize()),
                 (int) (mouseWorld.y / terrain.getTileSize())
@@ -564,40 +568,38 @@ public class SimplePlacementController extends Component {
         GridPoint2 bounds = terrain.getMapBounds(0);
         boolean inBounds = tile.x >= 0 && tile.y >= 0 && tile.x < bounds.x && tile.y < bounds.y;
 
-        // Only allow placement on path tiles
+        // Placement allowed only on path tiles
         boolean onPath = inBounds && isOnPath(tile);
 
-        // Snap ghost to tile position if in bounds, otherwise follow mouse
+        // Snap ghost to the grid position if in bounds; otherwise follow the mouse freely
         Vector2 snapPos = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
 
-        // Move ghost summon
+        // Move ghost entity to preview location
         ghostSummon.setPosition(snapPos);
 
-        // Left click → place summon
+        // Left-click to place summon
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
-            if (!onPath) return;
+            if (!onPath) return; // Must be on a valid path tile
+            if (hasSummonOnTile(tile, terrain)) return; // Prevent overlapping summons
 
-            // Prevent overlapping turrets on same tile
-            if (hasSummonOnTile(tile, terrain)) return;
-
-            // Finalize summon placement
+            // Proceed to finalize placement
             placeSummon(snapPos, tile);
         }
     }
 
     /**
-     * Finalizes summon placement and spawns the actual entity in the world.
+     * Finalizes summon placement and spawns the actual summon entity in the world.
      * <p>
-     * Depending on {@code pendingType}, this method creates a turret, currency bot,
-     * or melee summon. Ghosts are destroyed once placement is confirmed.
+     * Depending on {@code pendingType}, this method creates a turret, a currency bot,
+     * or a melee summon. The placement ghost is destroyed once placement is confirmed.
      * </p>
      *
-     * @param snapPos The world position where the summon is placed.
-     * @param tile    The tile coordinate of placement.
+     * @param snapPos The world position where the summon should be placed.
+     * @param tile    The grid tile coordinate of the placement.
      */
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
-        // ★★★ 方案A关键：生成前询问是否允许 ★★★
-        String typeToPlace = pendingType; // 保存原类型，避免下方重置后日志打印错
+        // === Step 1: Check if placement is allowed via event system ===
+        String typeToPlace = pendingType; // Save type before reset for accurate logging
         if (!requestCanSpawn(typeToPlace)) {
             if (ghostSummon != null) {
                 ghostSummon.dispose();
@@ -610,7 +612,7 @@ public class SimplePlacementController extends Component {
             return;
         }
 
-        // 清理幽灵
+        // === Step 2: Clean up placement ghost ===
         if (ghostSummon != null) {
             ghostSummon.dispose();
             ghostSummon = null;
@@ -618,9 +620,11 @@ public class SimplePlacementController extends Component {
 
         EngineerSummonComponent owner = findEngineerOwner();
 
+        // === Step 3: Create summon based on type ===
         if ("turret".equals(typeToPlace)) {
+            // Example: create a directional turret facing left (can be extended for multiple directions)
             Vector2[] dirs = new Vector2[]{
-                    new Vector2(-1, 0) // 例子：朝左；可扩展多方向
+                    new Vector2(-1, 0)
             };
 
             for (Vector2 d : dirs) {
@@ -634,6 +638,7 @@ public class SimplePlacementController extends Component {
             }
 
         } else if ("currencyBot".equals(typeToPlace)) {
+            // Create a currency generator bot
             Entity player = findPlayerEntity();
 
             Entity bot = SummonFactory.createCurrencyBot(
@@ -641,8 +646,8 @@ public class SimplePlacementController extends Component {
                     1f,
                     player,
                     CurrencyType.METAL_SCRAP,
-                    300,
-                    2f
+                    300,   // collection radius or range
+                    2f     // collection interval (seconds)
             );
             bot.addComponent(new SummonOwnerComponent(owner, typeToPlace));
             bot.setPosition(snapPos);
@@ -651,7 +656,7 @@ public class SimplePlacementController extends Component {
             System.out.println(">>> currencyBot placed at " + tile);
 
         } else {
-            // melee / barrier
+            // Default: melee summon (e.g., sentry or barrier)
             Entity summon = SummonFactory.createMeleeSummon(
                     pendingSummonTexture, false, 1f
             );
@@ -661,21 +666,38 @@ public class SimplePlacementController extends Component {
             summon.create();
         }
 
+        // === Step 4: Reset placement state ===
         placementActive = false;
         mode = Mode.NONE;
         pendingType = "bone";
         System.out.println(">>> summon placed at " + tile + " type=" + typeToPlace);
     }
 
+    /**
+     * Sends an event to check whether the engineer can spawn a new summon of the given type.
+     * <p>
+     * If no EngineerSummonComponent is found, the placement is allowed by default.
+     * </p>
+     *
+     * @param type The type of summon being requested (e.g., "turret", "melee").
+     * @return {@code true} if placement is allowed, otherwise {@code false}.
+     */
     private boolean requestCanSpawn(String type) {
         EngineerSummonComponent owner = findEngineerOwner();
-        if (owner == null) return true; // 没找到工程师就放行（按需改为 false）
-        final boolean[] allow = { true };
+        if (owner == null) return true; // Allow placement if no engineer found
+        final boolean[] allow = {true};
         owner.getEntity().getEvents().trigger("summon:canSpawn?", type, allow);
         return allow[0];
     }
 
-    // ==== 工具：找到工程师组件（作为 Owner） ====
+    /**
+     * Finds the EngineerSummonComponent that represents the owner of summons.
+     * <p>
+     * This allows the placement controller to query summon caps, cooldowns, etc.
+     * </p>
+     *
+     * @return The {@link EngineerSummonComponent} if found, or {@code null} if none exists.
+     */
     private EngineerSummonComponent findEngineerOwner() {
         var all = ServiceLocator.getEntityService().getEntitiesCopy();
         if (all == null) return null;
@@ -686,5 +708,6 @@ public class SimplePlacementController extends Component {
         }
         return null;
     }
+
 
 }

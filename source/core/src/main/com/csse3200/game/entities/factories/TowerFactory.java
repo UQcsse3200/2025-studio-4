@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.components.deck.DeckComponent;
-import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
 import com.csse3200.game.components.towers.CurrencyGeneratorComponent;
 import com.csse3200.game.components.towers.*;
 import com.csse3200.game.entities.Entity;
@@ -280,17 +279,22 @@ public class TowerFactory {
                 .addComponent(new DeckComponent.TowerDeckComponent(
                         "bank", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
-                .addComponent(new TextureRenderComponent("images/towers/bank_tower.png"));
-        base.addComponent(new BankTowerUpgradeComponent(base,
-                CurrencyComponent.CurrencyType.METAL_SCRAP,
-                50,
-                3f
-        ));
+                // Set the floor image to match other towers
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"))
+                .addComponent(new CurrencyGeneratorComponent(
+                        CurrencyComponent.CurrencyType.METAL_SCRAP,
+                        50,
+                        3f
+                ));
 
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/super/superlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        // Use the correct bank tower atlas for head animation
+        com.badlogic.gdx.graphics.g2d.TextureAtlas bankAtlas = rs.getAsset("images/towers/bank/banklvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
-        RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(cavemanAtlas);
+        RotatingAnimationRenderComponent headAnim = new RotatingAnimationRenderComponent(bankAtlas);
         Entity head = new Entity().addComponent(headAnim);
+        headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
+        headAnim.startAnimation("idle");
+
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new Vector2(0f, 0f), 0.01f);
 

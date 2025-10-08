@@ -1,7 +1,5 @@
 package com.csse3200.game.components.maingame;
 
-import com.csse3200.game.components.towers.BankTowerUpgradeComponent;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,8 +96,10 @@ public class TowerUpgradeData {
         pathA.put("supercavemen", superCavemenA);
 
         Map<Integer, UpgradeStats> bankA = new HashMap<>();
-        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank_tower.png"));
-        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank_tower.png"));
+        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
+        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl3"));
+        bankA.put(4, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
+        bankA.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
         pathA.put("bank", bankA);
 
         return pathA;
@@ -162,8 +162,10 @@ public class TowerUpgradeData {
         pathB.put("supercavemen", superCavemenB);
 
         Map<Integer, UpgradeStats> bankB = new HashMap<>();
-        bankB.put(2, new UpgradeStats(0, 0, 5f, 0, 300, "images/bank_tower.png")); // cooldown decrease
-        bankB.put(3, new UpgradeStats(0, 0, 2.5f, 0, 600, "images/bank_tower.png"));
+        bankB.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
+        bankB.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl3"));
+        bankB.put(4, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
+        bankB.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
         pathB.put("bank", bankB);
 
         return pathB;

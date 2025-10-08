@@ -19,8 +19,7 @@ import com.csse3200.game.ui.UIComponent;
 
 /**
  * UI component that displays a hotbar for selecting and placing towers.
- * Towers are arranged in a grid with a pixel-art style title at the top.
- * Each button triggers the placement of its corresponding tower type.
+ * Dynamically resizes, tightly packed, and fits neatly beside the map.
  */
 public class TowerHotbarDisplay extends UIComponent {
 
@@ -34,12 +33,15 @@ public class TowerHotbarDisplay extends UIComponent {
         placementController = entity.getComponent(SimplePlacementController.class);
         hotbarSkin = skin;
 
-        // Root table anchored bottom-left
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+
+        // Root table bottom-left
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.bottom().left();
 
-        // Brown background
+        // Background
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
         pixmap.fill();
@@ -49,7 +51,7 @@ public class TowerHotbarDisplay extends UIComponent {
 
         Container<Table> container = new Container<>();
         container.setBackground(backgroundDrawable);
-        container.pad(6f);
+        container.pad(screenWidth * 0.0025f); // minimal border padding
 
         Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
@@ -68,7 +70,7 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable bouldercatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bouldercatapulticon.png")));
         TextureRegionDrawable villageshamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/villageshamanicon.png")));
 
-        // Create buttons
+        // Buttons
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
@@ -82,14 +84,12 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
         ImageButton placeholderBtn = new ImageButton(placeholderImage);
 
-        // Only include allowed towers in the hotbar
         ImageButton[] allButtons = {
-            boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
-            raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
-            superCavemenBtn, placeholderBtn
+                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
+                raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
+                superCavemenBtn, placeholderBtn
         };
 
-        // Add listeners for all tower types
         addPlacementListener(boneBtn, "bone");
         addPlacementListener(dinoBtn, "dino");
         addPlacementListener(cavemenBtn, "cavemen");
@@ -102,11 +102,11 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(villageshamanBtn, "villageshaman");
         addPlacementListener(superCavemenBtn, "supercavemen");
 
-        // Button grid
+        // Grid with almost no gaps
         Table buttonTable = new Table();
-        final float BUTTON_W = 132.5f;
-        final float BUTTON_H = 140f;
-        final float BUTTON_PAD = 6f;
+        float BUTTON_W = screenWidth * 0.07f;    // slightly narrower
+        float BUTTON_H = screenHeight * 0.10f;   // consistent height
+        float BUTTON_PAD = screenWidth * 0.0015f; // very tight gap
         buttonTable.defaults().pad(BUTTON_PAD).center();
 
         for (int i = 0; i < allButtons.length; i++) {
@@ -114,16 +114,22 @@ public class TowerHotbarDisplay extends UIComponent {
             if ((i + 1) % 3 == 0) buttonTable.row();
         }
 
-        // Add title and grid to container
+        // Layout
         Table content = new Table();
-        content.add(title).colspan(3).center().padBottom(6f).row();
-        content.add(buttonTable).colspan(3).center();
+        content.add(title).colspan(3).center().padBottom(screenHeight * 0.006f).row();
+
+        ScrollPane scrollPane = new ScrollPane(buttonTable, skin);
+        scrollPane.setScrollingDisabled(true, false);
+        scrollPane.setFadeScrollBars(false);
+        content.add(scrollPane).colspan(3).center().expand().fill();
 
         container.setActor(content);
-        rootTable.add(container);
+
+        // Slightly narrower width for perfect map fit
+        rootTable.add(container).width(screenWidth * 0.232f);
         stage.addActor(rootTable);
 
-        // Input multiplexer setup
+        // Input setup
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
         if (Gdx.input.getInputProcessor() != null) {
@@ -133,7 +139,6 @@ public class TowerHotbarDisplay extends UIComponent {
         Gdx.input.setInputProcessor(multiplexer);
     }
 
-    /** Adds placement logic for each button */
     private void addPlacementListener(ImageButton button, String towerType) {
         button.addListener(new ChangeListener() {
             @Override
@@ -155,7 +160,6 @@ public class TowerHotbarDisplay extends UIComponent {
         });
     }
 
-    /** Helper to capitalize tower type for event name */
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
@@ -170,7 +174,7 @@ public class TowerHotbarDisplay extends UIComponent {
     }
 
     @Override
-    public void draw(SpriteBatch batch) { }
+    public void draw(SpriteBatch batch) {}
 
     @Override
     public void dispose() {

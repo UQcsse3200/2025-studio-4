@@ -2,6 +2,7 @@ package com.csse3200.game.components.mainmenu;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -103,7 +104,10 @@ public class MapSelectionDisplay extends UIComponent {
         stage.addActor(bg);
 
         // Title
-        Label title = new Label("Select Map", skin, "title");
+        Label title = new Label("Select Map", skin);
+        title.setFontScale(1.8f);
+        title.setColor(new Color(1f, 0.9f, 0.6f, 1f));
+        title.getStyle().fontColor = Color.valueOf("CFF2FF");
         title.setAlignment(Align.center);
 
         // Thumbnail card
@@ -117,7 +121,9 @@ public class MapSelectionDisplay extends UIComponent {
         counterLabel.setAlignment(Align.center);
 
         // Difficulty selector
+
         Label difficultyLabel = new Label("Difficulty:", skin);
+        difficultyLabel.getStyle().fontColor = Color.valueOf("B0E0E6");
         final SelectBox<String> difficultySelect = new SelectBox<>(skin);
         difficultySelect.setItems("Easy", "Normal", "Hard");
 

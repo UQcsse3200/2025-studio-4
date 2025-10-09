@@ -45,6 +45,11 @@ public class SettingsMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
     private final GdxGame game;
 
+    // UI color palette (high-contrast, matches orange/wood buttons)
+    private static final Color TITLE_COLOR = Color.valueOf("CFF2FF");   // pale teal
+    private static final Color LABEL_COLOR = Color.valueOf("B0E0E6");   // muted cyan
+    private static final Color SECTION_COLOR = Color.valueOf("FFE8B0"); // warm cream
+
     private Table rootTable;
     private TextField fpsText;
     private CheckBox fullScreenCheck;
@@ -53,8 +58,8 @@ public class SettingsMenuDisplay extends UIComponent {
     private Slider musicVolumeSlider;
     private Slider soundVolumeSlider;
     private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
-    private SelectBox<String> difficultySelect;
-    private SelectBox<String> languageSelect;
+    private SelectBox<String> difficultySelect; // currently unused (kept for compatibility)
+    private SelectBox<String> languageSelect;   // currently unused
     private SelectBox<String> heroWeaponSelect;
     private SelectBox<String> heroEffectSelect;
     private boolean overlayMode = false;
@@ -98,6 +103,7 @@ public class SettingsMenuDisplay extends UIComponent {
         Table settingsTable = makeSettingsTable();
         Table menuBtns = makeMenuBtns();
 
+        // Panel background (fallbacks if skin has no dialog/window)
         Table panel = new Table(skin);
         panel.defaults().pad(12f);
         if (skin.has("window", Drawable.class)) {
@@ -121,7 +127,6 @@ public class SettingsMenuDisplay extends UIComponent {
         rootTable.row().padTop(30f);
         rootTable.add(panel).center()
                 .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
-
 
         if (overlayMode) {
             Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
@@ -204,16 +209,13 @@ public class SettingsMenuDisplay extends UIComponent {
         soundVolumeSlider.setValue(settings.soundVolume);
         Label soundVolumeValue = new Label(String.format("%.0f%%", settings.soundVolume * 100), skin);
 
-        //Label difficultyLabel = new Label("Difficulty:", skin);
-        //difficultySelect = new SelectBox<>(skin);
-        //difficultySelect.setItems("Easy", "Normal", "Hard");
-        //difficultySelect.setSelected(settings.difficulty);
-
         Label displayModeLabel = new Label("Resolution:", skin);
         displayModeSelect = new SelectBox<>(skin);
         Monitor selectedMonitor = Gdx.graphics.getMonitor();
         displayModeSelect.setItems(getDisplayModes(selectedMonitor));
         displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
+
+        Label heroCustomizationTitle = new Label("Hero Customization", skin);
 
         Label heroWeaponLabel = new Label("Hero Weapon:", skin);
         heroWeaponSelect = new SelectBox<>(skin);
@@ -225,6 +227,7 @@ public class SettingsMenuDisplay extends UIComponent {
         heroEffectSelect.setItems("Sound 1", "Sound 2", "Sound 3");
         heroEffectSelect.setSelected(settings.heroEffect.equals("default") ? "Sound 1" : settings.heroEffect);
 
+        // Layout
         Table table = new Table();
 
         table.add(fpsLabel).right().padRight(15f);
@@ -262,17 +265,12 @@ public class SettingsMenuDisplay extends UIComponent {
         table.add(soundVolumeLabel).right().padRight(15f);
         table.add(soundVolumeTable).left();
 
-        //table.row().padTop(10f);
-        //table.add(difficultyLabel).right().padRight(15f);
-        //table.add(difficultySelect).left();
-
         table.row().padTop(10f);
         table.add(displayModeLabel).right().padRight(15f);
         table.add(displayModeSelect).left();
 
         table.row().padTop(20f);
-        Label heroCustomizationTitle = new Label("Hero Customization", skin);
-        heroCustomizationTitle.setColor(Color.YELLOW);
+        heroCustomizationTitle.setColor(SECTION_COLOR);
         table.add(heroCustomizationTitle).colspan(2).center().padBottom(10f);
 
         table.row().padTop(10f);
@@ -283,6 +281,7 @@ public class SettingsMenuDisplay extends UIComponent {
         table.add(heroEffectLabel).right().padRight(15f);
         table.add(heroEffectSelect).left();
 
+        // Live label values
         uiScaleSlider.addListener(
                 (Event event) -> {
                     float value = uiScaleSlider.getValue();
@@ -294,9 +293,6 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    //if (ServiceLocator.getAudioService() != null) {
-                    //    ServiceLocator.getAudioService().setMusicVolume(value);
-                    //}
                     return true;
                 });
 
@@ -304,11 +300,11 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = soundVolumeSlider.getValue();
                     soundVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    //if (ServiceLocator.getAudioService() != null) {
-                    //    ServiceLocator.getAudioService().setSoundVolume(value);
-                    //}
                     return true;
                 });
+
+        // Tint all labels to the unified color scheme
+        tintLabelsRecursive(table, LABEL_COLOR);
 
         return table;
     }
@@ -398,12 +394,15 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.musicVolume = musicVolumeSlider.getValue();
         settings.soundVolume = soundVolumeSlider.getValue();
 
-        //settings.difficulty = difficultySelect.getSelected();
+        // settings.difficulty = difficultySelect.getSelected(); // not used here
 
         settings.heroWeapon = heroWeaponSelect.getSelected().toLowerCase();
         settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
 
+        // Persist
         UserSettings.set(settings, true);
+
+        // Apply non-disruptive runtime changes
         Gdx.graphics.setVSync(settings.vsync);
         Gdx.graphics.setForegroundFPS(settings.fps);
 
@@ -413,6 +412,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
         applyUiScale(settings.uiScale);
 
+        // Broadcast that settings changed
         if (ServiceLocator.getEntityService() != null) {
             for (var entity : ServiceLocator.getEntityService().getEntities()) {
                 entity.getEvents().trigger("settingsApplied", settings);
@@ -448,28 +448,23 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     @Override
-    protected void draw(SpriteBatch batch) {
-    }
+    protected void draw(SpriteBatch batch) { }
 
     @Override
     public void update() {
         stage.act(ServiceLocator.getTimeSource().getDeltaTime());
     }
 
-    /**
-     * Create title label using Arial Black font
-     */
+    /** Create title label using Arial Black font with high-contrast color */
     private Label createTitleLabel() {
         BitmapFont arialBlackFont = skin.getFont("arial_black");
-        Label titleLabel = new Label("Settings", new Label.LabelStyle(arialBlackFont, Color.WHITE));
-        titleLabel.setFontScale(1.5f);
-        titleLabel.setColor(Color.WHITE);
+        Label titleLabel = new Label("Settings", new Label.LabelStyle(arialBlackFont, TITLE_COLOR));
+        titleLabel.setFontScale(1.8f);  // makes the title more prominent
+        titleLabel.setColor(new Color(1f, 0.9f, 0.6f, 1f)); // warm pale orange tone for better contrast
         return titleLabel;
     }
 
-    /**
-     * Create custom button style using button background image
-     */
+    /** Create custom button style using the shared orange button texture */
     private TextButtonStyle createCustomButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
 
@@ -482,10 +477,10 @@ public class SettingsMenuDisplay extends UIComponent {
         NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
 
         NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+        pressedPatch.setColor(new Color(0.9f, 0.7f, 0.5f, 1f)); // subtle darken
 
         NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+        hoverPatch.setColor(new Color(1.05f, 1.05f, 1.05f, 1f)); // subtle brighten
 
         style.up = new NinePatchDrawable(buttonPatch);
         style.down = new NinePatchDrawable(pressedPatch);
@@ -515,5 +510,17 @@ public class SettingsMenuDisplay extends UIComponent {
             panelTexHandle = null;
         }
         super.dispose();
+    }
+
+    /** Recursively set label font colors inside a container */
+    private void tintLabelsRecursive(Actor actor, Color color) {
+        if (actor instanceof Label) {
+            ((Label) actor).getStyle().fontColor = color;
+            actor.setColor(color);
+        } else if (actor instanceof Table) {
+            for (Actor child : ((Table) actor).getChildren()) {
+                tintLabelsRecursive(child, color);
+            }
+        }
     }
 }

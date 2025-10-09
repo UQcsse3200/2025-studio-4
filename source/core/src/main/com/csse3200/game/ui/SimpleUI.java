@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public final class SimpleUI {
     private static BitmapFont BASE_FONT;
-    private static TextureRegionDrawable SOLID_CACHE_DARK;
 
     private SimpleUI() {}
 
@@ -92,9 +91,9 @@ public final class SimpleUI {
         TextButton.TextButtonStyle st = new TextButton.TextButtonStyle();
         st.font = font();
         st.fontColor = Color.WHITE;
-        st.up   = solid(Color.valueOf("1f2630"));
-        st.over = solid(Color.valueOf("293241"));
-        st.down = solid(Color.valueOf("15202b"));
+        st.up   = roundRect(Color.valueOf("1f2630"), null, Theme.RADIUS, 0);
+        st.over = roundRect(Color.valueOf("293241"), null, Theme.RADIUS, 0);
+        st.down = roundRect(Color.valueOf("15202b"), null, Theme.RADIUS, 0);
         return st;
     }
 
@@ -106,9 +105,9 @@ public final class SimpleUI {
         TextButton.TextButtonStyle st = new TextButton.TextButtonStyle();
         st.font = font();
         st.fontColor = Color.WHITE;
-        st.up   = solid(Color.valueOf("2aa35a"));
-        st.over = solid(Color.valueOf("34b56a"));
-        st.down = solid(Color.valueOf("1e7d45"));
+        st.up   = roundRect(Color.valueOf("2aa35a"), null, Theme.RADIUS, 0);
+        st.over = roundRect(Color.valueOf("34b56a"), null, Theme.RADIUS, 0);
+        st.down = roundRect(Color.valueOf("1e7d45"), null, Theme.RADIUS, 0);
         return st;
     }
 

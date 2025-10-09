@@ -1,6 +1,7 @@
 package com.csse3200.game.areas2.MapTwo;
 
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.utils.Difficulty;
@@ -66,7 +67,7 @@ public class ForestGameArea2 extends GameArea2 {
 
     public static ForestGameArea2 currentGameArea;
 
-    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(6, 36);
+    private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(5, 34);
     private static final float WALL_WIDTH = 0.1f;
 
 
@@ -78,7 +79,7 @@ public class ForestGameArea2 extends GameArea2 {
     private static final String[] forestSounds = {
             "sounds/homebase_hit_sound.mp3"
     };
-    private static final String backgroundMusic = "sounds/BGM_03_mp3.mp3";
+    private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
     private final TerrainFactory2 terrainFactory;
@@ -92,12 +93,13 @@ public class ForestGameArea2 extends GameArea2 {
     // Obstacle Coordinate Single Fact Source: Defined by the GameArea
     // create barriers areas
     private static final int[][] BARRIER_COORDS = new int[][]{
-            {27, 9}
+
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-            {15, 9}   };
+            {15, 9}
+    };
 
     /**
      * Initialise this ForestGameArea2 to use the provided TerrainFactory2.
@@ -339,6 +341,12 @@ public class ForestGameArea2 extends GameArea2 {
         cameraControl.addComponent(new CameraZoomDragComponent());
         spawnEntity(cameraControl);
         
+        // Create background entity (renders behind everything)
+        Entity background = new Entity();
+        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/game background.jpg"));
+        background.setPosition(0, 0); // Set position at origin
+        spawnEntity(background);
+        
         // 设置areas2的默认缩放为1.8f
         setCameraZoom(1.69f);
         
@@ -520,7 +528,10 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private Entity spawnPlayer() {
-        Entity newPlayer = PlayerFactory.createPlayer();
+        // Map2 使用更大的homebase缩放 (3f) 和更大的血条
+        HealthBarComponent healthBar = new HealthBarComponent(2.5f, 0.25f, 1.3f);
+        Entity newPlayer = PlayerFactory.createPlayer("images/homebase2.png", 3f, healthBar);
+        // 确保新玩家有钱包组件
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
@@ -664,8 +675,8 @@ public class ForestGameArea2 extends GameArea2 {
     private void playMusic() {
         // Route all music through AudioService to avoid overlaps across screens
         if (ServiceLocator.getAudioService() != null) {
-            ServiceLocator.getAudioService().registerMusic("forest_bgm", backgroundMusic);
-            ServiceLocator.getAudioService().playMusic("forest_bgm", true);
+            ServiceLocator.getAudioService().registerMusic("new_menutheme", backgroundMusic);
+            ServiceLocator.getAudioService().playMusic("new_menutheme", true);
             ServiceLocator.getAudioService().setMusicVolume(0.3f);
         } else {
             Music music = ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class);
@@ -797,9 +808,9 @@ public class ForestGameArea2 extends GameArea2 {
             }
         }
         if (ServiceLocator.getAudioService() != null) {
-            ServiceLocator.getAudioService().stopMusic();
+            //ServiceLocator.getAudioService().stopMusic();
         } else {
-            ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+            //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
     }

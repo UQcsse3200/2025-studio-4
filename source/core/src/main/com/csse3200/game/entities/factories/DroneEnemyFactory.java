@@ -10,6 +10,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -32,6 +33,7 @@ public class DroneEnemyFactory {
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 100;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties (these can remain static as they're defaults)
@@ -69,6 +71,7 @@ public class DroneEnemyFactory {
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         drone.addComponent(waypointComponent);
+        applySpeedModifier(drone, waypointComponent, waypoints.get(idx));
 
         drone
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
@@ -87,6 +90,7 @@ public class DroneEnemyFactory {
             if (dwc != null && dwc.hasMoreWaypoints()) {
                 Entity nextTarget = dwc.getNextWaypoint();
                 if (nextTarget != null) {
+                    applySpeedModifier(drone, dwc, nextTarget);
                     updateChaseTarget(drone, nextTarget);
                 }
             }
@@ -139,6 +143,22 @@ public class DroneEnemyFactory {
         }
         //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void applySpeedModifier(Entity drone, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(drone, desiredSpeed);
+        }
     }
 
     /**
@@ -246,3 +266,4 @@ public class DroneEnemyFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 }
+

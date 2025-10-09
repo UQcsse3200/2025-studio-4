@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 public class HomebaseDamageEffectComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(HomebaseDamageEffectComponent.class);
     
-    // 贴图路径
-    private static final String NORMAL_TEXTURE_PATH = "images/basement.png";
-    private static final String DAMAGED_TEXTURE_PATH = "images/basement_damaged.png";
+    // 默认贴图路径
+    private static final String DEFAULT_NORMAL_TEXTURE_PATH = "images/basement.png";
+    private static final String DEFAULT_DAMAGED_TEXTURE_PATH = "images/basement_damaged.png";
     
     // 音效路径
     private static final String HIT_SOUND_PATH = "sounds/homebase_hit_sound.mp3";
@@ -29,6 +29,10 @@ public class HomebaseDamageEffectComponent extends Component {
     private static final Color DAMAGE_COLOR = new Color(1f, 0.3f, 0.3f, 1f); // 红色
     private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f); // 白色（正常）
     
+    // 实例变量用于存储贴图路径
+    private final String normalTexturePath;
+    private final String damagedTexturePath;
+    
     private SwitchableTextureRenderComponent textureComponent;
     private Texture normalTexture;
     private Texture damagedTexture;
@@ -37,6 +41,28 @@ public class HomebaseDamageEffectComponent extends Component {
     private float damageEffectTimer = 0f;
     private int previousHealth = -1;
     private boolean hasDamagedTexture = false;
+    
+    /**
+     * Create with default texture paths
+     */
+    public HomebaseDamageEffectComponent() {
+        this(DEFAULT_NORMAL_TEXTURE_PATH);
+    }
+    
+    /**
+     * Create with custom texture path
+     * @param normalTexturePath path to the normal homebase texture
+     */
+    public HomebaseDamageEffectComponent(String normalTexturePath) {
+        this.normalTexturePath = normalTexturePath;
+        // Generate damaged texture path by appending "_damaged" before file extension
+        int dotIndex = normalTexturePath.lastIndexOf('.');
+        if (dotIndex > 0) {
+            this.damagedTexturePath = normalTexturePath.substring(0, dotIndex) + "_damaged" + normalTexturePath.substring(dotIndex);
+        } else {
+            this.damagedTexturePath = normalTexturePath + "_damaged";
+        }
+    }
     
     @Override
     public void create() {
@@ -96,17 +122,17 @@ public class HomebaseDamageEffectComponent extends Component {
      */
     private void loadTextures() {
         try {
-            normalTexture = ServiceLocator.getResourceService().getAsset(NORMAL_TEXTURE_PATH, Texture.class);
-            logger.debug("Loaded normal homebase texture: {}", NORMAL_TEXTURE_PATH);
+            normalTexture = ServiceLocator.getResourceService().getAsset(normalTexturePath, Texture.class);
+            logger.debug("Loaded normal homebase texture: {}", normalTexturePath);
         } catch (Exception e) {
             logger.error("Could not load normal homebase texture: {}", e.getMessage());
             return;
         }
         
         try {
-            damagedTexture = ServiceLocator.getResourceService().getAsset(DAMAGED_TEXTURE_PATH, Texture.class);
+            damagedTexture = ServiceLocator.getResourceService().getAsset(damagedTexturePath, Texture.class);
             hasDamagedTexture = true;
-            logger.debug("Loaded damaged homebase texture: {}", DAMAGED_TEXTURE_PATH);
+            logger.debug("Loaded damaged homebase texture: {}", damagedTexturePath);
         } catch (Exception e) {
             logger.warn("Could not load damaged texture, will use color-only effect: {}", e.getMessage());
             damagedTexture = null; // 设置为null，表示只使用颜色效果

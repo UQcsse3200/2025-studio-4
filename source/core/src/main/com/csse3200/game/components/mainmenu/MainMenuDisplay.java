@@ -8,12 +8,15 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.areas.ForestGameArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +49,12 @@ public class MainMenuDisplay extends UIComponent {
     stage.addActor(backgroundImage);
 
     // 创建自定义按钮样式
-    TextButtonStyle customButtonStyle = createCustomButtonStyle();
-    
+    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
     TextButton startBtn = new TextButton("New Game", customButtonStyle);
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
+    TextButton achievementBtn = new TextButton("Achievement", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
     TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
@@ -76,6 +79,7 @@ public class MainMenuDisplay extends UIComponent {
     loadBtn.getLabel().setColor(Color.WHITE);
     settingsBtn.getLabel().setColor(Color.WHITE);
     rankingBtn.getLabel().setColor(Color.WHITE);
+    achievementBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
 
     // Triggers an event when the button is pressed
@@ -135,6 +139,15 @@ public class MainMenuDisplay extends UIComponent {
       }
     });
 
+    achievementBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+
+        logger.debug("Achievement button clicked");
+        entity.getEvents().trigger("achievement");
+      }
+    });
+
 
     table.add().expandY().row();
     HorizontalGroup group = new HorizontalGroup();
@@ -153,11 +166,24 @@ public class MainMenuDisplay extends UIComponent {
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
+    table.add(achievementBtn).size(buttonWidth, buttonHeight).padTop(20f);
+    table.row();
     table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
     table.row();
     table.add().expandY(); 
 
     stage.addActor(table);
+    applyUiScale();
+  }
+
+  private void applyUiScale() {
+    UserSettings.Settings settings = UserSettings.get();
+    if (table != null) {
+      table.setTransform(true);
+      table.validate();
+      table.setOrigin(table.getWidth() / 2f, table.getHeight() / 2f);
+      table.setScale(settings.uiScale);
+    }
   }
 
   @Override

@@ -18,10 +18,10 @@ import org.slf4j.LoggerFactory;
 public class HealthBarComponent extends RenderComponent {
     private static final Logger logger = LoggerFactory.getLogger(HealthBarComponent.class);
     
-    // 血条尺寸
-    private static final float HEALTH_BAR_WIDTH = 2.0f;
-    private static final float HEALTH_BAR_HEIGHT = 0.2f;
-    private static final float HEALTH_BAR_OFFSET_Y = 1.5f; // 在实体上方的偏移
+    // 默认血条尺寸
+    private static final float DEFAULT_WIDTH = 1.5f;
+    private static final float DEFAULT_HEIGHT = 0.15f;
+    private static final float DEFAULT_OFFSET_Y = 0.8f;
     
     // 血条颜色
     private static final Color HEALTH_BAR_BACKGROUND = new Color(0.3f, 0.3f, 0.3f, 0.8f); // 深灰色背景
@@ -29,11 +29,26 @@ public class HealthBarComponent extends RenderComponent {
     private static final Color HEALTH_BAR_MEDIUM = new Color(1.0f, 0.8f, 0.0f, 0.9f); // 黄色（中等血量）
     private static final Color HEALTH_BAR_LOW = new Color(0.8f, 0.2f, 0.2f, 0.9f); // 红色（低血量）
     
+    // 可配置的血条尺寸
+    private float width;
+    private float height;
+    private float offsetY;
+    
     private PlayerCombatStatsComponent combatStats;
     private int maxHealth;
     private int currentHealth;
     private boolean isVisible = true;
     private ShapeRenderer shapeRenderer;
+    
+    public HealthBarComponent() {
+        this(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_OFFSET_Y);
+    }
+    
+    public HealthBarComponent(float width, float height, float offsetY) {
+        this.width = width;
+        this.height = height;
+        this.offsetY = offsetY;
+    }
     
     @Override
     public void create() {
@@ -108,8 +123,8 @@ public class HealthBarComponent extends RenderComponent {
         }
         
         // 计算血条位置（在实体上方）
-        float barX = entityPos.x - HEALTH_BAR_WIDTH / 2f;
-        float barY = entityPos.y + HEALTH_BAR_OFFSET_Y;
+        float barX = entityPos.x - width / 2f;
+        float barY = entityPos.y + offsetY;
         
         // 保存当前渲染状态
         batch.end();
@@ -123,12 +138,12 @@ public class HealthBarComponent extends RenderComponent {
         
         // 绘制血条背景
         shapeRenderer.setColor(HEALTH_BAR_BACKGROUND);
-        shapeRenderer.rect(barX, barY, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+        shapeRenderer.rect(barX, barY, width, height);
         
         // 绘制血量条
         Color healthColor = getHealthColor(healthPercentage);
         shapeRenderer.setColor(healthColor);
-        shapeRenderer.rect(barX, barY, HEALTH_BAR_WIDTH * healthPercentage, HEALTH_BAR_HEIGHT);
+        shapeRenderer.rect(barX, barY, width * healthPercentage, height);
         
         shapeRenderer.end();
         

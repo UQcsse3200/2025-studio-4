@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.csse3200.game.services.leaderboard.LeaderboardService.*;
 
 /**
  * 会话期间的排行榜服务
@@ -42,16 +41,31 @@ public class SessionLeaderboardService implements LeaderboardService {
     
     @Override
     public List<LeaderboardEntry> getEntries(LeaderboardQuery q) {
+        if (all.isEmpty()) {
+            return new ArrayList<>();
+        }
+        
         int from = Math.max(0, q.offset);
         int to = Math.min(all.size(), from + q.limit);
+        
+        if (from >= all.size()) {
+            return new ArrayList<>();
+        }
+        
         return all.subList(from, to);
     }
     
     @Override
     public LeaderboardEntry getMyBest() {
         String playerName = "Player";
+        String playerAvatar = "avatar_1";
+        
         if (ServiceLocator.getPlayerNameService() != null) {
             playerName = ServiceLocator.getPlayerNameService().getPlayerName();
+        }
+        
+        if (ServiceLocator.getPlayerAvatarService() != null) {
+            playerAvatar = ServiceLocator.getPlayerAvatarService().getPlayerAvatar();
         }
         
         // 查找玩家的最佳成绩
@@ -66,7 +80,7 @@ public class SessionLeaderboardService implements LeaderboardService {
         
         // 如果没有找到玩家的成绩，返回默认值
         if (myBest == null) {
-            return new LeaderboardEntry(all.size() + 1, myId, playerName, 0, System.currentTimeMillis());
+            return new LeaderboardEntry(all.size() + 1, myId, playerName, 0, System.currentTimeMillis(), playerAvatar);
         }
         
         return myBest;
@@ -75,8 +89,14 @@ public class SessionLeaderboardService implements LeaderboardService {
     @Override
     public void submitScore(long score) {
         String playerName = "Player";
+        String playerAvatar = "avatar_1";
+        
         if (ServiceLocator.getPlayerNameService() != null) {
             playerName = ServiceLocator.getPlayerNameService().getPlayerName();
+        }
+        
+        if (ServiceLocator.getPlayerAvatarService() != null) {
+            playerAvatar = ServiceLocator.getPlayerAvatarService().getPlayerAvatar();
         }
         
         // 创建新的排行榜条目
@@ -85,7 +105,8 @@ public class SessionLeaderboardService implements LeaderboardService {
             myId,
             playerName,
             score,
-            System.currentTimeMillis()
+            System.currentTimeMillis(),
+            playerAvatar
         );
         
         // 添加到列表中

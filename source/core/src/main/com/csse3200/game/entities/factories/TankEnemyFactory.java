@@ -10,6 +10,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -32,6 +33,7 @@ public class TankEnemyFactory {
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
     private static final int DEFAULT_POINTS = 300;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -69,6 +71,7 @@ public class TankEnemyFactory {
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         tank.addComponent(waypointComponent);
+        applySpeedModifier(tank, waypointComponent, waypoints.get(idx));
 
         tank
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
@@ -87,6 +90,7 @@ public class TankEnemyFactory {
             if (wc != null && wc.hasMoreWaypoints()) {
                 Entity nextTarget = wc.getNextWaypoint();
                 if (nextTarget != null) {
+                    applySpeedModifier(tank, wc, nextTarget);
                     updateChaseTarget(tank, nextTarget);
                 }
             }
@@ -137,7 +141,22 @@ public class TankEnemyFactory {
         //Gdx.app.postRunnable(entity::dispose);
 }
 
-    @SuppressWarnings("unused")
+    private static void applySpeedModifier(Entity tank, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(tank, desiredSpeed);
+        }
+    }
+
     private static void updateSpeed(Entity tank, Vector2 newSpeed) {
         WaypointComponent wc = tank.getComponent(WaypointComponent.class);
         if (wc != null) {
@@ -228,3 +247,4 @@ public class TankEnemyFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 }
+

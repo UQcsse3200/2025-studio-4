@@ -7,29 +7,27 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.ui.UIComponent;
 
-/**
- * UI component that displays a hotbar for selecting and placing towers.
- * Dynamically resizes, tightly packed, and fits neatly beside the map.
- */
 public class TowerHotbarDisplay extends UIComponent {
-
     private Table rootTable;
     private SimplePlacementController placementController;
     private Skin hotbarSkin;
 
-    /**
-     * Creates the UI for the tower hotbar and sets up listeners.
-     */
     @Override
     public void create() {
         super.create();
@@ -39,12 +37,12 @@ public class TowerHotbarDisplay extends UIComponent {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
 
-        // Root table bottom-left
+        // 根容器：左下角
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.bottom().left();
 
-        // Background
+        // 背景
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
         pixmap.fill();
@@ -54,12 +52,12 @@ public class TowerHotbarDisplay extends UIComponent {
 
         Container<Table> container = new Container<>();
         container.setBackground(backgroundDrawable);
-        container.pad(screenWidth * 0.0025f); // minimal border padding
+        container.pad(screenWidth * 0.0025f);
 
         Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
 
-        // Load tower icons
+        // 图标资源（如路径不同，请按资源实际位置调整）
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/boneicon.png")));
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/cavemenicon.png")));
@@ -73,7 +71,7 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable bouldercatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bouldercatapulticon.png")));
         TextureRegionDrawable villageshamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/villageshamanicon.png")));
 
-        // Buttons
+        // 按钮
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
@@ -88,9 +86,9 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton placeholderBtn = new ImageButton(placeholderImage);
 
         ImageButton[] allButtons = {
-                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
-                raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
-                superCavemenBtn, placeholderBtn
+            boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
+            raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
+            superCavemenBtn, placeholderBtn
         };
 
         addPlacementListener(boneBtn, "bone");
@@ -105,13 +103,11 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(villageshamanBtn, "villageshaman");
         addPlacementListener(superCavemenBtn, "supercavemen");
 
-        // Grid with visually balanced tiles
+        // 按钮网格
         Table buttonTable = new Table();
-
-        // Slightly narrower but taller tiles for better proportions
-        float BUTTON_W = screenWidth * 0.072f;   // small reduction in width
-        float BUTTON_H = screenHeight * 0.112f;  // slightly taller
-        float BUTTON_PAD = screenWidth * 0.001f; // tight gap
+        float BUTTON_W = screenWidth * 0.072f;
+        float BUTTON_H = screenHeight * 0.112f;
+        float BUTTON_PAD = screenWidth * 0.001f;
         buttonTable.defaults().pad(BUTTON_PAD).center();
 
         for (int i = 0; i < allButtons.length; i++) {
@@ -119,8 +115,7 @@ public class TowerHotbarDisplay extends UIComponent {
             if ((i + 1) % 3 == 0) buttonTable.row();
         }
 
-
-        // Layout
+        // 标题 + 滚动容器
         Table content = new Table();
         content.add(title).colspan(3).center().padBottom(screenHeight * 0.006f).row();
 
@@ -131,14 +126,13 @@ public class TowerHotbarDisplay extends UIComponent {
 
         container.setActor(content);
 
-        // Slightly narrower width for perfect map fit
-        // Keep width perfect, allow more height for taller tiles
+        // 放入根容器
         rootTable.add(container)
-                .width(screenWidth * 0.232f)
-                .height(screenHeight * 0.55f); // was auto, now fills 70% of screen height
+            .width(screenWidth * 0.232f)
+            .height(screenHeight * 0.55f);
         stage.addActor(rootTable);
 
-        // Input setup
+        // 输入多路复用
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
         if (Gdx.input.getInputProcessor() != null) {
@@ -146,13 +140,11 @@ public class TowerHotbarDisplay extends UIComponent {
         }
         multiplexer.addProcessor(new InputAdapter() {});
         Gdx.input.setInputProcessor(multiplexer);
+
+        // 应用 UI 缩放（来源于用户设置）
+        applyUiScale();
     }
 
-    /**
-     * Adds a placement listener to a hotbar button for the specified tower type.
-     * @param button The ImageButton to add the listener to.
-     * @param towerType The tower type string.
-     */
     private void addPlacementListener(ImageButton button, String towerType) {
         button.addListener(new ChangeListener() {
             @Override
@@ -174,20 +166,21 @@ public class TowerHotbarDisplay extends UIComponent {
         });
     }
 
-    /**
-     * Capitalizes the first letter of a string.
-     * @param str The string to capitalize.
-     * @return The capitalized string.
-     */
+    private void applyUiScale() {
+        UserSettings.Settings settings = UserSettings.get();
+        if (rootTable != null) {
+            rootTable.setTransform(true);
+            rootTable.validate();
+            rootTable.setOrigin(0f, 0f);
+            rootTable.setScale(settings.uiScale);
+        }
+    }
+
     private String capitalize(String str) {
         if (str == null || str.isEmpty()) return str;
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    /**
-     * Handles placement event triggering for a tower type.
-     * @param eventName The event name to trigger.
-     */
     private void handlePlacement(String eventName) {
         if (placementController != null && placementController.isPlacementActive()) {
             placementController.cancelPlacement();
@@ -196,19 +189,14 @@ public class TowerHotbarDisplay extends UIComponent {
         entity.getEvents().trigger(eventName);
     }
 
-    /**
-     * Draws the hotbar UI component. (No custom drawing needed.)
-     * @param batch The SpriteBatch used for rendering.
-     */
     @Override
     public void draw(SpriteBatch batch) {}
 
-    /**
-     * Disposes of resources used by the hotbar display.
-     */
     @Override
     public void dispose() {
-        rootTable.clear();
+        if (rootTable != null) {
+            rootTable.clear();
+        }
         super.dispose();
     }
 }

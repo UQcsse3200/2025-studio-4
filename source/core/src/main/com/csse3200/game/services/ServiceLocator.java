@@ -37,11 +37,17 @@ public class ServiceLocator {
   // Player Name Service
   private static PlayerNameService playerNameService;
   
+  // Player Avatar Service
+  private static PlayerAvatarService playerAvatarService;
+  
   // Game Session Manager
   private static GameSessionManager gameSessionManager;
   
   // Game Score Service
   private static GameScoreService gameScoreService;
+  
+  // Achievement Service
+  private static AchievementService achievementService;
 
     // --- Getters ---
   public static EntityService getEntityService() {
@@ -89,12 +95,20 @@ public class ServiceLocator {
     return playerNameService;
   }
   
+  public static PlayerAvatarService getPlayerAvatarService() {
+    return playerAvatarService;
+  }
+  
   public static GameSessionManager getGameSessionManager() {
     return gameSessionManager;
   }
   
   public static GameScoreService getGameScoreService() {
     return gameScoreService;
+  }
+  
+  public static AchievementService getAchievementService() {
+    return achievementService;
   }
 
   // --- Registrations ---
@@ -155,6 +169,11 @@ public class ServiceLocator {
     playerNameService = service;
   }
   
+  public static void registerPlayerAvatarService(PlayerAvatarService service) {
+    logger.debug("Registering player avatar service {}", service);
+    playerAvatarService = service;
+  }
+  
   public static void registerGameSessionManager(GameSessionManager service) {
     logger.debug("Registering game session manager {}", service);
     gameSessionManager = service;
@@ -163,6 +182,11 @@ public class ServiceLocator {
   public static void registerGameScoreService(GameScoreService service) {
     logger.debug("Registering game score service {}", service);
     gameScoreService = service;
+  }
+  
+  public static void registerAchievementService(AchievementService service) {
+    logger.debug("Registering achievement service {}", service);
+    achievementService = service;
   }
 
   // --- Teardown ---
@@ -174,11 +198,14 @@ public class ServiceLocator {
     inputService = null;
     resourceService = null;
     gameService = null;
+    gameStateService = null;
     audioService = null;     // ensure audio is cleared
     leaderboardService = null;
     playerNameService = null;
+    playerAvatarService = null;
     gameSessionManager = null;
     gameScoreService = null;
+    achievementService = null;
   }
 
     private ServiceLocator() {

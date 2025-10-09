@@ -74,7 +74,7 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f,0.9f,7f,1.25f, "images/towers/bone_projectile.png"));
+            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"));
             CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 

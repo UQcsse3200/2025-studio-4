@@ -207,7 +207,6 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
         keyWaypoints.add(new GridPoint2(32, 6));    // End - extended past base to ensure enemies reach it
-        keyWaypoints.add(new GridPoint2(28, 6));    // End
         Map<String, Float> speedModifiers = Map.of(
             "6,6", 0.5f,
             "7,6", 0.5f,

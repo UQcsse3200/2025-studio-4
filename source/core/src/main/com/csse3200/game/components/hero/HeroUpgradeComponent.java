@@ -21,7 +21,7 @@ import java.util.Map;
 public class HeroUpgradeComponent extends Component {
     /** Current level and maximum level cap */
     private int level = 1;
-    private final int maxLevel = 3;
+    private final int maxLevel = 2;
 
     /** Currency type and cost formula */
     private final CurrencyType costType = CurrencyType.METAL_SCRAP;

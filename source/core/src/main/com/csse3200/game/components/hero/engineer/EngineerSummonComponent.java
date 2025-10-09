@@ -34,7 +34,8 @@ public class EngineerSummonComponent extends Component {
     /**
      * Maximum total number of summons allowed at once.
      */
-    private final int maxSummons;
+    private int maxSummons;
+    private int extraPerLevel = 1;
 
     /**
      * Default summon texture (optional).
@@ -104,6 +105,11 @@ public class EngineerSummonComponent extends Component {
 
         // (3) When a summon dies or despawns → -1 count
         entity.getEvents().addListener("summon:died", (Entity e, String type) -> onSummonDied(type));
+        entity.getEvents().addListener("upgraded", (Integer newLevel,
+                                                    com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType costType,
+                                                    Integer cost) -> {
+            addMaxSummons(extraPerLevel);   // 默认每级 +1
+        });
 
         // Attach keyboard input adapter for hotkeys (Plan A)
         attachToMultiplexer(qAdapter = makeKeyAdapter());
@@ -126,6 +132,13 @@ public class EngineerSummonComponent extends Component {
     public void update() {
         float dt = ServiceLocator.getTimeSource().getDeltaTime();
         if (cd > 0f) cd -= dt;
+    }
+
+    public void addMaxSummons(int delta) {
+        if (delta <= 0) return;
+        maxSummons += delta;
+        entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+        Gdx.app.log("EngineerSummon", "maxSummons increased to " + maxSummons);
     }
 
     // =================== Keyboard Controls ===================

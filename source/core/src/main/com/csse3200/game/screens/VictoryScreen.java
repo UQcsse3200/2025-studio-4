@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -36,6 +37,7 @@ public class VictoryScreen implements Screen {
     
     private enum VictoryStage {
         SCROLLING_TEXT,
+        BOSS_DIALOG,
         VICTORY_DISPLAY
     }
     
@@ -48,6 +50,27 @@ public class VictoryScreen implements Screen {
     private float scrollCenterY;
     private boolean scrollTextFinished = false;
     private boolean scrollTextCentered = false;
+    
+    private Image bossImage;
+    private Image dialogBox;
+    private Label dialogLabel;
+    private BitmapFont dialogFont;
+    private Texture dialogBoxTexture;
+    private boolean bossShown = false;
+    private boolean dialogBoxShown = false;
+    private boolean textTypingStarted = false;
+    private boolean textTypingFinished = false;
+    
+    private String fullBossDialog;
+    private String currentDisplayedText = "";
+    private float typingSpeed = 0.05f;
+    private float typingTimer = 0f;
+    private int currentCharIndex = 0;
+    
+    private float bossAppearDelay = 1f;
+    private float dialogBoxDelay = 2f;
+    private float textStartDelay = 2.5f;
+    private float waitAfterTextDuration = 2f;
     
     private int clickCount = 0;
     private float lastClickTime = 0f;
@@ -70,6 +93,7 @@ public class VictoryScreen implements Screen {
     public VictoryScreen(GdxGame game, String mapId) {
         this.game = game;
         this.currentMapId = mapId;
+        this.fullBossDialog = getBossDialog();
         initializeServices();
         setupVictoryScreen();
         submitCurrentScore();
@@ -123,7 +147,8 @@ public class VictoryScreen implements Screen {
         String[] textures = {
             "images/Game_Victory.png",
             "images/Main_Menu_Button_Background.png",
-            "images/Main_Game_Button.png"
+            "images/Main_Game_Button.png",
+            "images/boss_enemy.png"
         };
         
         try {
@@ -197,6 +222,16 @@ public class VictoryScreen implements Screen {
         ));
     }
     
+    private String getBossDialog() {
+        return "You may have won this battle...\n\n" +
+               "But the war is far from over.\n\n" +
+               "I will return stronger,\n" +
+               "and next time,\n" +
+               "your defenses will crumble!\n\n" +
+               "Mark my words, human.\n" +
+               "We WILL be back!";
+    }
+    
     private void updateScrollingText(float delta) {
         handleSkipInput(delta);
         
@@ -208,7 +243,7 @@ public class VictoryScreen implements Screen {
                 scrollLabel.setY(scrollCenterY);
                 scrollTextCentered = true;
                 logger.info("Scrolling text centered, waiting 3 seconds before continuing");
-                scheduleTransition();
+                scheduleTransitionToBoss();
             } else {
                 scrollLabel.setY(newY);
             }
@@ -222,7 +257,7 @@ public class VictoryScreen implements Screen {
             if (currentTime - lastClickTime < clickTimeout) {
                 clickCount++;
                 if (clickCount >= 2) {
-                    logger.info("Double click detected, skipping scrolling text");
+                    logger.info("Double click detected, skipping to victory display");
                     skipToVictoryDisplay();
                 }
             } else {
@@ -236,29 +271,135 @@ public class VictoryScreen implements Screen {
         }
     }
     
-    private void scheduleTransition() {
+    private void scheduleTransitionToBoss() {
         scrollLabel.addAction(Actions.sequence(
             Actions.delay(3f),
+            Actions.fadeOut(1f),
             Actions.run(() -> {
-                logger.info("Transitioning to victory display after centered pause");
-                skipToVictoryDisplay();
+                logger.info("Transitioning to boss dialog");
+                scrollTextFinished = true;
+                scrollLabel.remove();
+                currentStage = VictoryStage.BOSS_DIALOG;
+                timeElapsed = 0f;
+                createBossDialog();
             })
         ));
     }
     
+    private void createBossDialog() {
+        dialogFont = new BitmapFont();
+        dialogFont.getData().setScale(1.8f);
+        
+        bossImage = new Image(ServiceLocator.getResourceService()
+            .getAsset("images/boss_enemy.png", Texture.class));
+        
+        float bossSize = 400f;
+        bossImage.setSize(bossSize, bossSize);
+        bossImage.setPosition(
+            Gdx.graphics.getWidth() * 0.15f,
+            Gdx.graphics.getHeight() / 2f - bossSize / 2f
+        );
+        bossImage.setColor(1, 1, 1, 0);
+        stage.addActor(bossImage);
+        
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0.1f, 0.1f, 0.1f, 0.9f));
+        pixmap.fill();
+        dialogBoxTexture = new Texture(pixmap);
+        pixmap.dispose();
+        
+        dialogBox = new Image(dialogBoxTexture);
+        float boxWidth = Gdx.graphics.getWidth() * 0.5f;
+        float boxHeight = 250f;
+        dialogBox.setSize(boxWidth, boxHeight);
+        dialogBox.setPosition(
+            Gdx.graphics.getWidth() * 0.45f,
+            Gdx.graphics.getHeight() / 2f - boxHeight / 2f
+        );
+        dialogBox.setColor(1, 1, 1, 0);
+        stage.addActor(dialogBox);
+        
+        Label.LabelStyle dialogStyle = new Label.LabelStyle();
+        dialogStyle.font = dialogFont;
+        dialogStyle.fontColor = Color.RED;
+        
+        dialogLabel = new Label("", dialogStyle);
+        dialogLabel.setAlignment(Align.topLeft);
+        dialogLabel.setWrap(true);
+        dialogLabel.setWidth(boxWidth - 40f);
+        dialogLabel.setPosition(
+            Gdx.graphics.getWidth() * 0.45f + 20f,
+            Gdx.graphics.getHeight() / 2f + boxHeight / 2f - 30f
+        );
+        dialogLabel.setColor(1, 1, 1, 0);
+        stage.addActor(dialogLabel);
+    }
+    
+    private void updateBossDialog(float delta) {
+        handleSkipInput(delta);
+        
+        if (!bossShown && timeElapsed >= bossAppearDelay) {
+            bossImage.addAction(Actions.fadeIn(1f));
+            bossShown = true;
+        }
+        
+        if (bossShown && !dialogBoxShown && timeElapsed >= dialogBoxDelay) {
+            dialogBox.addAction(Actions.fadeIn(0.5f));
+            dialogLabel.addAction(Actions.fadeIn(0.5f));
+            dialogBoxShown = true;
+        }
+        
+        if (dialogBoxShown && !textTypingStarted && timeElapsed >= textStartDelay) {
+            textTypingStarted = true;
+        }
+        
+        if (textTypingStarted && !textTypingFinished) {
+            typingTimer += delta;
+            if (typingTimer >= typingSpeed && currentCharIndex < fullBossDialog.length()) {
+                currentCharIndex++;
+                currentDisplayedText = fullBossDialog.substring(0, currentCharIndex);
+                dialogLabel.setText(currentDisplayedText);
+                typingTimer = 0f;
+                
+                if (currentCharIndex >= fullBossDialog.length()) {
+                    textTypingFinished = true;
+                }
+            }
+        }
+        
+        if (textTypingFinished && 
+            timeElapsed >= textStartDelay + (fullBossDialog.length() * typingSpeed) + waitAfterTextDuration) {
+            bossImage.addAction(Actions.fadeOut(1f));
+            dialogBox.addAction(Actions.fadeOut(1f));
+            dialogLabel.addAction(Actions.sequence(
+                Actions.fadeOut(1f),
+                Actions.run(() -> skipToVictoryDisplay())
+            ));
+        }
+    }
+    
     private void skipToVictoryDisplay() {
-        if (scrollTextFinished) return;
-        scrollTextFinished = true;
+        if (currentStage == VictoryStage.VICTORY_DISPLAY) return;
+        
         if (scrollLabel != null) {
             scrollLabel.remove();
         }
+        if (bossImage != null) {
+            bossImage.remove();
+        }
+        if (dialogBox != null) {
+            dialogBox.remove();
+        }
+        if (dialogLabel != null) {
+            dialogLabel.remove();
+        }
+        
         currentStage = VictoryStage.VICTORY_DISPLAY;
+        timeElapsed = 0f;
         createVictoryDisplay();
     }
     
     private void createVictoryDisplay() {
-        timeElapsed = 0f;
-        
         ResourceService resourceService = ServiceLocator.getResourceService();
         if (resourceService != null) {
             backgroundImage = new Image(resourceService
@@ -373,6 +514,8 @@ public class VictoryScreen implements Screen {
         
         if (currentStage == VictoryStage.SCROLLING_TEXT) {
             updateScrollingText(delta);
+        } else if (currentStage == VictoryStage.BOSS_DIALOG) {
+            updateBossDialog(delta);
         } else if (currentStage == VictoryStage.VICTORY_DISPLAY) {
             updateVictoryAnimation(delta);
         }
@@ -433,6 +576,12 @@ public class VictoryScreen implements Screen {
         }
         if (scrollFont != null) {
             scrollFont.dispose();
+        }
+        if (dialogFont != null) {
+            dialogFont.dispose();
+        }
+        if (dialogBoxTexture != null) {
+            dialogBoxTexture.dispose();
         }
     }
     

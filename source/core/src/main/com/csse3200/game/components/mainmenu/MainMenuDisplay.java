@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.areas.ForestGameArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -57,19 +56,6 @@ public class MainMenuDisplay extends UIComponent {
     TextButton achievementBtn = new TextButton("Achievement", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
     TextButton bookBtn = new TextButton("Book", customButtonStyle);
-
-    // stars display
-    Image starImage = new Image(
-            ServiceLocator.getResourceService().getAsset(
-                    "images/star.png",
-                    Texture.class
-            )
-    );
-    Label starsLabel = new Label(
-            Integer.toString(ServiceLocator.getGameStateService().getStars()),
-            skin,
-            "large"
-    );
 
 
     // 设置按钮大小
@@ -152,12 +138,6 @@ public class MainMenuDisplay extends UIComponent {
 
 
     table.add().expandY().row();
-    HorizontalGroup group = new HorizontalGroup();
-    group.space(5);
-    group.addActor(starImage);
-    group.addActor(starsLabel);
-    table.add(group);
-    table.row();
     table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
     table.row();
     table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);

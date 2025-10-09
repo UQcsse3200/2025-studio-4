@@ -33,9 +33,9 @@ public class SpeederEnemyFactory {
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.15f, 0.15f); // Starts VERY VERY slow - creeping
     private static final float DEFAULT_MAX_SPEED = 2.5f; // Gets extremely fast!
     private static final float DEFAULT_ACCELERATION_RATE = 0.06f; // Much slower ramp - builds tension over time
-    private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
+    private static final String DEFAULT_TEXTURE = "images/speedster_enemy.png";
     private static final String DEFAULT_NAME = "Speeder Enemy";
-    private static final float DEFAULT_CLICKRADIUS = 1.2f;  // Bigger click radius for boss
+    private static final float DEFAULT_CLICKRADIUS = 1f;  // Bigger click radius for boss
     private static final int DEFAULT_CURRENCY_AMOUNT = 150;  // More reward for tough enemy
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 400;  // Double points for mini-boss
@@ -72,9 +72,9 @@ public class SpeederEnemyFactory {
     public static Entity createSpeederEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
         int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
 
-        // Create base enemy - using boss spritesheet for intimidating appearance
+        // Create base enemy
         Entity speeder = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints,
-                "images/boss_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
+                "images/Speedster_Spritesheet.atlas", 0.1f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -103,9 +103,8 @@ public class SpeederEnemyFactory {
             }
         });
 
-        // Set custom BOSS size - make it BIG and intimidating!
         var sz = speeder.getScale();
-        speeder.setScale(sz.x * 1.8f, sz.y * 1.8f);
+        speeder.setScale(sz.x * 1.2f, sz.y * 1.2f);
 
         return speeder;
     }

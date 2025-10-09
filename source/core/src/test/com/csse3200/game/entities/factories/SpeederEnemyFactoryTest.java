@@ -147,13 +147,13 @@ public class SpeederEnemyFactoryTest {
         assertEquals(sampleTexture, SpeederEnemyFactory.getTexturePath());
         // Setting texture path to null should default
         SpeederEnemyFactory.setTexturePath(null);
-        assertEquals("images/boss_enemy.png", SpeederEnemyFactory.getTexturePath());
+        assertEquals("images/speedster_enemy.png", SpeederEnemyFactory.getTexturePath());
         // Setting texture path to empty string should default
         SpeederEnemyFactory.setTexturePath("");
-        assertEquals("images/boss_enemy.png", SpeederEnemyFactory.getTexturePath());
+        assertEquals("images/speedster_enemy.png", SpeederEnemyFactory.getTexturePath());
         // Setting texture path to whitespace should default
         SpeederEnemyFactory.setTexturePath("     ");
-        assertEquals("images/boss_enemy.png", SpeederEnemyFactory.getTexturePath());
+        assertEquals("images/speedster_enemy.png", SpeederEnemyFactory.getTexturePath());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class SpeederEnemyFactoryTest {
         assertEquals(new Vector2(0.15f, 0.15f), SpeederEnemyFactory.getSpeed());
         assertEquals(2.5f, SpeederEnemyFactory.getMaxSpeed());
         assertEquals(0.06f, SpeederEnemyFactory.getAccelerationRate());
-        assertEquals("images/boss_enemy.png", SpeederEnemyFactory.getTexturePath());
+        assertEquals("images/speedster_enemy.png", SpeederEnemyFactory.getTexturePath());
         assertEquals("Speeder Enemy", SpeederEnemyFactory.getDisplayName());
     }
 

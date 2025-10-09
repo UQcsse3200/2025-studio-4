@@ -30,10 +30,8 @@ public final class SwordFactory {
 
     /**
      * Creates a sword entity that orbits around its owner like a rotating blade.
-     * <p>
      * This version allows detailed configuration of sword behavior, including
      * angular speed, sprite alignment, jab timing, and hit cooldown.
-     * </p>
      *
      * @param owner                  The Samurai entity that owns the sword.
      * @param swordTexture           Path to the sword’s texture.
@@ -88,16 +86,6 @@ public final class SwordFactory {
 
     /**
      * Overloaded helper method that creates a sword with common default parameters.
-     * <p>
-     * Defaults:
-     * <ul>
-     *   <li>{@code spriteForwardOffsetDeg = 0°}</li>
-     *   <li>{@code centerToHandle = -0.25f}</li>
-     *   <li>{@code damage = 10}</li>
-     *   <li>{@code hitCooldown = 0.2s}</li>
-     * </ul>
-     * </p>
-     *
      * @param owner           The Samurai entity that owns the sword.
      * @param cfg             The {@link SamuraiConfig} with stats and texture paths.
      * @param swordTexture    Path to the sword’s texture.

@@ -91,6 +91,17 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">SummonFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Factory class for creating Engineer-related summon entities such as:
+ <ul>
+   <li>Melee summons (e.g., drones or barricades)</li>
+   <li>Directional turrets</li>
+   <li>Currency-generating bots</li>
+   <li>Ghost previews for placement</li>
+ </ul>
+ <p>
+ All entities created here are preconfigured with the appropriate physics,
+ rendering, and combat components.
+ </p></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -106,20 +117,36 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCurrencyBot(java.lang.String,float,com.csse3200.game.entities.Entity,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">createCurrencyBot</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale,
+ <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
+ <a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType,
+ int&nbsp;amountPerTick,
+ float&nbsp;intervalSec)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a currency-generating robot that periodically produces in-game currency
+ for its owner (typically the player).</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createDirectionalTurret(java.lang.String,float,float,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDirectionalTurret</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale,
+ float&nbsp;attackCooldown,
+ com.badlogic.gdx.math.Vector2&nbsp;fireDirection)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a directional turret that fires projectiles in a fixed direction.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMeleeSummon(java.lang.String,boolean,float)" class="member-name-link">createMeleeSummon</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
  boolean&nbsp;colliderSensor,
  float&nbsp;scale)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">近战型召唤物（静止版）：
- - 无移动、无追击任务；
- - 敌人碰到命中盒即触发 TouchAttackComponent；
- - 身体/命中盒均在 PLAYER 层，仅攻击 NPC 层目标。</div>
+<div class="block">Creates a simple melee summon (e.g., a close-range bot or barricade).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createMeleeSummonGhost(java.lang.String,float)" class="member-name-link">createMeleeSummonGhost</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
  float&nbsp;scale)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">幽灵版近战召唤物：仅显示用于放置预览；不攻击、不阻挡</div>
+<div class="block">Creates a translucent ghost entity for summon placement preview.</div>
 </div>
 </div>
 </div>
@@ -144,17 +171,70 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMeleeSummon</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
  boolean&nbsp;colliderSensor,
  float&nbsp;scale)</span></div>
-<div class="block">近战型召唤物（静止版）：
- - 无移动、无追击任务；
- - 敌人碰到命中盒即触发 TouchAttackComponent；
- - 身体/命中盒均在 PLAYER 层，仅攻击 NPC 层目标。</div>
+<div class="block">Creates a simple melee summon (e.g., a close-range bot or barricade).
+ <p>
+ These entities are static (non-moving) and deal touch damage upon contact.
+ They automatically despawn when their HP reaches zero.
+ </p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>texturePath</code> - 召唤物贴图</dd>
-<dd><code>colliderSensor</code> - 是否把实体碰撞体设为传感器（true=不阻挡，仅用于触发）</dd>
-<dd><code>scale</code> - 视觉缩放（与碰撞体按比例设置）</dd>
+<dd><code>texturePath</code> - Path to the summon texture.</dd>
+<dd><code>colliderSensor</code> - Whether the collider should act as a sensor (non-solid).</dd>
+<dd><code>scale</code> - Scale factor for the summon sprite.</dd>
 <dt>Returns:</dt>
-<dd>静止的近战召唤物实体</dd>
+<dd>The created melee summon entity.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createDirectionalTurret(java.lang.String,float,float,com.badlogic.gdx.math.Vector2)">
+<h3>createDirectionalTurret</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createDirectionalTurret</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale,
+ float&nbsp;attackCooldown,
+ com.badlogic.gdx.math.Vector2&nbsp;fireDirection)</span></div>
+<div class="block">Creates a directional turret that fires projectiles in a fixed direction.
+ <p>
+ The turret uses a <a href="../../components/hero/engineer/TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer"><code>TurretAttackComponent</code></a> for firing bullets and
+ a <a href="../../components/hero/engineer/FourWayCycleComponent.html" title="class in com.csse3200.game.components.hero.engineer"><code>FourWayCycleComponent</code></a> to automatically rotate its attack direction
+ (Up → Right → Down → Left).
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>texturePath</code> - Path to the turret texture.</dd>
+<dd><code>scale</code> - Scale factor for the turret sprite.</dd>
+<dd><code>attackCooldown</code> - Time interval (in seconds) between attacks.</dd>
+<dd><code>fireDirection</code> - Initial firing direction.</dd>
+<dt>Returns:</dt>
+<dd>The created turret entity.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createCurrencyBot(java.lang.String,float,com.csse3200.game.entities.Entity,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)">
+<h3>createCurrencyBot</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCurrencyBot</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
+ float&nbsp;scale,
+ <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
+ <a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType,
+ int&nbsp;amountPerTick,
+ float&nbsp;intervalSec)</span></div>
+<div class="block">Creates a currency-generating robot that periodically produces in-game currency
+ for its owner (typically the player).
+ <p>
+ Includes <a href="../../components/hero/engineer/OwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer"><code>OwnerComponent</code></a> to link it to its summoner and
+ <a href="../../components/hero/engineer/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.hero.engineer"><code>CurrencyGeneratorComponent</code></a> to handle timed currency production.
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>texturePath</code> - Path to the robot texture.</dd>
+<dd><code>scale</code> - Scale factor for the sprite.</dd>
+<dd><code>owner</code> - The player entity that owns this bot.</dd>
+<dd><code>currencyType</code> - Type of currency generated (e.g., METAL_SCRAP).</dd>
+<dd><code>amountPerTick</code> - Amount of currency produced each cycle.</dd>
+<dd><code>intervalSec</code> - Time interval (in seconds) between generations.</dd>
+<dt>Returns:</dt>
+<dd>The created currency bot entity.</dd>
 </dl>
 </section>
 </li>
@@ -163,7 +243,18 @@ loadScripts(document, 'script');</script>
 <h3>createMeleeSummonGhost</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createMeleeSummonGhost</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texturePath,
  float&nbsp;scale)</span></div>
-<div class="block">幽灵版近战召唤物：仅显示用于放置预览；不攻击、不阻挡</div>
+<div class="block">Creates a translucent ghost entity for summon placement preview.
+ <p>
+ The ghost entity does not interact physically (sensor-only collider)
+ and is typically used to show where a summon will be placed.
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>texturePath</code> - Path to the ghost texture.</dd>
+<dd><code>scale</code> - Scale factor for the preview.</dd>
+<dt>Returns:</dt>
+<dd>The created ghost summon entity.</dd>
+</dl>
 </section>
 </li>
 </ul>

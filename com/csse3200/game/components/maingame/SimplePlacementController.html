@@ -117,7 +117,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="SimplePlacementController.SummonSpec.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Specification for a summon being placed.</div>
+</div>
 </div>
 </section>
 </li>
@@ -157,12 +159,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#armSummon(com.csse3200.game.components.maingame.SimplePlacementController.SummonSpec)" class="member-name-link">armSummon</a><wbr>(<a href="SimplePlacementController.SummonSpec.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a>&nbsp;spec)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Arms the controller for summon placement mode.</div>
+<div class="block">Arms the system for summon placement (e.g., when the player presses 1–3).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cancelPlacement()" class="member-name-link">cancelPlacement</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Cancels current placement and disposes of the ghost tower.</div>
+<div class="block">Cancels the current placement and disposes of the ghost tower.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
@@ -359,7 +361,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="cancelPlacement()">
 <h3>cancelPlacement</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">cancelPlacement</span>()</div>
-<div class="block">Cancels current placement and disposes of the ghost tower.</div>
+<div class="block">Cancels the current placement and disposes of the ghost tower.</div>
 </section>
 </li>
 <li>
@@ -380,10 +382,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="armSummon(com.csse3200.game.components.maingame.SimplePlacementController.SummonSpec)">
 <h3>armSummon</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">armSummon</span><wbr><span class="parameters">(<a href="SimplePlacementController.SummonSpec.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a>&nbsp;spec)</span></div>
-<div class="block">Arms the controller for summon placement mode.</div>
+<div class="block">Arms the system for summon placement (e.g., when the player presses 1–3).
+ <p>
+ Initializes placement mode, creates a ghost summon for visual preview,
+ and registers it to the world for rendering and following the mouse.
+ </p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>spec</code> - The summon specification.</dd>
+<dd><code>spec</code> - Summon specification (texture + type)</dd>
 </dl>
 </section>
 </li>

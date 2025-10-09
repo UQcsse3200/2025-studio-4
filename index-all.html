@@ -118,6 +118,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Add a component to the entity.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#addCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int)" class="member-name-link">addCurrency(CurrencyComponent.CurrencyType, int)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html#addCurrencyEntity(com.csse3200.game.entities.Entity)" class="member-name-link">addCurrencyEntity(Entity)</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></dt>
 <dd>
 <div class="block">Add the Currency entity to the list if it is not already present.</div>
@@ -152,6 +154,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Add a listener to an event with three arguments</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#addMaxSummons(int)" class="member-name-link">addMaxSummons(int)</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/PlayerScoreComponent.html#addPoints(int)" class="member-name-link">addPoints(int)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerScoreComponent.html" title="class in com.csse3200.game.components">PlayerScoreComponent</a></dt>
 <dd>
 <div class="block">Adds a non-negative amount of points to the total score and notifies the HUD on change.</div>
@@ -230,7 +234,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#armSummon(com.csse3200.game.components.maingame.SimplePlacementController.SummonSpec)" class="member-name-link">armSummon(SimplePlacementController.SummonSpec)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>
-<div class="block">Arms the controller for summon placement mode.</div>
+<div class="block">Arms the system for summon placement (e.g., when the player presses 1–3).</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SummonPlacementController.html#armSummon(java.lang.String)" class="member-name-link">armSummon(String)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SummonPlacementController.html" title="class in com.csse3200.game.components.maingame">SummonPlacementController</a></dt>
 <dd>
@@ -256,9 +260,26 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Attack cooldown (seconds per shot) — lower values mean faster attack speed</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a> - Class in <a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a></dt>
+<dd>
+<div class="block">只有在 SwordJabPhysicsComponent.isAttacking()==true 时结算伤害。
+ 支持两种 CombatStats API：
+  1) targetStats.hit(attackerStats)  // 常见于你们项目
+  2) targetStats.hit(int damage)     // 若也存在此重载则可用</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html#%3Cinit%3E(int,short,float)" class="member-name-link">AttackOnContactIfAttacking(int, short, float)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html#%3Cinit%3E(com.csse3200.game.entities.Entity,int,short,float)" class="member-name-link">AttackOnContactIfAttacking(Entity, int, short, float)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html" class="type-name-link" title="class in com.csse3200.game.services">AudioService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#%3Cinit%3E()" class="member-name-link">AudioService()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/AutoDespawnOnDeathComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">AutoDespawnOnDeathComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
+<dd>
+<div class="block">Automatically and safely removes the entity when its health drops to zero or below.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/AutoDespawnOnDeathComponent.html#%3Cinit%3E()" class="member-name-link">AutoDespawnOnDeathComponent()</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/AutoDespawnOnDeathComponent.html" title="class in com.csse3200.game.components.hero.engineer">AutoDespawnOnDeathComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html#avatarId" class="member-name-link">avatarId</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardEntry.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardEntry</a></dt>
 <dd>&nbsp;</dd>
@@ -483,7 +504,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#cancelPlacement()" class="member-name-link">cancelPlacement()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>
-<div class="block">Cancels current placement and disposes of the ghost tower.</div>
+<div class="block">Cancels the current placement and disposes of the ghost tower.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SummonPlacementController.html#cancelPlacement()" class="member-name-link">cancelPlacement()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SummonPlacementController.html" title="class in com.csse3200.game.components.maingame">SummonPlacementController</a></dt>
 <dd>
@@ -620,6 +641,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a> - package com.csse3200.game.components.hero</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a> - package com.csse3200.game.components.hero.engineer</dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a> - package com.csse3200.game.components.hero.samurai</dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a> - package com.csse3200.game.components.maingame</dt>
 <dd>&nbsp;</dd>
@@ -791,8 +814,22 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/HealthBarComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HealthBarComponent.html" title="class in com.csse3200.game.components">HealthBarComponent</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
+<dt><a href="com/csse3200/game/components/hero/engineer/AutoDespawnOnDeathComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/AutoDespawnOnDeathComponent.html" title="class in com.csse3200.game.components.hero.engineer">AutoDespawnOnDeathComponent</a></dt>
+<dd>
+<div class="block">Registers event listeners for various types of death signals.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.hero.engineer">CurrencyGeneratorComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
+<dd>
+<div class="block">Initializes the component and registers event listeners for summon management.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/SummonOwnerComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonOwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">SummonOwnerComponent</a></dt>
+<dd>
+<div class="block">Called when the summon entity is created in the game world.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html" title="class in com.csse3200.game.components.hero">HeroAppearanceComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
@@ -810,6 +847,16 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/hero/HeroUltimateComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroUltimateComponent.html" title="class in com.csse3200.game.components.hero">HeroUltimateComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroUpgradeComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroUpgradeComponent.html" title="class in com.csse3200.game.components.hero">HeroUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordAppearanceComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordAppearanceComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordLevelSyncComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordLevelSyncComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordLevelSyncComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html" title="class in com.csse3200.game.components">HomebaseDamageEffectComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -911,6 +958,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/DamagePopupComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/DamagePopupComponent.html" title="class in com.csse3200.game.ui">DamagePopupComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatusPanelComponent.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatusPanelComponent.html" title="class in com.csse3200.game.ui">HeroStatusPanelComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/LeaderboardUI.html#create()" class="member-name-link">create()</a> - Method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardUI.html" title="class in com.csse3200.game.ui.leaderboard">LeaderboardUI</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/MinimalSkinFactory.html#create()" class="member-name-link">create()</a> - Static method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/MinimalSkinFactory.html" title="class in com.csse3200.game.ui.leaderboard">MinimalSkinFactory</a></dt>
@@ -983,9 +1032,18 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new currency entity with the given parameters.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/SummonFactory.html#createCurrencyBot(java.lang.String,float,com.csse3200.game.entities.Entity,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">createCurrencyBot(String, float, Entity, CurrencyComponent.CurrencyType, int, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SummonFactory.html" title="class in com.csse3200.game.entities.factories">SummonFactory</a></dt>
+<dd>
+<div class="block">Creates a currency-generating robot that periodically produces in-game currency
+ for its owner (typically the player).</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/TowerFactory.html#createDinoTower()" class="member-name-link">createDinoTower()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TowerFactory.html" title="class in com.csse3200.game.entities.factories">TowerFactory</a></dt>
 <dd>
 <div class="block">Creates a dino tower entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/SummonFactory.html#createDirectionalTurret(java.lang.String,float,float,com.badlogic.gdx.math.Vector2)" class="member-name-link">createDirectionalTurret(String, float, float, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SummonFactory.html" title="class in com.csse3200.game.entities.factories">SummonFactory</a></dt>
+<dd>
+<div class="block">Creates a directional turret that fires projectiles in a fixed direction.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html#createDividerChildEnemy(com.csse3200.game.entities.Entity,java.util.List,int,com.csse3200.game.utils.Difficulty)" class="member-name-link">createDividerChildEnemy(Entity, List&lt;Entity&gt;, int, Difficulty)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DividerChildEnemyFactory</a></dt>
 <dd>
@@ -1004,7 +1062,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Overload: start from specific waypoint index (for save/load resume).</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/HeroFactory.html#createEngineerHero(com.csse3200.game.entities.configs.EngineerConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createEngineerHero(EngineerConfig, Camera)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HeroFactory.html" title="class in com.csse3200.game.entities.factories">HeroFactory</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates and configures an Engineer hero entity.</div>
+</dd>
 <dt><a href="com/csse3200/game/input/InputFactory.html#createForPlayer()" class="member-name-link">createForPlayer()</a> - Method in class com.csse3200.game.input.<a href="com/csse3200/game/input/InputFactory.html" title="class in com.csse3200.game.input">InputFactory</a></dt>
 <dd>
 <div class="block">Creates an input handler for the player</div>
@@ -1063,14 +1123,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/SummonFactory.html#createMeleeSummon(java.lang.String,boolean,float)" class="member-name-link">createMeleeSummon(String, boolean, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SummonFactory.html" title="class in com.csse3200.game.entities.factories">SummonFactory</a></dt>
 <dd>
-<div class="block">近战型召唤物（静止版）：
- - 无移动、无追击任务；
- - 敌人碰到命中盒即触发 TouchAttackComponent；
- - 身体/命中盒均在 PLAYER 层，仅攻击 NPC 层目标。</div>
+<div class="block">Creates a simple melee summon (e.g., a close-range bot or barricade).</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/SummonFactory.html#createMeleeSummonGhost(java.lang.String,float)" class="member-name-link">createMeleeSummonGhost(String, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SummonFactory.html" title="class in com.csse3200.game.entities.factories">SummonFactory</a></dt>
 <dd>
-<div class="block">幽灵版近战召唤物：仅显示用于放置预览；不攻击、不阻挡</div>
+<div class="block">Creates a translucent ghost entity for summon placement preview.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/PlayerFactory.html#createPlayer()" class="member-name-link">createPlayer()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/PlayerFactory.html" title="class in com.csse3200.game.entities.factories">PlayerFactory</a></dt>
 <dd>
@@ -1098,6 +1155,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/RenderFactory.html#createRenderer()" class="member-name-link">createRenderer()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/RenderFactory.html" title="class in com.csse3200.game.entities.factories">RenderFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/HeroFactory.html#createSamuraiHero(com.csse3200.game.entities.configs.SamuraiConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createSamuraiHero(SamuraiConfig, Camera)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HeroFactory.html" title="class in com.csse3200.game.entities.factories">HeroFactory</a></dt>
+<dd>
+<div class="block">Creates and configures a Samurai hero entity.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/ObstacleFactory.html#createSnowTree()" class="member-name-link">createSnowTree()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/ObstacleFactory.html" title="class in com.csse3200.game.entities.factories">ObstacleFactory</a></dt>
 <dd>
 <div class="block">Creates a snow tree entity (占 1 个 tile).</div>
@@ -1113,6 +1174,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/TowerFactory.html#createSuperCavemenTower()" class="member-name-link">createSuperCavemenTower()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TowerFactory.html" title="class in com.csse3200.game.entities.factories">TowerFactory</a></dt>
 <dd>
 <div class="block">Creates a SuperCavemen tower entity that fires a red beam at enemies while rotating.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/SwordFactory.html#createSword(com.csse3200.game.entities.Entity,com.csse3200.game.entities.configs.SamuraiConfig,java.lang.String,float,float)" class="member-name-link">createSword(Entity, SamuraiConfig, String, float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordFactory.html" title="class in com.csse3200.game.entities.factories">SwordFactory</a></dt>
+<dd>
+<div class="block">Overloaded helper method that creates a sword with common default parameters.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/factories/SwordFactory.html#createSword(com.csse3200.game.entities.Entity,java.lang.String,float,com.csse3200.game.entities.configs.SamuraiConfig,float,float,float,int,float)" class="member-name-link">createSword(Entity, String, float, SamuraiConfig, float, float, float, int, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordFactory.html" title="class in com.csse3200.game.entities.factories">SwordFactory</a></dt>
+<dd>
+<div class="block">Creates a sword entity that orbits around its owner like a rotating blade.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/TankEnemyFactory.html#createTankEnemy(java.util.List,com.csse3200.game.entities.Entity,com.csse3200.game.utils.Difficulty)" class="member-name-link">createTankEnemy(List&lt;Entity&gt;, Entity, Difficulty)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TankEnemyFactory.html" title="class in com.csse3200.game.entities.factories">TankEnemyFactory</a></dt>
 <dd>
@@ -1133,6 +1202,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/factories/TowerFactory.html#createTotemTower()" class="member-name-link">createTotemTower()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TowerFactory.html" title="class in com.csse3200.game.entities.factories">TowerFactory</a></dt>
 <dd>
 <div class="block">Creates a totem tower entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/UltimateButtonComponent.html#createUltimateButton(com.csse3200.game.entities.Entity)" class="member-name-link">createUltimateButton(Entity)</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UltimateButtonComponent.html" title="class in com.csse3200.game.ui">UltimateButtonComponent</a></dt>
+<dd>
+<div class="block">Creates a ULT button that can be embedded in other UI components.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/TowerFactory.html#createVillageshamanTower()" class="member-name-link">createVillageshamanTower()</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TowerFactory.html" title="class in com.csse3200.game.entities.factories">TowerFactory</a></dt>
 <dd>
@@ -1201,6 +1274,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/CurrencyFactory.html#%3Cinit%3E()" class="member-name-link">CurrencyFactory()</a> - Constructor for class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/CurrencyFactory.html" title="class in com.csse3200.game.entities.factories">CurrencyFactory</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">CurrencyGeneratorComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
+<dd>
+<div class="block">A component that periodically generates currency for its owner (typically the player).</div>
+</dd>
 <dt><a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html" class="type-name-link" title="class in com.csse3200.game.components.towers">CurrencyGeneratorComponent</a> - Class in <a href="com/csse3200/game/components/towers/package-summary.html">com.csse3200.game.components.towers</a></dt>
 <dd>
 <div class="block">Component that generates currency for the player at regular intervals.</div>
@@ -1208,6 +1285,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html#%3Cinit%3E(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">CurrencyGeneratorComponent(CurrencyComponent.CurrencyType, int, float)</a> - Constructor for class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.towers">CurrencyGeneratorComponent</a></dt>
 <dd>
 <div class="block">Constructs a CurrencyGeneratorComponent with the specified currency type, amount, and interval.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">CurrencyGeneratorComponent(Entity, CurrencyComponent.CurrencyType, int, float)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.hero.engineer">CurrencyGeneratorComponent</a></dt>
+<dd>
+<div class="block">Constructs a currency generator.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/currencysystem/CurrencyManagerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a> - Class in <a href="com/csse3200/game/components/currencysystem/package-summary.html">com.csse3200.game.components.currencysystem</a></dt>
 <dd>
@@ -1380,7 +1461,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/HealthBarComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HealthBarComponent.html" title="class in com.csse3200.game.components">HealthBarComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Cleans up input listeners when the component is removed.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
@@ -1388,6 +1471,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/hero/HeroSelectionComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroSelectionComponent.html" title="class in com.csse3200.game.components.hero">HeroSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroUltimateComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroUltimateComponent.html" title="class in com.csse3200.game.components.hero">HeroUltimateComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html" title="class in com.csse3200.game.components">HomebaseDamageEffectComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -1500,6 +1585,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/services/ResourceService.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/DamagePopupComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/DamagePopupComponent.html" title="class in com.csse3200.game.ui">DamagePopupComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatusPanelComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatusPanelComponent.html" title="class in com.csse3200.game.ui">HeroStatusPanelComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/leaderboard/LeaderboardUI.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardUI.html" title="class in com.csse3200.game.ui.leaderboard">LeaderboardUI</a></dt>
 <dd>&nbsp;</dd>
@@ -1692,6 +1779,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html#%3Cinit%3E()" class="member-name-link">Enemy()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/physics/PhysicsLayer.html#ENEMY" class="member-name-link">ENEMY</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#ENEMY_BOOK" class="member-name-link">ENEMY_BOOK</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/book/BookPage.html#ENEMY_PAGE" class="member-name-link">ENEMY_PAGE</a> - Enum constant in enum class com.csse3200.game.components.book.<a href="com/csse3200/game/components/book/BookPage.html" title="enum class in com.csse3200.game.components.book">BookPage</a></dt>
@@ -1742,6 +1831,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameStateService.HeroType.html#ENGINEER" class="member-name-link">ENGINEER</a> - Enum constant in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.HeroType.html#ENGINEER" class="member-name-link">ENGINEER</a> - Enum constant in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.HeroType.html" title="enum class in com.csse3200.game.services">SelectedHeroService.HeroType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/EngineerConfig.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">EngineerConfig</a> - Class in <a href="com/csse3200/game/entities/configs/package-summary.html">com.csse3200.game.entities.configs</a></dt>
 <dd>
 <div class="block">Configuration for the Engineer hero.</div>
@@ -1750,12 +1841,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
 <dd>
-<div class="block">工程师召唤组件（方案A：使用 LibGDX InputMultiplexer 直连键盘事件）。
- - 在 Multiplexer 的 index=0 注入一个 InputAdapter，优先捕获 Q。
- - 不依赖项目自定义的 InputService，避免被 UI/Stage 吃掉事件。</div>
+<div class="block">EngineerSummonComponent (Plan A: Event Interception)</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#%3Cinit%3E(float,int,java.lang.String,com.badlogic.gdx.math.Vector2)" class="member-name-link">EngineerSummonComponent(float, int, String, Vector2)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Constructor.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/Component.html#entity" class="member-name-link">entity</a> - Variable in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/BodyUserData.html#entity" class="member-name-link">entity</a> - Variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/BodyUserData.html" title="class in com.csse3200.game.physics">BodyUserData</a></dt>
@@ -1879,6 +1970,15 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/areas2/MapTwo/ForestGameArea2.html#%3Cinit%3E(com.csse3200.game.areas2.terrainTwo.TerrainFactory2)" class="member-name-link">ForestGameArea2(TerrainFactory2)</a> - Constructor for class com.csse3200.game.areas2.MapTwo.<a href="com/csse3200/game/areas2/MapTwo/ForestGameArea2.html" title="class in com.csse3200.game.areas2.MapTwo">ForestGameArea2</a></dt>
 <dd>
 <div class="block">Initialise this ForestGameArea2 to use the provided TerrainFactory2.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
+<dd>
+<div class="block">A component that cycles the firing direction of an attached <a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer"><code>TurretAttackComponent</code></a>
+ in the fixed order: Up → Right → Down → Left.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html#%3Cinit%3E(float,com.badlogic.gdx.math.Vector2)" class="member-name-link">FourWayCycleComponent(float, Vector2)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a></dt>
+<dd>
+<div class="block">Constructs a Four-Way Direction Cycle component.</div>
 </dd>
 <dt><a href="com/csse3200/game/files/UserSettings.Settings.html#fps" class="member-name-link">fps</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" title="class in com.csse3200.game.files">UserSettings.Settings</a></dt>
 <dd>
@@ -2215,6 +2315,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get the event handler attached to this entity.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#getFacingDeg()" class="member-name-link">getFacingDeg()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>
+<div class="block">可选：暴露当前朝向（用于外部特效/音效朝向）</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#getFixedPath()" class="member-name-link">getFixedPath()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>
 <div class="block">Returns the fixed path as a 2D array of tile coordinates.</div>
@@ -2385,6 +2489,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Return an asset only if already loaded, otherwise null (no lazy-load).</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/OwnerComponent.html#getOwner()" class="member-name-link">getOwner()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/OwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">OwnerComponent</a></dt>
+<dd>
+<div class="block">Returns the owner entity associated with this component.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/TowerUpgradeData.html#getPathAUpgrades()" class="member-name-link">getPathAUpgrades()</a> - Static method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerUpgradeData.html" title="class in com.csse3200.game.components.maingame">TowerUpgradeData</a></dt>
 <dd>
 <div class="block">Returns a mapping of tower types to their Path A upgrades.</div>
@@ -2528,6 +2636,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/Entity.html#getScale()" class="member-name-link">getScale()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Get the entity's scale.</div>
+</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.html#getSelected()" class="member-name-link">getSelected()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.html" title="class in com.csse3200.game.services">SelectedHeroService</a></dt>
+<dd>
+<div class="block">读取当前选择</div>
 </dd>
 <dt><a href="com/csse3200/game/services/GameStateService.html#getSelectedHero()" class="member-name-link">getSelectedHero()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.html" title="class in com.csse3200.game.services">GameStateService</a></dt>
 <dd>
@@ -2901,6 +3013,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameStateService.HeroType.html#HERO" class="member-name-link">HERO</a> - Enum constant in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.HeroType.html#HERO" class="member-name-link">HERO</a> - Enum constant in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.HeroType.html" title="enum class in com.csse3200.game.services">SelectedHeroService.HeroType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroAppearanceComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
 <div class="block">Handles hero appearance upgrades (supports both RotatingTextureRenderComponent / TextureRenderComponent).</div>
@@ -2909,7 +3023,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
-<div class="block">左键点击英雄，弹出英雄数值与升级界面。</div>
+<div class="block">Hero clickable component - currently disabled.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#%3Cinit%3E()" class="member-name-link">HeroClickableComponent()</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2957,7 +3071,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
-<div class="block">One-shot component for switching hero form (weapon/skin).</div>
+<div class="block">Hero form switcher:
+ - Boot to form-1 immediately (texture + bullet + params) once hero is available.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#%3Cinit%3E(com.csse3200.game.entities.configs.HeroConfig,com.csse3200.game.entities.configs.HeroConfig2,com.csse3200.game.entities.configs.HeroConfig3)" class="member-name-link">HeroOneShotFormSwitchComponent(HeroConfig, HeroConfig2, HeroConfig3)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -2967,14 +3082,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#%3Cinit%3E(com.csse3200.game.areas.terrain.TerrainComponent,com.csse3200.game.areas.MapEditor,java.util.function.Consumer,int)" class="member-name-link">HeroPlacementComponent(TerrainComponent, MapEditor, Consumer&lt;GridPoint2&gt;, int)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
 <dd>
-<div class="block">可选：带自定义上限的构造</div>
+<div class="block">Optional: Construction with custom caps</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroSelectionComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroSelectionComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
-<div class="block">进入关卡后自动根据主菜单选择，安装对应的英雄放置器。
- 不再监听键盘/按钮，避免跨 Screen 的输入耦合。</div>
+<div class="block">After entering the level, the corresponding hero placement device will be automatically installed according to the main menu selection.</div>
 </dd>
-<dt><a href="com/csse3200/game/components/hero/HeroSelectionComponent.html#%3Cinit%3E(java.lang.Runnable,java.lang.Runnable)" class="member-name-link">HeroSelectionComponent(Runnable, Runnable)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroSelectionComponent.html" title="class in com.csse3200.game.components.hero">HeroSelectionComponent</a></dt>
+<dt><a href="com/csse3200/game/components/hero/HeroSelectionComponent.html#%3Cinit%3E(java.lang.Runnable,java.lang.Runnable,java.lang.Runnable)" class="member-name-link">HeroSelectionComponent(Runnable, Runnable, Runnable)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroSelectionComponent.html" title="class in com.csse3200.game.components.hero">HeroSelectionComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.Settings.html#heroSkin" class="member-name-link">heroSkin</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.Settings.html" title="class in com.csse3200.game.files">UserSettings.Settings</a></dt>
 <dd>&nbsp;</dd>
@@ -2983,6 +3097,17 @@ loadScripts(document, 'script');</script>
 <div class="block">英雄数值窗口：显示等级、生命、攻击，并支持升级。</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/HeroStatsDialog.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">HeroStatsDialog(Entity)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatsDialog.html" title="class in com.csse3200.game.ui">HeroStatsDialog</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui">HeroStatusPanelComponent</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
+<dd>
+<div class="block">左侧黄色栏里的“英雄状态卡片”。
+ - 显示：头像、名字、HP、能量/怒气、技能CD、等级等
+ - 通过事件刷新：hero.hp, hero.energy, ultimate.remaining, hero.level
+ - 也可以直接持有 hero 引用定时pull（看你项目习惯）</div>
+</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatusPanelComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">HeroStatusPanelComponent(Entity)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatusPanelComponent.html" title="class in com.csse3200.game.ui">HeroStatusPanelComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/ui/HeroStatusPanelComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,java.lang.String)" class="member-name-link">HeroStatusPanelComponent(Entity, String)</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatusPanelComponent.html" title="class in com.csse3200.game.ui">HeroStatusPanelComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/HeroConfig.html#heroTexture" class="member-name-link">heroTexture</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a></dt>
 <dd>
@@ -2996,6 +3121,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Path to hero sprite texture (relative to assets)</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#heroTexture" class="member-name-link">heroTexture</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
 <dd>
 <div class="block">Hero turret-style attack component:
@@ -3177,6 +3304,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/Entity.html#isActive()" class="member-name-link">isActive()</a> - Method in class com.csse3200.game.entities.<a href="com/csse3200/game/entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></dt>
 <dd>
 <div class="block">Check if the entity is active (created and enabled).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#isAttacking()" class="member-name-link">isAttacking()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>
+<div class="block">是否处于攻击窗口（给伤害组件判定用）</div>
 </dd>
 <dt><a href="com/csse3200/game/components/currencysystem/CollectibleComponent.html#isCollected()" class="member-name-link">isCollected()</a> - Method in class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CollectibleComponent.html" title="class in com.csse3200.game.components.currencysystem">CollectibleComponent</a></dt>
 <dd>
@@ -3418,13 +3549,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/HeroConfig3.html#levelTextures" class="member-name-link">levelTextures</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/HeroConfig3.html" title="class in com.csse3200.game.entities.configs">HeroConfig3</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#levelTextures" class="member-name-link">levelTextures</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardQuery.html#limit" class="member-name-link">limit</a> - Variable in class com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.LeaderboardQuery.html" title="class in com.csse3200.game.services.leaderboard">LeaderboardService.LeaderboardQuery</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#loadAll()" class="member-name-link">loadAll()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
 <div class="block">Blocking call to load all assets.</div>
 </dd>
-<dt><a href="com/csse3200/game/entities/factories/HeroFactory.html#loadAssets(com.csse3200.game.services.ResourceService,com.csse3200.game.entities.configs.HeroConfig...)" class="member-name-link">loadAssets(ResourceService, HeroConfig...)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HeroFactory.html" title="class in com.csse3200.game.entities.factories">HeroFactory</a></dt>
+<dt><a href="com/csse3200/game/entities/factories/HeroFactory.html#loadAssets(com.csse3200.game.services.ResourceService,com.csse3200.game.entities.configs.BaseEntityConfig...)" class="member-name-link">loadAssets(ResourceService, BaseEntityConfig...)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HeroFactory.html" title="class in com.csse3200.game.entities.factories">HeroFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/ResourceService.html#loadDefaultUiTextures()" class="member-name-link">loadDefaultUiTextures()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a></dt>
 <dd>
@@ -3638,6 +3771,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#%3Cinit%3E(com.badlogic.gdx.math.Vector2,com.badlogic.gdx.math.Vector2)" class="member-name-link">MovementTask(Vector2, Vector2)</a> - Constructor for class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#movespeed" class="member-name-link">movespeed</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/HeroConfig.html#moveSpeed" class="member-name-link">moveSpeed</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a></dt>
 <dd>
 <div class="block">Movement speed in pixels per second</div>
@@ -3757,10 +3892,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html#onNameConfirmed(java.lang.String,java.lang.String)" class="member-name-link">onNameConfirmed(String, String)</a> - Method in interface com.csse3200.game.ui.<a href="com/csse3200/game/ui/NameInputDialog.NameInputCallback.html" title="interface in com.csse3200.game.ui">NameInputDialog.NameInputCallback</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#onSummonDied()" class="member-name-link">onSummonDied()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#onSummonSpawned()" class="member-name-link">onSummonSpawned()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
-<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#onSummonDied(java.lang.String)" class="member-name-link">onSummonDied(String)</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
+<dd>
+<div class="block">Called when a summon is destroyed or removed.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#onSummonSpawned(java.lang.String)" class="member-name-link">onSummonSpawned(String)</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
+<dd>
+<div class="block">Called when a summon is created successfully.</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/ForestGameArea.html#onWaveDefeated()" class="member-name-link">onWaveDefeated()</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></dt>
 <dd>
 <div class="block">Called when all enemies in the current wave have been defeated.</div>
@@ -3795,6 +3934,14 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/tasks/DefaultTask.html#owner" class="member-name-link">owner</a> - Variable in class com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/DefaultTask.html" title="class in com.csse3200.game.ai.tasks">DefaultTask</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/OwnerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">OwnerComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
+<dd>
+<div class="block">A simple component that stores a reference to the entity's owner (e.g., the player).</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/OwnerComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity)" class="member-name-link">OwnerComponent(Entity)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/OwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">OwnerComponent</a></dt>
+<dd>
+<div class="block">Creates an OwnerComponent that links an entity to its owner.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:P">P</h2>
 <dl class="index">
@@ -3925,6 +4072,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html#%3Cinit%3E()" class="member-name-link">Player()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Player.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Player</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/PhysicsLayer.html#PLAYER" class="member-name-link">PLAYER</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/physics/PhysicsLayer.html#PLAYER_ATTACK" class="member-name-link">PLAYER_ATTACK</a> - Static variable in class com.csse3200.game.physics.<a href="com/csse3200/game/physics/PhysicsLayer.html" title="class in com.csse3200.game.physics">PhysicsLayer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/player/PlayerActions.html" class="type-name-link" title="class in com.csse3200.game.components.player">PlayerActions</a> - Class in <a href="com/csse3200/game/components/player/package-summary.html">com.csse3200.game.components.player</a></dt>
 <dd>
@@ -4498,6 +4647,20 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:S">S</h2>
 <dl class="index">
+<dt><a href="com/csse3200/game/services/GameStateService.HeroType.html#SAMURAI" class="member-name-link">SAMURAI</a> - Enum constant in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.HeroType.html#SAMURAI" class="member-name-link">SAMURAI</a> - Enum constant in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.HeroType.html" title="enum class in com.csse3200.game.services">SelectedHeroService.HeroType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a> - Class in <a href="com/csse3200/game/entities/configs/package-summary.html">com.csse3200.game.entities.configs</a></dt>
+<dd>
+<div class="block">Defines a basic set of properties stored in entities config files to be loaded by Entity Factories.</div>
+</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#%3Cinit%3E()" class="member-name-link">SamuraiConfig()</a> - Constructor for class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a> - Class in <a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#%3Cinit%3E(float,java.lang.String,com.csse3200.game.entities.configs.SamuraiConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">SamuraiSpinAttackComponent(float, String, SamuraiConfig, Camera)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.html#save()" class="member-name-link">save()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/GdxGame.ScreenType.html#SAVE_SELECTION" class="member-name-link">SAVE_SELECTION</a> - Enum constant in enum class com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></dt>
@@ -4575,6 +4738,17 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/ui/SimpleUI.html#scrollStyle()" class="member-name-link">scrollStyle()</a> - Static method in class com.csse3200.game.ui.<a href="com/csse3200/game/ui/SimpleUI.html" title="class in com.csse3200.game.ui">SimpleUI</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.html" class="type-name-link" title="class in com.csse3200.game.services">SelectedHeroService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>
+<div class="block">用来在“主菜单”与“游戏关卡（ForestGameArea/MainGameScreen）”之间
+ 传递玩家选择的英雄类型的简单服务。</div>
+</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.html#%3Cinit%3E()" class="member-name-link">SelectedHeroService()</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.html" title="class in com.csse3200.game.services">SelectedHeroService</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.HeroType.html" class="type-name-link" title="enum class in com.csse3200.game.services">SelectedHeroService.HeroType</a> - Enum Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
+<dd>
+<div class="block">先做两个选项；后续要扩展可以继续加</div>
+</dd>
 <dt><a href="com/csse3200/game/services/ServiceLocator.html" class="type-name-link" title="class in com.csse3200.game.services">ServiceLocator</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>
 <div class="block">A simplified implementation of the Service Locator pattern:
@@ -4663,6 +4837,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html#setBulletTexture(java.lang.String)" class="member-name-link">setBulletTexture(String)</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#setCenterToHandle(float)" class="member-name-link">setCenterToHandle(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setCenterToHandle(float)" class="member-name-link">setCenterToHandle(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#setClosed()" class="member-name-link">setClosed()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
 <dd>
 <div class="block">Closes the terminal and clears the stored message.</div>
@@ -4717,6 +4895,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/DividerEnemyFactoryLevel2.html#setDifficulty(com.csse3200.game.utils.Difficulty)" class="member-name-link">setDifficulty(Difficulty)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DividerEnemyFactoryLevel2.html" title="class in com.csse3200.game.entities.factories">DividerEnemyFactoryLevel2</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html#setDirection(com.badlogic.gdx.math.Vector2)" class="member-name-link">setDirection(Vector2)</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer">TurretAttackComponent</a></dt>
+<dd>
+<div class="block">Updates the turret’s firing direction dynamically.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/BossEnemyFactory.html#setDisplayName(java.lang.String)" class="member-name-link">setDisplayName(String)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/BossEnemyFactory.html" title="class in com.csse3200.game.entities.factories">BossEnemyFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html#setDisplayName(java.lang.String)" class="member-name-link">setDisplayName(String)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DividerChildEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DividerChildEnemyFactory</a></dt>
@@ -4797,6 +4979,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/CombatStatsComponent.html#setIsEnemy(boolean)" class="member-name-link">setIsEnemy(boolean)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/CombatStatsComponent.html" title="class in com.csse3200.game.components">CombatStatsComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setJabCooldown(float)" class="member-name-link">setJabCooldown(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setJabParams(float,float)" class="member-name-link">setJabParams(float, float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#setJabParams(float,float,float)" class="member-name-link">setJabParams(float, float, float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/ColliderComponent.html#setLayer(short)" class="member-name-link">setLayer(short)</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/ColliderComponent.html" title="class in com.csse3200.game.physics.components">ColliderComponent</a></dt>
 <dd>
 <div class="block">Set the collider layer, used in collision logic</div>
@@ -4845,6 +5033,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">设置带有指定背景的开场动画</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setPivotOffset(float,float)" class="member-name-link">setPivotOffset(float, float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/PlayerAvatarService.html#setPlayerAvatar(java.lang.String)" class="member-name-link">setPlayerAvatar(String)</a> - Method in interface com.csse3200.game.services.<a href="com/csse3200/game/services/PlayerAvatarService.html" title="interface in com.csse3200.game.services">PlayerAvatarService</a></dt>
 <dd>
 <div class="block">设置玩家头像</div>
@@ -4907,6 +5097,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Set restitution</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setRestRadius(float)" class="member-name-link">setRestRadius(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/RotatingAnimationRenderComponent.html#setRotation(float)" class="member-name-link">setRotation(float)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RotatingAnimationRenderComponent.html" title="class in com.csse3200.game.rendering">RotatingAnimationRenderComponent</a></dt>
 <dd>
 <div class="block">Set rotation in degrees (around the sprite center).</div>
@@ -4948,6 +5140,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/towers/TowerComponent.html#setSelected(boolean)" class="member-name-link">setSelected(boolean)</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/TowerComponent.html" title="class in com.csse3200.game.components.towers">TowerComponent</a></dt>
 <dd>
 <div class="block">Sets whether this tower is selected.</div>
+</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.html#setSelected(com.csse3200.game.services.SelectedHeroService.HeroType)" class="member-name-link">setSelected(SelectedHeroService.HeroType)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.html" title="class in com.csse3200.game.services">SelectedHeroService</a></dt>
+<dd>
+<div class="block">设定当前选择</div>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#setSelectedCurrencyType(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">setSelectedCurrencyType(CurrencyComponent.CurrencyType)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>
@@ -5015,12 +5211,32 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html#setSpeed(com.badlogic.gdx.math.Vector2)" class="member-name-link">setSpeed(Vector2)</a> - Method in class com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsMovementComponent.html" title="class in com.csse3200.game.physics.components">PhysicsMovementComponent</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSpinCooldown(float)" class="member-name-link">setSpinCooldown(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSpinDirectionCCW(boolean)" class="member-name-link">setSpinDirectionCCW(boolean)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSpinParams(float,float)" class="member-name-link">setSpinParams(float, float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSpinTurns(float)" class="member-name-link">setSpinTurns(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#setSpriteForwardOffsetDeg(float)" class="member-name-link">setSpriteForwardOffsetDeg(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSpriteForwardOffsetDeg(float)" class="member-name-link">setSpriteForwardOffsetDeg(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/rendering/RenderService.html#setStage(com.badlogic.gdx.scenes.scene2d.Stage)" class="member-name-link">setStage(Stage)</a> - Method in class com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RenderService.html" title="class in com.csse3200.game.rendering">RenderService</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameStateService.html#setStars(int)" class="member-name-link">setStars(int)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.html" title="class in com.csse3200.game.services">GameStateService</a></dt>
 <dd>
 <div class="block">Sets the current number of stars to the given number</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSweepArcDegrees(float)" class="member-name-link">setSweepArcDegrees(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSweepCooldown(float)" class="member-name-link">setSweepCooldown(float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#setSweepParams(float,float)" class="member-name-link">setSweepParams(float, float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#setSweepParams(float,float,float)" class="member-name-link">setSweepParams(float, float, float)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ai/movement/MovementController.html#setTarget(com.badlogic.gdx.math.Vector2)" class="member-name-link">setTarget(Vector2)</a> - Method in interface com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/MovementController.html" title="interface in com.csse3200.game.ai.movement">MovementController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/tasks/MovementTask.html#setTarget(com.badlogic.gdx.math.Vector2)" class="member-name-link">setTarget(Vector2)</a> - Method in class com.csse3200.game.components.tasks.<a href="com/csse3200/game/components/tasks/MovementTask.html" title="class in com.csse3200.game.components.tasks">MovementTask</a></dt>
@@ -5164,7 +5380,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#%3Cinit%3E()" class="member-name-link">SimplePlacementController()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Specification for a summon being placed.</div>
+</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService</a> - Class in <a href="com/csse3200/game/services/package-summary.html">com.csse3200.game.services</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.html#%3Cinit%3E(com.csse3200.game.entities.EntityService)" class="member-name-link">SimpleSaveService(EntityService)</a> - Constructor for class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" title="class in com.csse3200.game.services">SimpleSaveService</a></dt>
@@ -5358,7 +5576,23 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/entities/configs/EngineerConfig.html#summonCooldown" class="member-name-link">summonCooldown</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs">EngineerConfig</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/factories/SummonFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">SummonFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Factory class for creating Engineer-related summon entities such as:
+ 
+   Melee summons (e.g., drones or barricades)
+   Directional turrets
+   Currency-generating bots
+   Ghost previews for placement
+ </div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/SummonOwnerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">SummonOwnerComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
+<dd>
+<div class="block">Component attached to each summon entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/SummonOwnerComponent.html#%3Cinit%3E(com.csse3200.game.components.hero.engineer.EngineerSummonComponent,java.lang.String)" class="member-name-link">SummonOwnerComponent(EngineerSummonComponent, String)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonOwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">SummonOwnerComponent</a></dt>
+<dd>
+<div class="block">Creates a SummonOwnerComponent.</div>
+</dd>
 <dt><a href="com/csse3200/game/components/maingame/SummonPlacementController.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SummonPlacementController</a> - Class in <a href="com/csse3200/game/components/maingame/package-summary.html">com.csse3200.game.components.maingame</a></dt>
 <dd>
 <div class="block">专门负责“召唤物放置”的控制器：幽灵预览 + 左键落地。
@@ -5369,7 +5603,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SummonPlacementController.html#%3Cinit%3E()" class="member-name-link">SummonPlacementController()</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SummonPlacementController.html" title="class in com.csse3200.game.components.maingame">SummonPlacementController</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html#%3Cinit%3E(java.lang.String)" class="member-name-link">SummonSpec(String)</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a></dt>
+<dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html#%3Cinit%3E(java.lang.String,java.lang.String)" class="member-name-link">SummonSpec(String, String)</a> - Constructor for class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/EngineerConfig.html#summonSpeed" class="member-name-link">summonSpeed</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs">EngineerConfig</a></dt>
 <dd>&nbsp;</dd>
@@ -5391,6 +5625,40 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Create a switchable texture render component from a texture path.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#swordAngularSpeed" class="member-name-link">swordAngularSpeed</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordAppearanceComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a> - Class in <a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordAppearanceComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.entities.configs.SamuraiConfig)" class="member-name-link">SwordAppearanceComponent(Entity, SamuraiConfig)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordAppearanceComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#swordDamageByLevel" class="member-name-link">swordDamageByLevel</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/SwordFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">SwordFactory</a> - Class in <a href="com/csse3200/game/entities/factories/package-summary.html">com.csse3200.game.entities.factories</a></dt>
+<dd>
+<div class="block">Factory class for creating the Samurai's sword entity.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a> - Class in <a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a></dt>
+<dd>
+<div class="block">Sword Jab + Sweep + Spin physics:
+ - Idle: 剑柄停在 owner 前方 restRadius 处，维持 facingDeg。
+ - Jab:  朝目标方向“出-回”半径动画（抛物线 bump）。
+ - Sweep: 以鼠标方向为中心，做对称半圆（[aim-arc, aim+arc] 线性）。
+ - Spin:  固定半径整圈旋转（默认逆时针 360°）。
+
+ 只负责位姿；伤害由其他组件判定（可用 isAttacking() 做攻击窗口）。</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,float)" class="member-name-link">SwordJabPhysicsComponent(Entity, float)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordLevelSyncComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordLevelSyncComponent</a> - Class in <a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordLevelSyncComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.entities.configs.SamuraiConfig)" class="member-name-link">SwordLevelSyncComponent(Entity, SamuraiConfig)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordLevelSyncComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordLevelSyncComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#swordLevelTextures" class="member-name-link">swordLevelTextures</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#swordRadius" class="member-name-link">swordRadius</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/configs/SamuraiConfig.html#swordTexture" class="member-name-link">swordTexture</a> - Variable in class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
@@ -5775,10 +6043,32 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Used to trigger the component to early-update itself.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#triggerJabTowards(com.badlogic.gdx.math.Vector2)" class="member-name-link">triggerJabTowards(Vector2)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>
+<div class="block">触发一次朝目标点的突刺（传入鼠标世界坐标）</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#triggerSpin(boolean)" class="member-name-link">triggerSpin(boolean)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>
+<div class="block">触发旋风斩（整圈），ccw=true 逆时针，false 顺时针</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#triggerSweepToward(com.badlogic.gdx.math.Vector2)" class="member-name-link">triggerSweepToward(Vector2)</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
+<dd>
+<div class="block">横砍（以鼠标方向为中心）</div>
+</dd>
 <dt><a href="com/csse3200/game/components/Component.html#triggerUpdate()" class="member-name-link">triggerUpdate()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" title="class in com.csse3200.game.components">Component</a></dt>
 <dd>
 <div class="block">Used to trigger the component to update itself.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">TurretAttackComponent</a> - Class in <a href="com/csse3200/game/components/hero/engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></dt>
+<dd>
+<div class="block"><code>TurretAttackComponent</code></div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html#%3Cinit%3E(com.badlogic.gdx.math.Vector2,float,float,float,java.lang.String)" class="member-name-link">TurretAttackComponent(Vector2, float, float, float, String)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer">TurretAttackComponent</a></dt>
+<dd>
+<div class="block">Constructs a new <code>TurretAttackComponent</code>.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html#type" class="member-name-link">type</a> - Variable in class com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></dt>
@@ -5814,7 +6104,7 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/ui/UltimateButtonComponent.html" class="type-name-link" title="class in com.csse3200.game.ui">UltimateButtonComponent</a> - Class in <a href="com/csse3200/game/ui/package-summary.html">com.csse3200.game.ui</a></dt>
 <dd>
-<div class="block">Temporary test component: places an "ULT" button on the bottom-right corner of the HUD.</div>
+<div class="block">Ultimate button utility: provides static method to create ULT button for embedding in other UI.</div>
 </dd>
 <dt><a href="com/csse3200/game/ui/UltimateButtonComponent.html#%3Cinit%3E()" class="member-name-link">UltimateButtonComponent()</a> - Constructor for class com.csse3200.game.ui.<a href="com/csse3200/game/ui/UltimateButtonComponent.html" title="class in com.csse3200.game.ui">UltimateButtonComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -5868,7 +6158,15 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/enemy/clickable.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/clickable.html" title="class in com.csse3200.game.components.enemy">clickable</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.hero.engineer">CurrencyGeneratorComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></dt>
+<dd>
+<div class="block">Updates the cooldown timer every frame.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer">TurretAttackComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroClickableComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -5880,6 +6178,10 @@ loadScripts(document, 'script');</script>
  - Broadcasts remaining time every 0.1s (in seconds with one decimal place).</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/HeroUpgradeComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroUpgradeComponent.html" title="class in com.csse3200.game.components.hero">HeroUpgradeComponent</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html" title="class in com.csse3200.game.components">HomebaseDamageEffectComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -6093,6 +6395,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.HeroType.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.HeroType.html" title="enum class in com.csse3200.game.services">SelectedHeroService.HeroType</a></dt>
+<dd>
+<div class="block">Returns the enum constant of this class with the specified name.</div>
+</dd>
 <dt><a href="com/csse3200/game/utils/Difficulty.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class com.csse3200.game.utils.<a href="com/csse3200/game/utils/Difficulty.html" title="enum class in com.csse3200.game.utils">Difficulty</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
@@ -6168,6 +6474,11 @@ the order they are declared.</div>
 the order they are declared.</div>
 </dd>
 <dt><a href="com/csse3200/game/services/GameStateService.HeroType.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></dt>
+<dd>
+<div class="block">Returns an array containing the constants of this enum class, in
+the order they are declared.</div>
+</dd>
+<dt><a href="com/csse3200/game/services/SelectedHeroService.HeroType.html#values()" class="member-name-link">values()</a> - Static method in enum class com.csse3200.game.services.<a href="com/csse3200/game/services/SelectedHeroService.HeroType.html" title="enum class in com.csse3200.game.services">SelectedHeroService.HeroType</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>

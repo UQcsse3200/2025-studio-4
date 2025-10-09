@@ -115,7 +115,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createEngineerHero(com.csse3200.game.entities.configs.EngineerConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createEngineerHero</a><wbr>(<a href="../configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs">EngineerConfig</a>&nbsp;cfg,
  com.badlogic.gdx.graphics.Camera&nbsp;camera)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates and configures an Engineer hero entity.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createHero(com.csse3200.game.entities.configs.HeroConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createHero</a><wbr>(<a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a>&nbsp;cfg,
  com.badlogic.gdx.graphics.Camera&nbsp;camera)</code></div>
@@ -127,10 +129,16 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a "ghost hero" entity used only for placement previews.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#loadAssets(com.csse3200.game.services.ResourceService,com.csse3200.game.entities.configs.HeroConfig...)" class="member-name-link">loadAssets</a><wbr>(<a href="../../services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a>&nbsp;rs,
- <a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a>...&nbsp;configs)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSamuraiHero(com.csse3200.game.entities.configs.SamuraiConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">createSamuraiHero</a><wbr>(<a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg,
+ com.badlogic.gdx.graphics.Camera&nbsp;camera)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates and configures a Samurai hero entity.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#loadAssets(com.csse3200.game.services.ResourceService,com.csse3200.game.entities.configs.BaseEntityConfig...)" class="member-name-link">loadAssets</a><wbr>(<a href="../../services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a>&nbsp;rs,
+ <a href="../configs/BaseEntityConfig.html" title="class in com.csse3200.game.entities.configs">BaseEntityConfig</a>...&nbsp;configs)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -149,10 +157,10 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="loadAssets(com.csse3200.game.services.ResourceService,com.csse3200.game.entities.configs.HeroConfig...)">
+<section class="detail" id="loadAssets(com.csse3200.game.services.ResourceService,com.csse3200.game.entities.configs.BaseEntityConfig...)">
 <h3>loadAssets</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadAssets</span><wbr><span class="parameters">(<a href="../../services/ResourceService.html" title="class in com.csse3200.game.services">ResourceService</a>&nbsp;rs,
- <a href="../configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a>...&nbsp;configs)</span></div>
+ <a href="../configs/BaseEntityConfig.html" title="class in com.csse3200.game.entities.configs">BaseEntityConfig</a>...&nbsp;configs)</span></div>
 </section>
 </li>
 <li>
@@ -204,6 +212,45 @@ loadScripts(document, 'script');</script>
 <h3>createEngineerHero</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createEngineerHero</span><wbr><span class="parameters">(<a href="../configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs">EngineerConfig</a>&nbsp;cfg,
  com.badlogic.gdx.graphics.Camera&nbsp;camera)</span></div>
+<div class="block">Creates and configures an Engineer hero entity.
+ <p>
+ The Engineer specializes in deploying turrets, melee bots, and resource-generating summons.
+ This factory method assembles the hero with its necessary gameplay components, such as
+ summoning logic, ranged attack, upgrade, and ultimate abilities.
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cfg</code> - The <a href="../configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs"><code>EngineerConfig</code></a> containing hero stats and asset references.</dd>
+<dd><code>camera</code> - The active camera, used for attack targeting or rotation.</dd>
+<dt>Returns:</dt>
+<dd>A fully initialized Engineer hero entity.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createSamuraiHero(com.csse3200.game.entities.configs.SamuraiConfig,com.badlogic.gdx.graphics.Camera)">
+<h3>createSamuraiHero</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSamuraiHero</span><wbr><span class="parameters">(<a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg,
+ com.badlogic.gdx.graphics.Camera&nbsp;camera)</span></div>
+<div class="block">Creates and configures a Samurai hero entity.
+ <p>
+ The Samurai specializes in close-range melee combat using a spinning sword
+ that orbits around the hero. This factory method assembles the hero with all
+ required gameplay and rendering components.
+ </p>
+
+ <ul>
+   <li>Includes sword rotation via <a href="../../components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai"><code>SamuraiSpinAttackComponent</code></a>.</li>
+   <li>Centers the sword’s visual origin to ensure smooth rotation.</li>
+   <li>Supports fine pivot adjustments for precise visual alignment.</li>
+ </ul></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cfg</code> - The <a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs"><code>SamuraiConfig</code></a> containing hero stats and asset paths.</dd>
+<dd><code>camera</code> - The active camera for rendering or camera-relative effects.</dd>
+<dt>Returns:</dt>
+<dd>A fully initialized Samurai hero entity.</dd>
+</dl>
 </section>
 </li>
 </ul>

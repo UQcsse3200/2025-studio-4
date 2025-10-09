@@ -99,17 +99,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">HeroOneShotFormSwitchComponent</span>
 <span class="extends-implements">extends <a href="../../input/InputComponent.html" title="class in com.csse3200.game.input">InputComponent</a></span></div>
-<div class="block">One-shot component for switching hero form (weapon/skin).
-
- <p>Features:
- <ul>
-   <li>Preloads hero textures to avoid missing assets when switching.</li>
-   <li>Polls for the hero entity until it is found.</li>
-   <li>If no manual input is received within 5 seconds, defaults to form-1 automatically.</li>
-   <li>Intercepts keys 1/2/3 by registering an InputAdapter at index 0 of the InputMultiplexer
-       (highest priority, ensures events are not consumed by UI or camera).</li>
-   <li>Switch is one-shot: after applying a form, the component locks and disposes itself.</li>
- </ul></div>
+<div class="block">Hero form switcher:
+ - Boot to form-1 immediately (texture + bullet + params) once hero is available.
+ - No time limit for the first manual switch.
+ - Locks after the first successful manual switch.
+ - Also locks immediately after the hero upgrades (level &gt; 1 or "upgraded" event).</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

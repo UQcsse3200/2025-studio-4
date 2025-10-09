@@ -39,7 +39,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> waterTiles = new java.util.ArrayList<>();
 
-    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
@@ -206,7 +206,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(21, 12));
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
-        keyWaypoints.add(new GridPoint2(28, 6));    // End
+        keyWaypoints.add(new GridPoint2(32, 6));    // End - extended past base to ensure enemies reach it
         Map<String, Float> speedModifiers = Map.of(
             "6,6", 0.5f,
             "7,6", 0.5f,

@@ -40,7 +40,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     private java.util.List<GridPoint2> keyWaypoints2 = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
 
-    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList2 = new java.util.ArrayList<>();
 
     public MapEditor2(TerrainComponent2 terrain, Entity player) {
         this.terrain = terrain;
@@ -157,9 +158,9 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
-        keyWaypoints.add(new GridPoint2(5, 32));    // End
-        
+        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
+        keyWaypoints.add(new GridPoint2(6, 38));    // End - extended past base to ensure enemies reach it
+
         // 新增的5个关键点
         keyWaypoints2.add(new GridPoint2(28, 6));    // 新坐标5
         keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
@@ -167,8 +168,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints2.add(new GridPoint2(5, 25));    // Fourth waypoint
-        keyWaypoints2.add(new GridPoint2(5, 32));    // End
+        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
+        keyWaypoints2.add(new GridPoint2(6, 38));    // End
 
         Map<String, Float> speedModifiers = Map.of(
             "5,2", 0.5f,
@@ -201,7 +202,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             markKeypoint(wp);
             Entity waypoint = new Entity();
             waypoint.setPosition(wp.x/2, wp.y/2);
-            waypointList.add(waypoint);
+            waypointList2.add(waypoint);
         }
 
         // Connect waypoints with path tiles连接关键点之间的路径

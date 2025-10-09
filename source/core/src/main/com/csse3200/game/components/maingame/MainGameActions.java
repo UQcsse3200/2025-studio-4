@@ -2,6 +2,7 @@ package com.csse3200.game.components.maingame;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
@@ -113,6 +114,8 @@ public class MainGameActions extends Component {
    */
   private void onExit() {
     logger.info("Exiting main game screen");
+    ForestGameArea.cleanupAllWaves();
+    ForestGameArea2.cleanupAllWaves();
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
   

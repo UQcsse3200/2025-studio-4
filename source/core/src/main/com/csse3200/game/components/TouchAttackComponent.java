@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -22,6 +23,7 @@ public class TouchAttackComponent extends Component {
   private float knockbackForce = 0f;
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
+  private boolean hasAttacked = false;
 
   /**
    * Create a component which attacks entities on collision, without knockback.
@@ -46,9 +48,15 @@ public class TouchAttackComponent extends Component {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     combatStats = entity.getComponent(CombatStatsComponent.class);
     hitboxComponent = entity.getComponent(HitboxComponent.class);
+    
+    entity.getEvents().addListener("attackAnimationComplete", this::onAttackComplete);
   }
 
   private void onCollisionStart(Fixture me, Fixture other) {
+    if (hasAttacked) {
+      return;
+    }
+    
     if (hitboxComponent.getFixture() != me) {
       // Not triggered by hitbox, ignore
       return;
@@ -64,14 +72,21 @@ public class TouchAttackComponent extends Component {
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null) {
       targetStats.hit(combatStats);
-      // Add trigger damage popup on target
       target.getEvents().trigger("showDamage", combatStats.getBaseAttack(), target.getCenterPosition().cpy());
+      entity.getEvents().trigger("attackStart");
+      hasAttacked = true;
+      Gdx.app.log("ATTACK", "attackStart fired by " + entity.getId() + " on enemy");
     } else {
       Entity target2 = ((BodyUserData) other.getBody().getUserData()).entity;
       PlayerCombatStatsComponent playerStats = target2.getComponent(PlayerCombatStatsComponent.class);
       if (playerStats != null) {
         playerStats.hit(combatStats);
-        entity.getEvents().trigger("entityDeath");
+        hasAttacked = true;
+        
+        Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
+
+        entity.getEvents().trigger("attackStart");
+
       }
     }
 
@@ -83,5 +98,13 @@ public class TouchAttackComponent extends Component {
       Vector2 impulse = direction.setLength(knockbackForce);
       targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
     }
+  }
+  
+  /**
+   * Called when attack animation completes - now trigger death
+   */
+  private void onAttackComplete() {
+    Gdx.app.log("ATTACK", "Attack animation complete for " + entity.getId() + " - triggering entityDeath");
+    entity.getEvents().trigger("entityDeath");
   }
 }

@@ -26,6 +26,15 @@ public class GameTime {
     this.timeScale = timeScale;
   }
 
+  /**
+   * Get the current time scale
+   *
+   * @return current time scale multiplier
+   */
+  public float getTimeScale() {
+    return this.timeScale;
+  }
+
   /** @return time passed since the last frame in seconds, scaled by time scale. */
   public float getDeltaTime() {
     return Gdx.graphics.getDeltaTime() * timeScale;

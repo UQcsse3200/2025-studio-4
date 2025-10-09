@@ -54,7 +54,7 @@ public class WeaknessAndResistanceTest {
         waypointList.add(waypoint);
         Entity testEnemy = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = testEnemy.getComponent(CombatStatsComponent.class);
-        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(DamageTypeConfig.Fire, stats.getWeaknesses());
         stats.setWeaknesses(DamageTypeConfig.Electricity);
         assertEquals(DamageTypeConfig.Electricity, stats.getWeaknesses());
     }

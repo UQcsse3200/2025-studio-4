@@ -26,8 +26,8 @@ public class DividerChildEnemyFactory {
     private static final int DEFAULT_DAMAGE = 20;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(2f, 2f);
-    private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
+    private static final Vector2 DEFAULT_SPEED = new Vector2(1.5f, 1.5f);
+    private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
     private static final int DEFAULT_CURRENCY_AMOUNT = 50;
@@ -58,9 +58,9 @@ public class DividerChildEnemyFactory {
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
+    public static Entity createDividerChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
         Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
-        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
+        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, target, speed);
         waypointComponent.setCurrentWaypointIndex(waypointIndex);
@@ -71,6 +71,9 @@ public class DividerChildEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = DividerChild.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
 
@@ -96,8 +99,16 @@ public class DividerChildEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         // Award points to player upon defeating enemy
         if (currentTarget != null) {
@@ -123,8 +134,8 @@ public class DividerChildEnemyFactory {
                 player.getEvents().trigger("dropCurrency", drops);
             }
         }
-
-        Gdx.app.postRunnable(entity::dispose);
+        
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

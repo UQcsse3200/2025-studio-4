@@ -25,7 +25,7 @@ public class DroneEnemyFactory {
     private static final int DEFAULT_HEALTH = 25;
     private static final int DEFAULT_DAMAGE = 10;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
-    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Fire;
     private static final Vector2 DEFAULT_SPEED = new Vector2(1.2f, 1.2f);
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
@@ -78,6 +78,9 @@ public class DroneEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = drone.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
 
@@ -105,8 +108,16 @@ public class DroneEnemyFactory {
      * @param entity The drone entity to destroy
      */
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -130,8 +141,7 @@ public class DroneEnemyFactory {
                 prc.addKill();
             }
         }
-
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

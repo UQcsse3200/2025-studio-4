@@ -17,6 +17,7 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.movement.AdjustSpeedByHealthComponent;
 
 public class GruntEnemyFactory {
     // Default grunt configuration
@@ -68,17 +69,20 @@ public class GruntEnemyFactory {
         "images/grunt_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
-        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
+        WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, new Vector2(speed));
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         grunt.addComponent(waypointComponent);
-        applySpeedModifier(grunt, waypointComponent, waypoints.get(idx));
+        //applySpeedModifier(grunt, waypointComponent, waypoints.get(idx));
 
         grunt
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = grunt.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
 
@@ -88,18 +92,31 @@ public class GruntEnemyFactory {
             if (wc != null && wc.hasMoreWaypoints()) {
                 Entity nextTarget = wc.getNextWaypoint();
                 if (nextTarget != null) {
-                    applySpeedModifier(grunt, wc, nextTarget);
+                    //applySpeedModifier(grunt, wc, nextTarget);
                     updateChaseTarget(grunt, nextTarget);
                 }
             }
         });
 
+        grunt.addComponent(new AdjustSpeedByHealthComponent()
+                // Must add thresholds in order of ascending health percentages
+                .addThreshold(0.25f, 2f)
+                .addThreshold(0.5f, 1.4f)
+        );
         return grunt;
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -125,27 +142,27 @@ public class GruntEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 
-    private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
-        if (waypointComponent == null || waypoint == null) {
-            return;
-        }
+    // private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
+    //     if (waypointComponent == null || waypoint == null) {
+    //         return;
+    //     }
 
-        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
-        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
-        if (speedMarker != null) {
-            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
-        }
+    //     SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+    //     Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+    //     if (speedMarker != null) {
+    //         desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+    //     }
 
-        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
-            updateSpeed(grunt, desiredSpeed);
-        }
-    }
+    //     if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+    //         updateSpeed(grunt, desiredSpeed);
+    //     }
+    // }
 
-    private static void updateSpeed(Entity grunt, Vector2 newSpeed) {
+    public static void updateSpeed(Entity grunt, Vector2 newSpeed) {
         WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
         if (wc != null) {
             wc.incrementPriorityTaskCount();

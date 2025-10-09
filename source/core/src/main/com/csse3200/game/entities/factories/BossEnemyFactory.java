@@ -79,6 +79,9 @@ public class BossEnemyFactory {
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
+                CombatStatsComponent combatStats = boss.getComponent(CombatStatsComponent.class);
+                if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
 
@@ -102,8 +105,16 @@ public class BossEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
@@ -128,7 +139,7 @@ public class BossEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 

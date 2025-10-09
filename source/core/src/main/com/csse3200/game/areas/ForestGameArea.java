@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.wavesystem.Wave;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
+import com.csse3200.game.areas2.MapTwo.MapEditor2;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
@@ -62,13 +63,14 @@ public class ForestGameArea extends GameArea {
     private List<Runnable> enemySpawnQueue;
     private boolean waveInProgress = false;
     private float spawnDelay = 2f; // Delay between spawns (updated per wave)
+    private List<List<Entity>> waypointLists;
 
     // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
     private boolean autoStartWaves = true;
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
-    private static ForestGameArea currentGameArea;
+    public static ForestGameArea currentGameArea;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(30, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -105,7 +107,7 @@ public class ForestGameArea extends GameArea {
             {5, 24}, {8, 20},
             // 在x<31且y>13且x<13范围内随机添加的坐标点
             {8, 15}, {5, 17}, {11, 14}, {3, 18},
-            {7, 25}, {2, 15}, {6, 29},
+            {7, 25}, {2, 15},  {6, 29},
     };
 
     // create snowtree areas - 避开路径坐标
@@ -141,34 +143,44 @@ public class ForestGameArea extends GameArea {
         this.autoStartWaves = autoStartWaves;
     }
 
-    /**
-     * Initialize all waves for this game area.
-     */
+    private void initializeWaypointLists() {
+        waypointLists = new ArrayList<>();
+        waypointLists.add(MapEditor.waypointList);
+    }
+
     private void initializeWaves() {
-        waves = new ArrayList<>();
-
-        // Wave 1:
-        waves.add(new Wave(1, 5, 0, 0, 0, 0, 3.0f));
-
-        // Wave 2:
-        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2.0f));
-
-        // Wave 3:
-        waves.add(new Wave(3, 10, 5, 2, 0, 0, 2.0f));
-
-        // Wave 4:
-        waves.add(new Wave(4, 8, 6, 3, 0, 1, 1.5f));
-
-        // Wave 5:
-        waves.add(new Wave(5, 10, 8, 4, 1, 1, 1.2f));
-
+        // Initialize waypoint lists first
+        initializeWaypointLists();
+        
         // Initialize spawn callbacks
+        initializeSpawnCallbacks();
+        
+        waves = new ArrayList<>();
+        
+        // Wave 1: Basic enemies
+        waves.add(new Wave(1, 5, 1, 0, 0, 0, 0, 3.0f, waypointLists));
+
+        // Wave 2: Introduce speeders
+        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2, 2.0f, waypointLists));
+
+        // Wave 3: More variety
+        waves.add(new Wave(3, 10, 5, 2, 0, 0, 3, 2.0f, waypointLists));
+
+        // Wave 4: Dividers appear
+        waves.add(new Wave(4, 8, 6, 3, 0, 1, 2, 1.5f, waypointLists));
+
+        // Wave 5: Final wave with boss
+        waves.add(new Wave(5, 10, 8, 4, 1, 1, 4, 1.2f, waypointLists));
+}
+
+    private void initializeSpawnCallbacks() {
         spawnCallbacks = new Wave.WaveSpawnCallbacks(
-            this::spawnSingleDrone,
-            this::spawnSingleGrunt,
-            this::spawnSingleTank,
-            this::spawnSingleBoss,
-            this::spawnSingleDivider
+            this::spawnDrone,
+            this::spawnGrunt,
+            this::spawnTank,
+            this::spawnBoss,
+            this::spawnDivider,
+            this::spawnSpeeder
         );
     }
 
@@ -177,7 +189,7 @@ public class ForestGameArea extends GameArea {
      */
     private void startEnemyWave() {
         if (waveInProgress) return;
-
+        
         waveInProgress = true;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
@@ -193,12 +205,19 @@ public class ForestGameArea extends GameArea {
         }
 
         Wave currentWave = waves.get(currentWaveIndex);
+        
+        // Set counters before building queue or spawning anything
         NUM_ENEMIES_TOTAL = currentWave.getTotalEnemies();
         NUM_ENEMIES_DEFEATED = 0;
         spawnDelay = currentWave.getSpawnDelay();
-
+        
+        logger.info("Starting Wave {} with {} enemies (Total: {}, Defeated: {})", 
+                    currentWave.getWaveNumber(), 
+                    NUM_ENEMIES_TOTAL,
+                    NUM_ENEMIES_TOTAL,
+                    NUM_ENEMIES_DEFEATED);
+        
         enemySpawnQueue = currentWave.buildSpawnQueue(spawnCallbacks);
-        logger.info("Starting Wave {} with {} enemies", currentWave.getWaveNumber(), NUM_ENEMIES_TOTAL);
     }
 
     /**
@@ -220,12 +239,14 @@ public class ForestGameArea extends GameArea {
         } else {
             // Start next wave after delay
             currentWaveIndex++;
+            // Adjust delay by time scale
+            float adjustedDelay = 3.0f / ServiceLocator.getTimeSource().getTimeScale();
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
                     startEnemyWave();
                 }
-            }, 3.0f);
+            }, adjustedDelay);
         }
     }
 
@@ -254,18 +275,21 @@ public class ForestGameArea extends GameArea {
             forceStopWave();
             return;
         }
-
+        
         if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
             // Spawning complete, but enemies still alive
             waveInProgress = false;
             logger.info("Wave {} spawning completed", currentWaveIndex + 1);
             return;
         }
-
+        
         // Cancel any existing spawn task
         if (waveSpawnTask != null) {
             waveSpawnTask.cancel();
         }
+        
+        // Adjust spawn delay to compensate for time scale
+        float adjustedSpawnDelay = spawnDelay / ServiceLocator.getTimeSource().getTimeScale();
 
         // Schedule next spawn
         waveSpawnTask = Timer.schedule(new Timer.Task() {
@@ -276,7 +300,7 @@ public class ForestGameArea extends GameArea {
                     logger.info("Game area changed during spawn, stopping");
                     return;
                 }
-
+                
                 // Double-check services are still available when task runs
                 try {
                     if (ServiceLocator.getPhysicsService() == null ||
@@ -285,12 +309,12 @@ public class ForestGameArea extends GameArea {
                         forceStopWave();
                         return;
                     }
-
+                    
                     if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
                         // Spawn the next enemy
                         Runnable spawnAction = enemySpawnQueue.remove(0);
                         spawnAction.run();
-
+                        
                         // Schedule the next one
                         scheduleNextEnemySpawn();
                     }
@@ -299,7 +323,7 @@ public class ForestGameArea extends GameArea {
                     forceStopWave();
                 }
             }
-        }, spawnDelay);
+        }, adjustedSpawnDelay);
     }
 
     /**
@@ -329,6 +353,11 @@ public class ForestGameArea extends GameArea {
         // Send the chosen difficulty so it shows immediately
         difficultyUi.getEvents().trigger("setDifficulty", gameDifficulty.name());
         */
+
+        // Create time speed control button
+        Entity timeSpeedUI = new Entity();
+        timeSpeedUI.addComponent(new com.csse3200.game.components.maingame.TimeSpeedButton());
+        spawnEntity(timeSpeedUI);
 
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
@@ -472,7 +501,6 @@ public class ForestGameArea extends GameArea {
                 GridPoint2Utils.ZERO, false, false);
     }
 
-
     //Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
@@ -536,38 +564,65 @@ public class ForestGameArea extends GameArea {
         return mapEditor != null ? mapEditor.getWaypointList() : java.util.Collections.emptyList();
     }
 
-    private void spawnSingleDrone() {
-        Entity drone = DroneEnemyFactory.createDroneEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(drone, new GridPoint2(0, 10), true, true);
-        logger.debug("Spawned drone. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnDrone(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity drone = DroneEnemyFactory.createDroneEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(drone, spawnPos, true, true);
+        logger.debug("Spawned drone at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleGrunt() {
-        Entity grunt = GruntEnemyFactory.createGruntEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(grunt, new GridPoint2(0, 10), true, true);
-        logger.debug("Spawned grunt. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnGrunt(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity grunt = GruntEnemyFactory.createGruntEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(grunt, spawnPos, true, true);
+        logger.debug("Spawned grunt at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleTank() {
-        Entity tank = TankEnemyFactory.createTankEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(tank, new GridPoint2(0, 10), true, true);
-        logger.debug("Spawned tank. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnTank(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity tank = TankEnemyFactory.createTankEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(tank, spawnPos, true, true);
+        logger.debug("Spawned tank at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleBoss() {
-        Entity boss = BossEnemyFactory.createBossEnemy(mapEditor.getWaypointList(), player, gameDifficulty);
-        spawnEntityAt(boss, new GridPoint2(0, 10), true, true);
-        logger.debug("Spawned boss. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnBoss(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity boss = BossEnemyFactory.createBossEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(boss, spawnPos, true, true);
+        logger.debug("Spawned boss at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
     }
 
-    private void spawnSingleDivider() {
-        Entity divider = DividerEnemyFactory.createDividerEnemy(mapEditor.getWaypointList(), this, player, gameDifficulty);
-        spawnEntityAt(divider, new GridPoint2(0, 10), true, true);
-        logger.debug("Spawned divider. Total enemies: {}", NUM_ENEMIES_TOTAL);
+    private void spawnDivider(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity divider = DividerEnemyFactory.createDividerEnemy(waypoints, this, player, gameDifficulty);
+        spawnEntityAt(divider, spawnPos, true, true);
+        logger.debug("Spawned divider at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
+    }
+
+    private void spawnSpeeder(List<Entity> waypoints) {
+        GridPoint2 spawnPos = getSpawnPosition(waypoints);
+        Entity speeder = SpeederEnemyFactory.createSpeederEnemy(waypoints, player, gameDifficulty);
+        spawnEntityAt(speeder, spawnPos, true, true);
+        logger.debug("Spawned speeder at {}. Total enemies: {}", spawnPos, NUM_ENEMIES_TOTAL);
+    }
+
+    /**
+     * Helper method to get spawn position from the first waypoint in the list
+     */
+    private GridPoint2 getSpawnPosition(List<Entity> waypoints) {
+        if (waypoints == null || waypoints.isEmpty()) {
+            logger.warn("No waypoints provided, using default spawn position");
+            return new GridPoint2(0, 0);
+        }
+        // Get position from the first waypoint entity
+        Entity firstWaypoint = waypoints.get(0);
+        Vector2 pos = firstWaypoint.getPosition();
+        return new GridPoint2((int) pos.x * 2, (int) pos.y * 2);
     }
 
     public static void checkEnemyCount() {
         if (NUM_ENEMIES_DEFEATED >= NUM_ENEMIES_TOTAL) {
+            // Wave complete - let onWaveDefeated handle progression
             if (currentGameArea != null) {
                 currentGameArea.onWaveDefeated();
             }
@@ -722,6 +777,12 @@ public class ForestGameArea extends GameArea {
 
     @Override
     public void dispose() {
+        forceStopWave();
+
+        if (currentGameArea == this) {
+            currentGameArea = null;
+        }
+
         super.dispose();
         if (mapEditor != null) {
             // Both MapEditor and MapEditor2 have cleanup()
@@ -739,4 +800,6 @@ public class ForestGameArea extends GameArea {
         this.unloadAssets();
     }
 }
+
+
 

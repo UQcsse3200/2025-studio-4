@@ -3,6 +3,8 @@ package com.csse3200.game.components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.screens.GameOverScreen;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.services.ServiceLocator;
@@ -58,6 +60,12 @@ public class PlayerCombatStatsComponent extends Component {
       entity.getEvents().trigger("updateHealth", this.health);
       if (this.health == 0) {
         // Lose Condition
+        if (ForestGameArea2.currentGameArea != null) {
+            ForestGameArea2.currentGameArea.cleanupAllWaves();
+          }
+        if (ForestGameArea.currentGameArea != null) {
+            ForestGameArea.currentGameArea.cleanupAllWaves();
+        }
         ServiceLocator.getEntityService().unregister(entity);
         MainGameScreen.ui.getComponent(GameOverScreen.class).addActors();
         }

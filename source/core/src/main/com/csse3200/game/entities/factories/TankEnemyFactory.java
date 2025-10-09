@@ -1,9 +1,9 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.components.projectile.AntiProjectileShooterComponent;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -24,8 +24,8 @@ public class TankEnemyFactory {
     ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 100;
     private static final int DEFAULT_DAMAGE = 15;
-    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
-    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.Fire;
+    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Electricity;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.6f, 0.6f);
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
@@ -77,7 +77,10 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius));
+            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"));
+            CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
 
@@ -100,8 +103,16 @@ public class TankEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -127,7 +138,7 @@ public class TankEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
 }
 
     private static void applySpeedModifier(Entity tank, WaypointComponent waypointComponent, Entity waypoint) {

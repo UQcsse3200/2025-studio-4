@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
@@ -149,12 +150,23 @@ public class EnemyFactory {
     Array<TextureAtlas.AtlasRegion> walkRegions = atlas.findRegions("walk");
     Array<TextureAtlas.AtlasRegion> idleRegions = atlas.findRegions("idle");
 
+    //Gdx.app.log("ATLAS", atlasPath + "  attack regions=" + atlas.findRegions("attack").size +
+                     //"  death regions=" + atlas.findRegions("death").size);
+
     if (walkRegions.size > 0) {
-      anim.addAnimation("walk", walkFrameDur, PlayMode.LOOP);
+        anim.addAnimation("walk", walkFrameDur, PlayMode.LOOP);
     }
     if (idleRegions.size > 0 && idleFrameDur != null) {
-      anim.addAnimation("idle", idleFrameDur, PlayMode.LOOP);
+        anim.addAnimation("idle", idleFrameDur, PlayMode.LOOP);
     }
+
+    float attackDur = EnemyAnimationController.ATTACK_FRAME_DUR;
+    float deathDur  = EnemyAnimationController.DEATH_FRAME_DUR;
+
+    if (atlas.findRegions("attack").size > 0)
+        anim.addAnimation("attack", attackDur, PlayMode.NORMAL);
+    if (atlas.findRegions("death").size > 0)
+        anim.addAnimation("death", deathDur, PlayMode.NORMAL);
 
     e.addComponent(anim)
             .addComponent(new EnemyAnimationController());

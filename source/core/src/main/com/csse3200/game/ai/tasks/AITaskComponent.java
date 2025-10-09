@@ -19,6 +19,12 @@ public class AITaskComponent extends Component implements TaskRunner {
 
   private final List<PriorityTask> priorityTasks = new ArrayList<>(2);
   private PriorityTask currentTask;
+  private boolean movementStopped = false; 
+  @Override
+  public void create() {
+    super.create();
+    entity.getEvents().addListener("stopMovement", this::stopMovement);
+  }
 
   /**
    * Add a priority task to the list of tasks. This task will be run only when it has the highest
@@ -41,6 +47,10 @@ public class AITaskComponent extends Component implements TaskRunner {
    */
   @Override
   public void update() {
+    if (movementStopped) {
+      return;
+    }
+
     PriorityTask desiredtask = getHighestPriorityTask();
     if (desiredtask == null || desiredtask.getPriority() < 0) {
       return;
@@ -50,6 +60,19 @@ public class AITaskComponent extends Component implements TaskRunner {
       changeTask(desiredtask);
     }
     currentTask.update();
+  }
+
+  /**
+   * Stop all movement and AI tasks permanently (called when enemy dies)
+   */
+  private void stopMovement() {
+    logger.debug("{} Stopping all movement and AI tasks", this);
+    movementStopped = true;
+    
+    if (currentTask != null) {
+      currentTask.stop();
+      currentTask = null;
+    }
   }
 
   @Override

@@ -2,7 +2,7 @@
     "health": 120,
     "baseAttack": 1,
     "heroTexture": "images/engineer/Engineer.png",
-    "summonCooldown": 5.0,
+    "summonCooldown": 3.0,
     "maxSummons": 3,
     "summonSpeed": 250.0,
     "summonTexture": "images/engineer/Sentry.png"

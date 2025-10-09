@@ -3,7 +3,13 @@ package com.csse3200.game.areas;
 import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.services.SelectedHeroService;
+import com.csse3200.game.ui.HeroStatusPanelComponent;
+
+
 import com.csse3200.game.components.maingame.*;
+
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
@@ -32,6 +38,7 @@ import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
+import com.csse3200.game.entities.configs.SamuraiConfig;
 
 import com.badlogic.gdx.utils.Timer;
 
@@ -344,6 +351,7 @@ public class ForestGameArea extends GameArea {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+
         /*
         // Difficulty label UI
         Entity difficultyUi = new Entity()
@@ -358,6 +366,7 @@ public class ForestGameArea extends GameArea {
         Entity timeSpeedUI = new Entity();
         timeSpeedUI.addComponent(new com.csse3200.game.components.maingame.TimeSpeedButton());
         spawnEntity(timeSpeedUI);
+
 
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
@@ -438,9 +447,15 @@ public class ForestGameArea extends GameArea {
         GameStateService.HeroType chosen = gameState.getSelectedHero();
         Gdx.app.log("ForestGameArea", "chosen=" + chosen);
 
-        // 根据选择安装一个只放“指定英雄”的放置器
-        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
-                (chosen == GameStateService.HeroType.ENGINEER) ? this::spawnEngineerAt : this::spawnHeroAt;
+// 根据选择安装一个只放“指定英雄”的放置器
+
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
+        switch (chosen) {
+            case ENGINEER -> placeCb = this::spawnEngineerAt;
+            case SAMURAI -> placeCb = this::spawnSamuraiAt;   // ★ 新增武士
+            default -> placeCb = this::spawnHeroAt;
+        }
+
 
         Entity placementEntity = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, (MapEditor)mapEditor, placeCb)
@@ -449,23 +464,7 @@ public class ForestGameArea extends GameArea {
 
         playMusic();
 
-        HeroConfig cfg1 = new HeroConfig();
-        cfg1.heroTexture = "images/hero/Heroshoot.png";
-        cfg1.bulletTexture = "images/hero/Bullet.png";
 
-        HeroConfig2 cfg2 = new HeroConfig2();
-        cfg2.heroTexture = "images/hero2/Heroshoot.png";
-        cfg2.bulletTexture = "images/hero2/Bullet.png";
-
-        HeroConfig3 cfg3 = new HeroConfig3();
-        cfg3.heroTexture = "images/hero3/Heroshoot.png";
-        cfg3.bulletTexture = "images/hero3/Bullet.png";
-
-        // 一次性换肤组件，注册到 EntityService
-        Entity skinSwitcher = new Entity().addComponent(
-                new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(cfg1, cfg2, cfg3)
-        );
-        com.csse3200.game.services.ServiceLocator.getEntityService().register(skinSwitcher);
     }
 
     private void spawnTerrain() {
@@ -630,50 +629,57 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnHeroAt(GridPoint2 cell) {
+        // 1️⃣ 加载配置（或直接手动创建，如你示例）
+        HeroConfig heroCfg = new HeroConfig();
+        heroCfg.heroTexture = "images/hero/Heroshoot.png";
+        heroCfg.bulletTexture = "images/hero/Bullet.png";
 
-        HeroConfig heroCfg = FileLoader.readClass(HeroConfig.class, "configs/hero.json");
-        if (heroCfg == null) {
-            logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
-            heroCfg = new HeroConfig();
-        }
+        HeroConfig2 heroCfg2 = new HeroConfig2();
+        heroCfg2.heroTexture = "images/hero2/Heroshoot.png";
+        heroCfg2.bulletTexture = "images/hero2/Bullet.png";
 
-        HeroConfig2 heroCfg2 = FileLoader.readClass(HeroConfig2.class, "configs/hero2.json");
-        if (heroCfg2 == null) {
-            logger.warn("Failed to load configs/hero2.json, using default HeroConfig.");
-            heroCfg2 = new HeroConfig2();
-        }
+        HeroConfig3 heroCfg3 = new HeroConfig3();
+        heroCfg3.heroTexture = "images/hero3/Heroshoot.png";
+        heroCfg3.bulletTexture = "images/hero3/Bullet.png";
 
-        HeroConfig3 heroCfg3 = FileLoader.readClass(HeroConfig3.class, "configs/hero3.json");
-        if (heroCfg3 == null) {
-            logger.warn("Failed to load configs/hero.json, using default HeroConfig.");
-            heroCfg3 = new HeroConfig3();
-        }
-
+        // 2️⃣ 加载贴图资源（不放 create() 全局加载）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
         }
 
+        // 3️⃣ 创建英雄实体
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity hero = HeroFactory.createHero(heroCfg, cam);
 
+        // 4️⃣ 挂上 OneShotFormSwitchComponent（带三套 cfg）
+        hero.addComponent(new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(
+                heroCfg, heroCfg2, heroCfg3
+        ));
+
+        // 5️⃣ 其他组件照旧
         var up = hero.getComponent(HeroUpgradeComponent.class);
-        if (up != null) {
-            up.attachPlayer(player);
-        }
+        if (up != null) up.attachPlayer(player);
 
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+        hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
+
+        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(hero, "Hero"));
+        spawnEntity(heroStatusUI);
 
         spawnEntityAt(hero, cell, true, true);
 
-        // 放置完成后的一次性提示窗口
+        // 6️⃣ 一次性提示窗口
         if (!heroHintShown) {
-            com.badlogic.gdx.scenes.scene2d.Stage stage = ServiceLocator.getRenderService().getStage();
+            var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
             heroHintShown = true;
         }
+
     }
+
+
 
     private void spawnEngineerAt(GridPoint2 cell) {
         // 1) 只读取工程师配置
@@ -701,13 +707,61 @@ public class ForestGameArea extends GameArea {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 放置
+        // 4) 创建状态栏UI
+        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(engineer, "Engineer"));
+        spawnEntity(heroStatusUI);
+
+        // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
 
-        // 5) 一次性提示
+        // 6) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
+            heroHintShown = true;
+        }
+    }
+
+    private void spawnSamuraiAt(GridPoint2 cell) {
+        // 1) 读 samurai 配置
+        SamuraiConfig samCfg = FileLoader.readClass(SamuraiConfig.class, "configs/samurai.json");
+        if (samCfg == null) {
+            logger.warn("Failed to load configs/samurai.json, using default SamuraiConfig.");
+            samCfg = new SamuraiConfig();
+        }
+
+        // 2) 预加载 samurai 资源（主体 + 刀）
+        ResourceService rs = ServiceLocator.getResourceService();
+        HeroFactory.loadAssets(rs, samCfg);
+        while (!rs.loadForMillis(10)) {
+            logger.info("Loading samurai assets... {}%", rs.getProgress());
+        }
+
+        // 3) 创建 samurai 英雄（你之前实现的 createSamuraiHero）
+        Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
+        Entity samurai = HeroFactory.createSamuraiHero(samCfg, cam);
+
+        // 4) 附加钱包/升级等（和其他英雄保持一致）
+        if (samurai.getComponent(CurrencyManagerComponent.class) == null) {
+            samurai.addComponent(new CurrencyManagerComponent());
+        }
+        var up = samurai.getComponent(HeroUpgradeComponent.class);
+        if (up != null) {
+            up.attachPlayer(player);
+        }
+        samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+
+        // 5) 创建状态栏UI
+        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(samurai, "Samurai"));
+        spawnEntity(heroStatusUI);
+
+        // 6) 放置
+        spawnEntityAt(samurai, cell, true, true);
+
+        // 7) 一次性提示
+        if (!heroHintShown) {
+            var stage = ServiceLocator.getRenderService().getStage();
+            new com.csse3200.game.ui.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
         }
     }

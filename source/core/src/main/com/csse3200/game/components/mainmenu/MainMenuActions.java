@@ -20,6 +20,7 @@ public class MainMenuActions extends Component {
     this.game = game;
   }
 
+
   @Override
   public void create() {
     entity.getEvents().addListener("start", this::onStart);
@@ -30,6 +31,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("ranking", this::onRanking);
     entity.getEvents().addListener("achievement", this::onAchievement);
   }
+
 
   /**
    * Shows name input dialog before starting new game.
@@ -129,6 +131,8 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.BOOK);
   }
 
+
+
   /**
    * Shows the leaderboard/ranking screen.
    */
@@ -138,6 +142,7 @@ public class MainMenuActions extends Component {
     // Since we have LeaderboardUI component, we can trigger it directly
     showLeaderboard();
   }
+
 
   /**
    * Shows the leaderboard popup.

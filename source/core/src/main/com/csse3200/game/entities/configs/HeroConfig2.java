@@ -15,7 +15,7 @@ public class HeroConfig2 extends HeroConfig {
   public float moveSpeed = 220f;
 
   /** Attack cooldown (seconds per shot) — lower values mean faster attack speed */
-  public float attackCooldown = 0.08f;
+  public float attackCooldown = 0.20f;
 
   /** Bullet lifetime (seconds) */
   public float bulletLife = 1.6f;
@@ -45,7 +45,7 @@ public class HeroConfig2 extends HeroConfig {
    */
   public HeroConfig2() {
     this.health = 100;
-    this.baseAttack = 5;
+    this.baseAttack = 2;
   }
 }
 

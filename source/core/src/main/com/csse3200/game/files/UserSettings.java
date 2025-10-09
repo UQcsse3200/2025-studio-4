@@ -98,10 +98,12 @@ public class UserSettings {
     
     public String difficulty = "Normal";
     public String language = "English";
+
     
     public String heroSkin = "default";
     public String heroWeapon = "default";
     public String heroEffect = "default";
+
   }
 
   /**

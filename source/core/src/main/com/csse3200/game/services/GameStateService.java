@@ -16,8 +16,9 @@ public class GameStateService {
     private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
 
     public enum HeroType {
-        HERO,       // 普通英雄
-        ENGINEER    // 工程师
+        HERO,
+        ENGINEER,
+        SAMURAI
     }
 
     private Entity base;
@@ -33,18 +34,21 @@ public class GameStateService {
 
         heroUnlocks.put(HeroType.HERO, true);
         heroUnlocks.put(HeroType.ENGINEER, false);
+        heroUnlocks.put(HeroType.SAMURAI, false);
     }
 
     /**
      * Sets the current Base entity to track health
+     *
      * @param player the base of our current map
      */
-    public void setBase (Entity player) {
+    public void setBase(Entity player) {
         this.base = player;
     }
 
     /**
      * Gets the current number of stars
+     *
      * @return current number of stars
      */
     public int getStars() {
@@ -53,6 +57,7 @@ public class GameStateService {
 
     /**
      * Sets the current number of stars to the given number
+     *
      * @param newStars new number of stars
      */
     public void setStars(int newStars) {
@@ -61,6 +66,7 @@ public class GameStateService {
 
     /**
      * Increments the current number of stars by the given number
+     *
      * @param increment the number of stars to increment by
      */
     public void updateStars(int increment) {
@@ -98,11 +104,11 @@ public class GameStateService {
             return;
         }
         PlayerCombatStatsComponent stats = base.getComponent(PlayerCombatStatsComponent.class);
-        if (stats == null){
+        if (stats == null) {
             logger.warn("Base is missing PlayerCombatStatsComponent");
             return;
         }
-        double hpPercent = (double) stats.getHealth()/stats.getMaxHealth();
+        double hpPercent = (double) stats.getHealth() / stats.getMaxHealth();
         rewardStarsByHealth(hpPercent);
     }
 
@@ -119,7 +125,7 @@ public class GameStateService {
         int starsAwarded =
                 (healthPercent >= 0.80) ? 3 :
                         (healthPercent >= 0.50) ? 2 :
-                                (healthPercent >  0.00) ? 1 : 0;
+                                (healthPercent > 0.00) ? 1 : 0;
 
         updateStars(starsAwarded);
         logger.info("Awarded {} stars for health {}%. Total: {}",
@@ -146,6 +152,7 @@ public class GameStateService {
 
     /**
      * Sets the current selected hero
+     *
      * @param type the HeroType of the selected hero
      */
     public void setSelectedHero(HeroType type) {
@@ -156,6 +163,7 @@ public class GameStateService {
 
     /**
      * Gets the current selected hero
+     *
      * @return the HeroType of the selected hero
      */
     public HeroType getSelectedHero() {

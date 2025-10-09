@@ -83,7 +83,7 @@ public class CurrencyManagerComponent extends Component {
      * @param entity the currency entity to add
      */
     public void addCurrencyEntity(Entity entity) {
-        if (!currencyEntityList.contains(entity)){
+        if (!currencyEntityList.contains(entity)) {
             currencyEntityList.add(entity);
             entity.getEvents().addListener("collectCurrency", this::collectCurrency);
         }
@@ -100,6 +100,7 @@ public class CurrencyManagerComponent extends Component {
 
     /**
      * Update UI rendering for a specific currency type
+     *
      * @param type the currency type
      */
     private void updateCurrencyUI(CurrencyType type) {
@@ -122,6 +123,7 @@ public class CurrencyManagerComponent extends Component {
 
     /**
      * Increment the counter and trigger to update UI.
+     *
      * @param entity collected Currency Entity
      */
     private void collectCurrency(Entity entity) {
@@ -166,10 +168,10 @@ public class CurrencyManagerComponent extends Component {
      *
      * @param costMap a map of {@link CurrencyType} to the required amount for each type
      * @return true if the player can afford the cost and the player's currencies are deducted,
-     *         false if the player cannot afford the cost
+     * false if the player cannot afford the cost
      */
     public boolean canAffordAndSpendCurrency(Map<CurrencyType, Integer> costMap) {
-        for (Map.Entry<CurrencyType, Integer> entry:  costMap.entrySet()) {
+        for (Map.Entry<CurrencyType, Integer> entry : costMap.entrySet()) {
             // Check if the cost is larger than the player's currency
             if (entry.getValue() > this.getCurrencyAmount(entry.getKey())) {
                 return false;
@@ -187,9 +189,8 @@ public class CurrencyManagerComponent extends Component {
      * Refunds a portion of the tower’s cost according to the specified refund rate.*
      * Usage: playerEntity.getComponent(CurrencyManagerComponent.class).refundCurrency(costMap)
      *
-     * @param costMap a map of {@link CurrencyType} to the required amount for each type
+     * @param costMap    a map of {@link CurrencyType} to the required amount for each type
      * @param refundRate the refund rate of the cost
-     *
      */
     public void refundCurrency(Map<CurrencyType, Integer> costMap, float refundRate) {
         costMap.forEach((type, value) -> {
@@ -197,5 +198,13 @@ public class CurrencyManagerComponent extends Component {
             this.updateCurrencyUI(type);
         });
     }
+
+    public void addCurrency(CurrencyType type, int amount) {
+        if (amount <= 0) return;
+        addCurrencyAmount(type, amount);
+        updateCurrencyUI(type);
+    }
 }
+
+
 

@@ -71,6 +71,7 @@ public class MainMenuDisplay extends UIComponent {
             "large"
     );
 
+
     // 设置按钮大小
     float buttonWidth = 200f;
     float buttonHeight = 50f;
@@ -80,6 +81,7 @@ public class MainMenuDisplay extends UIComponent {
     settingsBtn.getLabel().setColor(Color.WHITE);
     rankingBtn.getLabel().setColor(Color.WHITE);
     achievementBtn.getLabel().setColor(Color.WHITE);
+
     exitBtn.getLabel().setColor(Color.WHITE);
 
     // Triggers an event when the button is pressed

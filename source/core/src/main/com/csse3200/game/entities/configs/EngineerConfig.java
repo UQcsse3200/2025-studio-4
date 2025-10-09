@@ -18,8 +18,8 @@ public class EngineerConfig extends HeroConfig {
     this.heroTexture = "images/engineer/Engineer.png";
     // 覆盖父类默认的普通英雄贴图
     this.levelTextures = new String[] {
-            "images/engineer/Engineer.png"   // 如果暂时没有多级皮肤，就放同一张
-            // "images/engineer/Engineer_Lv2.png", ...
+            "images/engineer/Engineer.png",   // 如果暂时没有多级皮肤，就放同一张
+            "images/engineer/Engineer_Level_2.png"// "images/engineer/Engineer_Lv2.png", ...
     };
   }
 }

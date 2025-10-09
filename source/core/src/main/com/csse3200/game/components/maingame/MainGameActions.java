@@ -125,11 +125,12 @@ public class MainGameActions extends Component {
   private void onGameOver() {
     logger.info("Game over, submitting defeat score");
     
-    // 在切换屏幕之前计算并保存最终得分
+    // Calculate and save the final score before switching screens
     try {
       var sessionManager = ServiceLocator.getGameSessionManager();
       if (sessionManager != null) {
-        // 提交失败得分（这会在实体还存在时计算得分）
+        
+          //Submission failure score (this is calculated while the entity still exists)
         sessionManager.submitScoreIfNotSubmitted(false);
       }
     } catch (Exception e) {

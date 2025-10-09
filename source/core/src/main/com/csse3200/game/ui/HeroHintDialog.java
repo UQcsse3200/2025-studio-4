@@ -41,7 +41,7 @@ public class HeroHintDialog extends Window {
         setTouchable(Touchable.enabled);
         pad(10);
 
-        hintLabel = new Label("Hint: press keyboard 1/2/3 can change weapon", SimpleUI.label());
+        hintLabel = new Label("Hint: press keyboard 1/2/3 use hero power", SimpleUI.label());
         closeBtn = new TextButton("Close", SimpleUI.darkButton());
 
         // 使用高分辨率位图字体（避免放大模糊）：加载 32px 字体并小幅缩放

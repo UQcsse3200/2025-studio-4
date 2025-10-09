@@ -27,7 +27,7 @@ import com.badlogic.gdx.Gdx;
 public class HeroStatsDialog extends Window {
     private final Entity hero;
     private final Label lvlLabel, hpLabel, atkLabel, costLabel;
-    private final TextButton upgradeBtn, closeBtn;
+    private final TextButton upgradeBtn, closeBtn, ultBtn;
 
     // Follow settings
     private final Vector3 tmp = new Vector3();
@@ -55,6 +55,7 @@ public class HeroStatsDialog extends Window {
 
         upgradeBtn = new TextButton("Upgrade", SimpleUI.primaryButton());
         closeBtn = new TextButton("Close", SimpleUI.darkButton());
+        ultBtn = UltimateButtonComponent.createUltimateButton(hero);
 
         // 使用高分辨率位图字体并小幅缩放（避免放大导致模糊）
         fontTitle = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
@@ -94,6 +95,17 @@ public class HeroStatsDialog extends Window {
         closeStyle.down = SimpleUI.solid(Color.WHITE);
         closeBtn.setStyle(closeStyle);
 
+        // ULT 按钮样式（白色背景，黑色文字）
+        TextButton.TextButtonStyle ultStyle = SimpleUI.darkButton();
+        ultStyle.font = fontButton;
+        ultStyle.fontColor = Color.BLACK;
+        ultStyle.overFontColor = Color.BLACK;
+        ultStyle.downFontColor = Color.BLACK;
+        ultStyle.up = SimpleUI.solid(Color.WHITE);
+        ultStyle.over = SimpleUI.solid(Color.WHITE);
+        ultStyle.down = SimpleUI.solid(Color.WHITE);
+        ultBtn.setStyle(ultStyle);
+
         Table t = new Table();
         t.defaults().pad(6).left();
         t.add(lvlLabel).row();
@@ -103,6 +115,7 @@ public class HeroStatsDialog extends Window {
 
         Table actions = new Table();
         actions.add(upgradeBtn).width(140).padRight(8);
+        actions.add(ultBtn).width(140).padRight(8);
         actions.add(closeBtn).width(140);
 
         add(t).growX().row();

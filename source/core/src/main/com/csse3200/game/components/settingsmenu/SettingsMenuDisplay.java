@@ -58,6 +58,7 @@ public class SettingsMenuDisplay extends UIComponent {
     private Slider musicVolumeSlider;
     private Slider soundVolumeSlider;
     private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
+
     private SelectBox<String> difficultySelect; // currently unused (kept for compatibility)
     private SelectBox<String> languageSelect;   // currently unused
     private SelectBox<String> heroWeaponSelect;
@@ -215,6 +216,7 @@ public class SettingsMenuDisplay extends UIComponent {
         displayModeSelect.setItems(getDisplayModes(selectedMonitor));
         displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
+
         Label heroCustomizationTitle = new Label("Hero Customization", skin);
 
         Label heroWeaponLabel = new Label("Hero Weapon:", skin);
@@ -225,9 +227,11 @@ public class SettingsMenuDisplay extends UIComponent {
         Label heroEffectLabel = new Label("Weapon Sound:", skin);
         heroEffectSelect = new SelectBox<>(skin);
         heroEffectSelect.setItems("Sound 1", "Sound 2", "Sound 3");
+
         heroEffectSelect.setSelected(settings.heroEffect.equals("default") ? "Sound 1" : settings.heroEffect);
 
         // Layout
+
         Table table = new Table();
 
         table.add(fpsLabel).right().padRight(15f);
@@ -270,6 +274,7 @@ public class SettingsMenuDisplay extends UIComponent {
         table.add(displayModeSelect).left();
 
         table.row().padTop(20f);
+
         heroCustomizationTitle.setColor(SECTION_COLOR);
         table.add(heroCustomizationTitle).colspan(2).center().padBottom(10f);
 
@@ -280,6 +285,7 @@ public class SettingsMenuDisplay extends UIComponent {
         table.row().padTop(10f);
         table.add(heroEffectLabel).right().padRight(15f);
         table.add(heroEffectSelect).left();
+
 
         // Live label values
         uiScaleSlider.addListener(
@@ -398,6 +404,7 @@ public class SettingsMenuDisplay extends UIComponent {
 
         settings.heroWeapon = heroWeaponSelect.getSelected().toLowerCase();
         settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
+
 
         // Persist
         UserSettings.set(settings, true);

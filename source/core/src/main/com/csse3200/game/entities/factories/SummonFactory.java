@@ -3,6 +3,7 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.hero.engineer.*;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.PhysicsLayer;
@@ -12,75 +13,188 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
-
+/**
+ * Factory class for creating Engineer-related summon entities such as:
+ * <ul>
+ *   <li>Melee summons (e.g., drones or barricades)</li>
+ *   <li>Directional turrets</li>
+ *   <li>Currency-generating bots</li>
+ *   <li>Ghost previews for placement</li>
+ * </ul>
+ * <p>
+ * All entities created here are preconfigured with the appropriate physics,
+ * rendering, and combat components.
+ * </p>
+ */
 public final class SummonFactory {
-    private SummonFactory() {}
+    private SummonFactory() {
+        // Prevent instantiation (utility factory class)
+    }
+
+    // === Melee Summon ===
 
     /**
-     * 近战型召唤物（静止版）：
-     * - 无移动、无追击任务；
-     * - 敌人碰到命中盒即触发 TouchAttackComponent；
-     * - 身体/命中盒均在 PLAYER 层，仅攻击 NPC 层目标。
+     * Creates a simple melee summon (e.g., a close-range bot or barricade).
+     * <p>
+     * These entities are static (non-moving) and deal touch damage upon contact.
+     * They automatically despawn when their HP reaches zero.
+     * </p>
      *
-     * @param texturePath 召唤物贴图
-     * @param colliderSensor 是否把实体碰撞体设为传感器（true=不阻挡，仅用于触发）
-     * @param scale 视觉缩放（与碰撞体按比例设置）
-     * @return 静止的近战召唤物实体
+     * @param texturePath    Path to the summon texture.
+     * @param colliderSensor Whether the collider should act as a sensor (non-solid).
+     * @param scale          Scale factor for the summon sprite.
+     * @return The created melee summon entity.
      */
-    // 静止近战召唤物（会造成伤害）
-    public static Entity createMeleeSummon(String texturePath,
-                                           boolean colliderSensor,
-                                           float scale) {
-
+    public static Entity createMeleeSummon(String texturePath, boolean colliderSensor, float scale) {
         var resistance = DamageTypeConfig.None;
-        var weakness   = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
 
         Entity s = new Entity()
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent()
-                        .setSensor(false)                 // 实体碰撞（用于“顶开/挡住”）
-                        .setLayer(PhysicsLayer.PLAYER)    // ← 还需保证与 NPC 互撞（见下方注意）
-                )
+                        .setSensor(false)
+                        .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new HitboxComponent()
-                        .setLayer(PhysicsLayer.PLAYER))   // 通常 Hitbox 是传感器，用于触发碰撞事件
+                        .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new TextureRenderComponent(texturePath))
-                .addComponent(new CombatStatsComponent(1, /*baseAttack*/0, resistance, weakness))
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, /*knockback*/4.0f)); // ✅ 只击退
+                .addComponent(new CombatStatsComponent(100, 0, resistance, weakness))
+                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 4.0f))
+                .addComponent(new AutoDespawnOnDeathComponent()); // ✅ Auto-despawn on death
 
-// 建议：把召唤物做成路障更稳定
         var phys = s.getComponent(PhysicsComponent.class);
         if (phys != null) {
             phys.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.StaticBody);
         }
 
-// 碰撞盒尺寸别太小，尽量接近 1×1（按你们世界单位/Tile 来）
         PhysicsUtils.setScaledCollider(s, 0.9f * scale, 0.9f * scale);
         s.setScale(scale, scale);
-
         return s;
-
     }
 
-    /** 幽灵版近战召唤物：仅显示用于放置预览；不攻击、不阻挡 */
-    public static Entity createMeleeSummonGhost(String texturePath, float scale) {
-        Entity ghost = new Entity()
+    // === Directional Turret ===
+
+    /**
+     * Creates a directional turret that fires projectiles in a fixed direction.
+     * <p>
+     * The turret uses a {@link TurretAttackComponent} for firing bullets and
+     * a {@link FourWayCycleComponent} to automatically rotate its attack direction
+     * (Up → Right → Down → Left).
+     * </p>
+     *
+     * @param texturePath    Path to the turret texture.
+     * @param scale          Scale factor for the turret sprite.
+     * @param attackCooldown Time interval (in seconds) between attacks.
+     * @param fireDirection  Initial firing direction.
+     * @return The created turret entity.
+     */
+    public static Entity createDirectionalTurret(String texturePath, float scale,
+                                                 float attackCooldown, Vector2 fireDirection) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        Entity turret = new Entity()
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent()
-                        .setSensor(true)                 // 不阻挡
-                        .setLayer(PhysicsLayer.NONE))    // 不参与任何碰撞层
+                        .setSensor(false)
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new HitboxComponent()
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new TextureRenderComponent(texturePath))
+                .addComponent(new CombatStatsComponent(20, 25, resistance, weakness))
+                .addComponent(new AutoDespawnOnDeathComponent()); // ✅ Auto-despawn on death
+
+        var phys = turret.getComponent(PhysicsComponent.class);
+        if (phys != null) {
+            phys.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.StaticBody);
+        }
+
+        PhysicsUtils.setScaledCollider(turret, 0.8f * scale, 0.8f * scale);
+        turret.setScale(scale, scale);
+
+        // Attack behavior: shoot bullets and rotate firing direction cyclically
+        turret.addComponent(new TurretAttackComponent(
+                fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/hero/Bullet.png"));
+        turret.addComponent(new FourWayCycleComponent(attackCooldown, fireDirection));
+
+        return turret;
+    }
+
+    // === Currency Generator Bot ===
+
+    /**
+     * Creates a currency-generating robot that periodically produces in-game currency
+     * for its owner (typically the player).
+     * <p>
+     * Includes {@link OwnerComponent} to link it to its summoner and
+     * {@link CurrencyGeneratorComponent} to handle timed currency production.
+     * </p>
+     *
+     * @param texturePath   Path to the robot texture.
+     * @param scale         Scale factor for the sprite.
+     * @param owner         The player entity that owns this bot.
+     * @param currencyType  Type of currency generated (e.g., METAL_SCRAP).
+     * @param amountPerTick Amount of currency produced each cycle.
+     * @param intervalSec   Time interval (in seconds) between generations.
+     * @return The created currency bot entity.
+     */
+    public static Entity createCurrencyBot(
+            String texturePath, float scale,
+            Entity owner,
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType currencyType,
+            int amountPerTick, float intervalSec
+    ) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        Entity bot = new Entity()
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent()
+                        .setSensor(false)
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new HitboxComponent()
+                        .setLayer(PhysicsLayer.PLAYER))
+                .addComponent(new TextureRenderComponent(texturePath))
+                .addComponent(new CombatStatsComponent(5, 0, resistance, weakness)) // Minimal HP
+                .addComponent(new AutoDespawnOnDeathComponent())
+                .addComponent(new OwnerComponent(owner))
+                .addComponent(new CurrencyGeneratorComponent(owner, currencyType, amountPerTick, intervalSec));
+
+        var phys = bot.getComponent(PhysicsComponent.class);
+        if (phys != null) {
+            phys.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.StaticBody);
+        }
+
+        PhysicsUtils.setScaledCollider(bot, 0.8f * scale, 0.8f * scale);
+        bot.setScale(scale, scale);
+
+        return bot;
+    }
+
+    // === Ghost Entity (for placement preview) ===
+
+    /**
+     * Creates a translucent ghost entity for summon placement preview.
+     * <p>
+     * The ghost entity does not interact physically (sensor-only collider)
+     * and is typically used to show where a summon will be placed.
+     * </p>
+     *
+     * @param texturePath Path to the ghost texture.
+     * @param scale       Scale factor for the preview.
+     * @return The created ghost summon entity.
+     */
+    public static Entity createMeleeSummonGhost(String texturePath, float scale) {
+        Entity ghost = new Entity()
                 .addComponent(new TextureRenderComponent(texturePath));
 
-        // 与正式体保持相同视觉/占位尺寸（便于预览时对齐）
-        PhysicsUtils.setScaledCollider(ghost, 0.12f * scale, 0.12f * scale);
+        // 如果引擎支持透明度/染色，可以半透明显示（按你们的组件API改）
+        // ghost.getComponent(TextureRenderComponent.class).setOpacity(0.5f);
+
         ghost.setScale(scale, scale);
-
-        // 如需半透明，可视你们的 TextureRenderComponent 能力加上（可选）：
-        // TextureRenderComponent rc = ghost.getComponent(TextureRenderComponent.class);
-        // if (rc != null) rc.setOpacity(0.5f); // 或 rc.setColor(new Color(1f,1f,1f,0.5f));
-
         return ghost;
     }
 
-
 }
+
+
 

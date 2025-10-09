@@ -13,25 +13,25 @@ import org.slf4j.LoggerFactory;
  * events is triggered.
  */
 public class MainMenuActions extends Component {
-    private static final Logger logger = LoggerFactory.getLogger(MainMenuActions.class);
-    private GdxGame game;
+  private static final Logger logger = LoggerFactory.getLogger(MainMenuActions.class);
+  private GdxGame game;
 
-    public MainMenuActions(GdxGame game) {
-        this.game = game;
-    }
-
-    @Override
-    public void create() {
-        entity.getEvents().addListener("start", this::onStart);
-        entity.getEvents().addListener("continue", this::onContinue);
-        entity.getEvents().addListener("exit", this::onExit);
-        entity.getEvents().addListener("settings", this::onSettings);
+  public MainMenuActions(GdxGame game) {
+    this.game = game;
+  }
 
 
+  @Override
+  public void create() {
+    entity.getEvents().addListener("start", this::onStart);
+    entity.getEvents().addListener("continue", this::onContinue);
+    entity.getEvents().addListener("exit", this::onExit);
+    entity.getEvents().addListener("settings", this::onSettings);
+    entity.getEvents().addListener("book", this::onBook);
+    entity.getEvents().addListener("ranking", this::onRanking);
+    entity.getEvents().addListener("achievement", this::onAchievement);
+  }
 
-        entity.getEvents().addListener("ranking", this::onRanking);
-
-    }
 
   /**
    * Shows name input dialog before starting new game.
@@ -40,7 +40,7 @@ public class MainMenuActions extends Component {
     logger.info("New Game clicked, showing name input dialog");
     showNameInputDialog();
   }
-
+  
   /**
    * Shows the name input dialog for new game.
    */
@@ -49,21 +49,22 @@ public class MainMenuActions extends Component {
     if (ServiceLocator.getPlayerNameService() == null) {
       ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
-
+    
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", 
+        com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(),
         new NameInputDialog.NameInputCallback() {
           @Override
-          public void onNameConfirmed(String name) {
-            handleNameConfirmed(name);
+          public void onNameConfirmed(String name, String avatarId) {
+            handleNameConfirmed(name, avatarId);
           }
-
+          
           @Override
           public void onNameCancelled() {
             handleNameCancelled();
           }
         });
-
+    
     // Get the current stage from the render service
     if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
       ServiceLocator.getRenderService().getStage().addActor(nameDialog);
@@ -74,50 +75,61 @@ public class MainMenuActions extends Component {
       game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
     }
   }
-
+  
   /**
-   * Handles when player confirms their name.
+   * Handles when player confirms their name and avatar.
    */
-  private void handleNameConfirmed(String name) {
-    logger.info("Player name confirmed: {}", name);
+  private void handleNameConfirmed(String name, String avatarId) {
+    logger.info("Player name confirmed: {}, avatar: {}", name, avatarId);
+    
+    // Save avatar selection to service
+    if (ServiceLocator.getPlayerAvatarService() != null) {
+      ServiceLocator.getPlayerAvatarService().setPlayerAvatar(avatarId);
+    }
+    
     // Proceed to map selection
     game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }
-
+  
   /**
    * Handles when player cancels name input.
    */
   private void handleNameCancelled() {
-    logger.info("Name input cancelled, proceeding to map selection with default name");
-    // Proceed to map selection with default name
-    game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
+    logger.info("Name input cancelled, returning to main menu");
+    // Return to main menu - dialog will close automatically
+    // No need to change screen since we're already on main menu
   }
 
 
-    /**
-     * Opens the save selection interface.
-     * Users can choose which save file to load or delete.
-     */
-    private void onContinue() {
-        logger.info("Opening save selection interface");
-        game.setScreen(GdxGame.ScreenType.SAVE_SELECTION);
-    }
+  /**
+   * Opens the save selection interface.
+   * Users can choose which save file to load or delete.
+   */
+  private void onContinue() {
+    logger.info("Opening save selection interface");
+    game.setScreen(GdxGame.ScreenType.SAVE_SELECTION);
+  }
 
-    /**
-     * Exits the game.
-     */
-    private void onExit() {
-        logger.info("Exit game");
-        game.exit();
-    }
+  /**
+   * Exits the game.
+   */
+  private void onExit() {
+    logger.info("Exit game");
+    game.exit();
+  }
 
-    /**
-     * Swaps to the Settings screen.
-     */
-    private void onSettings() {
-        logger.info("Launching settings screen");
-        game.setScreen(GdxGame.ScreenType.SETTINGS);
-    }
+  /**
+   * Swaps to the Settings screen.
+   */
+  private void onSettings() {
+    logger.info("Launching settings screen");
+    game.setScreen(GdxGame.ScreenType.SETTINGS);
+  }
+
+  private void onBook() {
+    logger.info("Launching book");
+    game.setScreen(GdxGame.ScreenType.BOOK);
+  }
 
 
 
@@ -137,27 +149,64 @@ public class MainMenuActions extends Component {
    */
   private void showLeaderboard() {
     try {
+      logger.info("Attempting to show leaderboard popup");
+      
       // Use the global leaderboard service (already registered in GdxGame)
-      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService =
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
         ServiceLocator.getLeaderboardService();
-
+      
       if (leaderboardService == null) {
-        logger.error("Leaderboard service not available");
-        return;
+        logger.error("Leaderboard service not available, registering fallback service");
+        // Register a fallback service if none exists
+        ServiceLocator.registerLeaderboardService(
+          new com.csse3200.game.services.leaderboard.SessionLeaderboardService("player-001"));
+        leaderboardService = ServiceLocator.getLeaderboardService();
       }
-
+      
       // Create and show leaderboard popup
-      com.csse3200.game.ui.leaderboard.LeaderboardController controller =
+      com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
         new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboardService);
-
-      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup =
+      
+      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = 
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(
           com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(), controller);
-
+      
       popup.showOn(ServiceLocator.getRenderService().getStage());
-
+      
     } catch (Exception e) {
       logger.error("Failed to show leaderboard", e);
+    }
+  }
+
+  /**
+   * Opens the achievement screen.
+   */
+  private void onAchievement() {
+    logger.info("Launching achievement screen");
+    showAchievementDialog();
+  }
+
+  /**
+   * Shows the achievement dialog popup.
+   */
+  private void showAchievementDialog() {
+    try {
+      // Create and show achievement dialog
+      com.csse3200.game.ui.AchievementDialog dialog =
+        new com.csse3200.game.ui.AchievementDialog(
+          "Achievements",
+          com.csse3200.game.ui.SimpleUI.windowStyle()
+        );
+
+      // Get the current stage from the render service
+      if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
+        dialog.show(ServiceLocator.getRenderService().getStage());
+      } else {
+        logger.warn("No stage available for achievement dialog");
+      }
+
+    } catch (Exception e) {
+      logger.error("Failed to show achievement dialog", e);
     }
   }
 }

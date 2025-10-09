@@ -27,7 +27,7 @@ public class DividerEnemyFactory {
     // 默认配置（按需调整）
     private static final int DEFAULT_HEALTH = 150;
     private static final int DEFAULT_DAMAGE = 5;
-    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.Electricity;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.75f, 0.75f);
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
@@ -74,6 +74,9 @@ public class DividerEnemyFactory {
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
+                CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
+                if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));
@@ -100,8 +103,16 @@ public class DividerEnemyFactory {
     private static void destroyEnemy(Entity entity, Entity target, GameArea area) {
         if (entity == null) return;
 
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         final Vector2 pos = entity.getPosition().cpy();
         final Vector2[] offsets = new Vector2[]{
@@ -138,7 +149,7 @@ public class DividerEnemyFactory {
             if (area != null && savedWaypoints != null) {
                 for (Vector2 offset : offsets) {
                     int targetWaypointIndex = Math.max(0, wc.getCurrentWaypointIndex() - 1);
-                    Entity child = DividerChildEnemyFactory.createDividerChildChildEnemy(
+                    Entity child = DividerChildEnemyFactory.createDividerChildEnemy(
                             target, savedWaypoints, targetWaypointIndex, difficulty
                     );
                     if (child != null) {

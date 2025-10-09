@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.hero.HeroAppearanceComponent;
 import com.csse3200.game.components.hero.samurai.SamuraiSpinAttackComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.components.hero.HeroCustomizationComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.components.CombatStatsComponent;
@@ -22,6 +23,7 @@ import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
 import java.util.LinkedHashSet;
 
 import com.csse3200.game.components.hero.HeroUltimateComponent;
+import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
  * Factory class for creating hero entities.
@@ -104,7 +106,10 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-                .addComponent(new HeroAppearanceComponent(cfg));
+
+                .addComponent(new UltimateButtonComponent())
+                .addComponent(new HeroAppearanceComponent(cfg))
+                .addComponent(new HeroCustomizationComponent());
 
         // Default scale to 1x1 so the hero is visible during testing
         hero.setScale(1f, 1f);

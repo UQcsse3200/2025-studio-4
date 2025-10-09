@@ -54,70 +54,70 @@ walk
   index: 5
 attack
   rotate: false
-  xy: 0, 1024
-  size: 1024, 1024
-  orig: 1024, 1024
-  offset: 0, 0
-  index: 0
-attack
-  rotate: false
-  xy: 1024, 1024
-  size: 1024, 1024
-  orig: 1024, 1024
-  offset: 0, 0
-  index: 1
-attack
-  rotate: false
-  xy: 2048, 1024
-  size: 1024, 1024
-  orig: 1024, 1024
-  offset: 0, 0
-  index: 2
-attack
-  rotate: false
-  xy: 3072, 1024
-  size: 1024, 1024
-  orig: 1024, 1024
-  offset: 0, 0
-  index: 3
-attack
-  rotate: false
-  xy: 4096, 1024
-  size: 1024, 1024
-  orig: 1024, 1024
-  offset: 0, 0
-  index: 4
-death
-  rotate: false
   xy: 0, 2048
   size: 1024, 1024
   orig: 1024, 1024
   offset: 0, 0
   index: 0
-death
+attack
   rotate: false
   xy: 1024, 2048
   size: 1024, 1024
   orig: 1024, 1024
   offset: 0, 0
   index: 1
-death
+attack
   rotate: false
   xy: 2048, 2048
   size: 1024, 1024
   orig: 1024, 1024
   offset: 0, 0
   index: 2
-death
+attack
   rotate: false
   xy: 3072, 2048
   size: 1024, 1024
   orig: 1024, 1024
   offset: 0, 0
   index: 3
-death
+attack
   rotate: false
   xy: 4096, 2048
+  size: 1024, 1024
+  orig: 1024, 1024
+  offset: 0, 0
+  index: 4
+death
+  rotate: false
+  xy: 0, 1024
+  size: 1024, 1024
+  orig: 1024, 1024
+  offset: 0, 0
+  index: 0
+death
+  rotate: false
+  xy: 1024, 1024
+  size: 1024, 1024
+  orig: 1024, 1024
+  offset: 0, 0
+  index: 1
+death
+  rotate: false
+  xy: 2048, 1024
+  size: 1024, 1024
+  orig: 1024, 1024
+  offset: 0, 0
+  index: 2
+death
+  rotate: false
+  xy: 3072, 1024
+  size: 1024, 1024
+  orig: 1024, 1024
+  offset: 0, 0
+  index: 3
+death
+  rotate: false
+  xy: 4096, 1024
   size: 1024, 1024
   orig: 1024, 1024
   offset: 0, 0

@@ -18,7 +18,7 @@ public class MovementTask extends DefaultTask {
   private final GameTime gameTime;
   private Vector2 target;
   private Vector2 speed;
-  private float stopDistance = 0.01f;
+  private float stopDistance = 0.2f;  // Increased from 0.01f to reduce jitter
   private long lastTimeMoved;
   private Vector2 lastPos;
   private PhysicsMovementComponent movementComponent;
@@ -32,6 +32,10 @@ public class MovementTask extends DefaultTask {
     this.target = target;
     this.speed = speed;
     this.gameTime = ServiceLocator.getTimeSource();
+    // Scale stop distance based on speed to prevent high-speed jitter
+    if (speed != null && speed.len() > 0) {
+      this.stopDistance = Math.max(0.2f, speed.len() * 0.15f);
+    }
   }
 
   public MovementTask(Vector2 target, float stopDistance) {

@@ -3,9 +3,11 @@ package com.csse3200.game;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.csse3200.game.components.book.BookPage;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.*;
 // NEW: Map selection screen
+import com.csse3200.game.screens.MapSelectionScreen;
 
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
@@ -30,24 +32,31 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
+    // Sets background to dark theme color (matching system theme)
+    // Using Theme.WINDOW_BG color: #0c1116
+    Gdx.gl.glClearColor(12f/255f, 17f/255f, 22f/255f, 1);
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
 
     // Register player name service
     ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameServiceImpl());
-
+    
+    // Register player avatar service
+    ServiceLocator.registerPlayerAvatarService(new com.csse3200.game.services.PlayerAvatarServiceImpl());
+    
     // Register global leaderboard service - ensures consistency across all screens
     ServiceLocator.registerLeaderboardService(
       new com.csse3200.game.services.leaderboard.SessionLeaderboardService("player-001"));
-
+    
     // Register game session manager to prevent duplicate score submissions
     ServiceLocator.registerGameSessionManager(new com.csse3200.game.services.GameSessionManager());
-
+    
     // Register game score service to track real-time scores
     ServiceLocator.registerGameScoreService(new com.csse3200.game.services.GameScoreService());
+    
+    // Register global achievement service - persists across all screens
+    ServiceLocator.registerAchievementService(new com.csse3200.game.services.AchievementService());
 
     setScreen(ScreenType.OPENING_CUTSCENE);
   }
@@ -144,6 +153,14 @@ public class GdxGame extends Game {
         return new MapSelectionScreen(this);
       case UPGRADES:
         return new UpgradeScreen(this);
+      case BOOK:
+        return new MainBookScreen(this);
+      case CURRENCY_BOOK:
+        return new BookScreen(this, BookPage.CURRENCY_PAGE);
+      case ENEMY_BOOK:
+        return new BookScreen(this, BookPage.ENEMY_PAGE);
+      case TOWER_BOOK:
+        return new BookScreen(this, BookPage.TOWER_PAGE);
       default:
         return null;
     }
@@ -151,7 +168,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
-    MAP_SELECTION, UPGRADES
+    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, UPGRADES
   }
 
   /**

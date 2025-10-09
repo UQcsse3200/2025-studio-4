@@ -14,6 +14,7 @@ public interface LeaderboardService {
         public final String displayName;
         public final long score;
         public final long achievedAtMs;
+        public final String avatarId;
 
         public LeaderboardEntry(int rank, String playerId, String displayName, long score, long achievedAtMs) {
             this.rank = rank;
@@ -21,6 +22,16 @@ public interface LeaderboardService {
             this.displayName = displayName;
             this.score = score;
             this.achievedAtMs = achievedAtMs;
+            this.avatarId = "avatar_1"; // 默认头像
+        }
+
+        public LeaderboardEntry(int rank, String playerId, String displayName, long score, long achievedAtMs, String avatarId) {
+            this.rank = rank;
+            this.playerId = playerId;
+            this.displayName = displayName;
+            this.score = score;
+            this.achievedAtMs = achievedAtMs;
+            this.avatarId = avatarId;
         }
     }
 

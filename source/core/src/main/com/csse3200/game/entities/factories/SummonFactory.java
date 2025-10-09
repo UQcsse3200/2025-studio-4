@@ -57,7 +57,7 @@ public final class SummonFactory {
                 .addComponent(new HitboxComponent()
                         .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new TextureRenderComponent(texturePath))
-                .addComponent(new CombatStatsComponent(500, 0, resistance, weakness))
+                .addComponent(new CombatStatsComponent(100, 0, resistance, weakness))
                 .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 4.0f))
                 .addComponent(new AutoDespawnOnDeathComponent()); // ✅ Auto-despawn on death
 
@@ -185,16 +185,15 @@ public final class SummonFactory {
      */
     public static Entity createMeleeSummonGhost(String texturePath, float scale) {
         Entity ghost = new Entity()
-                .addComponent(new PhysicsComponent())
-                .addComponent(new ColliderComponent()
-                        .setSensor(true)
-                        .setLayer(PhysicsLayer.NONE))
                 .addComponent(new TextureRenderComponent(texturePath));
 
-        PhysicsUtils.setScaledCollider(ghost, 0.12f * scale, 0.12f * scale);
+        // 如果引擎支持透明度/染色，可以半透明显示（按你们的组件API改）
+        // ghost.getComponent(TextureRenderComponent.class).setOpacity(0.5f);
+
         ghost.setScale(scale, scale);
         return ghost;
     }
+
 }
 
 

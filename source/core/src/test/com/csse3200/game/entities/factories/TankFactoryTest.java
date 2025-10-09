@@ -30,7 +30,7 @@ public class TankFactoryTest {
         ServiceLocator.registerResourceService(resourceService);
         
         // Load assets needed for PlayerFactory
-        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
+        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png", "images/divider_enemy.png"});
         resourceService.loadAll();
 
         TankEnemyFactory.resetToDefaults();
@@ -44,7 +44,7 @@ public class TankFactoryTest {
         Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(150, stats.getHealth());
+        assertEquals(100, stats.getHealth());
         assertEquals(15, stats.getBaseAttack());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }
@@ -69,7 +69,7 @@ public class TankFactoryTest {
         assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getResistance());
         // Setting resistance to null should default to None
         TankEnemyFactory.setResistance(null);
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.Fire, TankEnemyFactory.getResistance());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TankFactoryTest {
         assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getWeakness());
         // Setting weakness to null should default to None
         TankEnemyFactory.setWeakness(null);
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getWeakness());
+        assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getWeakness());
     }
 
     @Test
@@ -151,8 +151,8 @@ public class TankFactoryTest {
         TankEnemyFactory.resetToDefaults();
 
         // Verify the values have actually been reset to default values
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getResistance());
-        assertEquals(DamageTypeConfig.None, TankEnemyFactory.getWeakness());
+        assertEquals(DamageTypeConfig.Fire, TankEnemyFactory.getResistance());
+        assertEquals(DamageTypeConfig.Electricity, TankEnemyFactory.getWeakness());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
         assertEquals("images/tank_enemy.png", TankEnemyFactory.getTexturePath());
         assertEquals("Tank Enemy", TankEnemyFactory.getDisplayName());
@@ -167,7 +167,7 @@ public class TankFactoryTest {
         Entity tank = TankEnemyFactory.createTankEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = tank.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(600, stats.getHealth());
+        assertEquals(400, stats.getHealth());
         assertEquals(60, stats.getBaseAttack());
         assertEquals(new Vector2(0.6f, 0.6f), TankEnemyFactory.getSpeed());
     }

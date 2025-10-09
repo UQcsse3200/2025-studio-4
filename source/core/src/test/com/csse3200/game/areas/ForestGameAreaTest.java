@@ -18,6 +18,7 @@ import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.utils.Difficulty;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,9 +56,7 @@ class ForestGameTest {
     @Test
     void shouldCreateForestGameArea() {
         TerrainFactory terrainFactory = mock(TerrainFactory.class);
-
         ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-
         assertNotNull(forestGameArea);
     }
 
@@ -68,8 +67,6 @@ class ForestGameTest {
         when(terrainFactory.createTerrain(any())).thenReturn(terrainComponent);
 
         ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-
-        // Should not throw exception when creating the object
         assertNotNull(forestGameArea);
     }
 
@@ -80,9 +77,7 @@ class ForestGameTest {
         when(terrainFactory.createTerrain(any())).thenReturn(terrainComponent);
 
         ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-
-        // Should not throw exception when disposing
-        assertDoesNotThrow(() -> forestGameArea.dispose());
+        assertDoesNotThrow(forestGameArea::dispose);
     }
 
     @Test
@@ -92,9 +87,24 @@ class ForestGameTest {
         when(terrainFactory.createTerrain(any())).thenReturn(terrainComponent);
 
         ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
-
-        // Verify the object was created successfully
         assertNotNull(forestGameArea);
+    }
+
+    @Test
+    void shouldSetAndRetainDifficulty() {
+        TerrainFactory terrainFactory = mock(TerrainFactory.class);
+        TerrainComponent terrainComponent = createMockTerrainComponent();
+        when(terrainFactory.createTerrain(any())).thenReturn(terrainComponent);
+
+        ForestGameArea forestGameArea = new ForestGameArea(terrainFactory);
+        ForestGameArea.gameDifficulty = Difficulty.HARD;
+
+        assertEquals(Difficulty.HARD, ForestGameArea.gameDifficulty,
+                "ForestGameArea should correctly store the selected difficulty");
+
+        ForestGameArea.gameDifficulty = Difficulty.EASY;
+        assertEquals(Difficulty.EASY, ForestGameArea.gameDifficulty,
+                "ForestGameArea should update the difficulty when reassigned");
     }
 
     private TerrainComponent createMockTerrainComponent() {

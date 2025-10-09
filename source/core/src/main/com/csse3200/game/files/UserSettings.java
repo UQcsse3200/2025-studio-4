@@ -95,10 +95,12 @@ public class UserSettings {
     public float musicVolume = 0.5f;
     public float soundVolume = 0.5f;
     
-    // Gameplay settings
+    
     public String difficulty = "Normal";
     public String language = "English";
 
+    
+    public String heroSkin = "default";
     public String heroWeapon = "default";
     public String heroEffect = "default";
 

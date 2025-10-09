@@ -10,6 +10,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -21,17 +22,18 @@ public class DroneEnemyFactory {
     // Default drone configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 50;
+    private static final int DEFAULT_HEALTH = 25;
     private static final int DEFAULT_DAMAGE = 10;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
-    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
+    private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Fire;
     private static final Vector2 DEFAULT_SPEED = new Vector2(1.2f, 1.2f);
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
+    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
     private static final int DEFAULT_POINTS = 100;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties (these can remain static as they're defaults)
@@ -69,14 +71,16 @@ public class DroneEnemyFactory {
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         drone.addComponent(waypointComponent);
+        applySpeedModifier(drone, waypointComponent, waypoints.get(idx));
 
         drone
-            .addComponent(new com.csse3200.game.rendering.TextureRenderComponent(texturePath))
-
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = drone.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
 
@@ -86,6 +90,7 @@ public class DroneEnemyFactory {
             if (dwc != null && dwc.hasMoreWaypoints()) {
                 Entity nextTarget = dwc.getNextWaypoint();
                 if (nextTarget != null) {
+                    applySpeedModifier(drone, dwc, nextTarget);
                     updateChaseTarget(drone, nextTarget);
                 }
             }
@@ -103,8 +108,16 @@ public class DroneEnemyFactory {
      * @param entity The drone entity to destroy
      */
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
@@ -128,9 +141,24 @@ public class DroneEnemyFactory {
                 prc.addKill();
             }
         }
-
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void applySpeedModifier(Entity drone, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(drone, desiredSpeed);
+        }
     }
 
     /**
@@ -139,6 +167,7 @@ public class DroneEnemyFactory {
      * @param drone The drone entity to update
      * @param newSpeed The new speed vector
      */
+    @SuppressWarnings("unused")
     private static void updateSpeed(Entity drone, Vector2 newSpeed) {
         WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
         if (dwc != null) {
@@ -237,3 +266,4 @@ public class DroneEnemyFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 }
+

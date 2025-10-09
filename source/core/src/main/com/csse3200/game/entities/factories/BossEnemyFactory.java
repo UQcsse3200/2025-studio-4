@@ -10,6 +10,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.enemy.WaypointComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
@@ -33,6 +34,7 @@ public class BossEnemyFactory {
     private static final int DEFAULT_CURRENCY_AMOUNT = 10;
     private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
     private static final int DEFAULT_POINTS = 600;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -70,12 +72,16 @@ public class BossEnemyFactory {
         waypointComponent.setCurrentWaypointIndex(idx);
         waypointComponent.setCurrentTarget(waypoints.get(idx));
         boss.addComponent(waypointComponent);
+        applySpeedModifier(boss, waypointComponent, waypoints.get(idx));
 
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius));
+                CombatStatsComponent combatStats = boss.getComponent(CombatStatsComponent.class);
+                if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
 
@@ -85,6 +91,7 @@ public class BossEnemyFactory {
             if (wc != null && wc.hasMoreWaypoints()) {
                 Entity nextTarget = wc.getNextWaypoint();
                 if (nextTarget != null) {
+                    applySpeedModifier(boss, wc, nextTarget);
                     updateChaseTarget(boss, nextTarget);
                 }
             }
@@ -98,8 +105,16 @@ public class BossEnemyFactory {
     }
 
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
@@ -124,8 +139,24 @@ public class BossEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void applySpeedModifier(Entity boss, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(boss, desiredSpeed);
+        }
     }
 
     private static void updateSpeed(Entity boss, Vector2 newSpeed) {
@@ -221,3 +252,4 @@ public class BossEnemyFactory {
     }
 
 }
+

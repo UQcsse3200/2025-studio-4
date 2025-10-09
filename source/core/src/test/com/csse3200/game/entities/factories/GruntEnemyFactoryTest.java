@@ -30,7 +30,7 @@ public class GruntEnemyFactoryTest {
         ServiceLocator.registerResourceService(resourceService);
         
         // Load assets needed for PlayerFactory
-        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
+        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png", "images/divider_enemy.png"});
         resourceService.loadAll();
 
         GruntEnemyFactory.resetToDefaults();
@@ -44,7 +44,7 @@ public class GruntEnemyFactoryTest {
         Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(75, stats.getHealth());
+        assertEquals(50, stats.getHealth());
         assertEquals(12, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
@@ -169,7 +169,7 @@ public class GruntEnemyFactoryTest {
         Entity grunt = GruntEnemyFactory.createGruntEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = grunt.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(300, stats.getHealth());
+        assertEquals(200, stats.getHealth());
         assertEquals(48, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());

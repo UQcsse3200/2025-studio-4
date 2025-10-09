@@ -1,50 +1,185 @@
 {
   "boneTower": {
+    "name": "bone tower",
+    "lore": "Crafted by ancient tribes, Bone Towers channel the primal energy of the land. Their flying bone projectiles carry the spirits of long-dead guardians, sending a chilling warning to any who dare approach.",
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 10,
+      "damage": 5,
       "range": 3.0,
       "cooldown": 1.0,
       "metalScrapCost": 500,
       "titaniumCoreCost": 0,
       "neurochipCost": 0,
-      "projectileSpeed": 2.0,
+      "projectileSpeed": 4.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/bone_projectile.png",
-      "image": "images/bone.png"
+      "image": "images/towers/bone.png"
     }
   },
   "dinoTower": {
+    "name": "dino tower",
+    "locked": true,
+    "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 20,
+      "damage": 15,
       "range": 2.0,
-      "cooldown": 0.8,
+      "cooldown": 2,
       "metalScrapCost": 1000,
       "titaniumCoreCost": 0,
       "neurochipCost": 0,
       "projectileSpeed": 2,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/fireballdino.png",
-      "image": "images/dino.png"
+      "image": "images/towers/dino.png"
     }
   },
   "cavemenTower": {
+    "name": "cavemen tower",
+    "lore": "Cavemen Towers are staffed by expert marksmen armed with guns salvaged from defeated AI bots. With sharp eyes and steady hands, they make sure nothing slips through their sights.",
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 30,
+      "range": 5.0,
+      "cooldown": 5,
+      "metalScrapCost": 750,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 0,
+      "projectileSpeed": 6.0,
+      "projectileLife": 4,
+      "projectileTexture": "images/towers/projectile animations/caveman bullet.png",
+      "image": "images/towers/cavemen.png"
+    }
+  },
+  "pterodactylTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 5,
+      "range": 3.0,
+      "cooldown": 1.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 50,
+      "neurochipCost": 0,
+      "projectileSpeed": 15.0,
+      "projectileLife": 1,
+      "projectileTexture": "images/towers/spike.png",
+      "image": "images/towers/pteradactyl.png"
+    }
+  },
+  "supercavemenTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 36,
+      "range": 5.0,
+      "cooldown": 1,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 1000,
+      "projectileSpeed": 10.0,
+      "projectileLife": 4,
+      "projectileTexture": "images/towers/projectile animations/lazer.png",
+      "image": "images/towers/supercavemen.png"
+    }
+  },
+  "totemTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 0,
+      "range": 3.0,
+      "cooldown": 0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 150,
+      "neurochipCost": 0,
+      "projectileSpeed": 0.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/crystal.png",
+      "image": "images/towers/totem.png"
+    }
+  },
+  "bankTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 0,
+      "range": 0,
+      "cooldown": 10.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 200,
+      "neurochipCost": 0,
+      "projectileSpeed": 0,
+      "projectileLife": 0,
+      "projectileTexture": "",
+      "image": "images/towers/bank_tower.png"
+    }
+  },
+  "raftTower": {
     "base": {
       "level_A": 1,
       "level_B": 1,
       "damage": 15,
-      "range": 5.0,
-      "cooldown": 0.8,
-      "metalScrapCost": 750,
-      "titaniumCoreCost": 0,
+      "range": 3.0,
+      "cooldown": 1.5,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 250,
       "neurochipCost": 0,
-      "projectileSpeed": 2.0,
-      "projectileLife": 4,
-      "projectileTexture": "images/towers/projectile animations/zap.png",
-      "image": "images/cavemen.png"
+      "projectileSpeed": 5.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/raftproj.png",
+      "image": "images/towers/archer.png"
+    }
+  },
+  "frozenmamoothskullTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 22,
+      "range": 4.0,
+      "cooldown": 1.3,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 300,
+      "neurochipCost": 0,
+      "projectileSpeed": 6.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/icecube.png",
+      "image": "images/towers/frozenmamoothskull.png"
+    }
+  },
+  "bouldercatapultTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 40,
+      "range": 7.0,
+      "cooldown": 2.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 500,
+      "neurochipCost": 0,
+      "projectileSpeed": 8.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/rockcatapault.png",
+      "image": "images/towers/bouldercatapult.png"
+    }
+  },
+  "villageshamanTower": {
+    "base": {
+      "level_A": 1,
+      "level_B": 1,
+      "damage": 18,
+      "range": 3.5,
+      "cooldown": 1.0,
+      "metalScrapCost": 0,
+      "titaniumCoreCost": 0,
+      "neurochipCost": 500,
+      "projectileSpeed": 5.0,
+      "projectileLife": 2,
+      "projectileTexture": "images/towers/projectile animations/magic.png",
+      "image": "images/towers/villageshaman.png"
     }
   }
 }

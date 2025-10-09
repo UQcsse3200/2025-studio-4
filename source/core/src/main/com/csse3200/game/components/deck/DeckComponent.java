@@ -3,7 +3,7 @@ package com.csse3200.game.components.deck;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
-import com.csse3200.game.components.TowerStatsComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 
 import java.util.LinkedHashMap;
@@ -25,10 +25,21 @@ public class DeckComponent extends Component {
         RANGE("RANGE", "images/deck/bullseye_target.png"),
         SPEED("SPEED", "images/deck/shoe.png"),
         PROJECTILE_SPEED("PROJECTILE SPEED", "images/deck/arrow.png"),
+        PROJECTILE_LIFE("PROJECTILE LIFE", ""),
         COOLDOWN("COOLDOWN", "images/deck/hourglass.png"),
         WEAKNESS("WEAKNESS", "images/deck/cracked_skull.png"),
         RESISTANCE("RESISTANCE", "images/deck/shield.png"),
-        TEXTURE_PATH("", "");
+        LORE("LORE", ""),
+        TRAITS("TRAITS", ""),
+        ROLE("ROLE", ""),
+        CURRENCY("", ""),
+        POINTS("POINTS", ""),
+        SOUND("SOUND", ""),
+        METAL_SCRAP_COST("METAL SCRAP COST", "images/currency/metal_scrap.png"),
+        TITANIUM_CORE_COST("TITANIUM CORE COST", "images/currency/titanium_core.png"),
+        NEUROCHIP_COST("NEUROCHIP COST", "images/currency/neurochip.png"),
+        LOCKED("", "images/book/question_mark.png"),
+        TEXTURE_PATH("IMAGE", "");
 
         private final String texturePath;
         private final String displayName;
@@ -96,7 +107,10 @@ public class DeckComponent extends Component {
     }
 
     /**
-     * Update stats when needed
+     * Update stats when needed.
+     * <p>
+     * Subclasses should override this method to dynamically refresh stats
+     * from their associated components (e.g. combat, tower).
      */
     public void updateStats() {
         // Override method handles this
@@ -104,12 +118,21 @@ public class DeckComponent extends Component {
 
     /**
      * Specialized deck component for towers.
-     *
      * Usage:
      *      // Example inside TowerComponent or EnemyComponent click handler
      *      playerEntity.getEvents().trigger("displayDeck", towerEntity.getComponent(DeckComponent.class));
      */
     public static class TowerDeckComponent extends DeckComponent {
+        /**
+         * Constructs a new {@link TowerDeckComponent} with tower-specific stats.
+         *
+         * @param name            the tower's name
+         * @param damage          the tower's damage
+         * @param range           the tower's attack range
+         * @param cooldown        the tower's attack cooldown
+         * @param projectileSpeed the speed of the tower's projectiles
+         * @param texturePath     the path to the tower's image/texture
+         */
         public TowerDeckComponent(String name, int damage, double range, double cooldown, double projectileSpeed, String texturePath) {
             super(
                     createOrderedStats(
@@ -123,6 +146,17 @@ public class DeckComponent extends Component {
             );
         }
 
+        /**
+         * Creates an ordered map of tower stats for display in the deck UI.
+         *
+         * @param name            the tower name
+         * @param damage          the damage dealt by the tower
+         * @param range           the attack range of the tower
+         * @param cooldown        the attack cooldown of the tower
+         * @param projectileSpeed the speed of projectiles fired
+         * @param texturePath     the path to the tower's texture
+         * @return a {@link LinkedHashMap} of tower stats in display order
+         */
         private static Map<StatType, String> createOrderedStats(String name, int damage, double range, double cooldown, double projectileSpeed, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
@@ -134,6 +168,11 @@ public class DeckComponent extends Component {
             return stats;
         }
 
+        /**
+         * Updates the tower's stats from its {@link TowerStatsComponent}.
+         * This method synchronizes the deck display with the tower's
+         * current in-game attributes.
+         */
         @Override
         public void updateStats() {
             TowerStatsComponent towerStatsComponent = entity.getComponent(TowerStatsComponent.class);
@@ -151,18 +190,38 @@ public class DeckComponent extends Component {
 
     /**
      * Specialized deck component for enemies.
-     *
      * Usage:
      *      // Example inside TowerComponent or EnemyComponent click handler
      *      playerEntity.getEvents().trigger("displayDeck", enemyEntity.getComponent(DeckComponent.class));
      */
     public static class EnemyDeckComponent extends DeckComponent {
+        /**
+         * Constructs a new {@link EnemyDeckComponent} with enemy-specific stats.
+         *
+         * @param name       the enemy's name
+         * @param health     the enemy's health points
+         * @param damage     the enemy's damage
+         * @param resistance the enemy's resistance damage type
+         * @param weakness   the enemy's weakness damage type
+         * @param texturePath the path to the enemy's image/texture
+         */
         public EnemyDeckComponent(String name, int health, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
             super(
                     createOrderedStats(name, health, damage, resistance, weakness, texturePath)
             );
         }
 
+        /**
+         * Creates an ordered map of enemy stats for display in the deck UI.
+         *
+         * @param name       the enemy name
+         * @param health     the enemy health
+         * @param damage     the damage dealt by the enemy
+         * @param resistance the resistance damage type
+         * @param weakness   the weakness damage type
+         * @param texturePath the path to the enemy's texture
+         * @return a {@link LinkedHashMap} of enemy stats in display order
+         */
         private static Map<StatType, String> createOrderedStats(String name, int health, int damage, DamageTypeConfig resistance, DamageTypeConfig weakness, String texturePath) {
             Map<StatType, String> stats = new LinkedHashMap<>();
             stats.put(StatType.NAME, name.toUpperCase());    // Name first
@@ -174,6 +233,11 @@ public class DeckComponent extends Component {
             return stats;
         }
 
+        /**
+         * Updates the enemy's stats from its {@link CombatStatsComponent}.
+         * This method synchronizes the deck display with the enemy's
+         * current in-game health.
+         */
         @Override
         public void updateStats() {
             CombatStatsComponent combatStatsComponent = entity.getComponent(CombatStatsComponent.class);

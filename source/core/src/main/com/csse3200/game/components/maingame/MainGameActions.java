@@ -2,6 +2,7 @@ package com.csse3200.game.components.maingame;
 
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
@@ -33,7 +34,7 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("restart", this::onRestart);
     entity.getEvents().addListener("save", this::onSave);
     entity.getEvents().addListener("performSave", this::onPerformSave);
-    entity.getEvents().addListener("performSaveAs", this::onPerformSaveAs);
+    // Save As removed
     entity.getEvents().addListener("togglePause", this::onTogglePause);
     entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
@@ -113,6 +114,8 @@ public class MainGameActions extends Component {
    */
   private void onExit() {
     logger.info("Exiting main game screen");
+    ForestGameArea.cleanupAllWaves();
+    ForestGameArea2.cleanupAllWaves();
     game.setScreen(GdxGame.ScreenType.MAIN_MENU);
   }
   
@@ -144,6 +147,9 @@ public class MainGameActions extends Component {
   private void onVictory() {
     logger.info("Game won, showing victory screen");
     
+    // Unlock achievements
+    unlockAchievementsOnVictory();
+    
     // 在切换屏幕之前计算并保存最终得分
     try {
       var sessionManager = ServiceLocator.getGameSessionManager();
@@ -158,6 +164,52 @@ public class MainGameActions extends Component {
     game.setScreen(GdxGame.ScreenType.VICTORY);
   }
   
+  /**
+   * Unlocks achievements when the player wins the game
+   */
+  private void unlockAchievementsOnVictory() {
+    try {
+      com.csse3200.game.services.AchievementService achievementService = 
+        ServiceLocator.getAchievementService();
+      
+      if (achievementService != null) {
+        // Unlock "Perfect Clear" for winning the game
+        achievementService.unlockAchievement(
+          com.csse3200.game.services.AchievementService.PERFECT_CLEAR);
+        logger.info("Unlocked Perfect Clear achievement");
+        
+        // Check enemy defeat count for other achievements
+        int enemiesDefeated = com.csse3200.game.areas.ForestGameArea.NUM_ENEMIES_DEFEATED;
+        
+        // Unlock "Speed Runner" for defeating 5+ enemies
+        if (enemiesDefeated >= 5) {
+          achievementService.unlockAchievement(
+            com.csse3200.game.services.AchievementService.SPEED_RUNNER);
+          logger.info("Unlocked Speed Runner achievement");
+        }
+        
+        // Unlock "Slayer" for defeating 20+ enemies
+        if (enemiesDefeated >= 20) {
+          achievementService.unlockAchievement(
+            com.csse3200.game.services.AchievementService.SLAYER);
+          logger.info("Unlocked Slayer achievement");
+        }
+        
+        // Unlock "Tough Survivor" for completing the game
+        achievementService.unlockAchievement(
+          com.csse3200.game.services.AchievementService.TOUGH_SURVIVOR);
+        logger.info("Unlocked Tough Survivor achievement");
+        
+        // Unlock "Participation" for playing
+        achievementService.unlockAchievement(
+          com.csse3200.game.services.AchievementService.PARTICIPATION);
+        logger.info("Unlocked Participation achievement");
+      }
+    } catch (Exception e) {
+      logger.error("Error unlocking achievements", e);
+    }
+  }
+  
   private void onSave() {
     logger.info("Manual save requested");
     // Show save menu instead of directly saving
@@ -165,32 +217,53 @@ public class MainGameActions extends Component {
   }
 
   private void onPerformSave() {
-    logger.info("Performing save operation (CI sync)");
-    
+    logger.info("Performing save operation with naming dialog");
     try {
-      var entityService = ServiceLocator.getEntityService();
-      if (entityService != null) {
-        var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
-        boolean success = saveService.save();
-        if (success) {
-          logger.info("Manual save completed successfully");
-          entity.getEvents().trigger("showSaveSuccess");
-          // auto-close save UI after success
-          entity.getEvents().trigger("hideSaveUI");
-        } else {
-          logger.warn("Manual save failed");
-          entity.getEvents().trigger("showSaveError");
-        }
-      }
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
+          "Save Game", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
+            @Override public void onConfirmed(String name) {
+              try {
+                var entityService = ServiceLocator.getEntityService();
+                if (entityService == null) {
+                  entity.getEvents().trigger("showSaveError");
+                  return;
+                }
+                var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
+                boolean success = saveService.saveAs(name);
+                if (success) {
+                  logger.info("Saved as '{}' successfully", name);
+                  entity.getEvents().trigger("showSaveSuccess");
+                  entity.getEvents().trigger("hideSaveUI");
+                } else {
+                  entity.getEvents().trigger("showSaveError");
+                }
+              } catch (Exception ex) {
+                logger.error("Error during named save", ex);
+                entity.getEvents().trigger("showSaveError");
+              }
+            }
+            @Override public void onCancelled() { /* no-op */ }
+          }
+      );
+      dialog.show(stage);
     } catch (Exception e) {
-      logger.error("Error during manual save", e);
+      logger.error("Error opening SaveNameDialog", e);
       entity.getEvents().trigger("showSaveError");
     }
   }
 
-  private void onPerformSaveAs() {
-    logger.info("Save As requested");
-    // TODO: Implement save as functionality
-    entity.getEvents().trigger("showSaveError"); // For now, show error
+  // Save As removed
+
+  /**
+   * Awards stars when won
+   */
+  private void awardStars(int amount) {
+    if ((ServiceLocator.getGameStateService()) == null) {
+      logger.error("GameStateService is missing; register in Gdx.game");
+      return;
+    }
+    ServiceLocator.getGameStateService().updateStars(amount);
+    logger.info("Awarded {} star. Total = {}", amount, ServiceLocator.getGameStateService().getStars());
   }
 }

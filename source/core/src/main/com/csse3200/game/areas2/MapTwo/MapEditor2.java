@@ -158,8 +158,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints.add(new GridPoint2(6, 38));    // End - extended past base to ensure enemies reach it
+        keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints.add(new GridPoint2(5, 38));    // End - extended past base to ensure enemies reach it
 
         // 新增的5个关键点
         keyWaypoints2.add(new GridPoint2(28, 6));    // 新坐标5
@@ -168,8 +168,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 38));    // End
+        keyWaypoints2.add(new GridPoint2(5, 25));    // Fourth waypoint
+        keyWaypoints2.add(new GridPoint2(5, 38));    // End
 
         Map<String, Float> speedModifiers = Map.of(
             "5,2", 0.5f,

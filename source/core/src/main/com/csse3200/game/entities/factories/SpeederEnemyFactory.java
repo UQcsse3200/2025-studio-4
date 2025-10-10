@@ -17,6 +17,7 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 /**
  * Factory to create Speeder enemies.
@@ -88,7 +89,8 @@ public class SpeederEnemyFactory {
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius))
                 // KEY COMPONENT: Add acceleration mechanic
-                .addComponent(new AccelerateOverTimeComponent(speed.x, maxSpeed, accelerationRate));
+                .addComponent(new AccelerateOverTimeComponent(speed.x, maxSpeed, accelerationRate))
+                .addComponent(new SlowEffectComponent()); // 添加减速特效组件
 
         speeder.getEvents().addListener("entityDeath", () -> destroyEnemy(speeder));
 

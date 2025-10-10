@@ -17,6 +17,7 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 public class TankEnemyFactory {
     // Default tank configuration
@@ -77,7 +78,9 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"));
+            .addComponent(new clickable(clickRadius))
+            .addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"))
+            .addComponent(new SlowEffectComponent()); // 添加减速特效组件
             CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 
@@ -149,7 +152,19 @@ public class TankEnemyFactory {
         SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
         Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
         if (speedMarker != null) {
-            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+            float multiplier = speedMarker.getSpeedMultiplier();
+            desiredSpeed.scl(multiplier);
+            
+            // 如果是减速区域（倍率小于1.0），触发蓝色减速特效
+            if (multiplier < 1.0f) {
+                tank.getEvents().trigger("applySlow");
+            } else {
+                // 如果是加速区域或正常区域，移除减速特效
+                tank.getEvents().trigger("removeSlow");
+            }
+        } else {
+            // 如果没有速度修改器，移除减速特效
+            tank.getEvents().trigger("removeSlow");
         }
 
         if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {

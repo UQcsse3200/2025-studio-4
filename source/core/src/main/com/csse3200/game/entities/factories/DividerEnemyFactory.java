@@ -17,6 +17,7 @@ import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 /**
  * 可分裂敌人（死亡后生成 3 个子体）的工厂。
@@ -73,7 +74,8 @@ public class DividerEnemyFactory {
         divider
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-                .addComponent(new clickable(clickRadius));
+                .addComponent(new clickable(clickRadius))
+                .addComponent(new SlowEffectComponent()); // 添加减速特效组件
                 CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
                 if (combatStats != null) combatStats.setIsEnemy(true);
 

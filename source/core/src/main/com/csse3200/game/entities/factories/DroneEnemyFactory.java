@@ -90,12 +90,45 @@ public class DroneEnemyFactory {
         // Each drone handles its own waypoint progression
         drone.getEvents().addListener("chaseTaskFinished", () -> {
             WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
-            if (dwc != null && dwc.hasMoreWaypoints()) {
-                Entity nextTarget = dwc.getNextWaypoint();
-                if (nextTarget != null) {
-                    applySpeedModifier(drone, dwc, nextTarget);
-                    updateChaseTarget(drone, nextTarget);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = drone.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(drone, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = drone.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(drone, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(drone, dwc, nextTarget);
+                updateChaseTarget(drone, nextTarget);
             }
         });
 
@@ -170,7 +203,6 @@ public class DroneEnemyFactory {
      * @param drone The drone entity to update
      * @param newSpeed The new speed vector
      */
-    @SuppressWarnings("unused")
     private static void updateSpeed(Entity drone, Vector2 newSpeed) {
         WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
         if (dwc != null) {

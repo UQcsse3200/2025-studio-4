@@ -9,6 +9,7 @@ import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -20,13 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
-/**
- * 可分裂敌人（死亡后生成 3 个子体）的工厂。
- * 关键点：所有“销毁父体 + 生成子体 + 更新计数”的操作统一放入 postRunnable，
- * 避开 Box2D Step 锁，防止 IsLocked() 断言崩溃。
- */
+
 public class DividerEnemyFactory {
-    // 默认配置（按需调整）
+    // Default divider configuration
+    // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 150;
     private static final int DEFAULT_DAMAGE = 5;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.Electricity;
@@ -41,6 +40,7 @@ public class DividerEnemyFactory {
     CurrencyType.NEUROCHIP, 15
     );
     private static final int DEFAULT_POINTS = 300;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -81,17 +81,51 @@ public class DividerEnemyFactory {
                 CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
                 if (combatStats != null) combatStats.setIsEnemy(true);
 
-
-        // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));
 
+
+        // Each divider handles its own waypoint progression
         divider.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = divider.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    updateChaseTarget(divider, nextTarget);
+            WaypointComponent dwc = divider.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = divider.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(divider, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = divider.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(divider, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(divider, dwc, nextTarget);
+                updateChaseTarget(divider, nextTarget);
             }
         });
 
@@ -101,6 +135,38 @@ public class DividerEnemyFactory {
         savedWaypoints = waypoints;
 
         return divider;
+    }
+
+    private static void applySpeedModifier(Entity divider, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(divider, desiredSpeed);
+        }
+    }
+
+    /**
+     * Updates the speed of a specific divider.
+     *
+     * @param divider The divider entity to update
+     * @param newSpeed The new speed vector
+     */
+    private static void updateSpeed(Entity divider, Vector2 newSpeed) {
+        WaypointComponent dwc = divider.getComponent(WaypointComponent.class);
+        if (dwc != null) {
+            dwc.incrementPriorityTaskCount();
+            dwc.setSpeed(newSpeed);
+            divider.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(dwc.getCurrentTarget(), dwc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
     }
 
     /** 敌人死亡：统一延迟执行“销毁 + 分裂 + 计数” */

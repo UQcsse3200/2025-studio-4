@@ -8,6 +8,7 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
@@ -37,6 +38,7 @@ public class GruntEnemyFactory {
     CurrencyType.NEUROCHIP, 15
     );
     private static final int DEFAULT_POINTS = 150;
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -87,15 +89,48 @@ public class GruntEnemyFactory {
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
 
-        // Handle waypoint progression for this specific grunt
+        // Each grunt handles its own waypoint progression
         grunt.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    //applySpeedModifier(grunt, wc, nextTarget);
-                    updateChaseTarget(grunt, nextTarget);
+            WaypointComponent dwc = grunt.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = grunt.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(grunt, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = grunt.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(grunt, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(grunt, dwc, nextTarget);
+                updateChaseTarget(grunt, nextTarget);
             }
         });
 
@@ -144,6 +179,22 @@ public class GruntEnemyFactory {
 
         //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(grunt, desiredSpeed);
+        }
     }
 
     public static void updateSpeed(Entity grunt, Vector2 newSpeed) {

@@ -9,6 +9,7 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.movement.AccelerateOverTimeComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -44,6 +45,7 @@ public class SpeederEnemyFactory {
     CurrencyType.NEUROCHIP, 25
     );
     private static final int DEFAULT_POINTS = 400;  // Double points for mini-boss
+    private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -96,14 +98,48 @@ public class SpeederEnemyFactory {
 
         speeder.getEvents().addListener("entityDeath", () -> destroyEnemy(speeder));
 
-        // Handle waypoint progression
+        // Each speeder handles its own waypoint progression
         speeder.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = speeder.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    updateChaseTarget(speeder, nextTarget);
+            WaypointComponent dwc = speeder.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = speeder.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(speeder, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = speeder.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(speeder, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(speeder, dwc, nextTarget);
+                updateChaseTarget(speeder, nextTarget);
             }
         });
 
@@ -147,7 +183,39 @@ public class SpeederEnemyFactory {
             }
         }
 
-        Gdx.app.postRunnable(entity::dispose);
+        //Gdx.app.postRunnable(entity::dispose);
+    }
+
+    private static void applySpeedModifier(Entity speeder, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(speeder, desiredSpeed);
+        }
+    }
+
+    /**
+     * Updates the speed of a specific speeder.
+     *
+     * @param speeder The speeder entity to update
+     * @param newSpeed The new speed vector
+     */
+    private static void updateSpeed(Entity speeder, Vector2 newSpeed) {
+        WaypointComponent dwc = speeder.getComponent(WaypointComponent.class);
+        if (dwc != null) {
+            dwc.incrementPriorityTaskCount();
+            dwc.setSpeed(newSpeed);
+            speeder.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(dwc.getCurrentTarget(), dwc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
     }
 
     private static void updateChaseTarget(Entity speeder, Entity newTarget) {

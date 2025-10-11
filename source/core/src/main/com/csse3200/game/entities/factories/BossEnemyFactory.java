@@ -88,15 +88,48 @@ public class BossEnemyFactory {
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
 
-        // Handle waypoint progression for this specific boss
+        // Each boss handles its own waypoint progression
         boss.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = boss.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    applySpeedModifier(boss, wc, nextTarget);
-                    updateChaseTarget(boss, nextTarget);
+            WaypointComponent dwc = boss.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = boss.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(boss, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = boss.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(boss, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(boss, dwc, nextTarget);
+                updateChaseTarget(boss, nextTarget);
             }
         });
 

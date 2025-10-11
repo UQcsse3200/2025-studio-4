@@ -88,15 +88,48 @@ public class TankEnemyFactory {
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
 
-        // Handle waypoint progression for this specific tank
+        // Each tank handles its own waypoint progression
         tank.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = tank.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    applySpeedModifier(tank, wc, nextTarget);
-                    updateChaseTarget(tank, nextTarget);
+            WaypointComponent dwc = tank.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = tank.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(tank, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = tank.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(tank, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(tank, dwc, nextTarget);
+                updateChaseTarget(tank, nextTarget);
             }
         });
 

@@ -362,12 +362,6 @@ public class ForestGameArea extends GameArea {
         difficultyUi.getEvents().trigger("setDifficulty", gameDifficulty.name());
         */
 
-        // Create time speed control button
-        Entity timeSpeedUI = new Entity();
-        timeSpeedUI.addComponent(new com.csse3200.game.components.maingame.TimeSpeedButton());
-        spawnEntity(timeSpeedUI);
-
-
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
         cameraControl.addComponent(new CameraZoomDragComponent());

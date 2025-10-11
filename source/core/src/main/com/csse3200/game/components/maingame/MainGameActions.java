@@ -35,33 +35,9 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("save", this::onSave);
     entity.getEvents().addListener("performSave", this::onPerformSave);
     // Save As removed
-    entity.getEvents().addListener("togglePause", this::onTogglePause);
-    entity.getEvents().addListener("resume", this::onResume);
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
     entity.getEvents().addListener("showRanking", this::onShowRanking);
-  }
-
-  private boolean isPaused = false;
-
-  private void onTogglePause() {
-    if (isPaused) {
-      onResume();
-    } else {
-      onPause();
-    }
-  }
-
-  private void onPause() {
-    ServiceLocator.getTimeSource().setTimeScale(0f);
-    isPaused = true;
-    entity.getEvents().trigger("showPauseUI"); 
-  }
-
-  private void onResume() {
-    ServiceLocator.getTimeSource().setTimeScale(1f);
-    isPaused = false;
-    entity.getEvents().trigger("hidePauseUI"); 
   }
 
   private void onOpenSettings() {

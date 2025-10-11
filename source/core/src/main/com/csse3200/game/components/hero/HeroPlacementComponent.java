@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.GridPoint2;
 import com.csse3200.game.areas.MapEditor;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.input.InputComponent;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,9 +24,11 @@ public class HeroPlacementComponent extends InputComponent {
     private final HeroGhostPreview preview;
     private InputAdapter hotkeyAdapter;
 
+    private boolean placementActive = false;
+
     // ====== New: Placement limit control======
     private int maxPlacements = 1;   // Default most 1
-    private int placedCount   = 0;   // Placed quantity
+    private int placedCount = 0;   // Placed quantity
 
     public HeroPlacementComponent(TerrainComponent terrain, MapEditor mapEditor, Consumer<GridPoint2> onPlace) {
         super(500);
@@ -35,11 +38,14 @@ public class HeroPlacementComponent extends InputComponent {
         this.preview = new HeroGhostPreview(terrain, 0.5f);
     }
 
-    /** Optional: Construction with custom caps */
+    /**
+     * Optional: Construction with custom caps
+     */
     public HeroPlacementComponent(TerrainComponent terrain, MapEditor mapEditor, Consumer<GridPoint2> onPlace, int maxPlacements) {
         this(terrain, mapEditor, onPlace);
         this.maxPlacements = Math.max(1, maxPlacements);
     }
+
 
     @Override
     public void create() {
@@ -51,6 +57,11 @@ public class HeroPlacementComponent extends InputComponent {
             @Override
             public boolean keyDown(int keycode) {
                 System.out.println("[HOTKEY DEBUG] keyDown=" + keycode);
+
+                if (keycode == Input.Keys.H) {
+                    enterPlacementMode();
+                    return true;
+                }
 
                 // 取消预览
                 if (keycode == Input.Keys.NUM_4 || keycode == Input.Keys.NUMPAD_4) {
@@ -66,6 +77,11 @@ public class HeroPlacementComponent extends InputComponent {
                 // place
                 if (keycode == Input.Keys.S) {
                     // The limit has been reached -> prompt and swallow the event
+                    if (!placementActive) {             // ← 关键
+                        enterPlacementMode();
+                        return true;                    // 本次只“进入”，下一次 S 再放置
+                    }
+
                     if (placedCount >= maxPlacements) {
                         notifyUser("已达到放置上限（" + maxPlacements + "）。");
                         return true;
@@ -94,11 +110,12 @@ public class HeroPlacementComponent extends InputComponent {
                             notifyUser("放置完成（" + placedCount + "/" + maxPlacements + "）。已锁定此组件。");
                             Gdx.app.postRunnable(() -> {
                                 removeHotkeyAdapter();
-                                preview.remove();
+                                exitPlacementMode();        // 退出 & 收网格
                             });
                         } else {
                             // Limit not reached: Clear only this preview
                             Gdx.app.postRunnable(preview::remove);
+                            preview.createGhost(/*同样的 heroTexture */ "images/hero/Heroshoot.png");
                         }
                     } catch (Exception e) {
                         warn("Placement failed due to exception: " + e.getMessage());
@@ -122,6 +139,45 @@ public class HeroPlacementComponent extends InputComponent {
             Gdx.input.setInputProcessor(mux);
         }
     }
+
+    @Override
+    public void update() {
+        // 如果没在放置模式，就不用更新
+        if (!placementActive) return;
+
+        // === 1. 获取相机 ===
+        com.badlogic.gdx.graphics.OrthographicCamera camera = null;
+        var all = ServiceLocator.getEntityService().getEntitiesCopy();
+        if (all != null) {
+            for (var e : all) {
+                var cc = e.getComponent(com.csse3200.game.components.CameraComponent.class);
+                if (cc != null && cc.getCamera() instanceof com.badlogic.gdx.graphics.OrthographicCamera oc) {
+                    camera = oc;
+                    break;
+                }
+            }
+        }
+        if (camera == null) return;
+
+        // === 2. 屏幕坐标 -> 世界坐标 ===
+        com.badlogic.gdx.math.Vector3 mp = new com.badlogic.gdx.math.Vector3(
+                Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(mp);
+
+        // === 3. 吸附到格子 ===
+        float tile = terrain.getTileSize();
+        com.badlogic.gdx.math.GridPoint2 bounds = terrain.getMapBounds(0);
+        int gx = Math.max(0, Math.min((int)(mp.x / tile), bounds.x - 1));
+        int gy = Math.max(0, Math.min((int)(mp.y / tile), bounds.y - 1));
+        com.badlogic.gdx.math.Vector2 snap = terrain.tileToWorldPosition(gx, gy);
+
+        // === 4. 移动 Ghost ===
+        preview.setGhostPosition(snap.x, snap.y);
+
+        // === 5. （可选）通知 MapHighlighter 高亮当前格 ===
+        entity.getEvents().trigger("placement:hover", new com.badlogic.gdx.math.GridPoint2(gx, gy));
+    }
+
 
     @Override
     public boolean keyDown(int keycode) {
@@ -151,6 +207,40 @@ public class HeroPlacementComponent extends InputComponent {
             mux.removeProcessor(hotkeyAdapter);
             hotkeyAdapter = null;
         }
+    }
+
+    private void enterPlacementMode() {
+        if (placementActive) return;
+        placementActive = true;
+
+        // 1) 选择正确的贴图（按当前选择的英雄）
+        String heroTexture = "images/hero/Heroshoot.png";
+        var gs = ServiceLocator.getGameStateService();
+        if (gs != null) {
+            switch (gs.getSelectedHero()) {
+                case ENGINEER -> heroTexture = "images/engineer/Engineer.png"; // 按你的资源路径改
+                case SAMURAI  -> heroTexture = "images/samurai/Samurai.png";   // 按你的资源路径改
+                // 其它职业……
+                default       -> heroTexture = "images/hero/Heroshoot.png";
+            }
+        }
+
+        // 2) 创建 ghost
+        preview.createGhost(heroTexture);
+
+        // 3) 让 MapHighlighter 也画网格（如果你加了轮询 isPlacementActive，可以不发事件）
+        entity.getEvents().trigger("placement:on");
+    }
+
+    private void exitPlacementMode() {
+        placementActive = false;
+        Gdx.app.postRunnable(preview::remove);
+        entity.getEvents().trigger("placement:off");
+    }
+
+    // 提供只读方法给高亮器查询
+    public boolean isPlacementActive() {
+        return placementActive;
     }
 
     @Override

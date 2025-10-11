@@ -51,6 +51,16 @@ public class MapHighlighter extends UIComponent {
         this.towerFactory = towerFactory;
     }
 
+    private boolean isAnyHeroPlacementActive() {
+        Array<Entity> all = ServiceLocator.getEntityService().getEntitiesCopy();
+        if (all == null) return false;
+        for (Entity e : all) {
+            var hpc = e.getComponent(com.csse3200.game.components.hero.HeroPlacementComponent.class);
+            if (hpc != null && hpc.isPlacementActive()) return true;
+        }
+        return false;
+    }
+
     /**
      * Updates the highlighter, handling tower selection on mouse click.
      */
@@ -157,7 +167,8 @@ public class MapHighlighter extends UIComponent {
      */
     @Override
     public void draw(SpriteBatch batch) {
-        boolean showGrid = placementController != null && placementController.isPlacementActive();
+        boolean showGrid = (placementController != null && placementController.isPlacementActive())
+                || isAnyHeroPlacementActive();
 
         batch.end();
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
@@ -393,7 +404,6 @@ public class MapHighlighter extends UIComponent {
         }
         return null;
     }
-
 
     /**
      * Disposes of the shape renderer when no longer needed.

@@ -141,6 +141,21 @@ public final class HeroFactory {
         return e;
     }
 
+    // HeroFactory.java
+    public static Entity createHeroGhost(String heroTexture, float alpha) {
+        Entity e = new Entity();
+        TextureRenderComponent tex = new TextureRenderComponent(
+                (heroTexture != null && !heroTexture.isBlank())
+                        ? heroTexture
+                        : "images/hero/Heroshoot.png" // fallback
+        );
+        tex.setColor(new Color(1f, 1f, 1f, Math.max(0f, Math.min(alpha, 1f))));
+        e.addComponent(tex);
+        // 不加任何 Physics/Collider/Hitbox/攻击/升级组件，避免警告和性能开销
+        return e;
+    }
+
+
 
     // === HeroFactory.createEngineerHero(...) ===
 

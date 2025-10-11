@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
@@ -13,6 +14,7 @@ import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
 
 import java.util.HashMap;
@@ -39,6 +41,7 @@ public class GruntEnemyFactory {
     );
     private static final int DEFAULT_POINTS = 150;
     private static final float SPEED_EPSILON = 0.001f;
+    private static final String DEFAULT_DEATH_SOUND_PATH = "sounds/mixkit-arcade-game-explosion-2759.wav";
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -52,6 +55,7 @@ public class GruntEnemyFactory {
     private static float clickRadius = DEFAULT_CLICKRADIUS;
     private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
+    private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
 
     /**
      * Creates a grunt enemy with current configuration.
@@ -177,8 +181,15 @@ public class GruntEnemyFactory {
             }
         }
 
+        playDeathSound(deathSoundPath);
         //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void playDeathSound(String soundPath) {
+        ServiceLocator.getResourceService()
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
     }
 
     private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {

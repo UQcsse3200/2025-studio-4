@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
@@ -15,6 +16,7 @@ import com.csse3200.game.components.enemy.clickable;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
 
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public class DividerEnemyFactoryLevel2 {
     );
     private static final int DEFAULT_POINTS = 300;
     private static final float SPEED_EPSILON = 0.001f;
+    private static final String DEFAULT_DEATH_SOUND_PATH = "sounds/mixkit-arcade-game-explosion-2759.wav";
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -55,6 +58,7 @@ public class DividerEnemyFactoryLevel2 {
     private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
+    private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
 
     private static int priorityTaskCount = 1;
     private static java.util.List<Entity> savedWaypoints;
@@ -189,6 +193,7 @@ public class DividerEnemyFactoryLevel2 {
                 new Vector2(-0.3f, 0f),
                 new Vector2(0f, +0.3f)
         };
+        
 
         // Award points to player upon defeating enemy
         WaypointComponent wcForScore = entity.getComponent(WaypointComponent.class);
@@ -228,6 +233,8 @@ public class DividerEnemyFactoryLevel2 {
             }
         });
 
+        playDeathSound(deathSoundPath);
+
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
             Entity player = wc.getPlayerRef();
@@ -236,6 +243,12 @@ public class DividerEnemyFactoryLevel2 {
                 player.getEvents().trigger("dropCurrency", currencyDrops);
             }
         }
+    }
+
+   private static void playDeathSound(String soundPath) {
+        ServiceLocator.getResourceService()
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
     }
 
     private static void updateChaseTarget(Entity entity, Entity newTarget) {

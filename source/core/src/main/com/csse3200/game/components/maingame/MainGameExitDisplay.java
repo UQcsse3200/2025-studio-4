@@ -168,43 +168,6 @@ public class MainGameExitDisplay extends UIComponent {
     return Z_INDEX;
   }
 
-  /**
-   * Creates custom button style using button background image
-   */
-  private TextButtonStyle createCustomButtonStyle() {
-    TextButtonStyle style = new TextButtonStyle();
-    
-    // Use Segoe UI font
-    style.font = skin.getFont("segoe_ui");
-    
-    // Load button background image
-    Texture buttonTexture = ServiceLocator.getResourceService()
-        .getAsset("images/Main_Game_Button.png", Texture.class);
-    TextureRegion buttonRegion = new TextureRegion(buttonTexture);
-    
-    // Create NinePatch for scalable button background
-    NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-    
-    // Create pressed state NinePatch (slightly darker)
-    NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-    pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-    
-    // Create hover state NinePatch (slightly brighter)
-    NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-    hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
-    
-    // Set button states
-    style.up = new NinePatchDrawable(buttonPatch);
-    style.down = new NinePatchDrawable(pressedPatch);
-    style.over = new NinePatchDrawable(hoverPatch);
-    
-    style.fontColor = Color.CYAN;
-    style.downFontColor = new Color(0.0f, 0.6f, 0.8f, 1.0f);
-    style.overFontColor = new Color(0.2f, 0.8f, 1.0f, 1.0f);
-    
-    return style;
-  }
-
   @Override
   public void dispose() {
     table.clear();

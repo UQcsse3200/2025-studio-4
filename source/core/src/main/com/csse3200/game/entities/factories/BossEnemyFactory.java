@@ -1,6 +1,5 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
@@ -15,6 +14,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
@@ -31,8 +32,11 @@ public class BossEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
     private static final String DEFAULT_NAME = "Boss Enemy";
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 10;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
+    private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
+    CurrencyType.METAL_SCRAP, 500,
+    CurrencyType.TITANIUM_CORE, 300,
+    CurrencyType.NEUROCHIP, 150
+    );
     private static final int DEFAULT_POINTS = 600;
     private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,8 +50,7 @@ public class BossEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
-    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
 
     /**
@@ -122,8 +125,7 @@ public class BossEnemyFactory {
             Entity player = wc.getPlayerRef();
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
-                player.getEvents().trigger("dropCurrency", drops);
+                player.getEvents().trigger("dropCurrency", currencyDrops);
             }
 
             // Award points to player upon defeating enemy

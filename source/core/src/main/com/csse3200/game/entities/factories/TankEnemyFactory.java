@@ -15,6 +15,8 @@ import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.utils.Difficulty;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
@@ -30,8 +32,11 @@ public class TankEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
+    private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
+    CurrencyType.METAL_SCRAP, 150,
+    CurrencyType.TITANIUM_CORE, 100,
+    CurrencyType.NEUROCHIP, 50
+    );
     private static final int DEFAULT_POINTS = 300;
     private static final float SPEED_EPSILON = 0.001f;
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +50,7 @@ public class TankEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
-    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
 
     /**
@@ -130,11 +134,10 @@ public class TankEnemyFactory {
                 prc.addKill();
             }
 
-            // Drop currency upon defeating enemy
+            // Drop currency upon defeat
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
-                player.getEvents().trigger("dropCurrency", drops);
+                player.getEvents().trigger("dropCurrency", currencyDrops);
             }
         }
 

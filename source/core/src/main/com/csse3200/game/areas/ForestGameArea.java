@@ -3,6 +3,7 @@ package com.csse3200.game.areas;
 import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.components.hero.engineer.SummonPlacementComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.HeroStatusPanelComponent;
@@ -424,10 +425,12 @@ public class ForestGameArea extends GameArea {
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
 
+
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
                 new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+        highlighterEntity.addComponent(new SummonPlacementComponent());
 
         spawnEntity(highlighterEntity);
 

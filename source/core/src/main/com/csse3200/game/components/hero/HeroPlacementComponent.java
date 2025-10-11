@@ -58,69 +58,8 @@ public class HeroPlacementComponent extends InputComponent {
             public boolean keyDown(int keycode) {
                 System.out.println("[HOTKEY DEBUG] keyDown=" + keycode);
 
-                if (keycode == Input.Keys.H) {
+                if (keycode == Input.Keys.S) {        // 进入放置模式
                     enterPlacementMode();
-                    return true;
-                }
-
-                // 取消预览
-                if (keycode == Input.Keys.NUM_4 || keycode == Input.Keys.NUMPAD_4) {
-                    Gdx.app.postRunnable(() -> {
-                        if (preview.hasGhost()) {
-                            logger.info("[HeroPlacement] Key '4' -> cancel preview");
-                            preview.remove();
-                        }
-                    });
-                    return true;
-                }
-
-                // place
-                if (keycode == Input.Keys.S) {
-                    // The limit has been reached -> prompt and swallow the event
-                    if (!placementActive) {             // ← 关键
-                        enterPlacementMode();
-                        return true;                    // 本次只“进入”，下一次 S 再放置
-                    }
-
-                    if (placedCount >= maxPlacements) {
-                        notifyUser("已达到放置上限（" + maxPlacements + "）。");
-                        return true;
-                    }
-
-                    int mouseX = Gdx.input.getX();
-                    int mouseY = Gdx.input.getY();
-
-                    GridPoint2 cell = HeroPlacementRules.screenToGridNoClamp(mouseX, mouseY, terrain);
-                    if (cell == null) {
-                        warn("Out of map bounds");
-                        return true;
-                    }
-                    if (HeroPlacementRules.isBlockedCell(cell.x, cell.y, mapEditor)) {
-                        warn("Cell is blocked (obstacle/path/restricted area)");
-                        return true;
-                    }
-
-                    try {
-                        if (onPlace != null) onPlace.accept(new GridPoint2(cell));
-                        placedCount++;
-                        logger.info("Hero placed at ({}, {}) via 'S'  ({}/{})", cell.x, cell.y, placedCount, maxPlacements);
-
-                        // After reaching the limit: prompt + unbind input + remove preview
-                        if (placedCount >= maxPlacements) {
-                            notifyUser("放置完成（" + placedCount + "/" + maxPlacements + "）。已锁定此组件。");
-                            Gdx.app.postRunnable(() -> {
-                                removeHotkeyAdapter();
-                                exitPlacementMode();        // 退出 & 收网格
-                            });
-                        } else {
-                            // Limit not reached: Clear only this preview
-                            Gdx.app.postRunnable(preview::remove);
-                            preview.createGhost(/*同样的 heroTexture */ "images/hero/Heroshoot.png");
-                        }
-                    } catch (Exception e) {
-                        warn("Placement failed due to exception: " + e.getMessage());
-                    }
-
                     return true;
                 }
                 return false;
@@ -185,9 +124,80 @@ public class HeroPlacementComponent extends InputComponent {
         return false;
     }
 
+    // 2) 用鼠标左键完成放置（替换/实现 touchDown）
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        return false;
+        if (button == Input.Buttons.RIGHT) {
+            if (placementActive) {
+                logger.info("[HeroPlacement] Right-click -> exit placement mode");
+                notifyUser("已退出放置模式。");
+                exitPlacementMode();
+                return true; // 消费右键事件
+            }
+            return false;
+        }
+
+        // 只在放置模式 + 左键 时处理
+        if (!placementActive || button != com.badlogic.gdx.Input.Buttons.LEFT) {
+            return false;
+        }
+
+        // 上限检查
+        if (placedCount >= maxPlacements) {
+            notifyUser("已达到放置上限（" + maxPlacements + "）。");
+            // 消费事件，避免被其他处理器继续处理（例如编辑器）
+            return true;
+        }
+
+        // 计算目标格
+        GridPoint2 cell = HeroPlacementRules.screenToGridNoClamp(screenX, screenY, terrain);
+        if (cell == null) {
+            warn("Out of map bounds");
+            return true;
+        }
+        if (HeroPlacementRules.isBlockedCell(cell.x, cell.y, mapEditor)) {
+            warn("Cell is blocked (obstacle/path/restricted area)");
+            return true;
+        }
+
+        // 执行放置
+        try {
+            if (onPlace != null) onPlace.accept(new GridPoint2(cell));
+            placedCount++;
+            logger.info("Hero placed at ({}, {}) via MOUSE LEFT  ({}/{})", cell.x, cell.y, placedCount, maxPlacements);
+
+            if (placedCount >= maxPlacements) {
+                notifyUser("放置完成（" + placedCount + "/" + maxPlacements + "）。已锁定此组件。");
+                Gdx.app.postRunnable(() -> {
+                    removeHotkeyAdapter(); // 如需继续允许 H 重新进入放置，可不移除
+                    exitPlacementMode();
+                });
+            } else {
+                // 未达上限：仅刷新 ghost（保持继续放置）
+                Gdx.app.postRunnable(() -> {
+                    preview.remove();
+                    preview.createGhost(currentHeroTexture()); // 见下方小工具函数
+                });
+            }
+        } catch (Exception e) {
+            warn("Placement failed due to exception: " + e.getMessage());
+        }
+
+        // 一定要返回 true，拦截事件，避免被别的系统（例如地图编辑器）继续处理
+        return true;
+    }
+
+    private String currentHeroTexture() {
+        String heroTexture = "images/hero/Heroshoot.png";
+        var gs = ServiceLocator.getGameStateService();
+        if (gs != null) {
+            switch (gs.getSelectedHero()) {
+                case ENGINEER -> heroTexture = "images/engineer/Engineer.png";
+                case SAMURAI  -> heroTexture = "images/samurai/Samurai.png";
+                default       -> heroTexture = "images/hero/Heroshoot.png";
+            }
+        }
+        return heroTexture;
     }
 
     private void warn(String msg) {
@@ -213,22 +223,7 @@ public class HeroPlacementComponent extends InputComponent {
         if (placementActive) return;
         placementActive = true;
 
-        // 1) 选择正确的贴图（按当前选择的英雄）
-        String heroTexture = "images/hero/Heroshoot.png";
-        var gs = ServiceLocator.getGameStateService();
-        if (gs != null) {
-            switch (gs.getSelectedHero()) {
-                case ENGINEER -> heroTexture = "images/engineer/Engineer.png"; // 按你的资源路径改
-                case SAMURAI  -> heroTexture = "images/samurai/Samurai.png";   // 按你的资源路径改
-                // 其它职业……
-                default       -> heroTexture = "images/hero/Heroshoot.png";
-            }
-        }
-
-        // 2) 创建 ghost
-        preview.createGhost(heroTexture);
-
-        // 3) 让 MapHighlighter 也画网格（如果你加了轮询 isPlacementActive，可以不发事件）
+        preview.createGhost(currentHeroTexture());
         entity.getEvents().trigger("placement:on");
     }
 

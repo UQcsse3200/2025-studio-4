@@ -34,6 +34,9 @@ public class MapHighlighter extends UIComponent {
     private TowerUpgradeMenu towerUpgradeMenu;
 
     private Entity selectedTower = null; // currently selected tower
+    private boolean summonPlacementActive = false;
+    private String pendingSummonType = "";
+
 
     /**
      * Constructs a MapHighlighter for the given terrain and placement controller.
@@ -59,6 +62,20 @@ public class MapHighlighter extends UIComponent {
             if (hpc != null && hpc.isPlacementActive()) return true;
         }
         return false;
+    }
+
+    @Override
+    public void create() {
+        super.create();
+        // 监听“同一个实体”的事件
+        entity.getEvents().addListener("summon:placement:on", (String type) -> {
+            summonPlacementActive = true;
+            pendingSummonType = (type == null) ? "" : type;
+        });
+        entity.getEvents().addListener("summon:placement:off", () -> {
+            summonPlacementActive = false;
+            pendingSummonType = "";
+        });
     }
 
     /**
@@ -168,7 +185,8 @@ public class MapHighlighter extends UIComponent {
     @Override
     public void draw(SpriteBatch batch) {
         boolean showGrid = (placementController != null && placementController.isPlacementActive())
-                || isAnyHeroPlacementActive();
+                || isAnyHeroPlacementActive()
+                || summonPlacementActive;
 
         batch.end();
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
@@ -187,6 +205,52 @@ public class MapHighlighter extends UIComponent {
      * Draws the grid and preview for tower placement.
      */
     private void drawGridAndPreview() {
+
+        if (summonPlacementActive) {
+            GridPoint2 mapBounds = terrain.getMapBounds(0);
+            float tileSize = terrain.getTileSize();
+            Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
+
+            // 填充红/绿
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            for (int x = 0; x < mapBounds.x; x++) {
+                for (int y = 0; y < mapBounds.y; y++) {
+                    Vector2 worldPos = terrain.tileToWorldPosition(x, y);
+                    boolean valid = isPathTile(x, y) && !hasSummonAt(x, y, entities);
+                    shapeRenderer.setColor(valid ? new Color(0f,1f,0f,0.25f) : new Color(1f,0f,0f,0.20f));
+                    shapeRenderer.rect(worldPos.x, worldPos.y, tileSize, tileSize);
+                }
+            }
+            shapeRenderer.end();
+
+            // 鼠标处 1x1 预览框
+            Vector2 mouseWorld = getWorldClickPosition();
+            if (mouseWorld != null) {
+                int tx = (int)(mouseWorld.x / tileSize);
+                int ty = (int)(mouseWorld.y / tileSize);
+                if (tx >= 0 && ty >= 0 && tx < mapBounds.x && ty < mapBounds.y) {
+                    Vector2 tilePos = terrain.tileToWorldPosition(tx, ty);
+                    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+                    shapeRenderer.setColor(Color.BLACK);
+                    shapeRenderer.rect(tilePos.x, tilePos.y, tileSize, tileSize);
+                    shapeRenderer.end();
+                }
+            }
+
+            // 网格线
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(Color.BLACK);
+            for (int x = 0; x < mapBounds.x; x++) {
+                for (int y = 0; y < mapBounds.y; y++) {
+                    Vector2 worldPos = terrain.tileToWorldPosition(x, y);
+                    shapeRenderer.rect(worldPos.x, worldPos.y, tileSize, tileSize);
+                }
+            }
+            shapeRenderer.end();
+
+            return; // ✅ 不执行塔模式绘制
+        }
+
         GridPoint2 mapBounds = terrain.getMapBounds(0);
         float tileSize = terrain.getTileSize();
         Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
@@ -404,6 +468,30 @@ public class MapHighlighter extends UIComponent {
         }
         return null;
     }
+
+    private boolean isPathTile(int tileX, int tileY) {
+        int[][] path = (placementController != null) ? placementController.getFixedPath() : null;
+        if (path == null) return false;
+        for (int[] p : path) if (p[0] == tileX && p[1] == tileY) return true;
+        return false;
+    }
+
+    private boolean hasSummonAt(int tileX, int tileY, Array<Entity> entities) {
+        if (entities == null) return false;
+        float ts = terrain.getTileSize();
+        for (Entity e : entities) {
+            if (e == null) continue;
+            boolean isSummon =
+                    e.getComponent(com.csse3200.game.components.hero.engineer.SummonOwnerComponent.class) != null
+                            || e.getComponent(com.csse3200.game.components.hero.engineer.OwnerComponent.class) != null;
+            if (!isSummon) continue;
+            Vector2 p = e.getPosition(); if (p == null) continue;
+            int ex = (int)(p.x / ts), ey = (int)(p.y / ts);
+            if (ex == tileX && ey == tileY) return true;
+        }
+        return false;
+    }
+
 
     /**
      * Disposes of the shape renderer when no longer needed.

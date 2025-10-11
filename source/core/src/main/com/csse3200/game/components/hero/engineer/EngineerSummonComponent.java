@@ -157,8 +157,8 @@ public class EngineerSummonComponent extends Component {
             @Override
             public boolean keyDown(int keycode) {
                 if (cd > 0f) return true; // Ignore key if on cooldown
-                var ctrl = findPlacementController();
-                if (ctrl == null) return false;
+                var summonCtrl = findSummonPlacementComponent();
+                if (summonCtrl == null) return false;
 
                 String type = null;
                 String tex = null;
@@ -177,10 +177,27 @@ public class EngineerSummonComponent extends Component {
                 }
 
                 // Switch to placement mode; actual spawn validation happens later via events
-                ctrl.armSummon(new SimplePlacementController.SummonSpec(tex, type));
+                summonCtrl.armSummon(
+                        new com.csse3200.game.components.hero.engineer.SummonPlacementComponent.SummonSpec(tex, type)
+                );
                 return true;
             }
         };
+    }
+
+    /**
+     * Finds the SummonPlacementComponent in the current entity service.
+     * 确保 SummonPlacementComponent 挂在了你创建的 ui 实体上。
+     */
+    private com.csse3200.game.components.hero.engineer.SummonPlacementComponent findSummonPlacementComponent() {
+        var all = ServiceLocator.getEntityService().getEntitiesCopy();
+        if (all == null) return null;
+        for (var e : all) {
+            if (e == null) continue;
+            var c = e.getComponent(com.csse3200.game.components.hero.engineer.SummonPlacementComponent.class);
+            if (c != null) return c;
+        }
+        return null;
     }
 
     // =================== Summon Limit Logic ===================

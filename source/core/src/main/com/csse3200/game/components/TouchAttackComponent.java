@@ -83,7 +83,7 @@ public class TouchAttackComponent extends Component {
         playerStats.hit(combatStats);
         hasAttacked = true;
         
-        Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
+        //Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
 
         entity.getEvents().trigger("attackStart");
 

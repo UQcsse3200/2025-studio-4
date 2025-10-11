@@ -197,8 +197,8 @@ public class LeaderboardPopup extends Window {
     }
 
     public void showOn(Stage stage) {
-        // 暂停游戏
-        ServiceLocator.getTimeSource().setTimeScale(0f);
+        // Find the entity with PauseInputComponent and trigger its pause
+        triggerPauseSystem(true);
         
         stage.addActor(this);
         pack();
@@ -207,13 +207,56 @@ public class LeaderboardPopup extends Window {
     }
 
     public void dismiss() {
-        // 恢复游戏
-        ServiceLocator.getTimeSource().setTimeScale(1f);
+        // Find the entity with PauseInputComponent and trigger its resume
+        triggerPauseSystem(false);
         
         addAction(Actions.sequence(
                 Actions.parallel(Actions.alpha(0f, 0.12f), Actions.scaleTo(0.98f, 0.98f, 0.12f)),
                 Actions.removeActor()
         ));
+    }
+    
+    /**
+     * Triggers the pause system by finding the entity with PauseInputComponent
+     * and sending it the appropriate event
+     * 
+     * @param pause true to pause, false to resume
+     */
+    private void triggerPauseSystem(boolean pause) {
+        try {
+            if (ServiceLocator.getEntityService() == null) {
+                // Fallback to direct time scale manipulation
+                ServiceLocator.getTimeSource().setTimeScale(pause ? 0f : 1f);
+                return;
+            }
+            
+            com.badlogic.gdx.utils.Array<com.csse3200.game.entities.Entity> all = 
+                ServiceLocator.getEntityService().getEntities();
+            
+            // Find the entity with PauseInputComponent
+            for (int i = 0; i < all.size; i++) {
+                com.csse3200.game.entities.Entity entity = all.get(i);
+                if (entity.getComponent(com.csse3200.game.components.maingame.PauseInputComponent.class) != null) {
+                    // Found it! Trigger the event it listens for
+                    if (pause) {
+                        // Check if already paused by checking time scale
+                        if (ServiceLocator.getTimeSource().getTimeScale() > 0) {
+                            entity.getEvents().trigger("togglePause");
+                        }
+                    } else {
+                        entity.getEvents().trigger("resume");
+                    }
+                    return;
+                }
+            }
+            
+            // If we didn't find PauseInputComponent, fall back to direct time scale manipulation
+            ServiceLocator.getTimeSource().setTimeScale(pause ? 0f : 1f);
+            
+        } catch (Exception e) {
+            // Fallback to direct time scale manipulation if anything fails
+            ServiceLocator.getTimeSource().setTimeScale(pause ? 0f : 1f);
+        }
     }
     
     /**

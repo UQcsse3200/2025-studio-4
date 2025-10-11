@@ -1,9 +1,6 @@
 package com.csse3200.game.wavesystem;
 
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.factories.*;
-import com.csse3200.game.utils.Difficulty;
-import com.badlogic.gdx.math.GridPoint2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

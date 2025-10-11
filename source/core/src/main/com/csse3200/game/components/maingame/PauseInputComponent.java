@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public class PauseInputComponent extends UIComponent {
     private boolean paused = false;
+    private float previousTimeScale = 1f;
 
     @Override
     public void create() {
@@ -54,10 +55,12 @@ public class PauseInputComponent extends UIComponent {
     private void pauseGame() {
         paused = true;
 
-        // Freeze the simulation (everything that uses GameTime’s delta stops)
         GameTime time = ServiceLocator.getTimeSource();
         if (time != null) {
-            try { time.setTimeScale(0f); } catch (Throwable ignored) {}
+            try { 
+                previousTimeScale = time.getTimeScale();
+                time.setTimeScale(0f); 
+            } catch (Throwable ignored) {}
         }
 
         // Tell everyone we paused (AI can stash state if needed)
@@ -70,10 +73,9 @@ public class PauseInputComponent extends UIComponent {
     private void resumeGame() {
         paused = false;
 
-        // Restore time
         GameTime time = ServiceLocator.getTimeSource();
         if (time != null) {
-            try { time.setTimeScale(1f); } catch (Throwable ignored) {}
+            try { time.setTimeScale(previousTimeScale); } catch (Throwable ignored) {}
         }
 
         // Hide overlay first

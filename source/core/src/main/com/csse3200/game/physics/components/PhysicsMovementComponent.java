@@ -44,7 +44,7 @@ public class PhysicsMovementComponent extends Component implements MovementContr
     }
   }
   
-    public void setSpeed(Vector2 speed) {
+  public void setSpeed(Vector2 speed) {
     this.maxSpeed = speed;
   }
 
@@ -72,7 +72,13 @@ public class PhysicsMovementComponent extends Component implements MovementContr
   }
 
   private void updateDirection(Body body) {
-    Vector2 desiredVelocity = getDirection().scl(maxSpeed);
+    Vector2 direction = getDirection();
+    // Get the maximum speed as a scalar (use the larger component or average)
+    float maxSpeedScalar = Math.max(maxSpeed.x, maxSpeed.y);
+    
+    // Scale the normalized direction by the scalar max speed
+    Vector2 desiredVelocity = direction.scl(maxSpeedScalar);
+    
     setToVelocity(body, desiredVelocity);
   }
 

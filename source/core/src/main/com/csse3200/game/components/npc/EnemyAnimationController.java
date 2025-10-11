@@ -41,24 +41,24 @@ public class EnemyAnimationController extends Component {
 
   private void onWander() {
     if (!waitingForAttackFinish && !waitingForDeathFinish && !isDead) {
-      logger.debug("{} - onWander -> idle", entity.getId());
+      //logger.debug("{} - onWander -> idle", entity.getId());
       startSafe("idle");
     }
   }
 
   private void onChase() {
     if (!waitingForAttackFinish && !waitingForDeathFinish && !isDead) {
-      logger.debug("{} - onChase -> walk", entity.getId());
+      //logger.debug("{} - onChase -> walk", entity.getId());
       startSafe("walk");
     }
   }
 
   private void onAttack() {
-    logger.info("{} - onAttack called (isDead={}, waitingForDeath={}, hasAttack={})", 
-                entity.getId(), isDead, waitingForDeathFinish, animator.hasAnimation("attack"));
+    //logger.info("{} - onAttack called (isDead={}, waitingForDeath={}, hasAttack={})", 
+                //entity.getId(), isDead, waitingForDeathFinish, animator.hasAnimation("attack"));
     
     if (isDead) {
-      logger.info("{} - Already dead, ignoring attack", entity.getId());
+      //logger.info("{} - Already dead, ignoring attack", entity.getId());
       return;
     }
     
@@ -72,8 +72,8 @@ public class EnemyAnimationController extends Component {
   }
 
   private void onAnimationFinished(String animName) {
-    logger.info("{} - Animation finished: {} (waitingAttack={}, waitingDeath={}, isDead={}, deathQueued={})", 
-                entity.getId(), animName, waitingForAttackFinish, waitingForDeathFinish, isDead, deathAnimationQueued);
+    //logger.info("{} - Animation finished: {} (waitingAttack={}, waitingDeath={}, isDead={}, deathQueued={})", 
+                //entity.getId(), animName, waitingForAttackFinish, waitingForDeathFinish, isDead, deathAnimationQueued);
     
     if (waitingForAttackFinish && "attack".equals(animName)) {
       waitingForAttackFinish = false;

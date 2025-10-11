@@ -16,6 +16,7 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.rendering.RotatingAnimationRenderComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.towers.OrbitComponent;
@@ -306,12 +307,16 @@ public class TowerComponent extends Component {
      */
     @Override
     public void update() {
+        
         if (!active) return;
 
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
         if (stats == null) return;
 
-        float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
+        // Use GameTime's delta time which respects time scale (paused = 0, double speed = 2x)
+        GameTime gameTime = ServiceLocator.getTimeSource();
+        float dt = gameTime != null ? gameTime.getDeltaTime() : 0f;
+        
         stats.updateAttackTimer(dt);
 
         // Update head position only if it does NOT have an OrbitComponent

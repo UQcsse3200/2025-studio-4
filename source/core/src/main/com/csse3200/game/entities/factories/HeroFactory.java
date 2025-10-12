@@ -243,68 +243,63 @@ public final class HeroFactory {
         var resistance = DamageTypeConfig.None;
         var weakness = DamageTypeConfig.None;
 
-        // (1) Create a shared rendering component (avoid creating duplicates later)
+        // 只创建一个身体渲染组件，避免重复
         RotatingTextureRenderComponent body = new RotatingTextureRenderComponent(cfg.heroTexture);
 
         Entity hero = new Entity()
-                // === Core components ===
+                // === 基础物理/碰撞（沿用你原来的设置）===
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent().setSensor(true))
                 .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
 
-                // === Rendering ===
-                .addComponent(body) // Only one rendering component is needed
+                // === 渲染 ===
+                .addComponent(body)
 
-                // === Combat stats ===
+                // === 角色数值 ===
                 .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
 
-                // === Sword attack logic (rotation & collision) ===
-                .addComponent(new SamuraiSpinAttackComponent(
-                        cfg.swordRadius,   // Sword orbit radius
-                        cfg.swordTexture,  // Sword texture
-                        cfg,
-                        camera             // Camera reference
-                ))
+                // === 武士剑系统（内部：纯剑 + AttackLock + Jab/Sweep/Spin + Controller）===
+                .addComponent(
+                        new SamuraiSpinAttackComponent(
+                                cfg.swordRadius,   // 视觉/物理上的剑柄半径
+                                cfg.swordTexture,  // 剑贴图
+                                cfg,
+                                camera
+                        )
+                                // 贴图默认朝向：你的 PNG 默认朝右 => 0°
+                                .setSpriteForwardOffsetDeg(0f)
+                                // 贴图中心到“手柄”的偏移（通常为负值，拉近握柄）
+                                .setCenterToHandle(-0.25f)
+                                // 三招手感（与此前参数一致）
+                                .setJabParams(0.18f, 0.8f,  0.00f)  // duration, extra, 内部最小间隔（非主CD）
+                                .setSweepParams(0.22f, 0.35f, 0.00f) // duration, extra, 内部最小间隔
+                )
 
-                // === Upgrade and ultimate abilities ===
+                // === 升级/大招（你原来就有）===
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent());
 
         hero.setScale(1f, 1f);
 
-        // (2) Attempt to set the texture’s origin to its center
-        //     This ensures the Samurai rotates around its middle instead of the bottom-left corner.
+        // 把身体贴图的旋转原点设置到中心（以便朝向/旋转看起来自然）
         try {
-            // Common case: directly supported by RotatingTextureRenderComponent
             body.getClass().getMethod("setOriginToCenter").invoke(body);
         } catch (Throwable ignore) {
             try {
-                // Fallback: manually calculate the center point using width/height
                 float w = (float) body.getClass().getMethod("getTextureWidth").invoke(body);
                 float h = (float) body.getClass().getMethod("getTextureHeight").invoke(body);
                 body.getClass().getMethod("setOrigin", float.class, float.class).invoke(body, w / 2f, h / 2f);
             } catch (Throwable ignore2) {
-                // If the render component doesn’t support setting origin,
-                // the sword’s orbit pivot can be adjusted manually (see step 3 below)
+                // 如果渲染组件不支持设置原点，也没关系；剑组件内部会用 pivotOffset 做细调
             }
         }
 
-        // (3) Optional fine-tuning: adjust sword rotation alignment if visuals look off-center
-        SamuraiSpinAttackComponent spin = hero.getComponent(SamuraiSpinAttackComponent.class);
-        if (spin != null) {
-            // Controls which direction the sword texture faces by default:
-            // → = 0°, ↑ = 90°, ← = 180°, ↓ = 270°
-            spin.setSpriteForwardOffsetDeg(0f);
-
-            // If the sword still appears offset, adjust its orbit pivot:
-            // Retrieve the SwordOrbitPhysicsComponent (within SamuraiSpinAttackComponent)
-            // and call orbit.setPivotOffset(ox, oy), e.g., (0f, 0f) or slightly adjusted.
-            // Example:
-            // orbit.setPivotOffset(0.1f, -0.1f);
-        }
+        // 如果需要，后续还可以通过事件或额外 setter 调整 spin 的方向/圈数：
+        // hero.getComponent(SamuraiSpinAttackComponent.class) ... （当前已设置为默认 CCW=true, turns=1 在内部）
 
         return hero;
     }
+
 
 
 }

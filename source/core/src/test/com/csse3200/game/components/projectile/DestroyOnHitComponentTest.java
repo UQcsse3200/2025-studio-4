@@ -9,6 +9,7 @@ import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.InputMultiplexer;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.ComponentPriority;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -74,7 +75,14 @@ public class DestroyOnHitComponentTest {
 
   private static Entity makeEntityWith(Component... comps) {
     Entity e = spy(new Entity()); // spy to verify dispose() invocation
-    for (Component c : comps) e.addComponent(c);
+    for (Component c : comps) {
+      // Stub getPrio() for mock components
+      if (c instanceof HitboxComponent && ((HitboxComponent) c).getFixture() != null) {
+        // This is a mock, stub getPrio()
+        when(c.getPrio()).thenReturn(ComponentPriority.LOW);
+      }
+      e.addComponent(c);
+    }
     e.create();
     return e;
   }
@@ -88,6 +96,7 @@ public class DestroyOnHitComponentTest {
     // Mock HitboxComponent: getFixture() returns me
     HitboxComponent hitbox = mock(HitboxComponent.class);
     when(hitbox.getFixture()).thenReturn(me);
+    when(hitbox.getPrio()).thenReturn(ComponentPriority.LOW); // ADD THIS LINE
 
     DestroyOnHitComponent comp = new DestroyOnHitComponent(LAYER_TARGET);
 
@@ -114,6 +123,7 @@ public class DestroyOnHitComponentTest {
 
     HitboxComponent hitbox = mock(HitboxComponent.class);
     when(hitbox.getFixture()).thenReturn(me);
+    when(hitbox.getPrio()).thenReturn(ComponentPriority.LOW); // ADD THIS LINE
 
     DestroyOnHitComponent comp = new DestroyOnHitComponent(LAYER_TARGET);
     Entity entity = makeEntityWith(hitbox, comp);
@@ -135,6 +145,7 @@ public class DestroyOnHitComponentTest {
 
     HitboxComponent hitbox = mock(HitboxComponent.class);
     when(hitbox.getFixture()).thenReturn(myFixture);
+    when(hitbox.getPrio()).thenReturn(ComponentPriority.LOW); // ADD THIS LINE
 
     DestroyOnHitComponent comp = new DestroyOnHitComponent(LAYER_TARGET);
     Entity entity = makeEntityWith(hitbox, comp);

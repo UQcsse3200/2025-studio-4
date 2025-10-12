@@ -65,6 +65,10 @@ class HomebaseDamageEffectComponentSimpleTest {
         // Setup combat stats mock
         lenient().when(mockCombatStats.getHealth()).thenReturn(100);
         
+        // Stub getPrio() for mock components
+        lenient().when(mockTextureComponent.getPrio()).thenReturn(ComponentPriority.LOW);
+        lenient().when(mockCombatStats.getPrio()).thenReturn(ComponentPriority.LOW);
+        
         // Create entity and add components
         entity = new Entity();
         entity.addComponent(mockTextureComponent);

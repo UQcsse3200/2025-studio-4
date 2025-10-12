@@ -7,6 +7,9 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.components.ComponentType;
 import com.csse3200.game.events.EventHandler;
 import com.csse3200.game.services.ServiceLocator;
+
+import java.util.Comparator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,18 +215,21 @@ public class Entity {
    * and should not be called manually.
    */
   public void create() {
-    if (created) {
-      logger.error(
-          "{} was created twice. Entity should only be registered with the entity service once.",
-          this);
-      return;
+      if (created) {
+        logger.error(
+            "{} was created twice. Entity should only be registered with the entity service once.",
+            this);
+        return;
+      }
+      createdComponents = components.values().toArray();
+      createdComponents.sort(
+          Comparator.comparingInt(c -> c.getPrio().getValue())
+      );
+      for (Component component : createdComponents) {
+        component.create();
+      }
+      created = true;
     }
-    createdComponents = components.values().toArray();
-    for (Component component : createdComponents) {
-      component.create();
-    }
-    created = true;
-  }
 
   /**
    * Perform an early update on all components. This is called by the entity service and should not

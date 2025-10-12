@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.ComponentPriority;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -58,6 +59,7 @@ public class ProjectileComponentTest {
     Body body = mock(Body.class);
     PhysicsComponent phys = mock(PhysicsComponent.class);
     when(phys.getBody()).thenReturn(body);
+    when(phys.getPrio()).thenReturn(ComponentPriority.HIGH); // ADD THIS LINE (PhysicsComponent uses HIGH)
 
     // GameTime (not directly needed in this case, but stubbed in case the component accesses it)
     GameTime ts = mock(GameTime.class);
@@ -83,6 +85,7 @@ public class ProjectileComponentTest {
     Body body = mock(Body.class);
     PhysicsComponent phys = mock(PhysicsComponent.class);
     when(phys.getBody()).thenReturn(body);
+    when(phys.getPrio()).thenReturn(ComponentPriority.HIGH); // ADD THIS LINE (PhysicsComponent uses HIGH)
 
     GameTime ts = mock(GameTime.class);
     when(ts.getDeltaTime()).thenReturn(0.2f);

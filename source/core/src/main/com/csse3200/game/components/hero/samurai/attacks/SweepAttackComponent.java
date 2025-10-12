@@ -2,6 +2,8 @@ package com.csse3200.game.components.hero.samurai.attacks;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SweepAttackComponent extends AbstractSwordAttackComponent {
     private boolean active=false;
@@ -27,7 +29,8 @@ public class SweepAttackComponent extends AbstractSwordAttackComponent {
         return !active && cdOk && notBusy && miniOk;
     }
 
-    @Override public void trigger(Vector2 target) {
+    @Override
+    public void trigger(Vector2 target) {
         if (target==null || !canTrigger()) return;
 
         getEntityCenter(owner, ownerCenter); ownerCenter.add(pivotOffset);
@@ -46,11 +49,15 @@ public class SweepAttackComponent extends AbstractSwordAttackComponent {
         if (lock!=null) lock.tryAcquire("sweep");
         if (cds!=null) cds.trigger("sweep");
 
-        // 三扇形即时剑气
-        emitSwordQiAtAngle(baseDeg, "images/samurai/slash_red_thick_Heavy_6x1_64.png", 6,1,64,64,0.08f,true);
-        emitSwordQiAtAngle(baseDeg + qiFanOffsetDeg, "images/samurai/slash_red_thick_Heavy_6x1_64.png", 6,1,64,64,0.08f,true);
-        emitSwordQiAtAngle(baseDeg - qiFanOffsetDeg, "images/samurai/slash_red_thick_Heavy_6x1_64.png", 6,1,64,64,0.08f,true);
+        // --- Sweep 的飞行参数（例子：速度中等、寿命更长、单发伤害较低） ---
+        float swSpeed  = 9.0f;
+        float swLife   = 0.30f;
+        int   swDamage = 15;
+        float drawW = 1.4f, drawH = 1.4f;
+
+        emitSwordQiAtAngle(baseDeg, "images/samurai/slash_red_thick_Heavy_6x1_64.png", 6,1,64,64,0.08f,true, swSpeed, swLife, swDamage, drawW, drawH);
     }
+
 
     @Override public void update(float dt) {
         if (miniTimer>0f) miniTimer -= dt;

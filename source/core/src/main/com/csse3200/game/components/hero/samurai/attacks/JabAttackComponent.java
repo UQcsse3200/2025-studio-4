@@ -27,11 +27,12 @@ public class JabAttackComponent extends AbstractSwordAttackComponent {
         return !active && cdOk && notBusy && miniOk;
     }
 
-    @Override public void trigger(Vector2 target) {
+    @Override
+    public void trigger(Vector2 target) {
         if (target==null || !canTrigger()) return;
         float dt = (Gdx.graphics!=null)? Gdx.graphics.getDeltaTime() : 1f/60f;
 
-        // 拿中心，算角
+        // 角度计算（保持你原来的逻辑）
         getEntityCenter(owner, ownerCenter); ownerCenter.add(pivotOffset);
         float dx = target.x - ownerCenter.x, dy = target.y - ownerCenter.y;
         if (Math.abs(dx)<1e-5f && Math.abs(dy)<1e-5f) return;
@@ -42,10 +43,21 @@ public class JabAttackComponent extends AbstractSwordAttackComponent {
         if (lock!=null) lock.tryAcquire("jab");
         if (cds!=null) cds.trigger("jab");
 
-        // 立即打一发剑气
-        emitSwordQiAtAngle(angleDeg, "images/samurai/slash_red_thick_Heavy_6x1_64.png",
-                6,1, 64,64, 0.08f, true);
+        // --- 只改这一段：为 Jab 指定更短生命、更高伤害、更快或更慢的速度 ---
+        float jabSpeed  = 3.0f;   // 你想让它飞不远，可稍慢（也可靠 life 控制）
+        float jabLife   = 0.30f;  // 寿命短（飞行时间短）
+        int   jabDamage = 30;     // Jab 更痛（例子）
+        float drawW = 1.6f, drawH = 1.6f; // 如需更粗/更明显，可调大
+
+        emitSwordQiAtAngle(
+                angleDeg,
+                "images/samurai/slash_red_thick_Heavy_6x1_64.png",
+                6, 1, 64, 64, 0.08f, true,
+                jabSpeed, jabLife, jabDamage,
+                drawW, drawH
+        );
     }
+
 
     @Override public void update(float dt) {
         if (miniTimer>0f) miniTimer -= dt;

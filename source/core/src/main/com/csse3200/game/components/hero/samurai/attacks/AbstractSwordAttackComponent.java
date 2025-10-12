@@ -133,6 +133,39 @@ public abstract class AbstractSwordAttackComponent extends Component implements 
         ServiceLocator.getEntityService().register(qi);
     }
 
+    // 新增：允许每次发射临时覆盖 speed/life/damage/渲染大小
+    protected void emitSwordQiAtAngle(float angleDeg, String sheetPath, int cols, int rows,
+                                      int frameW, int frameH, float frameDur, boolean loop,
+                                      float speed, float life, int damage,
+                                      float drawW, float drawH) {
+        float rad = (float)Math.toRadians(angleDeg);
+        float ux = (float)Math.cos(rad);
+        float uy = (float)Math.sin(rad);
+
+        getEntityCenter(owner, ownerCenter);
+        ownerCenter.add(pivotOffset);
+
+        float forward = Math.max(restRadius + qiSpawnForward, 1.2f);
+        Vector2 spawn = new Vector2(ownerCenter.x + ux*forward, ownerCenter.y + uy*forward);
+
+        float baseRotation = 0f;
+
+        Entity qi = com.csse3200.game.entities.factories.SwordQiFactory.createSwordQi(
+                spawn, ux*speed, uy*speed, life, damage,
+                drawW, drawH,
+                sheetPath, cols, rows, frameW, frameH, frameDur,
+                angleDeg + spriteForwardOffsetDeg, baseRotation, loop
+        );
+
+        var anim = qi.getComponent(com.csse3200.game.rendering.RotatingSheetAnimationRenderComponent.class);
+        if (anim != null) { anim.setLayer(5); anim.setZIndexOverride(9999f); }
+
+        if (qi.getScale().isZero() || qi.getScale().x < 0.3f) qi.setScale(3f,3f);
+
+        ServiceLocator.getEntityService().register(qi);
+    }
+
+
     // 可选：通用 setter，子类也能用
     public AbstractSwordAttackComponent setSpriteForwardOffsetDeg(float deg){ this.spriteForwardOffsetDeg=deg; return this; }
     public AbstractSwordAttackComponent setCenterToHandle(float d){ this.centerToHandle=d; return this; }

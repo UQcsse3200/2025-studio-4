@@ -3,7 +3,6 @@ package com.csse3200.game.areas;
 import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
-import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.HeroStatusPanelComponent;
 
 
@@ -20,16 +19,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.wavesystem.Wave;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
-import com.csse3200.game.areas2.MapTwo.MapEditor2;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
@@ -47,8 +43,6 @@ import java.util.List;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
 /**
@@ -74,9 +68,6 @@ public class ForestGameArea extends GameArea {
     private long spawnScheduledTime = 0; // When the current spawn was scheduled (in milliseconds)
     private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
-
-    // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
-    private boolean autoStartWaves = true;
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
@@ -143,14 +134,6 @@ public class ForestGameArea extends GameArea {
      */
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
-    }
-
-    /**
-     * Control whether waves should auto start during create().
-     * Useful to disable when restoring from a save to avoid duplicated spawns.
-     */
-    public void setAutoStartWaves(boolean autoStartWaves) {
-        this.autoStartWaves = autoStartWaves;
     }
 
     private void initializeWaypointLists() {
@@ -429,6 +412,9 @@ public class ForestGameArea extends GameArea {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+        if (MainGameScreen.ui != null) {
+            MainGameScreen.ui.getEvents().addListener("startWave", this::startWaves);
+        }
 
         /*
         // Difficulty label UI
@@ -488,16 +474,6 @@ public class ForestGameArea extends GameArea {
         pauseListener.getEvents().addListener("gamePaused", this::pauseWaveSpawning);
         pauseListener.getEvents().addListener("gameResumed", this::resumeWaveSpawning);
         spawnEntity(pauseListener);
-
-        if (autoStartWaves) {
-            initializeWaves();
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
-        }
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
@@ -632,6 +608,16 @@ public class ForestGameArea extends GameArea {
             }
         }
         return null;
+    }
+
+    public void startWaves() {
+        initializeWaves();
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                startEnemyWave();
+            }
+        }, 2.0f); // Start wave after 2 seconds
     }
 
     /**

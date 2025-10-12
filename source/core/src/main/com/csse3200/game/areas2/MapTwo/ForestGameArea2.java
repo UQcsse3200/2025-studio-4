@@ -65,9 +65,6 @@ public class ForestGameArea2 extends GameArea2 {
     private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
 
-    // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
-    private boolean autoStartWaves = true;
-
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea2 currentGameArea;
@@ -124,13 +121,6 @@ public class ForestGameArea2 extends GameArea2 {
      */
     public void setHasExistingPlayer(boolean hasExistingPlayer) {
         this.hasExistingPlayer = hasExistingPlayer;
-    }
-
-    /**
-     * Control whether waves should auto start during create().
-     */
-    public void setAutoStartWaves(boolean autoStartWaves) {
-        this.autoStartWaves = autoStartWaves;
     }
 
     private void initializeWaypointLists() {
@@ -411,6 +401,10 @@ public class ForestGameArea2 extends GameArea2 {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+        if (MainGameScreen.ui != null) {
+            MainGameScreen.ui.getEvents().addListener("startWave", this::startWaves);
+        }
+
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
         cameraControl.addComponent(new CameraZoomDragComponent());
@@ -463,16 +457,6 @@ public class ForestGameArea2 extends GameArea2 {
         pauseListener.getEvents().addListener("gamePaused", this::pauseWaveSpawning);
         pauseListener.getEvents().addListener("gameResumed", this::resumeWaveSpawning);
         spawnEntity(pauseListener);
-
-        if (autoStartWaves) {
-            initializeWaves();
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
-        }
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
@@ -633,6 +617,16 @@ public class ForestGameArea2 extends GameArea2 {
             }
         }
         return null;
+    }
+
+    public void startWaves() {
+        initializeWaves();
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                startEnemyWave();
+            }
+        }, 2.0f); // Start wave after 2 seconds
     }
 
     /**

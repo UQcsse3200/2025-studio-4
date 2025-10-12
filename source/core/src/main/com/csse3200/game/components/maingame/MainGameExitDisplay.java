@@ -1,16 +1,12 @@
 package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIStyleHelper;
@@ -18,7 +14,6 @@ import com.csse3200.game.ui.leaderboard.LeaderboardController;
 import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
 import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +49,7 @@ public class MainGameExitDisplay extends UIComponent {
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     speedButton = new TextButton("Speed: 1x", customButtonStyle);
+    TextButton startWaveButton = new TextButton("Start Wave", customButtonStyle);
 
     // Set button size
     float buttonWidth = 120f;
@@ -63,6 +59,7 @@ public class MainGameExitDisplay extends UIComponent {
     mainMenuBtn.getLabel().setColor(Color.CYAN);
     rankingBtn.getLabel().setColor(Color.CYAN);
     speedButton.getLabel().setColor(Color.CYAN);
+    startWaveButton.getLabel().setColor(Color.CYAN);
     
     saveBtn.addListener(
       new ChangeListener() {
@@ -111,6 +108,13 @@ public class MainGameExitDisplay extends UIComponent {
         }
     });
 
+    startWaveButton.addListener(new ChangeListener() {
+        @Override
+        public void changed(ChangeEvent event, Actor actor) {
+            startWave();
+        }
+    });
+
     table.add(saveBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
     table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
@@ -118,9 +122,16 @@ public class MainGameExitDisplay extends UIComponent {
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
     table.row();
     table.add(speedButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.row();
+    table.add(startWaveButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
 
     stage.addActor(table);
     applyUiScale();
+  }
+
+  private void startWave() {
+    logger.debug("Start Wave button clicked");
+    entity.getEvents().trigger("startWave");
   }
 
   /**

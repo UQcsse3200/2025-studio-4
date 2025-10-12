@@ -72,6 +72,8 @@ public class EngineerSummonComponent extends Component {
      */
     private InputAdapter qAdapter;
 
+    private float lastEmitCd = -999f;
+
     /**
      * Constructor.
      *
@@ -113,6 +115,8 @@ public class EngineerSummonComponent extends Component {
 
         // Attach keyboard input adapter for hotkeys (Plan A)
         attachToMultiplexer(qAdapter = makeKeyAdapter());
+        emitCooldownEvent();
+        entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
     }
 
     /**
@@ -124,6 +128,10 @@ public class EngineerSummonComponent extends Component {
         detachFromMultiplexer(qAdapter);
         qAdapter = null;
     }
+    private void emitCooldownEvent() {
+        float remaining = Math.max(cd, 0f);
+        entity.getEvents().trigger("summon:cooldown", remaining, cooldownSec);
+    }
 
     /**
      * Updates the cooldown timer every frame.
@@ -131,7 +139,18 @@ public class EngineerSummonComponent extends Component {
     @Override
     public void update() {
         float dt = ServiceLocator.getTimeSource().getDeltaTime();
-        if (cd > 0f) cd -= dt;
+        if (cd > 0f) {
+            float prev = cd;
+            cd = Math.max(0f, cd - dt);
+
+            // 以0.05s为步长节流广播，或从>0变为0时强制广播
+            float quantPrev = (float)Math.floor(prev * 20f) / 20f;
+            float quantNow  = (float)Math.floor(cd   * 20f) / 20f;
+            if (quantNow != lastEmitCd || (prev > 0f && cd == 0f)) {
+                lastEmitCd = quantNow;
+                emitCooldownEvent();
+            }
+        }
     }
 
     public void addMaxSummons(int delta) {
@@ -230,6 +249,7 @@ public class EngineerSummonComponent extends Component {
         aliveByType.put(type, aliveByType.getOrDefault(type, 0) + 1);
         cd = cooldownSec;
         entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+        emitCooldownEvent();
     }
 
     /**

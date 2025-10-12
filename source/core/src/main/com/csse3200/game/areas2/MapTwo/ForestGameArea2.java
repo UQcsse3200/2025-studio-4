@@ -9,7 +9,7 @@ import com.csse3200.game.components.hero.engineer.SummonPlacementComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.services.GameStateService;
-import com.csse3200.game.ui.HeroStatusPanelComponent;
+import com.csse3200.game.ui.Hero.HeroStatusPanelComponent;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -679,7 +679,7 @@ public class ForestGameArea2 extends GameArea2 {
         // 6️⃣ 一次性提示窗口
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
+            new com.csse3200.game.ui.Hero.HeroHintDialog(hero).showOnceOn(stage);
             heroHintShown = true;
         }
 
@@ -721,7 +721,7 @@ public class ForestGameArea2 extends GameArea2 {
         // 6) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
+            new com.csse3200.game.ui.Hero.HeroHintDialog(engineer).showOnceOn(stage);
             heroHintShown = true;
         }
     }
@@ -765,7 +765,7 @@ public class ForestGameArea2 extends GameArea2 {
         // 7) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.HeroHintDialog(samurai).showOnceOn(stage);
+            new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
         }
     }

@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.hero.samurai.SkillCooldowns;
 import com.csse3200.game.components.hero.samurai.SwordAppearanceComponent;
 import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
 import com.csse3200.game.components.hero.samurai.SwordLevelSyncComponent;
@@ -78,14 +79,33 @@ public final class SwordFactory {
                         DamageTypeConfig.None,
                         DamageTypeConfig.None))
                 .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown))
+
+                .addComponent(new SkillCooldowns()
+                        .setTotal("jab",   3.0f)  // 戳
+                        .setTotal("spin",  5.0f)  // 旋
+                        .setTotal("sweep", 1.2f)  // 砍/横扫 —— 这里用 "sweep" 才能和组件里对上
+                )
+
                 // === Level sync ===
                 .addComponent(new SwordLevelSyncComponent(owner, cfg));
+
+        sword.getEvents().addListener("skill:cooldown",
+                (com.csse3200.game.components.hero.samurai.SkillCooldowns.SkillCooldownInfo info) -> {
+                    if (owner != null) owner.getEvents().trigger("skill:cooldown", info);
+                });
+
+        sword.getEvents().addListener("skill:ready",
+                (String skill) -> {
+                    if (owner != null) owner.getEvents().trigger("skill:ready", skill);
+                });
+
 
         return sword;
     }
 
     /**
      * Overloaded helper method that creates a sword with common default parameters.
+     *
      * @param owner           The Samurai entity that owns the sword.
      * @param cfg             The {@link SamuraiConfig} with stats and texture paths.
      * @param swordTexture    Path to the sword’s texture.

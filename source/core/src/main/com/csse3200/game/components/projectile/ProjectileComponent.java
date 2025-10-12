@@ -58,6 +58,8 @@ public class ProjectileComponent extends Component {
         setVy = 0f;
       }
       physics.getBody().setLinearVelocity(setVx, setVy);
+
+      physics.getBody().setBullet(true);
     }
   }
 

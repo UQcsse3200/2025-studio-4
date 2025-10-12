@@ -54,54 +54,56 @@ public final class SwordFactory {
                                      float angularSpeedDeg,
                                      float spriteForwardOffsetDeg,
                                      float centerToHandle,
-                                     int damage,
-                                     float hitCooldown) {
+                                     int damage,          // ← 现在对剑本体无用，可保留签名
+                                     float hitCooldown) { // ← 现在对剑本体无用，可保留签名
 
         Entity sword = new Entity()
-                // === Physics and collision setup ===
+                // === 仅保留用于 setTransform 的物理体 ===
                 .addComponent(new PhysicsComponent())
-                .addComponent(new ColliderComponent())
-                .addComponent(new HitboxComponent()
-                        .setLayer(PhysicsLayer.PLAYER_ATTACK)
-                        .setSensor(true)) // Sensor: detects collisions but doesn’t apply physics forces
-                // === Rendering ===
+
+                // ❌ 不再添加碰撞体，避免任何近战接触
+                // .addComponent(new ColliderComponent())
+                // .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER_ATTACK).setSensor(true))
+
+                // === 渲染 ===
                 .addComponent(new RotatingTextureRenderComponent(swordTexture))
                 .addComponent(new SwordAppearanceComponent(owner, cfg))
-                // === Movement and orbiting physics ===
+
+                // === 运动与轨道逻辑（保留，用于视觉/朝向/发射方向计算）===
                 .addComponent(new SwordJabPhysicsComponent(owner, radius)
                         .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                         .setCenterToHandle(centerToHandle)
-                        .setJabParams(0.18f, 0.8f)     // Jab duration/distance (tweak for animation feel)
-                        .setJabCooldown(0.05f))        // Minimum interval between jabs
-                // === Combat logic ===
-                .addComponent(new CombatStatsComponent(
-                        10, damage,                   // Health, Attack Power
-                        DamageTypeConfig.None,
-                        DamageTypeConfig.None))
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown))
+                        .setJabParams(0.18f, 0.8f)
+                        .setJabCooldown(0.05f))
 
+                // ❌ 不再在“剑”上挂近战 CombatStats（如果系统别处强依赖，可保留一个占位，攻击力设置为0）
+                // .addComponent(new CombatStatsComponent(10, damage, DamageTypeConfig.None, DamageTypeConfig.None))
+
+                // ❌ 不再在“剑”上挂触碰伤害
+                // .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown))
+
+                // === 仍保留多技能冷却，用于 Jab/Sweep/Spin 的触发节流 ===
                 .addComponent(new SkillCooldowns()
-                        .setTotal("jab",   3.0f)  // 戳
-                        .setTotal("spin",  5.0f)  // 旋
-                        .setTotal("sweep", 1.2f)  // 砍/横扫 —— 这里用 "sweep" 才能和组件里对上
-                )
+                        .setTotal("jab",   3.0f)
+                        .setTotal("spin",  5.0f)
+                        .setTotal("sweep", 1.2f))
 
-                // === Level sync ===
+                // === 等级同步（保留）===
                 .addComponent(new SwordLevelSyncComponent(owner, cfg));
 
+        // 透传冷却事件到 owner（保留）
         sword.getEvents().addListener("skill:cooldown",
                 (com.csse3200.game.components.hero.samurai.SkillCooldowns.SkillCooldownInfo info) -> {
                     if (owner != null) owner.getEvents().trigger("skill:cooldown", info);
                 });
-
         sword.getEvents().addListener("skill:ready",
                 (String skill) -> {
                     if (owner != null) owner.getEvents().trigger("skill:ready", skill);
                 });
 
-
         return sword;
     }
+
 
     /**
      * Overloaded helper method that creates a sword with common default parameters.

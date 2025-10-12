@@ -53,79 +53,61 @@ public class SamuraiSpinAttackComponent extends Component {
     public void create() {
         super.create();
 
-        // 1) 创建剑（角速度参数给 0 即可）
+        // 1) 创建“纯可视”的剑（工厂内已挂 SwordJabPhysicsComponent）
         sword = com.csse3200.game.entities.factories.SwordFactory.createSword(
-                this.entity, cfg,swordTexture, restRadius, 0f
+                this.entity, cfg, swordTexture, restRadius, 0f
         );
 
-        // 2) 挂运动控制（J/K/L）
-        var motion = new SwordJabPhysicsComponent(this.entity, restRadius)
-                .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
-                .setCenterToHandle(centerToHandle)
-                .setJabParams(jabDuration, jabExtra)
-                .setJabCooldown(jabCooldown)
-                .setSweepParams(sweepDuration, sweepExtra)
-                .setSweepCooldown(sweepCooldown)
-                .setSweepArcDegrees(60f)
-                .setSpinParams(0.5f, 0.25f)
-                .setSpinCooldown(0.6f)
-                .setSpinDirectionCCW(true)
-                .setSpinTurns(1f);
-        sword.addComponent(motion);
+        // 可选：在这里拿到控制器做参数微调（若工厂没设）
+        var ctrl = sword.getComponent(SwordJabPhysicsComponent.class);
+        if (ctrl != null) {
+            ctrl.setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
+                    .setCenterToHandle(centerToHandle)
+                    .setJabParams(jabDuration, jabExtra)
+                    .setJabCooldown(jabCooldown)
+                    .setSweepParams(sweepDuration, sweepExtra)
+                    .setSweepCooldown(sweepCooldown)
+                    .setSweepArcDegrees(60f)
+                    .setSpinParams(0.5f, 0.25f)
+                    .setSpinCooldown(0.6f)
+                    .setSpinDirectionCCW(true)
+                    .setSpinTurns(1f);
+        }
 
-
-        // 3) 命中组件（确保 sword 有 Hitbox/Collider）
-        sword.addComponent(new AttackOnContactIfAttacking(
-                25,
-                com.csse3200.game.physics.PhysicsLayer.ENEMY,
-                0.10f
-        ));
-
-        // 4) 注册到实体服务
+        // 2) 注册实体
         var es = ServiceLocator.getEntityService();
         if (es != null) Gdx.app.postRunnable(() -> es.register(sword));
 
-        // 5) 绑定 J/K/L 输入
+        // 3) 绑定输入（只触发 trigger...）
         adapter = new InputAdapter() {
             private final Vector3 tmp = new Vector3();
             private final Vector2 mouseWorld = new Vector2();
-
             @Override public boolean keyDown(int keycode) {
-                if (sword == null || camera == null) return false; // 不吞事件
-
-                // 屏幕 -> 世界
+                if (sword == null || camera == null) return false;
                 tmp.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
                 camera.unproject(tmp);
                 mouseWorld.set(tmp.x, tmp.y);
 
-                // ✅ 拿回“当前剑”的控制组件（注意类型是 SwordJabPhysicsComponent）
-                var ctrl = sword.getComponent(SwordJabPhysicsComponent.class);
-                if (ctrl == null) return false;
+                var c = sword.getComponent(SwordJabPhysicsComponent.class);
+                if (c == null) return false;
 
-                if (keycode == Input.Keys.NUM_1) {
-                    ctrl.triggerJabTowards(mouseWorld);
-                    return true;
-                } else if (keycode == Input.Keys.NUM_2) {
-                    ctrl.triggerSweepToward(mouseWorld);
-                    return true;
-                } else if (keycode == Input.Keys.NUM_3) {
-                    ctrl.triggerSpin(true); // 逆时针
-                    return true;
-                }
+                if (keycode == Input.Keys.NUM_1) { c.triggerJabTowards(mouseWorld); return true; }
+                if (keycode == Input.Keys.NUM_2) { c.triggerSweepToward(mouseWorld); return true; }
+                if (keycode == Input.Keys.NUM_3) { c.triggerSpin(true); return true; }
                 return false;
             }
         };
 
         var cur = Gdx.input.getInputProcessor();
-        if (cur instanceof InputMultiplexer mux) {
-            mux.addProcessor(0, adapter);
-        } else {
+        if (cur instanceof InputMultiplexer mux) mux.addProcessor(0, adapter);
+        else {
             var mux = new InputMultiplexer();
             mux.addProcessor(adapter);
             if (cur != null) mux.addProcessor(cur);
             Gdx.input.setInputProcessor(mux);
         }
     }
+
 
     @Override
     public void dispose() {

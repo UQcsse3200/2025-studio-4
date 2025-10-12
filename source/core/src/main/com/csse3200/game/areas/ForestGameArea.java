@@ -741,6 +741,9 @@ public class ForestGameArea extends GameArea {
         // 2) 预加载 samurai 资源（主体 + 刀）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, samCfg);
+        rs.loadTextures(new String[]{
+                "images/samurai/slash_sheet_6x1_64.png"
+        });
         while (!rs.loadForMillis(10)) {
             logger.info("Loading samurai assets... {}%", rs.getProgress());
         }

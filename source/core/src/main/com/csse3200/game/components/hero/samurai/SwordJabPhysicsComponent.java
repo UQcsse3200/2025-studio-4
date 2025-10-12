@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
+import com.csse3200.game.services.ServiceLocator;
 
 public class SwordJabPhysicsComponent extends Component {
     private final Entity owner;
@@ -53,6 +55,15 @@ public class SwordJabPhysicsComponent extends Component {
     private float spinStartDeg = 0f;
     private float spinDir = +1f;
     private float spinTurns = 1f;
+
+    // 统一参数（可根据手感调整）
+    private String qiTexture = "images/samurai/Stab.png";
+    private float qiSpeed = 10f;      // 单位/秒
+    private float qiLife  = 0.60f;    // 存活秒数
+    private int   qiDamage = 30;      // 剑气伤害
+    private float qiFanOffsetDeg = 15f; // 扇形偏角
+    private int   qiSpinCount = 8;    // Spin 一圈发射数量
+    private float qiSpawnForward =  restRadius + 0.25f;
 
     // NEW: 多技能冷却
     private SkillCooldowns cds;
@@ -247,6 +258,7 @@ public class SwordJabPhysicsComponent extends Component {
         this.jabbing = true;
         this.jabT = 0f;
 
+        emitSwordQiAtAngle(jabAngleDeg);
         if (cds != null) cds.trigger("jab");             // NEW: 进入主CD
     }
 
@@ -274,6 +286,10 @@ public class SwordJabPhysicsComponent extends Component {
         this.sweeping = true;
         this.sweepT = 0f;
 
+        emitSwordQiAtAngle(sweepBaseDeg); // 中线
+        emitSwordQiAtAngle(sweepBaseDeg + qiFanOffsetDeg);
+        emitSwordQiAtAngle(sweepBaseDeg - qiFanOffsetDeg);
+
         if (cds != null) cds.trigger("sweep");           // NEW: 进入主CD
     }
 
@@ -286,6 +302,13 @@ public class SwordJabPhysicsComponent extends Component {
         this.spinDir = ccw ? +1f : -1f;
         this.spinning = true;
         this.spinT = 0f;
+
+        float step = 360f / Math.max(1, qiSpinCount);
+        float start = spinStartDeg; // 也可用 facingDeg
+        for (int i = 0; i < qiSpinCount; i++) {
+            float ang = start + i * step;
+            emitSwordQiAtAngle(ang);
+        }
 
         if (cds != null) cds.trigger("spin");            // NEW: 进入主CD
     }
@@ -342,5 +365,71 @@ public class SwordJabPhysicsComponent extends Component {
             return fallback;
         }
     }
+
+    // 替换你类中的 emitSwordQiAtAngle(float angleDeg)
+    private void emitSwordQiAtAngle(float angleDeg) {
+        // 方向向量
+        float rad = (float) Math.toRadians(angleDeg);
+        float ux = (float) Math.cos(rad);
+        float uy = (float) Math.sin(rad);
+
+        // owner 中心 + 可视枢轴偏移
+        getEntityCenter(owner, ownerCenter);
+        ownerCenter.add(pivotOffset);
+
+        // ✅ 出生点：适当加大 forward，避免“生成即命中即销毁”
+        float forward = Math.max(qiSpawnForward, 1.2f);
+        Vector2 spawn = new Vector2(
+                ownerCenter.x + ux * forward,
+                ownerCenter.y + uy * forward
+        );
+
+        // ✅ 渲染尺寸（世界单位）
+        float drawW = 1.2f;
+        float drawH = 1.2f;
+
+        // 贴图基准朝向：PNG 默认朝右=0f；若默认朝上改为 90f
+        float baseRotation = 0f;
+
+        // ✅ 为了便于“看见”，生命/帧时长稍微放宽；确认可见后再调回
+        float life = Math.max(qiLife, 0.6f);
+        float frameDur = 0.08f; // 比 0.06 更容易看清
+
+        // 创建“剑气投射物”
+        Entity qi = com.csse3200.game.entities.factories.SwordQiFactory.createSwordQi(
+                spawn,
+                ux * qiSpeed, uy * qiSpeed,   // 速度
+                life,                         // 存活时间
+                qiDamage,                     // 伤害
+                drawW, drawH,                 // 渲染宽高（世界单位）
+                "images/samurai/slash_red_thick_Heavy_6x1_64.png",
+                6, 1,                         // 列、行
+                64, 64,                       // 每帧像素
+                frameDur,                     // 每帧时长
+                angleDeg + spriteForwardOffsetDeg, // 朝向角
+                baseRotation,                 // 素材基准朝向
+                true                          // ✅ 先循环，确认可见；之后再改回 false
+        );
+
+        // ✅ 把动画渲染组件推到前景层，并给高 zIndex（避免被地形/单位遮住）
+        var anim = qi.getComponent(com.csse3200.game.rendering.RotatingSheetAnimationRenderComponent.class);
+        if (anim != null) {
+            anim.setLayer(5);                // 只要比默认层(1)大就行，5 作为前景层
+            anim.setZIndexOverride(9999f);   // 兜底：极高 z
+        }
+
+        // ✅ 尺寸防呆：如果 scale 很小或为 0，直接给一个可见尺寸（调试用）
+        if (qi.getScale().isZero() || qi.getScale().x < 0.3f || qi.getScale().y < 0.3f) {
+            qi.setScale(3.0f, 3.0f);         // 先看得见；确认后再回 1.2f
+        }
+
+        // （可选）监听动画播完事件：anim.setAutoRemoveOnFinish(true) 时可移除渲染等
+        // qi.getEvents().addListener("animationFinished", (String name) -> { ... });
+
+        // 注册实体
+        ServiceLocator.getEntityService().register(qi);
+    }
+
+
 }
 

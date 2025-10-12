@@ -461,8 +461,8 @@ public class ForestGameArea extends GameArea {
 
 
         Entity placementEntity = new Entity().addComponent(
-                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, (MapEditor)mapEditor, placeCb)
-        );
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
+        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
 
         playMusic();

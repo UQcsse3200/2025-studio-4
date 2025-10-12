@@ -45,95 +45,101 @@ public class HeroStatusPanelComponent extends Component {
     public void create() {
         stage = ServiceLocator.getRenderService().getStage();
 
-        // ==== 皮肤与字体（沿用你们的 SimpleUI）====
+        // === 与 HeroHotbarDisplay 保持一致的深色主题 ===
         Skin skin = new Skin();
-        skin.add("default-font", SimpleUI.font(), com.badlogic.gdx.graphics.g2d.BitmapFont.class);
-        // 生成基础 Label 样式
-        Label.LabelStyle ls = new Label.LabelStyle(SimpleUI.font(), Color.BLACK);
+        // 白字更适合深色背景
+        Label.LabelStyle ls = new Label.LabelStyle(SimpleUI.font(), Color.WHITE);
         skin.add("default", ls);
 
-        // ==== 背景：浅黄卡片 ====
-        TextureRegionDrawable yellowBg = new TextureRegionDrawable(makeSolid(240, 200, new Color(0xFFF3ACFF))); // #FFF3AC
+        // —— 与 Hotbar 一致的暗色背景（0.15,0.15,0.18,0.9）——
+        TextureRegionDrawable darkBg = new TextureRegionDrawable(makeSolid(4, 4, new Color(0.15f, 0.15f, 0.18f, 0.9f)));
 
-        // ==== 左侧根布局：固定在左边，宽度与你黄色栏一致 ====
+        // === 屏幕与右侧栏的布局常量（与 HeroHotbarDisplay 对齐） ===
+        float sw = Gdx.graphics.getWidth();
+        float sh = Gdx.graphics.getHeight();
+
+        // Hotbar 的宽高（你的 Hotbar 代码里用的是 width=0.20f, height=0.20f）
+        float HOTBAR_W = sw * 0.20f;
+        float HOTBAR_H = sh * 0.20f;
+        float SIDE_PAD  = sw * 0.012f;  // 右侧外边距
+        float GAP       = sh * 0.012f;  // Hotbar 与状态卡片之间的垂直间距
+
+        // 本面板尺寸尽量与 Hotbar 同宽，稍高一些
+        float PANEL_W   = HOTBAR_W;
+        float PANEL_H   = sh * 0.24f;
+
+        // === 根 Table：固定在“右上”，并向下偏移 Hotbar 的高度 → 恰好在 Hotbar 正下方 ===
         root = new Table();
         root.setFillParent(true);
-        root.left().center().padLeft(16);    // 左上角
-        root.defaults().left();
+        // 改成：
+        root.top().right();
+// Hotbar靠右居中 => Hotbar 顶边 = sh * 0.5f + HOTBAR_H * 0.5f
+        root.padTop(sh * 0.5f + HOTBAR_H * 0.5f + GAP).padRight(0f);
 
-        // 如果黄色背景是全屏左栏，这里**不再**设置背景；若想自己画出一块卡片：
+        // === 卡片内容 ===
         card = new Table(skin);
-        card.setBackground(yellowBg);
-        card.pad(12);
-        card.defaults().left().padBottom(6);
+        card.setBackground(darkBg);
+        card.pad(sw * 0.008f);
+        card.defaults().left().padBottom(sh * 0.006f);
 
-
-        // ==== 文本 ====
-        nameLabel   = new Label(heroName, skin); // 使用传入的英雄名字
+        // 文本与按钮（白字）
+        nameLabel   = new Label(heroName, skin);
         hpLabel     = new Label("HP: 100/100", skin);
         energyLabel = new Label("Energy: 50/50", skin);
         levelLabel  = new Label("Lv. 1", skin);
         Label damageLabel = new Label("DMG: -", skin);
         costLabel   = new Label("Upgrade cost: 200", skin);
 
-        // ==== ULT 按钮 ====
+        // ULT 按钮（可复用你们的样式，但把字色设为黑或白都可）
         ultBtn = UltimateButtonComponent.createUltimateButton(hero);
 
-        // ==== 升级按钮 ====
+        // 升级按钮（用你们 SimpleUI 的主按钮样式，适配深色背景）
         TextButton.TextButtonStyle upStyle = SimpleUI.primaryButton();
         upStyle.font = SimpleUI.font();
-        upStyle.fontColor = Color.BLACK;
+        upStyle.fontColor = Color.BLACK;     // 按钮内用浅底深字
         upStyle.overFontColor = Color.BLACK;
         upStyle.downFontColor = Color.BLACK;
         upgradeBtn = new TextButton("Upgrade", upStyle);
 
-        // 布局：头像+右侧信息
-        Table row = new Table();
+        // 头像/信息行（如需头像，这里可加 Image）
         Table info = new Table();
         info.add(nameLabel).left().row();
         info.add(levelLabel).left();
-        row.add(info).left().expandX();
 
-        card.add(row).left().row();
+        card.add(info).left().row();
         card.add(hpLabel).left().row();
         card.add(damageLabel).left().row();
         card.add(energyLabel).left().row();
         card.add(costLabel).left().row();
-        card.add(upgradeBtn).left().width(120).padTop(4).row();
-        card.add(ultBtn).left().row(); // 用按钮替换原 ultCdLabel
+        card.add(upgradeBtn).left().width(sw * 0.10f).padTop(sh * 0.004f).row();
+        card.add(ultBtn).left().row();
 
-        // 把卡片塞到左栏（按你黄色区域从上往下的顺序放）
-        root.add(card).width(220).growX();
-
+        // 把卡片放进右侧根容器，并固定宽高与 Hotbar 对齐
+        root.add(card).width(PANEL_W).height(PANEL_H);
         stage.addActor(root);
 
-        // ==== 事件对接：根据你现有事件名监听并更新 ====
-        // 1) HP 变化
+        // ==== 事件绑定 ====
         hero.getEvents().addListener("hero.hp", (Integer cur, Integer max) -> {
             if (cur == null || max == null) return;
             hpLabel.setText("HP: " + cur + "/" + max);
         });
 
-        // ★ 新增：伤害事件
         hero.getEvents().addListener("hero.damage", (Integer dmg) -> {
             if (dmg == null) return;
             damageLabel.setText("DMG: " + dmg);
         });
 
-        // 2) 能量/怒气 变化
         hero.getEvents().addListener("hero.energy", (Integer cur, Integer max) -> {
             if (cur == null || max == null) return;
             energyLabel.setText("Energy: " + cur + "/" + max);
         });
 
-        // 3) 等级变化
         hero.getEvents().addListener("hero.level", (Integer lv) -> {
             if (lv == null) return;
             levelLabel.setText("Lv. " + lv);
-            refreshUpgradeInfo(); // 刷新升级信息
+            refreshUpgradeInfo();
         });
 
-        // 4) 升级按钮事件
         upgradeBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -142,12 +148,11 @@ public class HeroStatusPanelComponent extends Component {
             }
         });
 
-        // 5) 响应升级结果
         hero.getEvents().addListener("upgraded", (Integer level, Object currencyType, Integer cost) -> refreshUpgradeInfo());
         hero.getEvents().addListener("upgradeFailed", (String msg) -> refreshUpgradeInfo());
 
-        // 初始化升级信息
         refreshUpgradeInfo();
+
     }
 
     @Override

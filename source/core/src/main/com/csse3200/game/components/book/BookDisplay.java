@@ -2,6 +2,7 @@ package com.csse3200.game.components.book;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -50,6 +51,7 @@ public class BookDisplay extends UIComponent {
 
     private DeckComponent deck;
     private boolean hasJustOpenedBook = true;
+    private static final Color borderColor =  new Color(0.38f, 0.26f, 0.04f, 1f);
 
     private Table contentListTable;
     private Table titleTable;
@@ -172,7 +174,7 @@ public class BookDisplay extends UIComponent {
         table.setFillParent(true);
 
         // Left content list
-        table.top().left().padLeft(stageWidth * 0.2f).padTop(stageHeight * 0.2f);
+        table.top().left().padLeft(stageWidth * 0.18f).padTop(stageHeight * 0.2f);
 
         // Book title
         Label labelTitle = new Label(this.book.getTitle(), skin, "large");
@@ -223,12 +225,67 @@ public class BookDisplay extends UIComponent {
                     }
                 });
             }
-            table.add(button).size(buttonW, buttonH).padRight(stageWidth * 0.02f / imagesPerRow);
+
+            // Wrap button with a bordered table
+            Table borderedButton = new Table();
+            borderedButton.setBackground(new TextureRegionDrawable(
+                    new TextureRegion(createBorderTexture(borderColor, 2))
+            ));
+            borderedButton.add(button).size(buttonW, buttonH).pad(2);
+
+            table.add(borderedButton).padRight(stageWidth * 0.02f / imagesPerRow);
         }
 
         stage.addActor(titleTable);
         stage.addActor(table);
     }
+
+    private Texture createBorderTexture(Color color, int thickness) {
+        int size = 64;
+        Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+
+        // Make everything transparent first
+        pixmap.setColor(0, 0, 0, 0);
+        pixmap.fill();
+
+        // Set border color
+        pixmap.setColor(color);
+
+        // Draw multiple nested rectangles to create the desired thickness
+        for (int i = 0; i < thickness; i++) {
+            pixmap.drawRectangle(i, i, size - 2 * i, size - 2 * i);
+        }
+
+        Texture texture = new Texture(pixmap);
+        pixmap.dispose();
+        return texture;
+    }
+
+    // Create a NinePatchDrawable that is a border (transparent center, colored frame)
+    private NinePatchDrawable createBorderNinePatchDrawable(int size, int thickness, Color color) {
+        Pixmap pixmap = new Pixmap(size, size, Pixmap.Format.RGBA8888);
+        // Fill fully transparent first
+        pixmap.setColor(0, 0, 0, 0);
+        pixmap.fill();
+
+        // Draw border by drawing rectangles of 1px thickness inwards
+        pixmap.setColor(color);
+        for (int i = 0; i < thickness; i++) {
+            pixmap.drawRectangle(i, i, size - 2 * i, size - 2 * i);
+        }
+
+        Texture texture = new Texture(pixmap);
+        pixmap.dispose();
+
+        // Create NinePatch so the center area stretches but border remains intact
+        NinePatch patch = new NinePatch(new TextureRegion(texture),
+                thickness, thickness, thickness, thickness);
+        NinePatchDrawable drawable = new NinePatchDrawable(patch);
+
+        // NOTE: texture will be owned by the patch; dispose later when screen is disposed
+        return drawable;
+    }
+
 
     /**
      * Renders the details of a selected deck on the right-hand panel.
@@ -257,15 +314,29 @@ public class BookDisplay extends UIComponent {
         // Clear the whole right panel before re-rendering
         rightTable.clear();
 
-        // --- IMAGE ---
+        // --- IMAGE --- (inside renderRightDeck)
         Texture tex = ServiceLocator.getResourceService()
                 .getAsset(stats.get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
         Image rightImage = new Image(new TextureRegionDrawable(new TextureRegion(tex)));
 
         float imageW = stageWidth * 0.15f;
         float imageH = stageHeight * 0.25f;
-        rightTable.add(rightImage).size(imageW, imageH).center();
+
+        // Create border drawable (size 64, thickness 2 px)
+        int borderSize = 64;
+        int borderThicknessPx = 6;
+        NinePatchDrawable borderDrawable = createBorderNinePatchDrawable(borderSize, borderThicknessPx, borderColor);
+
+        // Wrap the image in a Table so the background is the border drawable
+        Table borderedImage = new Table();
+        borderedImage.setBackground(borderDrawable);
+
+        // Add the image inside the bordered table with a small padding so it doesn't overlap the border
+        float pad = borderThicknessPx; // Scale this using stageWidth/stageHeight if needed
+        borderedImage.add(rightImage).size(imageW - pad * 2, imageH - pad * 2).center();
+        rightTable.add(borderedImage).size(imageW, imageH).center();
         rightTable.row().padTop(stageHeight * 0.01f);
+
 
         // --- NAME ---
         String name = stats.get(DeckComponent.StatType.NAME);

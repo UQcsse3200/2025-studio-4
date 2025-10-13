@@ -26,6 +26,7 @@ import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.maingame.TowerUpgradeData.UpgradeStats;
+import com.csse3200.game.components.towers.BeamAttackComponent;
 
 import java.util.Map;
 import java.util.EnumMap;
@@ -448,6 +449,11 @@ public class TowerUpgradeMenu extends UIComponent {
                 com.csse3200.game.components.towers.OrbitComponent orbit = head.getComponent(com.csse3200.game.components.towers.OrbitComponent.class);
                 if (orbit != null) {
                     orbit.setRadius(stats.getRange());
+                }
+                // also update beam range so visuals/target checks match upgraded stats
+                BeamAttackComponent beam = head.getComponent(BeamAttackComponent.class);
+                if (beam != null) {
+                    beam.setRange(stats.getRange());
                 }
             }
         }

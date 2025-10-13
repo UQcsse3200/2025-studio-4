@@ -368,6 +368,9 @@ public class TowerComponent extends Component {
             if (headEntity != null) {
                 var beam = headEntity.getComponent(BeamAttackComponent.class);
                 if (beam != null) {
+                    // keep beam range in sync with upgraded stats
+                    beam.setRange(stats.getRange());
+
                     if (nearest != null) {
                         beam.setTarget(nearest);
                         // rotate head to face target

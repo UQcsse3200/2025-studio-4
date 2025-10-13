@@ -184,7 +184,12 @@ public class BookDisplay extends UIComponent {
                 .padTop(stageHeight * 0.12f);
         titleTable.add(labelTitle);
 
-        int imagesPerRow = 3;
+        int imagesPerRow = 4;
+        if (decks.size() <= 8) {
+            imagesPerRow = 2;
+        } else if (decks.size() <= 15) {
+            imagesPerRow = 3;
+        }
         
         // Scale buttons relative to screen width
         float buttonW = stageWidth * 0.24f / imagesPerRow;
@@ -268,7 +273,7 @@ public class BookDisplay extends UIComponent {
             name = "Unknown";
         }
         Label nameLabel = new Label(name, skin, "large");
-        nameLabel.setFontScale(stageWidth * 0.001f);
+        nameLabel.setFontScale(stageWidth * 0.0008f);
         rightTable.add(nameLabel).center();
         rightTable.row().padTop(stageHeight * 0.01f);
 

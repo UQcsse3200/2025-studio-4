@@ -2,6 +2,7 @@ package com.csse3200.game.entities.factories;
 
 import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.HomebaseDamageEffectComponent;
+import com.csse3200.game.components.HomebaseRegenerationComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckDisplay;
@@ -83,6 +84,7 @@ public class PlayerFactory {
             .addComponent(new CurrencyManagerComponent())
             .addComponent(new PlayerStatsDisplay())
             .addComponent(new HomebaseDamageEffectComponent(texturePath))
+            .addComponent(new HomebaseRegenerationComponent())
             .addComponent(new PlayerScoreComponent())
             .addComponent(new DamagePopupComponent())
             .addComponent(healthBar)

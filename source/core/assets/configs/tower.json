@@ -1,6 +1,6 @@
 {
   "boneTower": {
-    "name": "bone tower",
+    "name": "Bone",
     "lore": "Crafted by ancient tribes, Bone Towers channel the primal energy of the land. Their flying bone projectiles carry the spirits of long-dead guardians, sending a chilling warning to any who dare approach.",
     "base": {
       "level_A": 1,
@@ -18,7 +18,7 @@
     }
   },
   "dinoTower": {
-    "name": "dino tower",
+    "name": "Dino",
     "locked": true,
     "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
     "base": {
@@ -37,7 +37,7 @@
     }
   },
   "cavemenTower": {
-    "name": "cavemen tower",
+    "name": "Cavemen",
     "lore": "Cavemen Towers are staffed by expert marksmen armed with guns salvaged from defeated AI bots. With sharp eyes and steady hands, they make sure nothing slips through their sights.",
     "base": {
       "level_A": 1,
@@ -55,6 +55,8 @@
     }
   },
   "pterodactylTower": {
+    "name": "Pterodactyl",
+    "lore": "Hatched from a relic nest of ancient beasts, the Pterodactyl Tower binds its fierce instincts to modern defense systems. Its wings never tire, and its piercing shrieks echo across the battlefield as it defends its territory with primal fury.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -71,6 +73,8 @@
     }
   },
   "supercavemenTower": {
+    "name": "Super Cavemen",
+    "lore": "Super Cavemen are the result of experimental enhancements on elite hunters. With eyes that burn with laser fury and muscles honed to perfection, they strike fear into all who dare approach their territory.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -87,6 +91,8 @@
     }
   },
   "totemTower": {
+    "name": "Totem",
+    "lore": "Totem Towers are relics of a forgotten civilization, imbued with ancient magic that resonates with nearby machinery. Their mystical aura inspires and empowers all who stand within its influence.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -103,6 +109,8 @@
     }
   },
   "bankTower": {
+    "name": "Bank",
+    "lore": "Bank Towers are fortified vaults staffed by clever financiers. Their mechanisms mint currency from the battlefield itself, ensuring that wealth flows steadily to fund the defense of the realm.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -119,6 +127,8 @@
     }
   },
   "raftTower": {
+    "name": "Raft",
+    "lore": "Raft Towers are crewed by fearless Viking archers who mastered both sea and bow. Their handmade ships drift silently across the water, striking down enemies before they can ever reach the shore.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -135,6 +145,8 @@
     }
   },
   "frozenmamoothskullTower": {
+    "name": "Frozen Mammoth Skull",
+    "lore": "The Frozen Mammoth Skull Tower channels the lingering spirit of a long-extinct titan. Its frosty breath echoes through the ages, freezing all who dare tread near its glacial domain.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -151,6 +163,8 @@
     }
   },
   "bouldercatapultTower": {
+    "name": "Boulder Catapult",
+    "lore": "Constructed under the guidance of ancient village shamans, the Boulder Catapult Tower channels raw strength and earth’s fury. Each stone it launches carries the weight of the mountains themselves, crushing all who stand in its way.",
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -167,6 +181,8 @@
     }
   },
   "villageshamanTower": {
+    "name": "Village Shaman",
+    "lore": "The Village Shaman Tower draws its strength from ancient spirits and forgotten rituals. Guided by wisdom older than time, its chants summon lightning and energy from the skies, striking down enemies with divine precision.",
     "base": {
       "level_A": 1,
       "level_B": 1,

@@ -781,6 +781,11 @@ public class ForestGameArea extends GameArea {
                 .addComponent(new SamuraiStatusPanelComponent(samurai, "Samurai"));
         spawnEntity(heroStatusUI);
 
+        // 5.5) ★ 新增：创建“武士攻击工具条”UI（带 1/2/3 提示）
+        Entity samuraiAttackUI = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.SamuraiAttackToolbarComponent(samurai));
+        spawnEntity(samuraiAttackUI);
+
         // 6) 放置
         spawnEntityAt(samurai, cell, true, true);
 

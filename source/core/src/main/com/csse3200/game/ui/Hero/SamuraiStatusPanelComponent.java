@@ -27,7 +27,7 @@ public class SamuraiStatusPanelComponent extends BaseHeroStatusPanelComponent {
     private static final String[] ICONS  = {
             "images/samurai/Stab.png",
             "images/samurai/Slash.png",
-            "images/samurai/Slash.png"
+            "images/samurai/Spin.png"
     };
 
     public SamuraiStatusPanelComponent(Entity hero, String heroName) {

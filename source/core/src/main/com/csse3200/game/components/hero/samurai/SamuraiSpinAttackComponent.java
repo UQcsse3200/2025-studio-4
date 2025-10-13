@@ -105,6 +105,26 @@ public class SamuraiSpinAttackComponent extends Component {
 
         ctrl = new SamuraiSwordController(jab, sweep, spin);
 
+        this.entity.getEvents().addListener("ui:samurai:attack", (String type) -> {
+            if (ctrl == null || camera == null) return;
+
+            // 复用你键盘里同样的“鼠标世界坐标”逻辑
+            com.badlogic.gdx.math.Vector3 tmp = new com.badlogic.gdx.math.Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
+            camera.unproject(tmp);
+            com.badlogic.gdx.math.Vector2 mouseWorld = new com.badlogic.gdx.math.Vector2(tmp.x, tmp.y);
+
+            boolean ok = false;
+            switch (type) {
+                case "jab"   -> ok = ctrl.triggerJab(mouseWorld);
+                case "sweep" -> ok = ctrl.triggerSweep(mouseWorld);
+                case "spin"  -> ok = ctrl.triggerSpin(true); // 这里默认逆时针，可按需改参
+            }
+            if (!ok) {
+                // 如果触发失败（冷却/锁），你可以在这里给 UI 回发提示或冷却时间
+                this.entity.getEvents().trigger("ui:toast", "Cannot use now");
+            }
+        });
+
         sword.addComponent(lock)
                 .addComponent(jab)
                 .addComponent(sweep)

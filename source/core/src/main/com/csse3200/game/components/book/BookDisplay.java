@@ -184,11 +184,12 @@ public class BookDisplay extends UIComponent {
                 .padTop(stageHeight * 0.12f);
         titleTable.add(labelTitle);
 
+        int imagesPerRow = 3;
+        
         // Scale buttons relative to screen width
-        float buttonW = stageWidth * 0.12f;
-        float buttonH = stageHeight * 0.12f;
+        float buttonW = stageWidth * 0.24f / imagesPerRow;
+        float buttonH = stageHeight * 0.24f / imagesPerRow;
 
-        int imagesPerRow = 2;
         int count = 0;
 
         for (DeckComponent currentDeck : decks) {
@@ -217,7 +218,7 @@ public class BookDisplay extends UIComponent {
                     }
                 });
             }
-            table.add(button).size(buttonW, buttonH).padRight(stageWidth * 0.01f);
+            table.add(button).size(buttonW, buttonH).padRight(stageWidth * 0.02f / imagesPerRow);
         }
 
         stage.addActor(titleTable);

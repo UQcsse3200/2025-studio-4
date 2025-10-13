@@ -128,13 +128,24 @@ public class HeroUpgradeComponent extends Component {
     }
 
     /** Applies stat growth when hero levels up (customizable). */
+    /** Applies stat growth when hero levels up (customizable). */
     private void applyStatGrowth(int newLevel) {
+        // ① 固定基础攻击为 12（无论之前是多少）
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
-            stats.setBaseAttack(stats.getBaseAttack() + 10);
-            stats.setHealth(stats.getHealth() + 20);
+            stats.setBaseAttack(12);
+            // 如果不想改生命，这里就不再 +20 了；若仍想顺带加血，可自行加：
+            // stats.setHealth(stats.getHealth() + 20);
+        }
+
+        // ② 固定攻速为 1 秒 1 发（即冷却 = 1.0f 秒）
+        //    这里假设你的射击逻辑在 HeroTurretAttackComponent 里
+        HeroTurretAttackComponent atk = entity.getComponent(HeroTurretAttackComponent.class);
+        if (atk != null) {
+            atk.setCooldown(1.0f); // 冷却秒数：每 1.0s 可射一发
         }
     }
+
 
     /**
      * Fallback player lookup:

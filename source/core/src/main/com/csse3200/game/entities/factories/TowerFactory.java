@@ -162,7 +162,7 @@ public class TowerFactory {
                 .addComponent(new DeckComponent.TowerDeckComponent(
                         "pterodactyl", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
-                .addComponent(new TextureRenderComponent("images/towers/nest.png"));
+                .addComponent(new TextureRenderComponent("images/towers/pteradactyl/nest.png"));
         // TEMPORARY
         com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/pteradactyl/perolvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 

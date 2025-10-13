@@ -13,8 +13,8 @@
       "neurochipCost": 0,
       "projectileSpeed": 4.0,
       "projectileLife": 1,
-      "projectileTexture": "images/towers/bone_projectile.png",
-      "image": "images/towers/bone.png"
+      "projectileTexture": "images/towers/projectile animations/bone_projectile.png",
+      "image": "images/towers/bones/bonelvl1.png"
     }
   },
   "dinoTower": {
@@ -33,7 +33,7 @@
       "projectileSpeed": 2,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/fireballdino.png",
-      "image": "images/towers/dino.png"
+      "image": "images/towers/dino/dinolvl1.png"
     }
   },
   "cavemenTower": {
@@ -51,7 +51,7 @@
       "projectileSpeed": 6.0,
       "projectileLife": 4,
       "projectileTexture": "images/towers/projectile animations/caveman bullet.png",
-      "image": "images/towers/cavemen.png"
+      "image": "images/towers/cavemen/lvl1/caveman_lvl1.png"
     }
   },
   "pterodactylTower": {
@@ -66,8 +66,8 @@
       "neurochipCost": 0,
       "projectileSpeed": 15.0,
       "projectileLife": 1,
-      "projectileTexture": "images/towers/spike.png",
-      "image": "images/towers/pteradactyl.png"
+      "projectileTexture": "images/towers/projectile animations/spike.png",
+      "image": "images/towers/pteradactyl/perolvl1.png"
     }
   },
   "supercavemenTower": {
@@ -83,7 +83,7 @@
       "projectileSpeed": 10.0,
       "projectileLife": 4,
       "projectileTexture": "images/towers/projectile animations/lazer.png",
-      "image": "images/towers/supercavemen.png"
+      "image": "images/towers/super/superlvl1.png"
     }
   },
   "totemTower": {
@@ -99,7 +99,7 @@
       "projectileSpeed": 0.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/crystal.png",
-      "image": "images/towers/totem.png"
+      "image": "images/towers/totem/totemlvl1.png"
     }
   },
   "bankTower": {
@@ -115,7 +115,7 @@
       "projectileSpeed": 0,
       "projectileLife": 0,
       "projectileTexture": "",
-      "image": "images/towers/bank_tower.png"
+      "image": "images/towers/bank/banklvl1.png"
     }
   },
   "raftTower": {
@@ -131,7 +131,7 @@
       "projectileSpeed": 5.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/raftproj.png",
-      "image": "images/towers/archer.png"
+      "image": "images/towers/viking/vikinglvl1.png"
     }
   },
   "frozenmamoothskullTower": {
@@ -147,7 +147,7 @@
       "projectileSpeed": 6.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/icecube.png",
-      "image": "images/towers/frozenmamoothskull.png"
+      "image": "images/towers/mammoth/frozenmamoothskull.png"
     }
   },
   "bouldercatapultTower": {
@@ -163,7 +163,7 @@
       "projectileSpeed": 8.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/rockcatapault.png",
-      "image": "images/towers/bouldercatapult.png"
+      "image": "images/towers/catapault/catapaultlvl1.png"
     }
   },
   "villageshamanTower": {
@@ -179,7 +179,7 @@
       "projectileSpeed": 5.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/magic.png",
-      "image": "images/towers/villageshaman.png"
+      "image": "images/towers/shaman/charmanlvl1.png"
     }
   }
 }

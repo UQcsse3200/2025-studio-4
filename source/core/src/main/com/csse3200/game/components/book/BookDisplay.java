@@ -277,7 +277,7 @@ public class BookDisplay extends UIComponent {
         if (lore != null && !lore.isEmpty()) {
             String trimmedLore = trimWords(lore, maxWordsLore);
             Label loreLabel = new Label(trimmedLore, skin, "small"); // use a smaller style
-            loreLabel.setFontScale(stageWidth * 0.001f);
+            loreLabel.setFontScale(stageWidth * 0.0008f);
             loreLabel.setWrap(true);
             rightTable.add(loreLabel)
                     .width(stageWidth * 0.3f)

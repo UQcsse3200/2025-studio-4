@@ -183,6 +183,7 @@
   "villageshamanTower": {
     "name": "Village Shaman",
     "lore": "The Village Shaman Tower draws its strength from ancient spirits and forgotten rituals. Guided by wisdom older than time, its chants summon lightning and energy from the skies, striking down enemies with divine precision.",
+    "locked": true,
     "base": {
       "level_A": 1,
       "level_B": 1,

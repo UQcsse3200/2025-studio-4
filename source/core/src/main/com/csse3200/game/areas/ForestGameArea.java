@@ -675,6 +675,17 @@ public class ForestGameArea extends GameArea {
                 .addComponent(new DefaultHeroStatusPanelComponent(hero, "Hero"));
         spawnEntity(heroStatusUI);
 
+        Entity heroWeaponBar = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.HeroWeaponSwitcherToolbarComponent(
+                        hero,
+                        /* 建议使用独立图标（小尺寸方图） */
+                        "images/hero/gun1.png",
+                        "images/hero2/gun2.png",
+                        "images/hero3/gun3.png"
+                        // 也可以暂时用 heroCfg.heroTexture 等
+                ));
+        spawnEntity(heroWeaponBar);
+
         spawnEntityAt(hero, cell, true, true);
 
         // 6️⃣ 一次性提示窗口

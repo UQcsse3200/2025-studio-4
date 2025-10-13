@@ -29,30 +29,25 @@ import java.util.ArrayList;
  * - Locks after the first successful manual switch.
  * - Also locks immediately after the hero upgrades (level > 1 or "upgraded" event).
  */
+// 省略 package/import（与原文件保持一致）
+
 public class HeroOneShotFormSwitchComponent extends InputComponent {
     private static final Logger logger = LoggerFactory.getLogger(HeroOneShotFormSwitchComponent.class);
+    private static final float POLL_INTERVAL_SEC = 0.25f;
 
-    private static final float POLL_INTERVAL_SEC = 0.25f; // Poll hero existence
+    private final HeroConfig  cfg1;   // Form 1
+    private final HeroConfig2 cfg2;   // Form 2
+    private final HeroConfig3 cfg3;   // Form 3
 
-    // Configs for different hero forms
-    private final HeroConfig cfg1;   // Form 1
-    private final HeroConfig2 cfg2;  // Form 2
-    private final HeroConfig3 cfg3;  // Form 3
-
-    private Entity hero;              // Reference to the hero entity
-    private boolean locked = false;   // Lock after first manual switch or any upgrade
-
-    // Polling timer (no auto-default timer anymore)
+    private Entity hero;
+    private boolean locked = false;
     private Timer.Task pollTask;
 
-    // InputAdapter registered at index 0 to intercept keys 1/2/3
-    private InputAdapter hotkeyAdapter;
-
-    // Track current form (1/2/3). 0 means not initialized yet.
+    // ── 删除：hotkeyAdapter / keyDown 相关
     private int currentForm = 0;
 
     public HeroOneShotFormSwitchComponent(HeroConfig cfg1, HeroConfig2 cfg2, HeroConfig3 cfg3) {
-        super(1000); // High priority, but actual capture is via mux[0]
+        super(1000);
         this.cfg1 = cfg1;
         this.cfg2 = cfg2;
         this.cfg3 = cfg3;
@@ -62,7 +57,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     public void create() {
         super.create();
 
-        // === Preload hero textures (filter out null or empty paths) ===
+        // 预加载纹理（保持你原逻辑）
         var textures = new ArrayList<String>();
         if (cfg1 != null && cfg1.heroTexture != null && !cfg1.heroTexture.isBlank()) textures.add(cfg1.heroTexture);
         if (cfg2 != null && cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) textures.add(cfg2.heroTexture);
@@ -70,80 +65,45 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (!textures.isEmpty()) {
             ResourceService rs = ServiceLocator.getResourceService();
             rs.loadTextures(textures.toArray(new String[0]));
-            while (!rs.loadForMillis(10)) { /* wait until loaded */ }
+            while (!rs.loadForMillis(10)) { /* wait */ }
         }
 
-        // === Find hero; if not ready, poll; when ready, hook upgrade lock & boot to form-1 ===
         if (!tryFindHero()) {
-            armHeroPolling(); // will call hookUpgradeLock() + bootToForm1() when hero is found
+            armHeroPolling();
         } else {
             hookUpgradeLock();
             bootToForm1();
         }
 
-        // === Register hotkeyAdapter at index 0 to intercept keys 1/2/3 ===
-        if (hotkeyAdapter == null) {
-            hotkeyAdapter = new InputAdapter() {
-                @Override
-                public boolean keyDown(int keycode) {
-                    if (locked) return true; // already locked → swallow event
-                    if (hero == null && !tryFindHero()) return false;
+        // === 关键改动：监听 UI 事件，而不是键盘 ===
+        // "ui:weapon:switch"(Integer form)  -> 首次成功手动切换后锁定，并广播 "ui:weapon:locked"
+        this.getEntity().getEvents().addListener("ui:weapon:switch", (Integer form) -> {
+            if (locked) return;
+            if (hero == null && !tryFindHero()) return;
 
-                    int target = 0;
-                    if (keycode == Input.Keys.NUM_1 || keycode == Input.Keys.NUMPAD_1) target = 1;
-                    else if (keycode == Input.Keys.NUM_2 || keycode == Input.Keys.NUMPAD_2) target = 2;
-                    else if (keycode == Input.Keys.NUM_3 || keycode == Input.Keys.NUMPAD_3) target = 3;
-                    else return false; // let other keys pass through
+            int target = (form != null ? form : 0);
+            if (target < 1 || target > 3) return;
+            if (target == currentForm) return;
 
-                    // Pressing the same form does nothing (and does NOT lock)
-                    if (target == currentForm) return true;
-
-                    boolean ok = applyForm(target, "hotkey-" + target);
-                    if (ok) {
-                        // First successful manual switch → lock
-                        locked = true;
-                        // Optional: remove input hook to behave like a one-shot component
-                        dispose();
-                        Gdx.app.log("HeroSkinSwitch", "locked by manual switch to form " + target);
-                    }
-                    return ok;
-                }
-
-                @Override
-                public boolean keyTyped(char character) {
-                    // Not needed; keyDown is sufficient
-                    return false;
-                }
-            };
-
-            // Add to InputMultiplexer at index 0
-            if (Gdx.input.getInputProcessor() instanceof InputMultiplexer mux) {
-                mux.addProcessor(0, hotkeyAdapter);
-            } else {
-                InputMultiplexer mux = new InputMultiplexer();
-                mux.addProcessor(hotkeyAdapter);
-                if (Gdx.input.getInputProcessor() != null) mux.addProcessor(Gdx.input.getInputProcessor());
-                Gdx.input.setInputProcessor(mux);
+            boolean ok = applyForm(target, "ui-" + target);
+            if (ok) {
+                locked = true; // 一次性
+                // 通知 UI（置灰按钮）
+                hero.getEvents().trigger("ui:weapon:locked");
+                // 如需彻底卸载该组件的输入/定时器可：
+                dispose();
+                Gdx.app.log("HeroSkinSwitch", "locked by UI switch to form " + target);
             }
-        }
+        });
     }
 
-    /**
-     * Start polling for hero entity; once found, hook upgrade lock & boot to form-1.
-     */
     private void armHeroPolling() {
         if (pollTask != null) return;
         pollTask = Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                if (locked) {
-                    cancel();
-                    pollTask = null;
-                    return;
-                }
+            @Override public void run() {
+                if (locked) { cancel(); pollTask = null; return; }
                 if (tryFindHero()) {
-                    cancel();
-                    pollTask = null;
+                    cancel(); pollTask = null;
                     hookUpgradeLock();
                     bootToForm1();
                 }
@@ -151,9 +111,6 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         }, 0f, POLL_INTERVAL_SEC);
     }
 
-    /**
-     * Try to find the hero entity (with HeroTurretAttackComponent).
-     */
     private boolean tryFindHero() {
         var entityService = ServiceLocator.getEntityService();
         if (entityService == null) {
@@ -169,38 +126,29 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         return false;
     }
 
-    /**
-     * Hook listeners that lock switching as soon as the hero upgrades.
-     * Locks when hero.level > 1 or upgraded is triggered.
-     */
     private void hookUpgradeLock() {
         if (hero == null) return;
 
-        // Lock when hero.level > 1
-        // --- Hero is locked after leveling up (hero.level event has only one parameter)---
         hero.getEvents().addListener("hero.level", (EventListener1<Integer>) newLevel -> {
-            if (!locked && newLevel > 1) {
+            if (!locked && newLevel != null && newLevel > 1) {
                 locked = true;
-                dispose(); // optional
+                hero.getEvents().trigger("ui:weapon:locked");
+                dispose();
                 Gdx.app.log("HeroSkinSwitch", "locked by levelUp: level=" + newLevel);
             }
         });
 
-// --- Hero upgrade completed and locked (upgraded event has three parameters)---
         hero.getEvents().addListener("upgraded",
                 (EventListener3<Integer, Object, Integer>) (newLevel, _costType, _cost) -> {
-                    if (!locked && newLevel > 1) {
+                    if (!locked && newLevel != null && newLevel > 1) {
                         locked = true;
+                        hero.getEvents().trigger("ui:weapon:locked");
                         dispose();
                         Gdx.app.log("HeroSkinSwitch", "locked by upgraded: level=" + newLevel);
                     }
                 });
-
     }
 
-    /**
-     * Boot to form-1 once hero is ready (texture + bullet + params).
-     */
     private void bootToForm1() {
         if (hero == null || cfg1 == null) {
             logger.warn("[HeroSkinSwitch] bootToForm1 skipped: hero or cfg1 is null");
@@ -217,19 +165,13 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         }
     }
 
-    /**
-     * Apply target form (used by the first manual switch).
-     */
     private boolean applyForm(int form, String tag) {
-        String tex = null;
-        switch (form) {
-            case 1 -> tex = (cfg1 != null ? cfg1.heroTexture : null);
-            case 2 -> tex = (cfg2 != null ? cfg2.heroTexture : null);
-            case 3 -> tex = (cfg3 != null ? cfg3.heroTexture : null);
-            default -> {
-                return false;
-            }
-        }
+        String tex = switch (form) {
+            case 1 -> (cfg1 != null ? cfg1.heroTexture : null);
+            case 2 -> (cfg2 != null ? cfg2.heroTexture : null);
+            case 3 -> (cfg3 != null ? cfg3.heroTexture : null);
+            default -> null;
+        };
         if (tex == null || tex.isBlank()) return false;
 
         boolean ok = switchTexture(tex, tag);
@@ -249,18 +191,12 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         return true;
     }
 
-    /**
-     * Update bullet texture for the current hero attack component.
-     */
     private void updateBulletTexture(String bulletTexture) {
         if (hero == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
         if (atc != null) atc.setBulletTexture(bulletTexture);
     }
 
-    /**
-     * Apply config values (form 1) to hero attack and combat stats.
-     */
     private void applyConfigToHero(HeroConfig cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -273,9 +209,6 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
-    /**
-     * Apply config values (form 2) to hero attack and combat stats.
-     */
     private void applyConfigToHero2(HeroConfig2 cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -288,9 +221,6 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
-    /**
-     * Apply config values (form 3) to hero attack and combat stats.
-     */
     private void applyConfigToHero3(HeroConfig3 cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -303,10 +233,6 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
-    /**
-     * Just switch the texture on RotatingTextureRenderComponent.
-     * No lock or timers here (locking is controlled by manual switch or upgrade events).
-     */
     private boolean switchTexture(String texturePath, String keyTag) {
         if (texturePath == null || texturePath.isBlank()) {
             logger.warn("[HeroSkinSwitch] empty texture for {}", keyTag);
@@ -326,27 +252,17 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         return true;
     }
 
-    /**
-     * Cancel any scheduled timers.
-     */
     private void cancelTimers() {
-        if (pollTask != null) {
-            pollTask.cancel();
-            pollTask = null;
-        }
+        if (pollTask != null) { pollTask.cancel(); pollTask = null; }
     }
 
     @Override
     public void dispose() {
         super.dispose();
         cancelTimers();
-        if (hotkeyAdapter != null && Gdx.input.getInputProcessor() instanceof InputMultiplexer mux) {
-            mux.removeProcessor(hotkeyAdapter);
-        }
-        hotkeyAdapter = null;
+        // 无键盘处理器可移除
     }
 }
-
 
 
 

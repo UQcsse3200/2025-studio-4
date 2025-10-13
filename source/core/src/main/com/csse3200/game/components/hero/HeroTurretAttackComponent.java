@@ -10,6 +10,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.GameTime;
 
 /**
  * Hero turret-style attack component:
@@ -72,7 +73,10 @@ public class HeroTurretAttackComponent extends Component {
   public void update() {
     if (entity == null) return;
 
-    float dt = (Gdx.graphics != null) ? Gdx.graphics.getDeltaTime() : (1f / 60f);
+    // Use GameTime's delta time which respects time scale (paused = 0, double speed = 2x)
+    GameTime gameTime = ServiceLocator.getTimeSource();
+    float dt = gameTime != null ? gameTime.getDeltaTime() : 0f;
+    
     if (cdTimer > 0f) {
       cdTimer -= dt;
     }
@@ -83,13 +87,13 @@ public class HeroTurretAttackComponent extends Component {
 
     // Rotate sprite to face aim direction
     RotatingTextureRenderComponent rot = entity.getComponent(RotatingTextureRenderComponent.class);
-    if (rot != null) {
+    if (rot != null && gameTime.getTimeScale() > 0f) {
       float angleDeg = dir.angleDeg() + SPRITE_FACING_OFFSET_DEG;
       rot.setRotation(angleDeg);
     }
 
-    // Fire when cooldown expires
-    if (cdTimer <= 0f) {
+    // Only fire if game is not paused (time scale > 0) and cooldown has expired
+    if (gameTime != null && gameTime.getTimeScale() > 0f && cdTimer <= 0f) {
       float vx = dir.x * bulletSpeed;
       float vy = dir.y * bulletSpeed;
 

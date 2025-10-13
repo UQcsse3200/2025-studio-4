@@ -1,6 +1,6 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
@@ -14,7 +14,10 @@ import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
@@ -31,10 +34,14 @@ public class BossEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
     private static final String DEFAULT_NAME = "Boss Enemy";
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 10;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.NEUROCHIP;
+    private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
+    CurrencyType.METAL_SCRAP, 500,
+    CurrencyType.TITANIUM_CORE, 300,
+    CurrencyType.NEUROCHIP, 150
+    );
     private static final int DEFAULT_POINTS = 600;
     private static final float SPEED_EPSILON = 0.001f;
+    private static final String DEFAULT_DEATH_SOUND_PATH = "sounds/mixkit-arcade-game-explosion-2759.wav";
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     // Configurable properties
@@ -46,9 +53,10 @@ public class BossEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
-    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
+    private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
+
 
     /**
      * Creates a boss enemy with current configuration.
@@ -85,15 +93,48 @@ public class BossEnemyFactory {
 
         boss.getEvents().addListener("entityDeath", () -> destroyEnemy(boss));
 
-        // Handle waypoint progression for this specific boss
+        // Each boss handles its own waypoint progression
         boss.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = boss.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    applySpeedModifier(boss, wc, nextTarget);
-                    updateChaseTarget(boss, nextTarget);
+            WaypointComponent dwc = boss.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = boss.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(boss, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = boss.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(boss, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(boss, dwc, nextTarget);
+                updateChaseTarget(boss, nextTarget);
             }
         });
 
@@ -122,8 +163,7 @@ public class BossEnemyFactory {
             Entity player = wc.getPlayerRef();
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
-                player.getEvents().trigger("dropCurrency", drops);
+                player.getEvents().trigger("dropCurrency", currencyDrops);
             }
 
             // Award points to player upon defeating enemy
@@ -139,8 +179,16 @@ public class BossEnemyFactory {
             }
         }
 
+
+        playDeathSound(deathSoundPath);
         //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void playDeathSound(String soundPath) {
+        ServiceLocator.getResourceService()
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
     }
 
     private static void applySpeedModifier(Entity boss, WaypointComponent waypointComponent, Entity waypoint) {

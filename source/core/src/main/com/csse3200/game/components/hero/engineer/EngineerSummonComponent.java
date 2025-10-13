@@ -117,6 +117,33 @@ public class EngineerSummonComponent extends Component {
         attachToMultiplexer(qAdapter = makeKeyAdapter());
         emitCooldownEvent();
         entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+
+        // 来自 UI 的图标点击请求
+        entity.getEvents().addListener("ui:summon:request", (String type) -> {
+            if (type == null) return;
+            if (cd > 0f) {
+                entity.getEvents().trigger("ui:toast", "On cooldown");
+                emitCooldownEvent();
+                return;
+            }
+            if (!canPlace(type)) {
+                entity.getEvents().trigger("ui:toast", "Summon limit reached");
+                entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+                return;
+            }
+            var summonCtrl = findSummonPlacementComponent();
+            if (summonCtrl == null) return;
+
+            String tex = switch (type) {
+                case "melee"       -> "images/engineer/Sentry.png";
+                case "turret"      -> "images/engineer/Turret.png";
+                case "currencyBot" -> "images/engineer/Currency_tower.png";
+                default -> summonTexture != null ? summonTexture : "images/engineer/Turret.png";
+            };
+
+            summonCtrl.armSummon(new com.csse3200.game.components.hero.engineer.SummonPlacementComponent.SummonSpec(tex, type));
+        });
+
     }
 
     /**

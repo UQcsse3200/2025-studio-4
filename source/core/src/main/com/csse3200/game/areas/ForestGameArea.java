@@ -118,12 +118,12 @@ public class ForestGameArea extends GameArea {
             {5, 24}, {8, 20},
             // 在x<31且y>13且x<13范围内随机添加的坐标点
             {8, 15}, {5, 17}, {11, 14}, {3, 18},
-            {7, 25}, {2, 15},  {6, 29},
+            {7, 25}, {2, 15}, {6, 29},
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-        {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
+            {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
     };
 
     /**
@@ -162,12 +162,12 @@ public class ForestGameArea extends GameArea {
     private void initializeWaves() {
         // Initialize waypoint lists first
         initializeWaypointLists();
-        
+
         // Initialize spawn callbacks
         initializeSpawnCallbacks();
-        
+
         waves = new ArrayList<>();
-        
+
         // Wave 1: Basic enemies
         waves.add(new Wave(1, 5, 1, 0, 0, 0, 0, 3.0f, waypointLists));
 
@@ -182,16 +182,16 @@ public class ForestGameArea extends GameArea {
 
         // Wave 5: Final wave with boss
         waves.add(new Wave(5, 10, 8, 4, 1, 1, 4, 1.2f, waypointLists));
-}
+    }
 
     private void initializeSpawnCallbacks() {
         spawnCallbacks = new Wave.WaveSpawnCallbacks(
-            this::spawnDrone,
-            this::spawnGrunt,
-            this::spawnTank,
-            this::spawnBoss,
-            this::spawnDivider,
-            this::spawnSpeeder
+                this::spawnDrone,
+                this::spawnGrunt,
+                this::spawnTank,
+                this::spawnBoss,
+                this::spawnDivider,
+                this::spawnSpeeder
         );
     }
 
@@ -200,7 +200,7 @@ public class ForestGameArea extends GameArea {
      */
     private void startEnemyWave() {
         if (waveInProgress) return;
-        
+
         waveInProgress = true;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
@@ -216,18 +216,18 @@ public class ForestGameArea extends GameArea {
         }
 
         Wave currentWave = waves.get(currentWaveIndex);
-        
+
         // Set counters before building queue or spawning anything
         NUM_ENEMIES_TOTAL = currentWave.getTotalEnemies();
         NUM_ENEMIES_DEFEATED = 0;
         spawnDelay = currentWave.getSpawnDelay();
-        
-        logger.info("Starting Wave {} with {} enemies (Total: {}, Defeated: {})", 
-                    currentWave.getWaveNumber(), 
-                    NUM_ENEMIES_TOTAL,
-                    NUM_ENEMIES_TOTAL,
-                    NUM_ENEMIES_DEFEATED);
-        
+
+        logger.info("Starting Wave {} with {} enemies (Total: {}, Defeated: {})",
+                currentWave.getWaveNumber(),
+                NUM_ENEMIES_TOTAL,
+                NUM_ENEMIES_TOTAL,
+                NUM_ENEMIES_DEFEATED);
+
         enemySpawnQueue = currentWave.buildSpawnQueue(spawnCallbacks);
     }
 
@@ -275,8 +275,8 @@ public class ForestGameArea extends GameArea {
         // Safety check: ensure services are still available
         try {
             if (ServiceLocator.getPhysicsService() == null ||
-                ServiceLocator.getEntityService() == null ||
-                ServiceLocator.getResourceService() == null) {
+                    ServiceLocator.getEntityService() == null ||
+                    ServiceLocator.getResourceService() == null) {
                 logger.warn("Services not available, stopping wave spawning");
                 forceStopWave();
                 return;
@@ -286,19 +286,19 @@ public class ForestGameArea extends GameArea {
             forceStopWave();
             return;
         }
-        
+
         if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
             // Spawning complete, but enemies still alive
             waveInProgress = false;
             logger.info("Wave {} spawning completed", currentWaveIndex + 1);
             return;
         }
-        
+
         // Cancel any existing spawn task
         if (waveSpawnTask != null) {
             waveSpawnTask.cancel();
         }
-        
+
         // Adjust spawn delay to compensate for time scale
         float adjustedSpawnDelay = spawnDelay / ServiceLocator.getTimeSource().getTimeScale();
 
@@ -311,21 +311,21 @@ public class ForestGameArea extends GameArea {
                     logger.info("Game area changed during spawn, stopping");
                     return;
                 }
-                
+
                 // Double-check services are still available when task runs
                 try {
                     if (ServiceLocator.getPhysicsService() == null ||
-                        ServiceLocator.getEntityService() == null) {
+                            ServiceLocator.getEntityService() == null) {
                         logger.warn("Services disposed during spawn, stopping wave");
                         forceStopWave();
                         return;
                     }
-                    
+
                     if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
                         // Spawn the next enemy
                         Runnable spawnAction = enemySpawnQueue.remove(0);
                         spawnAction.run();
-                        
+
                         // Schedule the next one
                         scheduleNextEnemySpawn();
                     }
@@ -534,7 +534,7 @@ public class ForestGameArea extends GameArea {
         HealthBarComponent healthBar = new HealthBarComponent(1.4f, 0.15f, 0.8f);
         Entity newPlayer = PlayerFactory.createPlayer("images/homebase1.png", 1.88f, healthBar);
         // 确保新玩家有钱包组件
-       if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
+        if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
 
@@ -687,7 +687,6 @@ public class ForestGameArea extends GameArea {
     }
 
 
-
     private void spawnEngineerAt(GridPoint2 cell) {
         // 1) 只读取工程师配置
         EngineerConfig engCfg = FileLoader.readClass(EngineerConfig.class, "configs/engineer.json");
@@ -714,10 +713,14 @@ public class ForestGameArea extends GameArea {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 创建状态栏UI
+        // 4) 工程师 UI：状态栏 + 工具条（点击图标放置三类召唤）
         Entity heroStatusUI = new Entity()
                 .addComponent(new EngineerStatusPanelComponent(engineer, "Engineer"));
         spawnEntity(heroStatusUI);
+
+        Entity engineerToolbarUI = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.EngineerSummonToolbarComponent(engineer));
+        spawnEntity(engineerToolbarUI);
 
         // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
@@ -853,9 +856,9 @@ public class ForestGameArea extends GameArea {
         if (mapEditor != null) {
             // Both MapEditor and MapEditor2 have cleanup()
             if (mapEditor instanceof MapEditor) {
-                ((MapEditor)mapEditor).cleanup();
+                ((MapEditor) mapEditor).cleanup();
             } else if (mapEditor instanceof com.csse3200.game.areas2.MapTwo.MapEditor2) {
-                ((com.csse3200.game.areas2.MapTwo.MapEditor2)mapEditor).cleanup();
+                ((com.csse3200.game.areas2.MapTwo.MapEditor2) mapEditor).cleanup();
             }
         }
         if (ServiceLocator.getAudioService() != null) {

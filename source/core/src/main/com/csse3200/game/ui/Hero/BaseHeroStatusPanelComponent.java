@@ -8,8 +8,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
@@ -17,10 +19,10 @@ import com.csse3200.game.ui.SimpleUI;
 import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
- * 英雄状态栏通用基类：
+ * 英雄状态栏通用基类（百分比定位/尺寸版）：
  * - 名字、HP、能量、伤害、等级、升级费用、ULT 按钮
- * - 子类可覆写 buildExtraSections()/bindExtraListeners() 增加自定义区块（如工程师的容量/冷却）
- * - 子类可在构造器里设定颜色与高度
+ * - 子类可覆写 buildExtraSections()/bindExtraListeners() 增加自定义区块
+ * - 面板自动放在：Hotbar 正下方 → 召唤工具条正下方
  */
 public class BaseHeroStatusPanelComponent extends Component {
     protected final Entity hero;
@@ -30,7 +32,25 @@ public class BaseHeroStatusPanelComponent extends Component {
     protected final Color bgColor;
     protected final Color textColor;
     protected final Color accentColor;
-    protected final float panelHeightScale; // 面板高度相对屏幕高的比例（如0.24f）
+
+    // ====== 右侧 UI 纵向栈的公共百分比参数（与你的 Hotbar/Toolbar 保持一致）======
+    /** Hotbar：高度占屏幕比例（你的最终版是 0.28f） */
+    protected static final float HOTBAR_HEIGHT_PCT = 0.28f;
+    /** Hotbar 底缘：垂直居中 → 0.5 + 高度的一半 */
+    protected static final float HOTBAR_BOTTOM_PCT = 0.5f + HOTBAR_HEIGHT_PCT * 0.5f;
+
+    /** 召唤工具条高度（你的最终版是 0.06f） */
+    protected static final float TOOLBAR_HEIGHT_PCT = 0.06f;
+    /** 工具条与状态栏之间的间距 */
+    protected static final float GAP_BELOW_TOOLBAR_PCT = 0.0f; // 想紧贴就设 0f
+
+    /** 右侧这些面板的统一宽度（与你的 Hotbar 相同：0.195f） */
+    protected static final float COMMON_PANEL_WIDTH_PCT = 0.195f;
+    /** 状态栏自身高度（可调） */
+    protected final float panelHeightPct; // 替代原 panelHeightScale（相对屏幕高的比例）
+
+    /** 与屏幕右边的外边距（与你的 Hotbar 一致：0f 贴边） */
+    protected static final float RIGHT_MARGIN_PCT = 0.0f;
 
     // 舞台与容器
     protected Stage stage;
@@ -46,13 +66,13 @@ public class BaseHeroStatusPanelComponent extends Component {
                                         Color bgColor,
                                         Color textColor,
                                         Color accentColor,
-                                        float panelHeightScale) {
+                                        float panelHeightPct /* 面板高度占屏幕的比例，例如 0.12f~0.26f */) {
         this.hero = hero;
         this.heroName = (heroName != null) ? heroName : "Hero";
         this.bgColor = (bgColor != null) ? bgColor : new Color(0.15f, 0.15f, 0.18f, 0.90f);
         this.textColor = (textColor != null) ? textColor : Color.WHITE;
         this.accentColor = (accentColor != null) ? accentColor : new Color(0.35f, 0.75f, 1.00f, 1f);
-        this.panelHeightScale = (panelHeightScale > 0f) ? panelHeightScale : 0.24f;
+        this.panelHeightPct = (panelHeightPct > 0f) ? panelHeightPct : 0.24f;
     }
 
     @Override
@@ -67,26 +87,19 @@ public class BaseHeroStatusPanelComponent extends Component {
         // 背景
         TextureRegionDrawable darkBg = new TextureRegionDrawable(makeSolid(4, 4, bgColor));
 
-        // 布局常量
-        float sw = Gdx.graphics.getWidth();
-        float sh = Gdx.graphics.getHeight();
-        float HOTBAR_W = sw * 0.20f;
-        float HOTBAR_H = sh * 0.20f;
-        float GAP      = sh * 0.012f;
-        float PANEL_W  = HOTBAR_W;
-        float PANEL_H  = sh * panelHeightScale;
-
-        // 根容器：右上，位于 Hotbar 下方
+        // ===== 根容器：右上；纵向位置 = Hotbar 底 + 工具条高 + 间距 =====
         root = new Table();
         root.setFillParent(true);
-        root.top().right();
-        root.padTop(sh * 0.5f + HOTBAR_H * 0.5f + GAP).padRight(0f);
+        root.align(Align.topRight);
+        root.padTop(Value.percentHeight(HOTBAR_BOTTOM_PCT + TOOLBAR_HEIGHT_PCT + GAP_BELOW_TOOLBAR_PCT, root));
+        root.padRight(Value.percentWidth(RIGHT_MARGIN_PCT, root));
 
-        // 卡片
+        // ===== 卡片 =====
         card = new Table(skin);
         card.setBackground(darkBg);
-        card.pad(sw * 0.008f);
-        card.defaults().left().padBottom(sh * 0.006f);
+        // 内边距 & 行间距 使用相对卡片的百分比，更稳
+        card.pad(Value.percentWidth(0.02f, card));             // 左右留白
+        card.defaults().left().padBottom(Value.percentHeight(0.02f, card));
 
         // 文本与按钮
         nameLabel   = new Label(heroName, skin);
@@ -115,18 +128,26 @@ public class BaseHeroStatusPanelComponent extends Component {
         card.add(damageLabel).left().row();
         card.add(energyLabel).left().row();
 
-        // —— 子类扩展区（容量/冷却等） ——
-        buildExtraSections(card, skin, sw, sh);
+        // —— 子类扩展区（容量/冷却等） —— //
+        buildExtraSections(card, skin,
+                Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         // 升级/ULT
         card.add(costLabel).left().row();
-        card.add(upgradeBtn).left().width(sw * 0.10f).padTop(sh * 0.004f).row();
+        card.add(upgradeBtn)
+                .left()
+                .width(Value.percentWidth(0.45f, card))              // 升级按钮宽 = 卡片宽 45%
+                .padTop(Value.percentHeight(0.02f, card))
+                .row();
         card.add(ultBtn).left().row();
 
-        root.add(card).width(PANEL_W).height(PANEL_H);
+        // 将卡片按 “等宽对齐 & 百分比高度” 放进右侧布局
+        root.add(card)
+                .width(Value.percentWidth(COMMON_PANEL_WIDTH_PCT, root))
+                .height(Value.percentHeight(panelHeightPct, root));
         stage.addActor(root);
 
-        // 公共事件
+        // ===== 公共事件 =====
         hero.getEvents().addListener("hero.hp", (Integer cur, Integer max) -> {
             if (cur == null || max == null) return;
             hpLabel.setText("HP: " + cur + "/" + max);
@@ -207,7 +228,7 @@ public class BaseHeroStatusPanelComponent extends Component {
         return null;
     }
 
-    /** 生成纯色贴图 */
+    /** 生成纯色贴图（注意：此处未集中回收，若频繁创建可上资源管理器） */
     protected static TextureRegion makeSolid(int w, int h, Color c) {
         Pixmap pm = new Pixmap(w, h, Pixmap.Format.RGBA8888);
         pm.setColor(c);
@@ -217,3 +238,4 @@ public class BaseHeroStatusPanelComponent extends Component {
         return new TextureRegion(tex);
     }
 }
+

@@ -3,6 +3,7 @@ package com.csse3200.game.components.hero;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.ComponentPriority;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
@@ -41,6 +42,7 @@ public class HeroAppearanceComponentTest {
         Entity hero = new Entity();
         RotatingTextureRenderComponent rot = mock(RotatingTextureRenderComponent.class);
         when(rot.getRotation()).thenReturn(45f);
+        when(rot.getPrio()).thenReturn(ComponentPriority.LOW); // ADD THIS LINE
 
         HeroAppearanceComponent comp = new HeroAppearanceComponent(cfg);
         hero.addComponent(rot);
@@ -67,6 +69,7 @@ public class HeroAppearanceComponentTest {
         Entity hero = new Entity();
         RotatingTextureRenderComponent rot = mock(RotatingTextureRenderComponent.class);
         when(rot.getRotation()).thenReturn(10f, 20f, 30f); // successive calls to preserve
+        when(rot.getPrio()).thenReturn(ComponentPriority.LOW); // ADD THIS LINE
 
         HeroAppearanceComponent comp = new HeroAppearanceComponent(cfg);
         hero.addComponent(rot);
@@ -100,6 +103,7 @@ public class HeroAppearanceComponentTest {
         // Old standard texture render component (mocked)
         TextureRenderComponent texOld = mock(TextureRenderComponent.class);
         when(texOld.getRotation()).thenReturn(33f);
+        when(texOld.getPrio()).thenReturn(ComponentPriority.LOW); // ADD THIS LINE
 
         HeroAppearanceComponent comp = new HeroAppearanceComponent(cfg);
         hero.addComponent(texOld);

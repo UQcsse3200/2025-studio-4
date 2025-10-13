@@ -313,7 +313,6 @@ public class TowerComponent extends Component {
      */
     @Override
     public void update() {
-
         if (!active) return;
 
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);

@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.csse3200.game.events.listeners.EventListener1;
 import com.csse3200.game.events.listeners.EventListener3; // 用于 upgraded 三参数事件
+import com.badlogic.gdx.utils.TimeUtils; // ← 新增：用来拿毫秒时间戳
 
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     private Entity hero;
     private boolean locked = false;
     private Timer.Task pollTask;
+    private static final long SWITCH_COOLDOWN_MS = 3000L; // 切换冷却：3秒
+    private long nextSwitchAtMs = 0L;                     // 下次允许切换的时间点（毫秒时间戳）
 
     // ── 删除：hotkeyAdapter / keyDown 相关
     private int currentForm = 0;
@@ -78,8 +81,18 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         // === 关键改动：监听 UI 事件，而不是键盘 ===
         // "ui:weapon:switch"(Integer form)  -> 首次成功手动切换后锁定，并广播 "ui:weapon:locked"
         this.getEntity().getEvents().addListener("ui:weapon:switch", (Integer form) -> {
-            if (locked) return;
+            if (locked) return; // 升级后锁定仍生效
             if (hero == null && !tryFindHero()) return;
+
+            // —— 冷却检查开始 ——
+            long now = TimeUtils.millis();
+            if (now < nextSwitchAtMs) {
+                long remainMs = nextSwitchAtMs - now;
+                // 可选：通知UI剩余冷却（用于显示“还需X秒”）
+                hero.getEvents().trigger("ui:weapon:cooldown", remainMs);
+                return; // 冷却中，直接拒绝
+            }
+            // —— 冷却检查结束 ——
 
             int target = (form != null ? form : 0);
             if (target < 1 || target > 3) return;
@@ -87,14 +100,16 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
 
             boolean ok = applyForm(target, "ui-" + target);
             if (ok) {
-                locked = true; // 一次性
-                // 通知 UI（置灰按钮）
-                hero.getEvents().trigger("ui:weapon:locked");
-                // 如需彻底卸载该组件的输入/定时器可：
-                dispose();
-                Gdx.app.log("HeroSkinSwitch", "locked by UI switch to form " + target);
+                // 设置下一次可切换时间
+                nextSwitchAtMs = now + SWITCH_COOLDOWN_MS;
+
+                // 可选：通知UI开始进入3秒冷却（比如置灰按钮、显示读条等）
+                hero.getEvents().trigger("ui:weapon:cooldown:start", SWITCH_COOLDOWN_MS);
+
+                Gdx.app.log("HeroSkinSwitch", "switched by UI to form " + target + " (cooldown 3s)");
             }
         });
+
     }
 
     private void armHeroPolling() {
@@ -263,6 +278,21 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         // 无键盘处理器可移除
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

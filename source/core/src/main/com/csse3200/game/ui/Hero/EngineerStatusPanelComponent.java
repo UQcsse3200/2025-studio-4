@@ -27,7 +27,7 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 new Color(0.15f, 0.15f, 0.18f, 0.90f), // 背景
                 Color.WHITE,                           // 文本
                 new Color(0.98f, 0.80f, 0.10f, 1f),    // 强调：工业黄
-                0.26f                                  // 面板高度略高一些
+                0.32f                                  // 面板高度略高一些
         );
     }
 

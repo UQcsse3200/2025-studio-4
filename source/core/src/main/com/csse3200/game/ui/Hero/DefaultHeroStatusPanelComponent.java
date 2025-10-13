@@ -16,7 +16,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
                 new Color(0.15f, 0.15f, 0.18f, 0.90f), // 背景
                 Color.WHITE,                           // 文字
                 new Color(0.35f, 0.75f, 1.00f, 1f),    // 强调：蓝青
-                0.24f                                  // 高度
+                0.32f                                  // 高度
         );
     }
 

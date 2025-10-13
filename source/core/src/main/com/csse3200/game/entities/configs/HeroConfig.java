@@ -21,7 +21,7 @@ public class HeroConfig extends BaseEntityConfig {
   public float bulletLife = 1.6f;
 
   /** Bullet speed (pixels per second) */
-  public float bulletSpeed = 900f;
+  public float bulletSpeed = 400f;
 
   /** Path to hero sprite texture (relative to assets) */
   public String heroTexture = "images/hero/Heroshoot.png";

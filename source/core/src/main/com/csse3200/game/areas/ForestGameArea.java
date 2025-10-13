@@ -681,8 +681,9 @@ public class ForestGameArea extends GameArea {
                         /* 建议使用独立图标（小尺寸方图） */
                         "images/hero/gun1.png",
                         "images/hero2/gun2.png",
-                        "images/hero3/gun3.png"
+                        "images/hero3/gun3.png",
                         // 也可以暂时用 heroCfg.heroTexture 等
+                        "images/hero/Final_gun.png"
                 ));
         spawnEntity(heroWeaponBar);
 

@@ -163,7 +163,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLevel()" class="member-name-link">getLevel</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">level getter</div>
+<div class="block">Current upgrade level of the tower.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSelectedPurchaseCurrency()" class="member-name-link">getSelectedPurchaseCurrency</a>()</code></div>
@@ -202,7 +202,9 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLevel(int)" class="member-name-link">setLevel</a><wbr>(int&nbsp;lvl)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set the tower's level.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSelected(boolean)" class="member-name-link">setSelected</a><wbr>(boolean&nbsp;selected)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -284,13 +286,22 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getLevel()">
 <h3>getLevel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getLevel</span>()</div>
-<div class="block">level getter</div>
+<div class="block">Current upgrade level of the tower. Minimum 1.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>tower level</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setLevel(int)">
 <h3>setLevel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setLevel</span><wbr><span class="parameters">(int&nbsp;lvl)</span></div>
+<div class="block">Set the tower's level. Values less than 1 are clamped to 1.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>lvl</code> - desired level</dd>
+</dl>
 </section>
 </li>
 <li>

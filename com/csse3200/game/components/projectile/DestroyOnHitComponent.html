@@ -93,8 +93,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DestroyOnHitComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Destroys the entity after colliding with a specified physics layer.
- This is one-time only, to avoid multiple triggers in the same frame.</div>
+<div class="block">Destroys (despawns) the entity after the first collision with a specified physics layer.
+ This is pooling-friendly: calls ProjectileComponent.deactivate() and then EntityService.despawnEntity().
+ A one-time fuse prevents multiple triggers in the same frame.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -134,7 +135,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Subscribe to collision events and reset one-shot flags when the projectile is reactivated.</div>
 </div>
 </div>
 </div>
@@ -160,6 +161,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(short)">
 <h3>DestroyOnHitComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">DestroyOnHitComponent</span><wbr><span class="parameters">(short&nbsp;targetLayer)</span></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>targetLayer</code> - physics layer mask that the other fixture must match to trigger destruction</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -174,9 +179,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Subscribe to collision events and reset one-shot flags when the projectile is reactivated.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>

@@ -96,9 +96,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Projectile component:
  <p>
  Handles projectile velocity and lifetime. When the lifetime expires,
- the projectile is safely disposed (which will also unregister it from
- the EntityService via Entity#dispose()).
- Destruction is deferred to the next frame to avoid concurrent modification.
+ the projectile is safely despawned. Compatible with pooling via
+ activate()/deactivate() and EntityService.despawnEntity().
  </p></div>
 </section>
 <section class="summary">
@@ -139,14 +138,37 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#activate(float,float,float)" class="member-name-link">activate</a><wbr>(float&nbsp;newVx,
+ float&nbsp;newVy,
+ float&nbsp;newLife)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Apply initial velocity on creation.</div>
+<div class="block">Reactivate this projectile with new velocity and lifetime.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Tick lifetime; when expired, stop physics and dispose next frame.</div>
+<div class="block">Apply initial velocity and cache physics on first create.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deactivate()" class="member-name-link">deactivate</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Deactivate this projectile for pooling.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPoolKey()" class="member-name-link">getPoolKey</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInactive()" class="member-name-link">isInactive</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ProjectileComponent.html" title="class in com.csse3200.game.components.projectile">ProjectileComponent</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPoolKey(java.lang.String)" class="member-name-link">setPoolKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;key)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set the pool key used by EntityService to group reusable projectiles.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Advance lifetime and despawn when it elapses.</div>
 </div>
 </div>
 </div>
@@ -194,7 +216,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block">Apply initial velocity on creation.</div>
+<div class="block">Apply initial velocity and cache physics on first create.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -205,10 +227,68 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Tick lifetime; when expired, stop physics and dispose next frame.</div>
+<div class="block">Advance lifetime and despawn when it elapses. Skips updates while inactive (pooled).</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="activate(float,float,float)">
+<h3>activate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">activate</span><wbr><span class="parameters">(float&nbsp;newVx,
+ float&nbsp;newVy,
+ float&nbsp;newLife)</span></div>
+<div class="block">Reactivate this projectile with new velocity and lifetime.
+ Restores scale/visibility, re-enables physics, and triggers "projectile.activated"
+ so other components can reset per-shot state.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>newVx</code> - horizontal velocity in world units per second</dd>
+<dd><code>newVy</code> - vertical velocity in world units per second</dd>
+<dd><code>newLife</code> - new lifetime in seconds</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="deactivate()">
+<h3>deactivate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">deactivate</span>()</div>
+<div class="block">Deactivate this projectile for pooling. Halts physics, hides sprite, and moves it off-screen.
+ Call EntityService.despawnEntity(...) afterwards to return it to the pool.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setPoolKey(java.lang.String)">
+<h3>setPoolKey</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ProjectileComponent.html" title="class in com.csse3200.game.components.projectile">ProjectileComponent</a></span>&nbsp;<span class="element-name">setPoolKey</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;key)</span></div>
+<div class="block">Set the pool key used by EntityService to group reusable projectiles.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>key</code> - pool identifier (e.g., "bullet:images/bullet.png")</dd>
+<dt>Returns:</dt>
+<dd>this for chaining</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getPoolKey()">
+<h3>getPoolKey</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getPoolKey</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the pool key used for despawn/obtain, or null if not pooled</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isInactive()">
+<h3>isInactive</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInactive</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if this projectile is currently inactive (pooled), false if active</dd>
 </dl>
 </section>
 </li>

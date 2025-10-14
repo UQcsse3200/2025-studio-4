@@ -640,17 +640,28 @@ public class ForestGameArea extends GameArea {
         HeroConfig heroCfg = new HeroConfig();
         heroCfg.heroTexture = "images/hero/Heroshoot.png";
         heroCfg.bulletTexture = "images/hero/Bullet.png";
-
+        heroCfg.shootSfx = "sounds/Explosion_sfx.ogg";
+        heroCfg.shootSfxVolume = 1.0f;
         HeroConfig2 heroCfg2 = new HeroConfig2();
         heroCfg2.heroTexture = "images/hero2/Heroshoot.png";
         heroCfg2.bulletTexture = "images/hero2/Bullet.png";
-
+        heroCfg2.shootSfx = "sounds/Explosion_sfx2.ogg";
+        heroCfg2.shootSfxVolume = 1.0f;
         HeroConfig3 heroCfg3 = new HeroConfig3();
         heroCfg3.heroTexture = "images/hero3/Heroshoot.png";
         heroCfg3.bulletTexture = "images/hero3/Bullet.png";
-
+        heroCfg3.shootSfx = "sounds/Explosion_sfx3.ogg";
+        heroCfg3.shootSfxVolume = 1.0f;
         // 2️⃣ 加载贴图资源（不放 create() 全局加载）
         ResourceService rs = ServiceLocator.getResourceService();
+        java.util.ArrayList<String> sfx = new java.util.ArrayList<>();
+        if (heroCfg.shootSfx  != null && !heroCfg.shootSfx.isBlank())  sfx.add(heroCfg.shootSfx);
+        if (heroCfg2.shootSfx != null && !heroCfg2.shootSfx.isBlank()) sfx.add(heroCfg2.shootSfx);
+        if (heroCfg3.shootSfx != null && !heroCfg3.shootSfx.isBlank()) sfx.add(heroCfg3.shootSfx);
+        if (!sfx.isEmpty()) {
+            rs.loadSounds(sfx.toArray(new String[0]));
+            while (!rs.loadForMillis(10)) { /* wait */ }
+        }
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
@@ -671,7 +682,7 @@ public class ForestGameArea extends GameArea {
 
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
         hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
-        hero.getComponent(HeroTurretAttackComponent.class).setShootSfxKey("sounds/Explosion_sfx.ogg");
+
         Entity heroStatusUI = new Entity()
                 .addComponent(new DefaultHeroStatusPanelComponent(hero, "Hero"));
         spawnEntity(heroStatusUI);

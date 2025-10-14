@@ -38,9 +38,10 @@ public final class HeroFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 
-    public static void loadAssets(ResourceService rs,
-                                  BaseEntityConfig... configs) {
-        LinkedHashSet<String> textures = new LinkedHashSet<>();
+    public static void loadAssets(ResourceService rs, BaseEntityConfig... configs) {
+        LinkedHashSet<String> textures  = new LinkedHashSet<>();
+        LinkedHashSet<String> soundKeys = new LinkedHashSet<>(); // ★ 声音键集合（方法内局部变量）
+
         for (BaseEntityConfig base : configs) {
             if (base == null) continue;
 
@@ -51,6 +52,11 @@ public final class HeroFactory {
                 }
                 if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) textures.add(cfg.bulletTexture);
 
+                // ★ 收集每个形态配置里的射击音效键
+                if (cfg.shootSfx != null && !cfg.shootSfx.isBlank()) {
+                    soundKeys.add(cfg.shootSfx);
+                }
+
                 if (cfg instanceof EngineerConfig ec) {
                     if (ec.summonTexture != null && !ec.summonTexture.isBlank()) textures.add(ec.summonTexture);
                 }
@@ -60,11 +66,18 @@ public final class HeroFactory {
                     for (String s : sc.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
                 }
                 if (sc.swordTexture != null && !sc.swordTexture.isBlank()) textures.add(sc.swordTexture);
+                // Samurai 如以后也要远程音效，可以在配置里加 shootSfx 字段后同样收集
             }
-            // 未来还要加别的职业/形态就在这里继续 instanceof ...
         }
-        if (!textures.isEmpty()) rs.loadTextures(textures.toArray(new String[0]));
+
+        if (!textures.isEmpty()) {
+            rs.loadTextures(textures.toArray(new String[0]));
+        }
+        if (!soundKeys.isEmpty()) { // ★ 别忘了把声音也加载
+            rs.loadSounds(soundKeys.toArray(new String[0]));
+        }
     }
+
 
 
     /**
@@ -105,8 +118,21 @@ public final class HeroFactory {
                 .addComponent(new UltimateButtonComponent())
                 .addComponent(new HeroAppearanceComponent(cfg))
                 .addComponent(new HeroCustomizationComponent());
+
         hero.setScale(1f, 1f);
+
+        HeroTurretAttackComponent atk = hero.getComponent(HeroTurretAttackComponent.class);
+        if (atk != null) {
+            if (cfg.shootSfx != null && !cfg.shootSfx.isBlank()) {
+                atk.setShootSfxKey(cfg.shootSfx);
+            }
+            if (cfg.shootSfxVolume != null) {
+                atk.setShootSfxVolume(Math.max(0f, Math.min(1f, cfg.shootSfxVolume)));
+            }
+        }
+
         return hero;
+
 
     }
 

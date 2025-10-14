@@ -33,7 +33,8 @@ public class HeroConfig3 extends HeroConfig {
           "images/hero3/Heroshoot.png",
           "images/hero3/Hero_level2.png",
   };
-
+  public String shootSfx;
+  public Float shootSfxVolume;
 
   /**
    * Default constructor.

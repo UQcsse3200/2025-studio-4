@@ -1,9 +1,6 @@
 package com.csse3200.game.components.hero;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.entities.Entity;
@@ -17,20 +14,10 @@ import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.csse3200.game.events.listeners.EventListener1;
-import com.csse3200.game.events.listeners.EventListener3; // 用于 upgraded 三参数事件
-import com.badlogic.gdx.utils.TimeUtils; // ← 新增：用来拿毫秒时间戳
-
+import com.csse3200.game.events.listeners.EventListener3;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
-
-/**
- * Hero form switcher:
- * - Boot to form-1 immediately (texture + bullet + params) once hero is available.
- * - No time limit for the first manual switch.
- * - Locks after the first successful manual switch.
- * - Also locks immediately after the hero upgrades (level > 1 or "upgraded" event).
- */
-// 省略 package/import（与原文件保持一致）
 
 public class HeroOneShotFormSwitchComponent extends InputComponent {
     private static final Logger logger = LoggerFactory.getLogger(HeroOneShotFormSwitchComponent.class);
@@ -43,10 +30,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     private Entity hero;
     private boolean locked = false;
     private Timer.Task pollTask;
-    private static final long SWITCH_COOLDOWN_MS = 3000L; // 切换冷却：3秒
-    private long nextSwitchAtMs = 0L;                     // 下次允许切换的时间点（毫秒时间戳）
+    private static final long SWITCH_COOLDOWN_MS = 3000L; // 3s CD
+    private long nextSwitchAtMs = 0L;
 
-    // ── 删除：hotkeyAdapter / keyDown 相关
     private int currentForm = 0;
 
     public HeroOneShotFormSwitchComponent(HeroConfig cfg1, HeroConfig2 cfg2, HeroConfig3 cfg3) {
@@ -60,7 +46,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     public void create() {
         super.create();
 
-        // 预加载纹理（保持你原逻辑）
+        // 预加载三形态贴图（声音推荐在 GameArea/HeroFactory 里统一 loadSounds）
         var textures = new ArrayList<String>();
         if (cfg1 != null && cfg1.heroTexture != null && !cfg1.heroTexture.isBlank()) textures.add(cfg1.heroTexture);
         if (cfg2 != null && cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) textures.add(cfg2.heroTexture);
@@ -78,21 +64,17 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             bootToForm1();
         }
 
-        // === 关键改动：监听 UI 事件，而不是键盘 ===
-        // "ui:weapon:switch"(Integer form)  -> 首次成功手动切换后锁定，并广播 "ui:weapon:locked"
+        // 监听 UI 切换（1/2/3），内置 3s 冷却
         this.getEntity().getEvents().addListener("ui:weapon:switch", (Integer form) -> {
-            if (locked) return; // 升级后锁定仍生效
+            if (locked) return;
             if (hero == null && !tryFindHero()) return;
 
-            // —— 冷却检查开始 ——
             long now = TimeUtils.millis();
             if (now < nextSwitchAtMs) {
                 long remainMs = nextSwitchAtMs - now;
-                // 可选：通知UI剩余冷却（用于显示“还需X秒”）
                 hero.getEvents().trigger("ui:weapon:cooldown", remainMs);
-                return; // 冷却中，直接拒绝
+                return;
             }
-            // —— 冷却检查结束 ——
 
             int target = (form != null ? form : 0);
             if (target < 1 || target > 3) return;
@@ -100,16 +82,11 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
 
             boolean ok = applyForm(target, "ui-" + target);
             if (ok) {
-                // 设置下一次可切换时间
                 nextSwitchAtMs = now + SWITCH_COOLDOWN_MS;
-
-                // 可选：通知UI开始进入3秒冷却（比如置灰按钮、显示读条等）
                 hero.getEvents().trigger("ui:weapon:cooldown:start", SWITCH_COOLDOWN_MS);
-
                 Gdx.app.log("HeroSkinSwitch", "switched by UI to form " + target + " (cooldown 3s)");
             }
         });
-
     }
 
     private void armHeroPolling() {
@@ -172,7 +149,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         boolean ok = switchTexture(cfg1.heroTexture, "boot-1");
         if (ok) {
             updateBulletTexture(cfg1.bulletTexture);
-            applyConfigToHero(cfg1);
+            applyConfigToHero(cfg1);   // ★ 会同步音效键/音量
             currentForm = 1;
             logger.info("[HeroSkinSwitch] booted with form-1");
         } else {
@@ -194,13 +171,13 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
 
         if (form == 1 && cfg1 != null) {
             updateBulletTexture(cfg1.bulletTexture);
-            applyConfigToHero(cfg1);
+            applyConfigToHero(cfg1);     // ★ 同步形态1参数 + 音效
         } else if (form == 2 && cfg2 != null) {
             updateBulletTexture(cfg2.bulletTexture);
-            applyConfigToHero2(cfg2);
+            applyConfigToHero2(cfg2);    // ★ 同步形态2参数 + 音效
         } else if (form == 3 && cfg3 != null) {
             updateBulletTexture(cfg3.bulletTexture);
-            applyConfigToHero3(cfg3);
+            applyConfigToHero3(cfg3);    // ★ 同步形态3参数 + 音效
         }
         currentForm = form;
         return true;
@@ -212,6 +189,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (atc != null) atc.setBulletTexture(bulletTexture);
     }
 
+    /** 形态1：同步攻击参数 + 音效键/音量 */
     private void applyConfigToHero(HeroConfig cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -220,10 +198,20 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             atc.setCooldown(cfg.attackCooldown)
                     .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
                     .setBulletTexture(cfg.bulletTexture);
+            // ★ 音效（如果配置了就覆盖）
+            if (cfg.shootSfx != null && !cfg.shootSfx.isBlank()) {
+                atc.setShootSfxKey(cfg.shootSfx);
+            }
+            // shootSfxVolume 建议是 Float 包装类型；如果是 primitive，请去掉空判
+            if (cfg.shootSfxVolume != null) {
+                float vol = Math.max(0f, Math.min(1f, cfg.shootSfxVolume));
+                atc.setShootSfxVolume(vol);
+            }
         }
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
+    /** 形态2：同步攻击参数 + 音效键/音量 */
     private void applyConfigToHero2(HeroConfig2 cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -232,10 +220,18 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             atc.setCooldown(cfg.attackCooldown)
                     .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
                     .setBulletTexture(cfg.bulletTexture);
+            if (cfg.shootSfx != null && !cfg.shootSfx.isBlank()) {
+                atc.setShootSfxKey(cfg.shootSfx);
+            }
+            if (cfg.shootSfxVolume != null) {
+                float vol = Math.max(0f, Math.min(1f, cfg.shootSfxVolume));
+                atc.setShootSfxVolume(vol);
+            }
         }
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
+    /** 形态3：同步攻击参数 + 音效键/音量 */
     private void applyConfigToHero3(HeroConfig3 cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -244,6 +240,13 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             atc.setCooldown(cfg.attackCooldown)
                     .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
                     .setBulletTexture(cfg.bulletTexture);
+            if (cfg.shootSfx != null && !cfg.shootSfx.isBlank()) {
+                atc.setShootSfxKey(cfg.shootSfx);
+            }
+            if (cfg.shootSfxVolume != null) {
+                float vol = Math.max(0f, Math.min(1f, cfg.shootSfxVolume));
+                atc.setShootSfxVolume(vol);
+            }
         }
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
@@ -275,24 +278,5 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     public void dispose() {
         super.dispose();
         cancelTimers();
-        // 无键盘处理器可移除
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

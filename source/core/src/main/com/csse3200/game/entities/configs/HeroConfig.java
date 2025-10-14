@@ -33,7 +33,8 @@ public class HeroConfig extends BaseEntityConfig {
           "images/hero/Heroshoot.png",
           "images/hero/Hero_level2.png",
   };
-
+  public String shootSfx;
+  public Float shootSfxVolume;
 
   /**
    * Default constructor.

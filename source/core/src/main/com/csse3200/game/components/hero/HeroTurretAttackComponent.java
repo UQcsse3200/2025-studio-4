@@ -28,9 +28,9 @@ public class HeroTurretAttackComponent extends Component {
     private Camera camera;
 
     /** 音效资源键（通常为 assets 内路径或你们的别名键） */
-    private String shootSfxKey = "sounds/Explosion_sfx.ogg";
-    /** 音量 [0,1] */
-    private float shootSfxVolume = 2.0f;
+    private String shootSfxKey = null; // 由配置注入
+    private float shootSfxVolume = 1.0f; // 合理默认，范围[0,1]
+
     /** 限频：避免极短时间内叠加过多 */
     private float shootSfxMinInterval = 0.06f;
     private float sfxCooldown = 0f;

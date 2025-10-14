@@ -213,17 +213,24 @@ public final class HeroFactory {
                         cfg.maxSummons,
                         cfg.summonTexture,
                         new Vector2(cfg.summonSpeed, cfg.summonSpeed)
-                ))
+                ));
 
                 // === Optional: Engineer’s ranged turret attack ===
                 // Handles rotating aim and shooting bullets toward cursor direction
-                .addComponent(new HeroTurretAttackComponent(
-                        cfg.attackCooldown,
-                        cfg.bulletSpeed,
-                        cfg.bulletLife,
-                        cfg.bulletTexture, // Engineer-specific bullet texture
-                        camera
-                ))
+        HeroTurretAttackComponent atc = new HeroTurretAttackComponent(
+                cfg.attackCooldown,
+                cfg.bulletSpeed,
+                cfg.bulletLife,
+                cfg.bulletTexture, // Engineer-specific bullet texture
+                camera
+        );
+        atc.setShootSfxKey(
+                (cfg.shootSfx != null && !cfg.shootSfx.isBlank())
+                        ? cfg.shootSfx
+                        : "sounds/Explosion_sfx.ogg"     // 兜底
+        ).setShootSfxVolume(0.9f);              // 可选：音量 0~1
+
+        hero.addComponent(atc)
 
                 // === Hero upgrade and ultimate systems ===
                 .addComponent(new HeroUpgradeComponent())
@@ -323,7 +330,3 @@ public final class HeroFactory {
 
 
 }
-
-
-
-

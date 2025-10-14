@@ -11,6 +11,8 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.SummonFactory;
 import com.csse3200.game.services.ServiceLocator;
+import com.badlogic.gdx.audio.Sound;
+import com.csse3200.game.services.ResourceService;
 
 public class SummonPlacementComponent extends Component {
 
@@ -26,7 +28,24 @@ public class SummonPlacementComponent extends Component {
     private String pendingTexture = "images/engineer/Sentry.png";
     private Entity ghost; // 预览实体
     private OrthographicCamera camera;
+    private String placeSfxMelee   = "sounds/place_soft_click.ogg";
+    private String placeSfxTurret  = "sounds/place_metal_clunk.ogg";
+    private String placeSfxCurrency= "sounds/place_energy_drop.ogg";
+    private float placeSfxVolume   = 1.0f;
+    // 限频，避免一次点击被触发两次
+    private float placeSfxMinInterval = 0.05f; // 50ms
+    private float placeSfxCd = 0f;
 
+    public SummonPlacementComponent setPlaceSfxKeys(String melee, String turret, String currency) {
+        if (melee != null && !melee.isBlank()) this.placeSfxMelee = melee;
+        if (turret != null && !turret.isBlank()) this.placeSfxTurret = turret;
+        if (currency != null && !currency.isBlank()) this.placeSfxCurrency = currency;
+        return this;
+    }
+    public SummonPlacementComponent setPlaceSfxVolume(float vol) {
+        this.placeSfxVolume = Math.max(0f, Math.min(1f, vol));
+        return this;
+    }
     @Override
     public void create() {
         super.create();
@@ -67,6 +86,11 @@ public class SummonPlacementComponent extends Component {
 
     @Override
     public void update() {
+        if (placeSfxCd > 0f) {
+            float dt = (Gdx.graphics != null) ? Gdx.graphics.getDeltaTime() : (1f/60f);
+            placeSfxCd = Math.max(0f, placeSfxCd - dt);
+        }
+
         if (!placementActive) return;
 
         var terrain = findTerrain();
@@ -140,7 +164,7 @@ public class SummonPlacementComponent extends Component {
             created.addComponent(new com.csse3200.game.components.hero.engineer.SummonOwnerComponent(owner, type));
             created.setPosition(snapPos);
             ServiceLocator.getEntityService().register(created);
-
+            playPlaceSfx(type);
             // === [删除] 不要再手动触发 spawned，会双计数 ===
             // if (owner != null) {
             //     owner.getEntity().getEvents().trigger("summon:spawned", created, type);
@@ -231,6 +255,41 @@ public class SummonPlacementComponent extends Component {
         try { return ServiceLocator.getEntityService().getEntitiesCopy(); }
         catch (Exception ex) { return null; }
     }
+    private void playPlaceSfx(String type) {
+        if (placeSfxCd > 0f) return; // 限频
+        String key;
+        switch (type) {
+            case "turret"      -> key = placeSfxTurret;
+            case "currencyBot" -> key = placeSfxCurrency;
+            default            -> key = placeSfxMelee; // "melee"
+        }
+        if (key == null || key.isBlank()) return;
+
+        float vol = Math.max(0f, Math.min(1f, placeSfxVolume));
+
+        try {
+            ResourceService rs = ServiceLocator.getResourceService();
+            Sound s = null;
+            if (rs != null) {
+                try { s = rs.getAsset(key, Sound.class); } catch (Throwable ignored) {}
+            }
+            if (s != null) {
+                s.play(vol);
+            } else {
+                // 回退：直接从文件系统加载（确保 assets 里有对应文件）
+                if (Gdx.files.internal(key).exists() && Gdx.audio != null) {
+                    Sound s2 = Gdx.audio.newSound(Gdx.files.internal(key));
+                    s2.play(vol);
+                } else {
+                    Gdx.app.error("SummonPlaceSFX", "Sound not found or audio backend null: " + key);
+                }
+            }
+            placeSfxCd = placeSfxMinInterval;
+        } catch (Throwable t) {
+            Gdx.app.error("SummonPlaceSFX", "Play failed for key=" + key, t);
+        }
+    }
+
 
     public boolean isPlacementActive() { return placementActive; }
     public String getPendingType() { return pendingType; }

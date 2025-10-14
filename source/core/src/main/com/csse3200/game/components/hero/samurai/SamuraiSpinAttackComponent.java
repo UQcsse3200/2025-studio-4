@@ -29,6 +29,19 @@ public class SamuraiSpinAttackComponent extends Component {
     private final String swordTexture;
     private final Camera camera;
     private final SamuraiConfig cfg;
+    // === SFX keys & volumes ===
+    private String jabSfxKey   = "sounds/katana_stab_2s.ogg";   // 刺
+    private String sweepSfxKey = "sounds/katana_slash_2s.ogg";  // 劈砍
+    private String spinSfxKey  = "sounds/katana_spin_2s.ogg";   // 旋转
+
+    private float jabSfxVol = 1.0f;
+    private float sweepSfxVol = 1.0f;
+    private float spinSfxVol = 1.0f;
+
+    // 限频，避免短时间内重复播放重叠
+    private float sfxMinInterval = 0.06f;
+    private float jabSfxCd = 0f, sweepSfxCd = 0f, spinSfxCd = 0f;
+
 
     // 视觉/手感参数
     private float spriteForwardOffsetDeg = 0f;
@@ -115,10 +128,11 @@ public class SamuraiSpinAttackComponent extends Component {
 
             boolean ok = false;
             switch (type) {
-                case "jab"   -> ok = ctrl.triggerJab(mouseWorld);
-                case "sweep" -> ok = ctrl.triggerSweep(mouseWorld);
-                case "spin"  -> ok = ctrl.triggerSpin(true); // 这里默认逆时针，可按需改参
+                case "jab"   -> ok = triggerJabWithSfx(mouseWorld);
+                case "sweep" -> ok = triggerSweepWithSfx(mouseWorld);
+                case "spin"  -> ok = triggerSpinWithSfx(true); // 逆时针
             }
+
             if (!ok) {
                 // 如果触发失败（冷却/锁），你可以在这里给 UI 回发提示或冷却时间
                 this.entity.getEvents().trigger("ui:toast", "Cannot use now");
@@ -188,9 +202,9 @@ public class SamuraiSpinAttackComponent extends Component {
                 camera.unproject(tmp);
                 mouseWorld.set(tmp.x, tmp.y);
 
-                if (keycode == Input.Keys.NUM_1) { return ctrl.triggerJab(mouseWorld); }
-                if (keycode == Input.Keys.NUM_2) { return ctrl.triggerSweep(mouseWorld); }
-                if (keycode == Input.Keys.NUM_3) { return ctrl.triggerSpin(true); } // true=CCW，false=CW
+                if (keycode == Input.Keys.NUM_1) { return triggerJabWithSfx(mouseWorld); }
+                if (keycode == Input.Keys.NUM_2) { return triggerSweepWithSfx(mouseWorld); }
+                if (keycode == Input.Keys.NUM_3) { return triggerSpinWithSfx(true); } // true=CCW
                 return false;
             }
         };
@@ -204,6 +218,68 @@ public class SamuraiSpinAttackComponent extends Component {
             Gdx.input.setInputProcessor(mux);
         }
     }
+    // 更新每帧的 SFX 冷却（如果你本组件有 update，可放 update；没有就靠限频足够）
+    private void tickSfxCooldowns(float dt) {
+        if (jabSfxCd > 0f)   jabSfxCd   -= dt;
+        if (sweepSfxCd > 0f) sweepSfxCd -= dt;
+        if (spinSfxCd > 0f)  spinSfxCd  -= dt;
+    }
+
+    // 包装触发 + 成功后播音
+    private boolean triggerJabWithSfx(Vector2 mouseWorld) {
+        boolean ok = (ctrl != null) && ctrl.triggerJab(mouseWorld);
+        if (ok) playSfxOnce(jabSfxKey, jabSfxVol, /*cd*/false, /*which*/"jab");
+        return ok;
+    }
+    private boolean triggerSweepWithSfx(Vector2 mouseWorld) {
+        boolean ok = (ctrl != null) && ctrl.triggerSweep(mouseWorld);
+        if (ok) playSfxOnce(sweepSfxKey, sweepSfxVol, false, "sweep");
+        return ok;
+    }
+    private boolean triggerSpinWithSfx(boolean ccw) {
+        boolean ok = (ctrl != null) && ctrl.triggerSpin(ccw);
+        if (ok) playSfxOnce(spinSfxKey, spinSfxVol, false, "spin");
+        return ok;
+    }
+
+    // 通用播放（带 ResourceService 优先，newSound 回退 + 限频）
+// which: "jab"/"sweep"/"spin"
+    private void playSfxOnce(String key, float vol, boolean useCooldown, String which) {
+        if (key == null || key.isBlank()) return;
+
+        // 限频
+        if (useCooldown) {
+            if ("jab".equals(which) && jabSfxCd > 0f)   return;
+            if ("sweep".equals(which) && sweepSfxCd > 0f) return;
+            if ("spin".equals(which) && spinSfxCd > 0f)  return;
+        }
+
+        float v = Math.max(0f, Math.min(1f, vol));
+        try {
+            var rs = ServiceLocator.getResourceService();
+            com.badlogic.gdx.audio.Sound s = null;
+            if (rs != null) {
+                try { s = rs.getAsset(key, com.badlogic.gdx.audio.Sound.class); } catch (Throwable ignored) {}
+            }
+            if (s != null) {
+                s.play(v);
+            } else {
+                if (!Gdx.files.internal(key).exists() || Gdx.audio == null) return;
+                com.badlogic.gdx.audio.Sound s2 = Gdx.audio.newSound(Gdx.files.internal(key));
+                s2.play(v);
+            }
+        } catch (Throwable t) {
+            // 忽略或记日志都行
+        }
+
+        // 设置限频冷却
+        if (useCooldown) {
+            if ("jab".equals(which))      jabSfxCd = sfxMinInterval;
+            else if ("sweep".equals(which)) sweepSfxCd = sfxMinInterval;
+            else if ("spin".equals(which))  spinSfxCd = sfxMinInterval;
+        }
+    }
+
 
     @Override
     public void dispose() {

@@ -99,7 +99,15 @@ public class ForestGameArea extends GameArea {
             "sounds/book_closing.mp3",
             "sounds/Explosion_sfx.ogg",
             "sounds/hero_lv2_shot.ogg",
-            "sounds/ult_shot.ogg"
+            "sounds/ult_shot.ogg",
+            "sounds/katana_stab_2s.ogg",
+            "sounds/katana_slash_2s.ogg",
+            "sounds/katana_spin_2s.ogg",
+            "sounds/turret_shoot.ogg",
+            "sounds/explosion_2s.ogg",
+            "sounds/place_soft_click.ogg",
+            "sounds/place_metal_clunk.ogg",
+            "sounds/place_energy_drop.ogg"
     };
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};

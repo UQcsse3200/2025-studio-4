@@ -73,10 +73,10 @@ public class TowerUpgradeData {
 
         // Pteradactyl tower (Path A: Damage & Range)
         Map<Integer, UpgradeStats> pteroA = new HashMap<>();
-        pteroA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 4.0f, 60, "images/towers/pteradactyl/perolvl2"));
-        pteroA.put(3, new UpgradeStats(10, 4.2f, 1.0f, 4.0f, 70, "images/towers/pteradactyl/perolvl3"));
-        pteroA.put(4, new UpgradeStats(14, 5.1f, 1.0f, 4.0f, 110, "images/towers/pteradactyl/perolvl4"));
-        pteroA.put(5, new UpgradeStats(20, 6.2f, 1.0f, 4.0f, 190, "images/towers/pteradactyl/perolvl4"));
+        pteroA.put(2, new UpgradeStats(3, 3.5f, 1.0f, 4.0f, 60, "images/towers/pteradactyl/perolvl2"));
+        pteroA.put(3, new UpgradeStats(5, 4.2f, 1.0f, 4.0f, 70, "images/towers/pteradactyl/perolvl3"));
+        pteroA.put(4, new UpgradeStats(7, 5.1f, 1.0f, 4.0f, 110, "images/towers/pteradactyl/perolvl4"));
+        pteroA.put(5, new UpgradeStats(10, 6.2f, 1.0f, 4.0f, 190, "images/towers/pteradactyl/perolvl4"));
         pathA.put("pteradactyl", pteroA);
 
         // Totem tower (Path A: Range)

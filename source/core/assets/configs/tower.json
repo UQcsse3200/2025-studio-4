@@ -58,7 +58,7 @@
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 5,
+      "damage": 2.5,
       "range": 3.0,
       "cooldown": 1.0,
       "metalScrapCost": 0,

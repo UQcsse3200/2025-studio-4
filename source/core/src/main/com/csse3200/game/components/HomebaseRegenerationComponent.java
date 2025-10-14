@@ -13,7 +13,7 @@ public class HomebaseRegenerationComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(HomebaseRegenerationComponent.class);
     
     // 配置常量
-    private static final float TIME_WITHOUT_DAMAGE_REQUIRED = 3.0f; // 需要多少秒不受伤才能开始回复
+    private static final float TIME_WITHOUT_DAMAGE_REQUIRED = 0.5f; // 需要多少秒不受伤才能开始回复
     private static final float REGENERATION_INTERVAL = 4.0f; // 每隔多少秒回复一次
     private static final int REGENERATION_AMOUNT = 5; // 每次回复的生命值
     

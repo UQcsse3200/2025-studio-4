@@ -419,7 +419,8 @@ public class TowerUpgradeMenu extends UIComponent {
         }
 
         int currentLevel = isLevelA ? stats.getLevel_A() : stats.getLevel_B();
-        if (currentLevel >= 5) {
+        int maxLevel = getMaxLevelForPath(currentTowerType, isLevelA); // <-- derive max from data
+        if (currentLevel >= maxLevel) {
             upgradeInProgress = false;
             return;
         }
@@ -466,11 +467,22 @@ public class TowerUpgradeMenu extends UIComponent {
         if (isLevelA) {
             stats.incrementLevel_A();
             stats.setDamage(upgrade.damage);
-            stats.setRange(upgrade.range);
+            if ("bank".equalsIgnoreCase(currentTowerType)) {
+                // Bank Path A: increase speed, keep range at 0
+                stats.setRange(0f);
+                stats.setProjectileSpeed(upgrade.speed);
+            } else {
+                stats.setRange(upgrade.range);
+            }
         } else {
             stats.incrementLevel_B();
-            stats.setAttackCooldown(upgrade.cooldown);
-            stats.setProjectileSpeed(upgrade.speed);
+            if ("bank".equalsIgnoreCase(currentTowerType)) {
+                // Bank Path B: unlock currencies; do not alter range/speed here
+                stats.setRange(0f); // ensure stays zero
+            } else {
+                stats.setAttackCooldown(upgrade.cooldown);
+                stats.setProjectileSpeed(upgrade.speed);
+            }
         }
 
         // 🔹 Determine the higher level between A and B
@@ -570,6 +582,10 @@ public class TowerUpgradeMenu extends UIComponent {
             // Ice tower: Path A = Range, Path B = Freeze Time
             if (pathATitleLabel != null) pathATitleLabel.setText("Range");
             if (pathBTitleLabel != null) pathBTitleLabel.setText("Freeze Time");
+        } else if ("bank".equalsIgnoreCase(currentTowerType)) {
+            // Bank: Path A = Speed, Path B = Unlock Currency
+            if (pathATitleLabel != null) pathATitleLabel.setText("Speed");
+            if (pathBTitleLabel != null) pathBTitleLabel.setText("Unlock Currency");
         } else {
             if (pathATitleLabel != null) pathATitleLabel.setText("Damage & Range");
             if (pathBTitleLabel != null) pathBTitleLabel.setText("Cooldown & Speed");
@@ -625,9 +641,11 @@ public class TowerUpgradeMenu extends UIComponent {
         // --- existing upgrade labels and buttons ---
         int levelA = stats.getLevel_A();
         int levelB = stats.getLevel_B();
+        int maxLevelA = getMaxLevelForPath(currentTowerType, true);   // <-- max per-path
+        int maxLevelB = getMaxLevelForPath(currentTowerType, false);  // <-- max per-path
 
-        pathALevelLabel.setText("Level: " + (levelA >= 5 ? "MAX" : levelA));
-        pathBLevelLabel.setText("Level: " + (levelB >= 5 ? "MAX" : levelB));
+        pathALevelLabel.setText("Level: " + (levelA >= maxLevelA ? "MAX" : levelA));
+        pathBLevelLabel.setText("Level: " + (levelB >= maxLevelB ? "MAX" : levelB));
 
         int nextLevelA = levelA + 1;
         int nextLevelB = levelB + 1;
@@ -664,7 +682,7 @@ public class TowerUpgradeMenu extends UIComponent {
         CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
 
         pathAButton.clearChildren();
-        if (levelA >= 5) {
+        if (levelA >= maxLevelA) {
             // Center "MAX" content
             setButtonCenteredText(pathAButton, "MAX");
             pathAButton.setDisabled(true);
@@ -675,16 +693,24 @@ public class TowerUpgradeMenu extends UIComponent {
         }
 
         pathBButton.clearChildren();
-        if (levelB >= 5) {
+        if (levelB >= maxLevelB) {
             // Center "MAX" content
             setButtonCenteredText(pathBButton, "MAX");
             pathBButton.setDisabled(true);
         } else {
-            int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
-            setupButtonContent(pathBButton, costB, displayCurrency);
-            pathBButton.setDisabled(false);
+            // Special UI for Bank Path B: show "Unlock" + currency icon instead of text cost
+            if ("bank".equalsIgnoreCase(currentTowerType)) {
+                CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
+                        : nextLevelB == 3 ? CurrencyType.NEUROCHIP
+                        : null;
+                setupButtonUnlockContent(pathBButton, unlockCurrency);
+                pathBButton.setDisabled(false);
+            } else {
+                int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
+                setupButtonContent(pathBButton, costB, displayCurrency);
+                pathBButton.setDisabled(false);
+            }
         }
-
     }
 
     // Remove manual updateUpgradeData and handleUpgradeA/B for supercavemen.
@@ -738,6 +764,20 @@ public class TowerUpgradeMenu extends UIComponent {
         button.add(content).expand().fill();
     }
 
+    // Helper: set content to "Unlock" + currency icon (centered)
+    private void setupButtonUnlockContent(TextButton button, CurrencyType currency) {
+        button.setText("");
+        Table content = new Table(skin);
+        if (currency != null) {
+            Image icon = new Image(getCurrencyDrawable(currency));
+            content.add(icon).size(24, 24).padRight(5);
+        }
+        Label label = new Label("Unlock", skin);
+        content.add(label);
+        button.clearChildren();
+        button.add(content).expand().fill().center();
+    }
+
     // Helper: tint an existing drawable while preserving its 9-patch/sprite shape
     private static Drawable tintDrawable(Drawable base, Color color) {
         if (base == null || color == null) return base;
@@ -761,5 +801,17 @@ public class TowerUpgradeMenu extends UIComponent {
         s.checked = tintDrawable(base.checked != null ? base.checked : base.up, color);
         s.disabled = tintDrawable(base.disabled != null ? base.disabled : base.up, color);
         return s;
+    }
+
+    // Helper: derive max level for a tower path from its upgrade map (highest key)
+    private int getMaxLevelForPath(String towerType, boolean isLevelA) {
+        String key = canonicalTowerType(towerType);
+        Map<Integer, UpgradeStats> map = isLevelA ? pathAUpgradesPerTower.get(key) : pathBUpgradesPerTower.get(key);
+        if (map == null || map.isEmpty()) return 5; // default cap
+        int max = 1; // base level
+        for (Integer lvl : map.keySet()) {
+            if (lvl != null && lvl > max) max = lvl;
+        }
+        return max;
     }
 }

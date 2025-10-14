@@ -95,12 +95,12 @@ public class TowerUpgradeData {
         superCavemenA.put(5, new UpgradeStats(130, 10.0f, 1.0f, 10.0f, 3500, "images/towers/super/superlvl4"));
         pathA.put("supercavemen", superCavemenA);
 
-        // Bank tower
+        // Bank tower — Path A: Speed (support). Range must always be 0.
         Map<Integer, UpgradeStats> bankA = new HashMap<>();
-        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 250, "images/towers/bank/banklvl2"));
-        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 300, "images/towers/bank/banklvl3"));
-        bankA.put(4, new UpgradeStats(0, 0, 0, 0, 350, "images/towers/bank/banklvl4"));
-        bankA.put(5, new UpgradeStats(0, 0, 0, 0, 400, "images/towers/bank/banklvl4"));
+        bankA.put(2, new UpgradeStats(0, 0f, 0f, 1.0f, 250, "images/towers/bank/banklvl2"));
+        bankA.put(3, new UpgradeStats(0, 0f, 0f, 1.25f, 300, "images/towers/bank/banklvl3"));
+        bankA.put(4, new UpgradeStats(0, 0f, 0f, 1.5f, 350, "images/towers/bank/banklvl4"));
+        bankA.put(5, new UpgradeStats(0, 0f, 0f, 1.75f, 400, "images/towers/bank/banklvl4"));
         pathA.put("bank", bankA);
 
 
@@ -222,12 +222,13 @@ public class TowerUpgradeData {
         shamanB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/shaman/charmanlvl4"));
         pathB.put("villageshaman", shamanB);
 
-        // Bank tower
+        // Bank tower — Path B: Unlock currencies, max level 3
         Map<Integer, UpgradeStats> bankB = new HashMap<>();
-        bankB.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
-        bankB.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl3"));
-        bankB.put(4, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
-        bankB.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
+        // Level 2 (from base level 1): Unlock Titanium Core
+        bankB.put(2, new UpgradeStats(0, 0f, 0f, 0f, 500, "images/towers/bank/banklvl2"));
+        // Level 3: Unlock Neuro Core (Neurochip)
+        bankB.put(3, new UpgradeStats(0, 0f, 0f, 0f, 1000, "images/towers/bank/banklvl3"));
+        // No levels 4/5 to enforce max = 3
         pathB.put("bank", bankB);
 
         return pathB;

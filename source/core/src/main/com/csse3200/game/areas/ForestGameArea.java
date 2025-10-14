@@ -3,8 +3,6 @@ package com.csse3200.game.areas;
 import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
-import com.csse3200.game.components.maingame.TowerUpgradeMenu;
-import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.HeroStatusPanelComponent;
 
 
@@ -21,16 +19,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.wavesystem.Wave;
 import com.csse3200.game.areas.terrain.TerrainFactory.TerrainType;
-import com.csse3200.game.areas2.MapTwo.MapEditor2;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
 import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
-import com.csse3200.game.utils.math.RandomUtils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.hero.HeroPlacementComponent;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
@@ -41,15 +36,13 @@ import com.badlogic.gdx.graphics.Camera;
 import com.csse3200.game.entities.configs.SamuraiConfig;
 
 import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
-import com.csse3200.game.components.maingame.SimplePlacementController;
-import com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent;
 import com.csse3200.game.components.CameraZoomDragComponent;
 
 /**
@@ -69,11 +62,12 @@ public class ForestGameArea extends GameArea {
     private Timer.Task waveSpawnTask;
     private List<Runnable> enemySpawnQueue;
     private boolean waveInProgress = false;
+    private boolean wavePaused = false;  // Track if wave spawning is paused
     private float spawnDelay = 2f; // Delay between spawns (updated per wave)
+    private float adjustedSpawnDelay = 2f; // The actual delay being used (accounting for time scale)
+    private long spawnScheduledTime = 0; // When the current spawn was scheduled (in milliseconds)
+    private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
-
-    // When loading from a save/continue, we don't want to auto-start waves and duplicate enemies
-    private boolean autoStartWaves = true;
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
@@ -142,14 +136,6 @@ public class ForestGameArea extends GameArea {
         this.hasExistingPlayer = hasExistingPlayer;
     }
 
-    /**
-     * Control whether waves should auto start during create().
-     * Useful to disable when restoring from a save to avoid duplicated spawns.
-     */
-    public void setAutoStartWaves(boolean autoStartWaves) {
-        this.autoStartWaves = autoStartWaves;
-    }
-
     private void initializeWaypointLists() {
         waypointLists = new ArrayList<>();
         waypointLists.add(MapEditor.waypointList);
@@ -198,6 +184,8 @@ public class ForestGameArea extends GameArea {
         if (waveInProgress) return;
         
         waveInProgress = true;
+        wavePaused = false;
+        timeRemainingWhenPaused = 0f;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
     }
@@ -246,8 +234,10 @@ public class ForestGameArea extends GameArea {
         } else {
             // Start next wave after delay
             currentWaveIndex++;
-            // Adjust delay by time scale
-            float adjustedDelay = 3.0f / ServiceLocator.getTimeSource().getTimeScale();
+            // Get current time scale, but don't divide by zero
+            float timeScale = ServiceLocator.getTimeSource().getTimeScale();
+            float adjustedDelay = timeScale > 0 ? 3.0f / timeScale : 3.0f;
+            
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
@@ -258,9 +248,51 @@ public class ForestGameArea extends GameArea {
     }
 
     /**
+     * Pause wave spawning (called when game is paused)
+     */
+    private void pauseWaveSpawning() {
+        if (waveInProgress && !wavePaused) {
+            wavePaused = true;
+            
+            // Calculate how much time has elapsed since the spawn was scheduled
+            if (waveSpawnTask != null && spawnScheduledTime > 0) {
+                long currentTime = TimeUtils.millis();
+                float elapsedSeconds = (currentTime - spawnScheduledTime) / 1000f;
+                
+                // Calculate remaining time
+                timeRemainingWhenPaused = Math.max(0f, adjustedSpawnDelay - elapsedSeconds);
+                
+                logger.info("Wave spawning paused. Elapsed: {}s, Remaining: {}s", 
+                           elapsedSeconds, timeRemainingWhenPaused);
+                
+                // Cancel the current task
+                waveSpawnTask.cancel();
+                waveSpawnTask = null;
+            }
+        }
+    }
+
+    /**
+     * Resume wave spawning (called when game is resumed)
+     */
+    private void resumeWaveSpawning() {
+        if (waveInProgress && wavePaused) {
+            wavePaused = false;
+            logger.info("Wave spawning resumed with {}s remaining", timeRemainingWhenPaused);
+            scheduleNextEnemySpawn();
+        }
+    }
+
+    /**
      * Schedule the next enemy spawn with delay (with comprehensive safety checks)
      */
     private void scheduleNextEnemySpawn() {
+        // Don't schedule if paused
+        if (wavePaused) {
+            logger.debug("Wave is paused, not scheduling next spawn");
+            return;
+        }
+
         // Safety check: ensure this game area is still the active one
         if (currentGameArea != this) {
             logger.info("Game area changed, stopping wave spawning");
@@ -295,13 +327,42 @@ public class ForestGameArea extends GameArea {
             waveSpawnTask.cancel();
         }
         
-        // Adjust spawn delay to compensate for time scale
-        float adjustedSpawnDelay = spawnDelay / ServiceLocator.getTimeSource().getTimeScale();
+        // Get time scale and handle pause (time scale = 0)
+        float timeScale = ServiceLocator.getTimeSource().getTimeScale();
+        if (timeScale <= 0) {
+            // Game is paused, don't schedule
+            wavePaused = true;
+            logger.debug("Time scale is 0, wave spawning paused");
+            return;
+        }
+        
+        // Determine the delay to use
+        float delayToUse;
+        if (timeRemainingWhenPaused > 0f) {
+            // We're resuming from a pause - use the remaining time, adjusted for current time scale
+            delayToUse = timeRemainingWhenPaused / timeScale;
+            logger.debug("Resuming spawn with remaining time: {}s (adjusted: {}s)", 
+                        timeRemainingWhenPaused, delayToUse);
+            timeRemainingWhenPaused = 0f; // Reset for next spawn
+        } else {
+            // Normal spawn - use full delay adjusted for time scale
+            delayToUse = spawnDelay / timeScale;
+        }
+        
+        // Store the adjusted delay and schedule time for pause calculations
+        adjustedSpawnDelay = delayToUse;
+        spawnScheduledTime = TimeUtils.millis();
 
         // Schedule next spawn
         waveSpawnTask = Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
+                // Check if paused before spawning
+                if (wavePaused) {
+                    logger.debug("Wave paused, skipping spawn");
+                    return;
+                }
+                
                 // Double-check we're still the active game area
                 if (currentGameArea != ForestGameArea.this) {
                     logger.info("Game area changed during spawn, stopping");
@@ -330,7 +391,7 @@ public class ForestGameArea extends GameArea {
                     forceStopWave();
                 }
             }
-        }, adjustedSpawnDelay);
+        }, delayToUse);
     }
 
     /**
@@ -351,6 +412,9 @@ public class ForestGameArea extends GameArea {
         ui.addComponent(placementController); // Handles user input for tower placement
         spawnEntity(ui);
 
+        if (MainGameScreen.ui != null) {
+            MainGameScreen.ui.getEvents().addListener("startWave", this::startWaves);
+        }
 
         /*
         // Difficulty label UI
@@ -361,12 +425,6 @@ public class ForestGameArea extends GameArea {
         // Send the chosen difficulty so it shows immediately
         difficultyUi.getEvents().trigger("setDifficulty", gameDifficulty.name());
         */
-
-        // Create time speed control button
-        Entity timeSpeedUI = new Entity();
-        timeSpeedUI.addComponent(new com.csse3200.game.components.maingame.TimeSpeedButton());
-        spawnEntity(timeSpeedUI);
-
 
         // Create camera control entity for zoom and drag functionality
         Entity cameraControl = new Entity();
@@ -411,15 +469,11 @@ public class ForestGameArea extends GameArea {
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
 
-        if (autoStartWaves) {
-            initializeWaves();
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, 2.0f); // Start wave after 2 seconds (gives player time to prepare)
-        }
+        // Register pause/resume listeners for wave system
+        Entity pauseListener = new Entity();
+        pauseListener.getEvents().addListener("gamePaused", this::pauseWaveSpawning);
+        pauseListener.getEvents().addListener("gameResumed", this::resumeWaveSpawning);
+        spawnEntity(pauseListener);
 
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
@@ -554,6 +608,16 @@ public class ForestGameArea extends GameArea {
             }
         }
         return null;
+    }
+
+    public void startWaves() {
+        initializeWaves();
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                startEnemyWave();
+            }
+        }, 2.0f); // Start wave after 2 seconds
     }
 
     /**
@@ -819,6 +883,8 @@ public class ForestGameArea extends GameArea {
                 waveSpawnTask = null;
             }
             waveInProgress = false;
+            wavePaused = false;
+            timeRemainingWhenPaused = 0f;
             if (enemySpawnQueue != null) {
                 enemySpawnQueue.clear();
                 enemySpawnQueue = null;
@@ -854,6 +920,3 @@ public class ForestGameArea extends GameArea {
         this.unloadAssets();
     }
 }
-
-
-

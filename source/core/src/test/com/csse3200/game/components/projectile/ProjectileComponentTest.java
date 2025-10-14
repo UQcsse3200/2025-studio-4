@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.ComponentPriority;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
 import com.csse3200.game.physics.components.PhysicsComponent;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.*;
 /**
  * Tests for ProjectileComponent.
  * - Velocity setting
- * - Expiration destruction (postRunnable -> execute immediately)
+ * - Expiration destruction via EntityService.despawnEntity (pooling-friendly)
  * - Safe behavior without Physics/Body
  */
 public class ProjectileComponentTest {
@@ -58,6 +59,7 @@ public class ProjectileComponentTest {
     Body body = mock(Body.class);
     PhysicsComponent phys = mock(PhysicsComponent.class);
     when(phys.getBody()).thenReturn(body);
+    when(phys.getPrio()).thenReturn(ComponentPriority.HIGH); // ADD THIS LINE (PhysicsComponent uses HIGH)
 
     // GameTime (not directly needed in this case, but stubbed in case the component accesses it)
     GameTime ts = mock(GameTime.class);
@@ -83,6 +85,7 @@ public class ProjectileComponentTest {
     Body body = mock(Body.class);
     PhysicsComponent phys = mock(PhysicsComponent.class);
     when(phys.getBody()).thenReturn(body);
+    when(phys.getPrio()).thenReturn(ComponentPriority.HIGH); // ADD THIS LINE (PhysicsComponent uses HIGH)
 
     GameTime ts = mock(GameTime.class);
     when(ts.getDeltaTime()).thenReturn(0.2f);
@@ -101,14 +104,13 @@ public class ProjectileComponentTest {
     verify(body, times(1)).setLinearVelocity(0f, 0f);
     verify(body, times(1)).setActive(false);
 
-    // Disposal and unregistration executed synchronously
-    verify(e, atLeastOnce()).dispose();
-    verify(es, atLeastOnce()).unregister(e);
+    // Pooled despawn path is used when an EntityService is present
+    verify(es, atLeastOnce()).despawnEntity(e);
 
-    // On further updates, unregistration should not repeat
+    // On further updates, despawn should not repeat
     clearInvocations(es);
     proj.update();
-    verify(es, never()).unregister(e);
+    verify(es, never()).despawnEntity(e);
   }
 
   @Test
@@ -129,8 +131,7 @@ public class ProjectileComponentTest {
     // When: one update expires (postRunnable executes synchronously)
     proj.update();
 
-    // Then: no crash, entity is disposed and unregistered
-    verify(e, atLeastOnce()).dispose();
-    verify(es, atLeastOnce()).unregister(e);
+    // Then: no crash, entity is returned to pool/unregistered via EntityService
+    verify(es, atLeastOnce()).despawnEntity(e);
   }
 }

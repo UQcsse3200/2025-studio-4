@@ -1,6 +1,6 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
@@ -9,12 +9,15 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
-import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.enemy.SpeedWaypointComponent;
+import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 import com.csse3200.game.components.movement.AdjustSpeedByHealthComponent;
@@ -32,10 +35,14 @@ public class GruntEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 100;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
+    CurrencyType.METAL_SCRAP, 100,
+    CurrencyType.TITANIUM_CORE, 50,
+    CurrencyType.NEUROCHIP, 15
+    );
     private static final int DEFAULT_POINTS = 150;
     private static final float SPEED_EPSILON = 0.001f;
+    private static final String DEFAULT_DEATH_SOUND_PATH = "sounds/mixkit-arcade-game-explosion-2759.wav";
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -47,9 +54,9 @@ public class GruntEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
-    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
+    private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
 
     /**
      * Creates a grunt enemy with current configuration.
@@ -88,15 +95,40 @@ public class GruntEnemyFactory {
 
         grunt.getEvents().addListener("entityDeath", () -> destroyEnemy(grunt));
 
-        // Handle waypoint progression for this specific grunt
+        // Each grunt handles its own waypoint progression
         grunt.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = grunt.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    applySpeedModifier(grunt, wc, nextTarget);
-                    updateChaseTarget(grunt, nextTarget);
+            WaypointComponent dwc = grunt.getComponent(WaypointComponent.class);
+            if (dwc == null) {
+                return;
+            }
+
+            Entity currentTarget = dwc.getCurrentTarget();
+
+            // If no more waypoints, ensure we finish moving toward the final target if far away
+            if (!dwc.hasMoreWaypoints()) {
+                if (currentTarget != null) {
+                    float distanceToTarget = grunt.getPosition().dst(currentTarget.getPosition());
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(grunt, currentTarget);
+                    }
                 }
+                return;
+            }
+
+            // If we're far from the current waypoint (e.g., after resume), keep chasing it
+            if (currentTarget != null) {
+                float distanceToTarget = grunt.getPosition().dst(currentTarget.getPosition());
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(grunt, currentTarget);
+                    return;
+                }
+            }
+
+            // Otherwise progress to the next waypoint
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(grunt, dwc, nextTarget);
+                updateChaseTarget(grunt, nextTarget);
             }
         });
 
@@ -127,8 +159,7 @@ public class GruntEnemyFactory {
             // Drop currency upon defeat
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
-                player.getEvents().trigger("dropCurrency", drops);
+                player.getEvents().trigger("dropCurrency", currencyDrops);
             }
 
             // Award points to player upon defeating enemy
@@ -144,8 +175,15 @@ public class GruntEnemyFactory {
             }
         }
 
+        playDeathSound(deathSoundPath);
         //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
+    }
+
+    private static void playDeathSound(String soundPath) {
+        ServiceLocator.getResourceService()
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
     }
 
     private static void applySpeedModifier(Entity grunt, WaypointComponent waypointComponent, Entity waypoint) {
@@ -153,23 +191,25 @@ public class GruntEnemyFactory {
             return;
         }
 
-        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
-        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
-        if (speedMarker != null) {
-            float multiplier = speedMarker.getSpeedMultiplier();
-            desiredSpeed.scl(multiplier);
-            
-            // 如果是减速区域（倍率小于1.0），触发蓝色减速特效
-            if (multiplier < 1.0f) {
-                grunt.getEvents().trigger("applySlow");
+
+    
+            SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+            Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+            if (speedMarker != null) {
+                float multiplier = speedMarker.getSpeedMultiplier();
+                desiredSpeed.scl(multiplier);
+                
+                // 如果是减速区域（倍率小于1.0），触发蓝色减速特效
+                if (multiplier < 1.0f) {
+                    grunt.getEvents().trigger("applySlow");
+                } else {
+                    // 如果是加速区域或正常区域，移除减速特效
+                    grunt.getEvents().trigger("removeSlow");
+                }
             } else {
-                // 如果是加速区域或正常区域，移除减速特效
+                // 如果没有速度修改器，移除减速特效
                 grunt.getEvents().trigger("removeSlow");
             }
-        } else {
-            // 如果没有速度修改器，移除减速特效
-            grunt.getEvents().trigger("removeSlow");
-        }
 
         if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
             updateSpeed(grunt, desiredSpeed);

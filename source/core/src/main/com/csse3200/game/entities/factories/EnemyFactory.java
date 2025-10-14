@@ -1,6 +1,5 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
@@ -56,55 +55,6 @@ public class EnemyFactory {
 
     PhysicsUtils.setScaledCollider(npc, 0.1f, 0.1f);
     npc.getEvents().addListener("entityDeath", () -> destroyEnemy(npc));
-
-    // --- Pause / Resume hooks -------------------------------------------------
-    final PhysicsComponent phys = npc.getComponent(PhysicsComponent.class);
-
-    npc.getEvents().addListener("gamePaused", () -> {
-      if (phys != null && phys.getBody() != null) {
-        // Freeze physics so enemies fully stop while overlay is up
-        phys.getBody().setLinearVelocity(0f, 0f);
-        phys.getBody().setAngularVelocity(0f);
-        phys.getBody().setActive(false);
-      }
-    });
-
-    npc.getEvents().addListener("gameResumed", () -> {
-      if (phys != null && phys.getBody() != null) {
-        // Wake physics
-        phys.getBody().setActive(true);
-        phys.getBody().setAwake(true);
-        phys.getBody().setLinearVelocity(0f, 0f);
-        phys.getBody().setAngularVelocity(0f);
-
-        // SNAP to nearest waypoint to eliminate steering drift after resume
-        if (waypoints != null && !waypoints.isEmpty()) {
-          float best = Float.MAX_VALUE;
-          Vector2 bestPos = null;
-          for (Entity wp : waypoints) {
-            Vector2 wpPos;
-            PhysicsComponent wpPhys = wp.getComponent(PhysicsComponent.class);
-            if (wpPhys != null && wpPhys.getBody() != null) {
-              wpPos = wpPhys.getBody().getPosition();
-            } else {
-              wpPos = wp.getPosition(); // fallback
-            }
-            float d2 = phys.getBody().getPosition().dst2(wpPos);
-            if (d2 < best) {
-              best = d2;
-              bestPos = wpPos;
-            }
-          }
-          if (bestPos != null) {
-            phys.getBody().setTransform(bestPos.x, bestPos.y, phys.getBody().getAngle());
-            phys.getBody().setLinearVelocity(0f, 0f);
-            phys.getBody().setAngularVelocity(0f);
-          }
-        }
-      }
-    });
-    // -------------------------------------------------------------------------
-
     return npc;
   }
 

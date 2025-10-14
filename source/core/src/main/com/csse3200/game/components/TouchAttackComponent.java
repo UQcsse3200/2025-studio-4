@@ -11,12 +11,8 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 
 /**
- * When this entity touches a valid enemy's hitbox, deal damage to them and apply a knockback.
- *
- * <p>Requires CombatStatsComponent, HitboxComponent on this entity.
- *
- * <p>Damage is only applied if target entity has a CombatStatsComponent. Knockback is only applied
- * if target entity has a PhysicsComponent.
+ * When this entity touches a valid enemy's hitbox, deal damage and optional knockback.
+ * Compatible with pooled projectiles by resetting per-shot state on "projectile.activated".
  */
 public class TouchAttackComponent extends Component {
   private short targetLayer;
@@ -43,6 +39,10 @@ public class TouchAttackComponent extends Component {
     this.knockbackForce = knockback;
   }
 
+  /**
+   * Register collision and animation listeners and cache required components.
+   * Resets one-shot attack state when the projectile is reactivated from the pool.
+   */
   @Override
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
@@ -50,8 +50,19 @@ public class TouchAttackComponent extends Component {
     hitboxComponent = entity.getComponent(HitboxComponent.class);
     
     entity.getEvents().addListener("attackAnimationComplete", this::onAttackComplete);
+
+    // Reset per-shot state when a pooled projectile is reactivated
+    entity.getEvents().addListener("projectile.activated", () -> {
+      hasAttacked = false;
+    });
   }
 
+  /**
+   * Handle collision start events. Applies damage once per shot to the first valid target,
+   * triggers attack animation hooks, and optionally applies knockback if the target has physics.
+   * @param me    this entity's fixture
+   * @param other the other entity's fixture
+   */
   private void onCollisionStart(Fixture me, Fixture other) {
     if (hasAttacked) {
       return;
@@ -83,7 +94,7 @@ public class TouchAttackComponent extends Component {
         playerStats.hit(combatStats);
         hasAttacked = true;
         
-        Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
+        //Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
 
         entity.getEvents().trigger("attackStart");
 
@@ -101,7 +112,7 @@ public class TouchAttackComponent extends Component {
   }
   
   /**
-   * Called when attack animation completes - now trigger death
+   * Called when the attack animation finishes to trigger the entity's death event.
    */
   private void onAttackComplete() {
     Gdx.app.log("ATTACK", "Attack animation complete for " + entity.getId() + " - triggering entityDeath");

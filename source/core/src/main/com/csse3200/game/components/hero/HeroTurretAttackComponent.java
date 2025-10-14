@@ -26,7 +26,8 @@ public class HeroTurretAttackComponent extends Component {
     private float bulletLife;
     private String bulletTexture;
     private Camera camera;
-
+    private String overrideShootSfxKey = null;
+    private Float  overrideShootSfxVol = null;
     /** 音效资源键（通常为 assets 内路径或你们的别名键） */
     private String shootSfxKey = null; // 由配置注入
     private float shootSfxVolume = 1.0f; // 合理默认，范围[0,1]
@@ -91,6 +92,16 @@ public class HeroTurretAttackComponent extends Component {
             this.attackScale = mul; // Multiplier directly applied in computeDamageFromStats()
         });
         // 声音资源请在关卡/区域加载阶段预加载（见 ForestGameArea.loadAssets）
+        entity.getEvents().addListener("attack.sfx.override", (String key, Float vol) -> {
+            this.overrideShootSfxKey = (key != null && !key.isBlank()) ? key : null;
+            this.overrideShootSfxVol = (vol != null) ? Math.max(0f, Math.min(1f, vol)) : null;
+        });
+
+        // ★ 监听：清除覆盖
+        entity.getEvents().addListener("attack.sfx.clear", () -> {
+            this.overrideShootSfxKey = null;
+            this.overrideShootSfxVol = null;
+        });
     }
 
     @Override
@@ -170,54 +181,73 @@ public class HeroTurretAttackComponent extends Component {
     // 直接通过 ResourceService 播放射击音效（带回退 + 日志）
     /** 直接播放射击音效：带存在性检查 + 设备检查 + 回退 + 清晰日志，不再抛异常 */
     private void playShootSfxDirect() {
-        if (shootSfxKey == null || shootSfxKey.isBlank()) return;
+        // 先合并覆盖值（例如大招/状态切换期间想临时换音效）
+        final String key = (overrideShootSfxKey != null && !overrideShootSfxKey.isBlank())
+                ? overrideShootSfxKey
+                : shootSfxKey;
+        final float baseVol = (overrideShootSfxVol != null) ? overrideShootSfxVol : shootSfxVolume;
+
+        // 基本校验 & 限频
+        if (key == null || key.isBlank()) return;
         if (sfxCooldown > 0f) return;
 
-        // clamp 到 0~1
-        final float vol = Math.max(0f, Math.min(1f, shootSfxVolume));
+        // 归一化音量 0~1
+        final float vol = Math.max(0f, Math.min(1f, baseVol));
 
         try {
-            // 先用 ResourceService 播放（需要已预加载）
+            // 优先从 ResourceService 里拿（要求你在关卡/区域里预加载了该 sound）
             var rs = ServiceLocator.getResourceService();
             if (rs != null) {
                 Sound s = null;
                 try {
-                    s = rs.getAsset(shootSfxKey, Sound.class); // 若没加载好，可能为 null 或抛错
+                    s = rs.getAsset(key, Sound.class); // 未加载好可能为 null 或抛异常
                 } catch (Throwable ignored) {
-                    // 忽略，走回退逻辑
+                    // 忽略异常，继续尝试回退加载
                 }
                 if (s != null) {
                     long id = s.play(vol);
-                    Gdx.app.log("HeroTurretSFX", "Played via ResourceService: key=" + shootSfxKey + ", id=" + id + ", vol=" + vol);
+                    Gdx.app.log("HeroTurretSFX",
+                            "Played via ResourceService: key=" + key + ", id=" + id + ", vol=" + vol
+                                    + (overrideShootSfxKey != null ? " (override)" : ""));
                     sfxCooldown = shootSfxMinInterval;
                     return;
                 } else {
-                    Gdx.app.error("HeroTurretSFX", "Not in ResourceService (or null): " + shootSfxKey + " -> try fallback newSound()");
+                    Gdx.app.error("HeroTurretSFX",
+                            "Sound not in ResourceService (or null): " + key + " -> try fallback newSound()");
                 }
             } else {
-                Gdx.app.error("HeroTurretSFX", "ResourceService is null -> try fallback newSound()");
+                Gdx.app.error("HeroTurretSFX",
+                        "ResourceService is null -> try fallback newSound()");
             }
 
-            // 回退：确认文件存在 & 音频后端可用再 newSound
-            if (!Gdx.files.internal(shootSfxKey).exists()) {
-                Gdx.app.error("HeroTurretSFX", "Asset file NOT FOUND: " + shootSfxKey + " (check path/case and that it’s in assets)");
+            // 回退：直接用 LibGDX newSound（确保文件存在且音频后端可用）
+            if (!Gdx.files.internal(key).exists()) {
+                Gdx.app.error("HeroTurretSFX",
+                        "Asset file NOT FOUND: " + key + " (check path/case and that it’s in assets)");
                 return;
             }
             if (Gdx.audio == null) {
-                Gdx.app.error("HeroTurretSFX", "Gdx.audio is NULL (headless test? audio backend not initialized)");
+                Gdx.app.error("HeroTurretSFX",
+                        "Gdx.audio is NULL (headless test? audio backend not initialized)");
                 return;
             }
 
-            Sound s2 = Gdx.audio.newSound(Gdx.files.internal(shootSfxKey));
+            Sound s2 = Gdx.audio.newSound(Gdx.files.internal(key));
             long id2 = s2.play(vol);
-            Gdx.app.log("HeroTurretSFX", "Played via fallback newSound: key=" + shootSfxKey + ", id=" + id2 + ", vol=" + vol);
+            Gdx.app.log("HeroTurretSFX",
+                    "Played via fallback newSound: key=" + key + ", id=" + id2 + ", vol=" + vol
+                            + (overrideShootSfxKey != null ? " (override)" : ""));
             sfxCooldown = shootSfxMinInterval;
 
+            // 说明：这里没有立即 dispose()，否则会中断播放。若担心泄漏，可做一个缓存复用。
+
         } catch (Throwable t) {
-            // 不再让异常冒泡；只记录日志
-            Gdx.app.error("HeroTurretSFX", "Play failed for key=" + shootSfxKey + ", vol=" + vol, t);
+            // 不让异常冒泡，避免打断射击流程
+            Gdx.app.error("HeroTurretSFX",
+                    "Play failed for key=" + key + ", vol=" + vol, t);
         }
     }
+
 
 
 

@@ -97,7 +97,9 @@ public class ForestGameArea extends GameArea {
             CurrencyManagerComponent.SOUND_PATH,
             "sounds/book_opening.mp3",
             "sounds/book_closing.mp3",
-            "sounds/Explosion_sfx.ogg"
+            "sounds/Explosion_sfx.ogg",
+            "sounds/hero_lv2_shot.ogg",
+            "sounds/ult_shot.ogg"
     };
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};

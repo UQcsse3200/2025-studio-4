@@ -37,7 +37,7 @@ public class SamuraiStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 new Color(0.15f, 0.12f, 0.14f, 0.92f), // 背景更偏红
                 Color.WHITE,
                 new Color(0.95f, 0.25f, 0.25f, 1f),    // 强调：武士红
-                0.24f
+                0.32f
         );
     }
 

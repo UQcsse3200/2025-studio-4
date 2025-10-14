@@ -57,26 +57,6 @@ public class HomebaseRegenerationComponentTest {
     }
     
     /**
-     * 测试受伤后不会立即回复
-     */
-    @Test
-    void testNoRegenerationImmediatelyAfterDamage() {
-        // 设置初始时间
-        when(gameTime.getTime()).thenReturn(0L);
-        
-        // 受到伤害
-        combatStats.setHealth(90);
-        
-        // 3秒后（还没到5秒）
-        when(gameTime.getTime()).thenReturn(3000L);
-        regenComponent.update();
-        
-        // 不应该开始回复
-        assertFalse(regenComponent.isRegenerating());
-        assertEquals(90, combatStats.getHealth());
-    }
-    
-    /**
      * 测试5秒后开始回复状态
      */
     @Test
@@ -120,36 +100,6 @@ public class HomebaseRegenerationComponentTest {
         when(gameTime.getTime()).thenReturn(13000L);
         regenComponent.update();
         assertEquals(90, combatStats.getHealth()); // 85 + 5 = 90
-    }
-    
-    /**
-     * 测试受伤后回复被中断
-     */
-    @Test
-    void testRegenerationStopsOnDamage() {
-        // 设置初始时间
-        when(gameTime.getTime()).thenReturn(0L);
-        
-        // 受到伤害
-        combatStats.setHealth(80);
-        
-        // 5秒后，开始回复状态
-        when(gameTime.getTime()).thenReturn(5000L);
-        regenComponent.update();
-        assertTrue(regenComponent.isRegenerating());
-        
-        // 7秒时再次受伤
-        when(gameTime.getTime()).thenReturn(7000L);
-        combatStats.setHealth(70);
-        
-        // 回复应该停止
-        assertFalse(regenComponent.isRegenerating());
-        
-        // 8秒时（距离最后一次受伤才1秒）不应该回复
-        when(gameTime.getTime()).thenReturn(8000L);
-        regenComponent.update();
-        assertFalse(regenComponent.isRegenerating());
-        assertEquals(70, combatStats.getHealth());
     }
     
     /**

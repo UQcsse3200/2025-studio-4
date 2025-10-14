@@ -19,7 +19,6 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
-
 import java.util.LinkedHashSet;
 
 import com.csse3200.game.components.hero.HeroUltimateComponent;
@@ -92,28 +91,23 @@ public final class HeroFactory {
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent().setSensor(true))
                 .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
-                // Renderable texture with rotation support
                 .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
-                // Combat stats (health, attack, resistances/weaknesses)
                 .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
-                // Turret attack logic (fires bullets toward mouse cursor)
                 .addComponent(new HeroTurretAttackComponent(
                         cfg.attackCooldown,
                         cfg.bulletSpeed,
                         cfg.bulletLife,
-                        cfg.bulletTexture, // Bullet texture is passed directly from HeroConfig
-                        camera // Inject camera for aiming & rotation
+                        cfg.bulletTexture,
+                        camera
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
-
                 .addComponent(new UltimateButtonComponent())
                 .addComponent(new HeroAppearanceComponent(cfg))
                 .addComponent(new HeroCustomizationComponent());
-
-        // Default scale to 1x1 so the hero is visible during testing
         hero.setScale(1f, 1f);
         return hero;
+
     }
 
     /**

@@ -9,7 +9,7 @@ import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.Hero.DefaultHeroStatusPanelComponent;
 import com.csse3200.game.ui.Hero.EngineerStatusPanelComponent;
 import com.csse3200.game.ui.Hero.HeroStatusPanelComponent;
-
+import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 
 import com.csse3200.game.components.maingame.*;
 
@@ -97,6 +97,7 @@ public class ForestGameArea extends GameArea {
             CurrencyManagerComponent.SOUND_PATH,
             "sounds/book_opening.mp3",
             "sounds/book_closing.mp3",
+            "sounds/Explosion_sfx.ogg"
     };
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
@@ -670,7 +671,7 @@ public class ForestGameArea extends GameArea {
 
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
         hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
-
+        hero.getComponent(HeroTurretAttackComponent.class).setShootSfxKey("sounds/Explosion_sfx.ogg");
         Entity heroStatusUI = new Entity()
                 .addComponent(new DefaultHeroStatusPanelComponent(hero, "Hero"));
         spawnEntity(heroStatusUI);
@@ -821,6 +822,18 @@ public class ForestGameArea extends GameArea {
         while (!resourceService.loadForMillis(10)) {
             logger.info("Loading... {}%", resourceService.getProgress());
         }
+//        try {
+//            com.badlogic.gdx.audio.Sound s =
+//                    resourceService.getAsset("sounds/Explosion_sfx.ogg", com.badlogic.gdx.audio.Sound.class);
+//            if (s != null) {
+//                long id = s.play(1f);
+//                Gdx.app.log("SmokeTest", "Played Explosion_sfx.ogg right after load, id=" + id);
+//            } else {
+//                Gdx.app.error("SmokeTest", "ResourceService returned NULL for Explosion_sfx.ogg");
+//            }
+//        } catch (Throwable t) {
+//            Gdx.app.error("SmokeTest", "Exception while smoke testing Explosion_sfx.ogg", t);
+//        }
     }
 
     private void unloadAssets() {

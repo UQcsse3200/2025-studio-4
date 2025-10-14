@@ -77,7 +77,7 @@ public class HeroUpgradeComponentTest {
     void upgradeSuccess_shouldDeductCost_applyGrowth_andTriggerUpgradedEvent() {
         // Arrange: mock wallet with sufficient currency
         CurrencyManagerComponent wallet = mock(CurrencyManagerComponent.class);
-        // From level 1 -> 2: expected cost = 4
+        // 1 -> 2: 费用 = nextLevel(2) * 200 = 400
         when(wallet.canAffordAndSpendCurrency(anyMap())).thenReturn(true);
 
         Entity player = new Entity();
@@ -102,7 +102,7 @@ public class HeroUpgradeComponentTest {
         // Act: trigger upgrade
         b.hero.getEvents().trigger("requestUpgrade", player);
 
-        // Assert: wallet deduction with correct cost
+        // Assert: wallet deduction with correct cost (METAL_SCRAP: 400)
         @SuppressWarnings("unchecked")
         ArgumentCaptor<Map<CurrencyType, Integer>> mapCaptor =
                 ArgumentCaptor.forClass((Class) Map.class);
@@ -111,11 +111,13 @@ public class HeroUpgradeComponentTest {
         assertEquals(1, costMap.size());
         assertEquals(400, costMap.get(CurrencyType.METAL_SCRAP));
 
-        // Assert: stat growth (+10 atk, +20 hp)
-        assertEquals(baseAttackBefore + 10, b.stats.getBaseAttack());
-        assertEquals(healthBefore + 20, b.stats.getHealth());
+        // === 改动点：根据你的新成长逻辑断言 ===
+        // 攻击固定被设为 12（不再是 +10）
+        assertEquals(12, b.stats.getBaseAttack());
+        // 生命值不再增长，保持原值
+        assertEquals(healthBefore, b.stats.getHealth());
 
-        // Assert: event payload
+        // 事件负载不变
         assertTrue(upgradedCalled.get());
         assertEquals(2, receivedLevel.get());
         assertEquals(CurrencyType.METAL_SCRAP, receivedType[0]);
@@ -123,6 +125,7 @@ public class HeroUpgradeComponentTest {
 
         verify(mockApp, atLeast(0)).log(anyString(), anyString());
     }
+
 
     @Test
     void upgradeFail_whenNotEnoughCurrency_shouldTriggerUpgradeFailed() {

@@ -333,7 +333,7 @@ public class TowerComponent extends Component {
                 );
             }
         }
-        // 🔄 Auto-revert fire -> idle when a non-looping fire clip finishes
+        // Auto-revert fire -> idle when a non-looping fire clip finishes
         if (headRenderer != null) {
             String curr = headRenderer.getCurrentAnimation();
             if (curr != null && curr.startsWith("fire") && headRenderer.isFinished()) {

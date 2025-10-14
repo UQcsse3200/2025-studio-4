@@ -27,6 +27,8 @@ public class TowerHotbarDisplay extends UIComponent {
     private Table rootTable;
     private SimplePlacementController placementController;
     private Skin hotbarSkin;
+    private Texture bgTexture; // background texture to dispose
+    private Texture transparentBtnTexture; // transparent 1x1 for placeholder
 
     @Override
     public void create() {
@@ -37,17 +39,12 @@ public class TowerHotbarDisplay extends UIComponent {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
 
-        // 根容器：左下角
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.bottom().left();
 
-        // 背景
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
-        pixmap.fill();
-        Texture bgTexture = new Texture(pixmap);
-        pixmap.dispose();
+        // Background (requested color, 60% opacity)
+        bgTexture = buildSolidTexture(new Color(0.15f, 0.15f, 0.18f, 0.6f)); // 60% opacity
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
         Container<Table> container = new Container<>();
@@ -56,13 +53,14 @@ public class TowerHotbarDisplay extends UIComponent {
 
         Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
+        title.setColor(Color.WHITE); // make the label white
 
         // 图标资源（如路径不同，请按资源实际位置调整）
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bones/boneicon.png")));
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dino/dinoicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/cavemen/cavemenicon.png")));
         TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/super/supercavemenicon.png")));
-        TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
+        TextureRegionDrawable placeholderImage = null; // removed picture; keep var to minimize diff
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pteradactyl/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totem/totemicon.png")));
         TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank/bankicon.png")));
@@ -83,7 +81,16 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton bouldercatapultBtn = new ImageButton(bouldercatapultImage);
         ImageButton villageshamanBtn = new ImageButton(villageshamanImage);
         ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
-        ImageButton placeholderBtn = new ImageButton(placeholderImage);
+
+        // Transparent placeholder button (no picture)
+        transparentBtnTexture = buildSolidTexture(new Color(1f, 1f, 1f, 0f)); // fully transparent
+        TextureRegionDrawable transparentDrawable = new TextureRegionDrawable(new TextureRegion(transparentBtnTexture));
+        ImageButton.ImageButtonStyle transparentStyle = new ImageButton.ImageButtonStyle();
+        transparentStyle.up = transparentDrawable;
+        transparentStyle.down = transparentDrawable;
+        transparentStyle.over = transparentDrawable;
+        transparentStyle.checked = transparentDrawable;
+        ImageButton placeholderBtn = new ImageButton(transparentStyle);
 
         ImageButton[] allButtons = {
             boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
@@ -197,6 +204,24 @@ public class TowerHotbarDisplay extends UIComponent {
         if (rootTable != null) {
             rootTable.clear();
         }
+        if (bgTexture != null) {
+            bgTexture.dispose();
+            bgTexture = null;
+        }
+        if (transparentBtnTexture != null) {
+            transparentBtnTexture.dispose();
+            transparentBtnTexture = null;
+        }
         super.dispose();
+    }
+
+    // Utility: build a 1x1 solid texture with the given color
+    private static Texture buildSolidTexture(Color color) {
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(color);
+        pm.fill();
+        Texture tex = new Texture(pm);
+        pm.dispose();
+        return tex;
     }
 }

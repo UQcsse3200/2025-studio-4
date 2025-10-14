@@ -27,7 +27,6 @@ public class GameStateService {
     private HeroType selectedHero = HeroType.HERO;
 
     public GameStateService() {
-        // should load from save file later
         logger.info("Loading GameStateService");
         stars = 0;
         heroUnlocks = new HashMap<>();
@@ -139,6 +138,15 @@ public class GameStateService {
      */
     public Map<HeroType, Boolean> getHeroUnlocks() {
         return heroUnlocks;
+    }
+
+    /**
+     * Sets the current unlock flags for the heroes
+     *
+     * @param unlocks map of the new hero unlocks
+     */
+    public void setHeroUnlocks(Map<HeroType, Boolean> unlocks) {
+        heroUnlocks = unlocks;
     }
 
     /**

@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SimpleSaveService {
@@ -27,6 +29,7 @@ public class SimpleSaveService {
   public SimpleSaveService(EntityService entityService) {
     this.entityService = entityService;
     this.json = new Json();
+    this.json.setTypeName(null); //removes class name in json for hashmap
     this.json.setOutputType(JsonWriter.OutputType.json);
   }
 
@@ -177,6 +180,14 @@ public class SimpleSaveService {
       }
     }
 
+    GameStateService gs = ServiceLocator.getGameStateService();
+
+    if (gs != null) {
+        data.heroUnlocks = gs.getHeroUnlocks();
+        data.stars = gs.getStars();
+        data.selectedHero = gs.getSelectedHero();
+    }
+
     return data;
   }
 
@@ -186,7 +197,7 @@ public class SimpleSaveService {
 
   /** Restore game state. If waypoints provided, enemies will be created bound to these. */
   private void restore(SaveData data, java.util.List<Entity> canonicalWaypoints) {
-    // restore player
+      // restore player
     Entity player = findPlayer();
     boolean newPlayer = false;
     if (player == null) {
@@ -298,6 +309,18 @@ public class SimpleSaveService {
         } catch (Throwable ignored) {}
       }
     }
+
+    //restore game state
+    GameStateService gs = new GameStateService();
+    ServiceLocator.registerGameStateService(gs);
+
+    if (!data.heroUnlocks.isEmpty()) {
+        gs.setHeroUnlocks(data.heroUnlocks);
+    }
+
+    gs.setStars(data.stars);
+    gs.setSelectedHero(data.selectedHero);
+
   }
 
   private Entity createEnemy(String type, Entity player, List<Entity> waypoints) {
@@ -376,6 +399,10 @@ public class SimpleSaveService {
     public Player player;
     public List<Tower> towers = new ArrayList<>();
     public List<Enemy> enemies = new ArrayList<>();
+
+    public Map<GameStateService.HeroType, Boolean> heroUnlocks = new HashMap<>();
+    public GameStateService.HeroType selectedHero = GameStateService.HeroType.HERO;
+    public int stars = 0;
 
     public static class Player { public Vector2 pos; public int hp; public int gold; }
     public static class Tower { public String type; public Vector2 pos; public int hp; public float cd; }

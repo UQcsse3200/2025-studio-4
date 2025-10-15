@@ -6,8 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -18,6 +20,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.SimpleUI;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +114,7 @@ public class IntroDialogueComponent extends UIComponent {
     portraitImage = new Image();
     portraitImage.setScaling(com.badlogic.gdx.utils.Scaling.fit);
     dialogueTable = new Table();
-    dialogueTable.align(Align.topLeft);
+    dialogueTable.align(Align.center);
     dialogueTable.defaults().pad(screenWidth * 0.005f);
     dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
             new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
@@ -119,11 +122,11 @@ public class IntroDialogueComponent extends UIComponent {
 
     dialogueLabel = new Label("", SimpleUI.label());
     dialogueLabel.setWrap(true);
-    dialogueLabel.setAlignment(Align.topLeft);
+    dialogueLabel.setAlignment(Align.center, Align.center);
     dialogueLabel.setColor(Color.BLACK);
     dialogueLabel.setFontScale(1.1f);
 
-    continueButton = new TextButton("continue", SimpleUI.primaryButton());
+    continueButton = new TextButton("continue", UIStyleHelper.orangeButtonStyle());
     continueButton.getLabel().setColor(Color.WHITE);
     continueButton.addListener(new ChangeListener() {
       @Override
@@ -141,19 +144,49 @@ public class IntroDialogueComponent extends UIComponent {
       }
     });
 
-    dialogueTable.add(dialogueLabel).width(screenWidth * 0.45f).top().left().row();
-    dialogueTable.add(continueButton)
-            .width(screenWidth * 0.135f)
-            .height(screenHeight * 0.065f)
-            .padTop(screenHeight * 0.2f)
+    Container<Label> dialogueContent = new Container<>(dialogueLabel);
+    dialogueContent.align(Align.center);
+    dialogueContent.fill();
+
+    dialogueTable.add(dialogueContent)
+            .width(screenWidth * 0.45f)
+            .expand()
+            .fill()
             .center()
-            .expandX();
-    dialogueTable.row();
+            .row();
+
+    float continueButtonWidth = screenWidth * 0.135f;
+    float continueButtonHeight = screenHeight * 0.065f;
+    float skipButtonWidth = screenWidth * 0.094f;
+    float skipButtonHeight = screenHeight * 0.056f;
+    float buttonRowHeight = Math.max(continueButtonHeight, skipButtonHeight);
+
+    Table continueRow = new Table();
+    continueRow.align(Align.bottom);
+    continueRow.setFillParent(true);
+    continueRow.add().expandX();
+    continueRow.add(continueButton)
+            .width(continueButtonWidth)
+            .height(continueButtonHeight)
+            .center();
+    continueRow.add().expandX();
 
     Table skipRow = new Table();
-    skipRow.add().expandX();
-    skipRow.add(skipButton).width(screenWidth * 0.094f).height(screenHeight * 0.056f).right();
-    dialogueTable.add(skipRow).growX();
+    skipRow.align(Align.bottomRight);
+    skipRow.setFillParent(true);
+    skipRow.add(skipButton)
+            .width(skipButtonWidth)
+            .height(skipButtonHeight)
+            .right();
+
+    Stack buttonStack = new Stack();
+    buttonStack.add(continueRow);
+    buttonStack.add(skipRow);
+
+    dialogueTable.add(buttonStack)
+            .growX()
+            .height(buttonRowHeight)
+            .padTop(screenHeight * 0.02f);
     
     // 对话框固定在底部中央
     overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.037f);

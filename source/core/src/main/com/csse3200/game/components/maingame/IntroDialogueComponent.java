@@ -35,8 +35,10 @@ public class IntroDialogueComponent extends UIComponent {
   private final DialogueAudioManager audioManager; // 音频管理器
 
   private Table overlayRoot;
+  private Table dialogueTable; // 对话框表格
   private Image portraitImage;
   private Label dialogueLabel;
+  private TextButton continueButton; // 继续按钮
   private TextButton skipButton;
   private int currentIndex = -1;
   private boolean finished = false;
@@ -98,7 +100,7 @@ public class IntroDialogueComponent extends UIComponent {
     overlayRoot.setFillParent(true);
     overlayRoot.setTouchable(Touchable.enabled);
     overlayRoot.defaults().pad(screenWidth * 0.01f);
-    overlayRoot.align(Align.bottom); // 底部对齐，水平居中
+    overlayRoot.align(Align.bottom); // 底部对齐
     overlayRoot.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.45f)));
     overlayRoot.addListener(new InputListener() {
       @Override
@@ -108,7 +110,7 @@ public class IntroDialogueComponent extends UIComponent {
     });
     portraitImage = new Image();
     portraitImage.setScaling(com.badlogic.gdx.utils.Scaling.fit);
-    Table dialogueTable = new Table();
+    dialogueTable = new Table();
     dialogueTable.align(Align.topLeft);
     dialogueTable.defaults().pad(screenWidth * 0.005f);
     dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
@@ -121,7 +123,7 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueLabel.setColor(Color.BLACK);
     dialogueLabel.setFontScale(1.1f);
 
-    final TextButton continueButton = new TextButton("continue", SimpleUI.primaryButton());
+    continueButton = new TextButton("continue", SimpleUI.primaryButton());
     continueButton.getLabel().setColor(Color.WHITE);
     continueButton.addListener(new ChangeListener() {
       @Override
@@ -139,7 +141,7 @@ public class IntroDialogueComponent extends UIComponent {
       }
     });
 
-    dialogueTable.add(dialogueLabel).width(screenWidth * 0.54f).top().left().row();
+    dialogueTable.add(dialogueLabel).width(screenWidth * 0.45f).top().left().row();
     dialogueTable.add(continueButton)
             .width(screenWidth * 0.135f)
             .height(screenHeight * 0.065f)
@@ -152,12 +154,14 @@ public class IntroDialogueComponent extends UIComponent {
     skipRow.add().expandX();
     skipRow.add(skipButton).width(screenWidth * 0.094f).height(screenHeight * 0.056f).right();
     dialogueTable.add(skipRow).growX();
-    Table topRow = new Table();
-    topRow.align(Align.topLeft);
-    topRow.add(portraitImage).width(screenWidth * 0.21f).height(screenHeight * 0.41f).left().top().padRight(screenWidth * 0.016f);
-    topRow.add(dialogueTable).width(screenWidth * 0.625f).minHeight(screenHeight * 0.3f).top().left();
-
-    overlayRoot.add(topRow).expand().bottom().padBottom(screenHeight * 0.037f); // 底部对齐，左右居中
+    
+    // 对话框固定在底部中央
+    overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.037f);
+    
+    // 头像单独添加到stage，初始隐藏
+    portraitImage.setSize(screenWidth * 0.21f, screenHeight * 0.41f);
+    portraitImage.setVisible(false); // 初始隐藏，在advanceDialogue中显示和定位
+    stage.addActor(portraitImage);
     dialogueTable.addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {
@@ -196,8 +200,12 @@ public class IntroDialogueComponent extends UIComponent {
     Texture portraitTexture = resolveTexture(entry.portraitPath());
     if (portraitTexture != null) {
       portraitImage.setDrawable(new Image(portraitTexture).getDrawable());
+      // 根据头像位置调整布局
+      adjustPortraitLayout(entry.portraitSide());
     } else {
+      // 没有头像时隐藏
       portraitImage.setDrawable(null);
+      portraitImage.setVisible(false);
     }
 
     // 播放对话音频
@@ -215,6 +223,40 @@ public class IntroDialogueComponent extends UIComponent {
     return resourceService.getAsset(path, Texture.class);
   }
 
+  /**
+   * 根据头像位置调整布局
+   * @param portraitSide 头像位置（"left"或"right"）
+   */
+  private void adjustPortraitLayout(String portraitSide) {
+    if (portraitSide == null || portraitSide.isBlank()) {
+      portraitSide = "left"; // 默认为左侧
+    }
+    
+    // 显示头像
+    portraitImage.setVisible(true);
+    
+    float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    
+    // 计算对话框的位置（屏幕底部中央）
+    float dialogueX = (screenWidth - screenWidth * 0.5f) / 2; // 对话框X位置（居中）
+    float dialogueY = screenHeight * 0.037f; // 对话框Y位置（距底部）
+    
+    float portraitWidth = screenWidth * 0.21f;
+    
+    if ("right".equalsIgnoreCase(portraitSide)) {
+      // 头像在对话框右侧
+      float portraitX = dialogueX + screenWidth * 0.5f; // 头像直接贴着对话框
+      float portraitY = dialogueY;
+      portraitImage.setPosition(portraitX, portraitY);
+    } else {
+      // 头像在对话框左侧（默认）
+      float portraitX = dialogueX - portraitWidth; // 头像直接贴着对话框
+      float portraitY = dialogueY;
+      portraitImage.setPosition(portraitX, portraitY);
+    }
+  }
+
   private void finishDialogue() {
     if (finished) {
       return;
@@ -227,6 +269,12 @@ public class IntroDialogueComponent extends UIComponent {
     if (overlayRoot != null) {
       overlayRoot.remove();
       overlayRoot = null;
+    }
+
+    // 移除头像
+    if (portraitImage != null) {
+      portraitImage.remove();
+      portraitImage = null;
     }
 
     if (ServiceLocator.getTimeSource() != null) {
@@ -262,13 +310,21 @@ public class IntroDialogueComponent extends UIComponent {
    * @param text 对话文本
    * @param portraitPath 头像图片路径（可选，传null表示不显示头像）
    * @param soundPath 对话音频路径（可选，传null表示无音频）
+   * @param portraitSide 头像位置（"left"或"right"，可选，默认为"left"）
    */
-  public record DialogueEntry(String text, String portraitPath, String soundPath) {
+  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide) {
     /**
      * 创建不带音频的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath) {
-      this(text, portraitPath, null);
+      this(text, portraitPath, null, "left");
+    }
+    
+    /**
+     * 创建带音频的对话条目（向后兼容）
+     */
+    public DialogueEntry(String text, String portraitPath, String soundPath) {
+      this(text, portraitPath, soundPath, "left");
     }
   }
 }

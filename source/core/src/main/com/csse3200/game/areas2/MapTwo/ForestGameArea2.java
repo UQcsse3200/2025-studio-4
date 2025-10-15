@@ -766,13 +766,9 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private void spawnIntroDialogue() {
+        // 使用 DialogueConfig 获取地图2的对话脚本
         java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
-                java.util.List.of(
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("111111111111111111", "images/talker1.png"),
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("222222222222222222", "images/hero/Heroshoot.png"),
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("333333333333333333", "images/talker1.png"),
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("444444444444444444", "images/hero/Heroshoot.png")
-                );
+                com.csse3200.game.components.maingame.DialogueConfig.getMap2Dialogue();
 
         Entity dialogueEntity = new Entity().addComponent(
                 new com.csse3200.game.components.maingame.IntroDialogueComponent(

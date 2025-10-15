@@ -1,0 +1,245 @@
+package com.csse3200.game.components.maingame;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.SimpleUI;
+import com.csse3200.game.ui.UIComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+public class IntroDialogueComponent extends UIComponent {
+  private static final Logger logger = LoggerFactory.getLogger(IntroDialogueComponent.class);
+
+  private final List<DialogueEntry> entries;
+  private final Runnable onComplete;
+  private final float originalTimeScale;
+
+  private Table overlayRoot;
+  private Image portraitImage;
+  private Label dialogueLabel;
+  private TextButton skipButton;
+  private int currentIndex = -1;
+  private boolean finished = false;
+
+  public IntroDialogueComponent(List<DialogueEntry> entries, Runnable onComplete) {
+    this.entries = Objects.requireNonNull(entries, "entries");
+    this.onComplete = onComplete;
+    var timeSource = ServiceLocator.getTimeSource();
+    this.originalTimeScale = timeSource != null ? timeSource.getTimeScale() : 1f;
+  }
+
+  @Override
+  public void create() {
+    super.create();
+    if (entries.isEmpty()) {
+      logger.warn("IntroDialogueComponent started with no dialogue entries");
+      finishDialogue();
+      return;
+    }
+
+    preloadPortraits();
+    pauseGameTime();
+    buildOverlay();
+    advanceDialogue();
+  }
+
+  private void preloadPortraits() {
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    if (resourceService == null) {
+      logger.warn("ResourceService not available, portraits may not load correctly");
+      return;
+    }
+
+    Set<String> textures = new LinkedHashSet<>();
+    entries.stream().map(DialogueEntry::portraitPath).filter(Objects::nonNull).forEach(textures::add);
+    if (textures.isEmpty()) {
+      return;
+    }
+
+    String[] paths = textures.toArray(new String[0]);
+    resourceService.loadTextures(paths);
+    resourceService.loadAll();
+  }
+
+  private void pauseGameTime() {
+    if (ServiceLocator.getTimeSource() != null) {
+      ServiceLocator.getTimeSource().setTimeScale(0f);
+    }
+  }
+
+  private void buildOverlay() {
+    overlayRoot = new Table();
+    overlayRoot.setFillParent(true);
+    overlayRoot.setTouchable(Touchable.enabled);
+    overlayRoot.defaults().pad(20f);
+    overlayRoot.align(Align.topRight);
+    overlayRoot.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.45f)));
+    overlayRoot.addListener(new InputListener() {
+      @Override
+      public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+        return true;
+      }
+    });
+    portraitImage = new Image();
+    portraitImage.setScaling(com.badlogic.gdx.utils.Scaling.fit);
+    Table dialogueTable = new Table();
+    dialogueTable.align(Align.topLeft);
+    dialogueTable.defaults().pad(10f);
+    dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
+            new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
+    dialogueTable.setTouchable(Touchable.enabled);
+
+    dialogueLabel = new Label("", SimpleUI.label());
+    dialogueLabel.setWrap(true);
+    dialogueLabel.setAlignment(Align.topLeft);
+    dialogueLabel.setColor(Color.BLACK);
+    dialogueLabel.setFontScale(1.1f);
+
+    final TextButton continueButton = new TextButton("continue", SimpleUI.primaryButton());
+    continueButton.getLabel().setColor(Color.WHITE);
+    continueButton.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent event, Actor actor) {
+        advanceDialogue();
+      }
+    });
+
+    skipButton = new TextButton("skip", SimpleUI.darkButton());
+    skipButton.getLabel().setColor(Color.WHITE);
+    skipButton.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent event, Actor actor) {
+        finishDialogue();
+      }
+    });
+
+    dialogueTable.add(dialogueLabel).width(1040f).top().left().row();
+    dialogueTable.add(continueButton)
+            .width(260f)
+            .height(70f)
+            .padTop(160f)
+            .center()
+            .expandX();
+    dialogueTable.row();
+
+    Table skipRow = new Table();
+    skipRow.add().expandX();
+    skipRow.add(skipButton).width(180f).height(60f).right();
+    dialogueTable.add(skipRow).growX();
+    Table topRow = new Table();
+    topRow.align(Align.topLeft);
+    topRow.add(portraitImage).width(200f).height(220f).left().top().padRight(30f);
+    topRow.add(dialogueTable).width(1200f).minHeight(320f).top().left();
+
+    overlayRoot.add(topRow).expand().top().right().padTop(40f).padRight(300f);
+    dialogueTable.addListener(new ClickListener() {
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+        Actor target = event.getTarget();
+        if (target != null
+                && (target == skipButton
+                    || skipButton.isAscendantOf(target)
+                    || target == continueButton
+                    || continueButton.isAscendantOf(target))) {
+          return;
+        }
+        advanceDialogue();
+      }
+    });
+
+    stage.addActor(overlayRoot);
+  }
+
+  private void advanceDialogue() {
+    if (finished) {
+      return;
+    }
+
+    currentIndex++;
+    if (currentIndex >= entries.size()) {
+      finishDialogue();
+      return;
+    }
+
+    DialogueEntry entry = entries.get(currentIndex);
+    dialogueLabel.setText(entry.text());
+
+    Texture portraitTexture = resolveTexture(entry.portraitPath());
+    if (portraitTexture != null) {
+      portraitImage.setDrawable(new Image(portraitTexture).getDrawable());
+    } else {
+      portraitImage.setDrawable(null);
+    }
+  }
+
+  private Texture resolveTexture(String path) {
+    if (path == null || path.isBlank()) {
+      return null;
+    }
+    ResourceService resourceService = ServiceLocator.getResourceService();
+    if (resourceService == null) {
+      return null;
+    }
+    return resourceService.getAsset(path, Texture.class);
+  }
+
+  private void finishDialogue() {
+    if (finished) {
+      return;
+    }
+    finished = true;
+
+    if (overlayRoot != null) {
+      overlayRoot.remove();
+      overlayRoot = null;
+    }
+
+    if (ServiceLocator.getTimeSource() != null) {
+      ServiceLocator.getTimeSource().setTimeScale(originalTimeScale);
+    }
+
+    if (onComplete != null) {
+      try {
+        onComplete.run();
+      } catch (Exception e) {
+        logger.error("Error running intro dialogue completion callback", e);
+      }
+    }
+
+    entity.dispose();
+  }
+
+  @Override
+  protected void draw(SpriteBatch batch) {
+    // Stage handles drawing
+  }
+
+  @Override
+  public void dispose() {
+    if (!finished) {
+      finishDialogue();
+    }
+    super.dispose();
+  }
+  public record DialogueEntry(String text, String portraitPath) {
+  }
+}

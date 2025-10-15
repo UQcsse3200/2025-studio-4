@@ -493,6 +493,10 @@ public class ForestGameArea extends GameArea {
         //Link the upgrade menu to the map highlighter
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
+        if (!hasExistingPlayer) {
+            spawnIntroDialogue();
+        }
+
         // Add hero placement system
         var gameState = ServiceLocator.getGameStateService();
         if (gameState == null) {
@@ -828,6 +832,29 @@ public class ForestGameArea extends GameArea {
             new com.csse3200.game.ui.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
         }
+    }
+
+    private void spawnIntroDialogue() {
+        java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
+                java.util.List.of(
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("1111111111111111", "images/talker1.png"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("2222222222222222", "images/hero/Heroshoot.png"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("3333333333333333", "images/talker1.png"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("4444444444444444", "images/hero/Heroshoot.png")
+                );
+
+        Entity dialogueEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.IntroDialogueComponent(
+                        script,
+                        () -> {
+                            if (MainGameScreen.ui != null) {
+                                MainGameScreen.ui.getEvents().trigger("startWave");
+                            } else {
+                                startWaves();
+                            }
+                        })
+        );
+        spawnEntity(dialogueEntity);
     }
 
     private void playMusic() {

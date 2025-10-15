@@ -488,6 +488,10 @@ public class ForestGameArea2 extends GameArea2 {
         //Link the upgrade menu to the map highlighter
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
+        if (!hasExistingPlayer) {
+            spawnIntroDialogue();
+        }
+
         // Add hero placement system
         // Note: HeroPlacementComponent expects TerrainComponent and MapEditor, but we have TerrainComponent2 and MapEditor2
         // We need to create a compatible version - for now, comment out
@@ -745,6 +749,29 @@ public class ForestGameArea2 extends GameArea2 {
             new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
             heroHintShown = true;
         }
+    }
+
+    private void spawnIntroDialogue() {
+        java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
+                java.util.List.of(
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("111111111111111111", "images/talker1.png"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("222222222222222222", "images/hero/Heroshoot.png"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("333333333333333333", "images/talker1.png"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("444444444444444444", "images/hero/Heroshoot.png")
+                );
+
+        Entity dialogueEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.IntroDialogueComponent(
+                        script,
+                        () -> {
+                            if (MainGameScreen.ui != null) {
+                                MainGameScreen.ui.getEvents().trigger("startWave");
+                            } else {
+                                startWaves();
+                            }
+                        })
+        );
+        spawnEntity(dialogueEntity);
     }
 
     private void playMusic() {

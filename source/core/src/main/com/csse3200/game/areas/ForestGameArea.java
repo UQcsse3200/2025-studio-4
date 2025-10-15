@@ -399,6 +399,12 @@ public class ForestGameArea extends GameArea {
      */
     @Override
     public void create() {
+        // 停止主菜单音乐
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().stopMusic();
+            logger.info("主菜单音乐已停止");
+        }
+        
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
         registerForCleanup();

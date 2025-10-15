@@ -94,7 +94,7 @@ public class IntroDialogueComponent extends UIComponent {
     overlayRoot.setFillParent(true);
     overlayRoot.setTouchable(Touchable.enabled);
     overlayRoot.defaults().pad(20f);
-    overlayRoot.align(Align.bottomRight);
+    overlayRoot.align(Align.bottom); // 底部对齐，水平居中
     overlayRoot.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.45f)));
     overlayRoot.addListener(new InputListener() {
       @Override
@@ -153,7 +153,7 @@ public class IntroDialogueComponent extends UIComponent {
     topRow.add(portraitImage).width(400f).height(440f).left().top().padRight(30f);
     topRow.add(dialogueTable).width(1200f).minHeight(320f).top().left();
 
-    overlayRoot.add(topRow).expand().bottom().right().padBottom(40f).padRight(300f);
+    overlayRoot.add(topRow).expand().bottom().padBottom(40f); // 底部对齐，左右居中
     dialogueTable.addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {

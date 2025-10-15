@@ -394,7 +394,14 @@ public class ForestGameArea2 extends GameArea2 {
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
-        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
+        
+        // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
+        com.csse3200.game.components.maingame.TowerHotbarDisplay towerHotbar = new com.csse3200.game.components.maingame.TowerHotbarDisplay();
+        if (!hasExistingPlayer) {
+            towerHotbar.setVisible(false); // 新游戏时隐藏，对话结束后显示
+        }
+        ui.addComponent(towerHotbar);
+        
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
 
         SimplePlacementController placementController = new SimplePlacementController();
@@ -490,6 +497,9 @@ public class ForestGameArea2 extends GameArea2 {
 
         if (!hasExistingPlayer) {
             spawnIntroDialogue();
+        } else {
+            // 如果已有玩家（从存档加载），直接播放音乐
+            playMusic();
         }
 
         // Add hero placement system
@@ -497,8 +507,6 @@ public class ForestGameArea2 extends GameArea2 {
         // We need to create a compatible version - for now, comment out
         // Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
         // spawnEntity(placement);
-
-        playMusic();
 
         HeroConfig cfg1 = new HeroConfig();
         cfg1.heroTexture = "images/hero/Heroshoot.png";
@@ -764,6 +772,10 @@ public class ForestGameArea2 extends GameArea2 {
                 new com.csse3200.game.components.maingame.IntroDialogueComponent(
                         script,
                         () -> {
+                            // 对话结束后显示防御塔列表和播放背景音乐
+                            showTowerUI();
+                            playMusic();
+                            
                             if (MainGameScreen.ui != null) {
                                 MainGameScreen.ui.getEvents().trigger("startWave");
                             } else {
@@ -772,6 +784,21 @@ public class ForestGameArea2 extends GameArea2 {
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+
+    /**
+     * 显示防御塔UI（在对话结束后调用）
+     */
+    private void showTowerUI() {
+        // 找到主UI实体并显示防御塔列表组件
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.maingame.TowerHotbarDisplay towerUI = entity.getComponent(com.csse3200.game.components.maingame.TowerHotbarDisplay.class);
+            if (towerUI != null) {
+                towerUI.setVisible(true);
+                logger.info("防御塔列表已显示");
+                break;
+            }
+        }
     }
 
     private void playMusic() {

@@ -27,6 +27,7 @@ public class TowerHotbarDisplay extends UIComponent {
     private Table rootTable;
     private SimplePlacementController placementController;
     private Skin hotbarSkin;
+    private boolean isVisible = true; // 默认可见
 
     @Override
     public void create() {
@@ -143,6 +144,9 @@ public class TowerHotbarDisplay extends UIComponent {
 
         // 应用 UI 缩放（来源于用户设置）
         applyUiScale();
+        
+        // 应用初始可见性状态
+        rootTable.setVisible(isVisible);
     }
 
     private void addPlacementListener(ImageButton button, String towerType) {
@@ -173,6 +177,17 @@ public class TowerHotbarDisplay extends UIComponent {
             rootTable.validate();
             rootTable.setOrigin(0f, 0f);
             rootTable.setScale(settings.uiScale);
+        }
+    }
+
+    /**
+     * 设置防御塔UI的可见性
+     * @param visible true显示，false隐藏
+     */
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+        if (rootTable != null) {
+            rootTable.setVisible(visible);
         }
     }
 

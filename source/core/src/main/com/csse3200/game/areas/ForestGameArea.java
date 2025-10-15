@@ -406,7 +406,14 @@ public class ForestGameArea extends GameArea {
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
-        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
+        
+        // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
+        TowerHotbarDisplay towerHotbar = new TowerHotbarDisplay();
+        if (!hasExistingPlayer) {
+            towerHotbar.setVisible(false); // 新游戏时隐藏，对话结束后显示
+        }
+        ui.addComponent(towerHotbar);
+        
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
@@ -520,8 +527,11 @@ public class ForestGameArea extends GameArea {
         );
         spawnEntity(placementEntity);
 
-        playMusic();
-
+        // 背景音乐将在对话结束后播放
+        if (hasExistingPlayer) {
+            // 如果已有玩家（从存档加载），直接播放音乐
+            playMusic();
+        }
 
     }
 
@@ -856,6 +866,10 @@ public class ForestGameArea extends GameArea {
                 new com.csse3200.game.components.maingame.IntroDialogueComponent(
                         script,
                         () -> {
+                            // 对话结束后显示防御塔列表和播放背景音乐
+                            showTowerUI();
+                            playMusic();
+                            
                             if (MainGameScreen.ui != null) {
                                 MainGameScreen.ui.getEvents().trigger("startWave");
                             } else {
@@ -864,6 +878,21 @@ public class ForestGameArea extends GameArea {
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+
+    /**
+     * 显示防御塔UI（在对话结束后调用）
+     */
+    private void showTowerUI() {
+        // 找到主UI实体并显示防御塔列表组件
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            TowerHotbarDisplay towerUI = entity.getComponent(TowerHotbarDisplay.class);
+            if (towerUI != null) {
+                towerUI.setVisible(true);
+                logger.info("防御塔列表已显示");
+                break;
+            }
+        }
     }
 
     private void playMusic() {

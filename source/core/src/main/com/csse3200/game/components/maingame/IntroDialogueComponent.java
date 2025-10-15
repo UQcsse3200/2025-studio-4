@@ -90,10 +90,14 @@ public class IntroDialogueComponent extends UIComponent {
   }
 
   private void buildOverlay() {
+    // 获取屏幕尺寸
+    float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    
     overlayRoot = new Table();
     overlayRoot.setFillParent(true);
     overlayRoot.setTouchable(Touchable.enabled);
-    overlayRoot.defaults().pad(20f);
+    overlayRoot.defaults().pad(screenWidth * 0.01f);
     overlayRoot.align(Align.bottom); // 底部对齐，水平居中
     overlayRoot.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.45f)));
     overlayRoot.addListener(new InputListener() {
@@ -106,7 +110,7 @@ public class IntroDialogueComponent extends UIComponent {
     portraitImage.setScaling(com.badlogic.gdx.utils.Scaling.fit);
     Table dialogueTable = new Table();
     dialogueTable.align(Align.topLeft);
-    dialogueTable.defaults().pad(10f);
+    dialogueTable.defaults().pad(screenWidth * 0.005f);
     dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
             new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
     dialogueTable.setTouchable(Touchable.enabled);
@@ -135,25 +139,25 @@ public class IntroDialogueComponent extends UIComponent {
       }
     });
 
-    dialogueTable.add(dialogueLabel).width(1040f).top().left().row();
+    dialogueTable.add(dialogueLabel).width(screenWidth * 0.54f).top().left().row();
     dialogueTable.add(continueButton)
-            .width(260f)
-            .height(70f)
-            .padTop(220f)
+            .width(screenWidth * 0.135f)
+            .height(screenHeight * 0.065f)
+            .padTop(screenHeight * 0.2f)
             .center()
             .expandX();
     dialogueTable.row();
 
     Table skipRow = new Table();
     skipRow.add().expandX();
-    skipRow.add(skipButton).width(180f).height(60f).right();
+    skipRow.add(skipButton).width(screenWidth * 0.094f).height(screenHeight * 0.056f).right();
     dialogueTable.add(skipRow).growX();
     Table topRow = new Table();
     topRow.align(Align.topLeft);
-    topRow.add(portraitImage).width(400f).height(440f).left().top().padRight(30f);
-    topRow.add(dialogueTable).width(1200f).minHeight(320f).top().left();
+    topRow.add(portraitImage).width(screenWidth * 0.21f).height(screenHeight * 0.41f).left().top().padRight(screenWidth * 0.016f);
+    topRow.add(dialogueTable).width(screenWidth * 0.625f).minHeight(screenHeight * 0.3f).top().left();
 
-    overlayRoot.add(topRow).expand().bottom().padBottom(40f); // 底部对齐，左右居中
+    overlayRoot.add(topRow).expand().bottom().padBottom(screenHeight * 0.037f); // 底部对齐，左右居中
     dialogueTable.addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {

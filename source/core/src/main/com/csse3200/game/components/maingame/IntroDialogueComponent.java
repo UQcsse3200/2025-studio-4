@@ -32,6 +32,7 @@ public class IntroDialogueComponent extends UIComponent {
   private final List<DialogueEntry> entries;
   private final Runnable onComplete;
   private final float originalTimeScale;
+  private final DialogueAudioManager audioManager; // 音频管理器
 
   private Table overlayRoot;
   private Image portraitImage;
@@ -43,6 +44,7 @@ public class IntroDialogueComponent extends UIComponent {
   public IntroDialogueComponent(List<DialogueEntry> entries, Runnable onComplete) {
     this.entries = Objects.requireNonNull(entries, "entries");
     this.onComplete = onComplete;
+    this.audioManager = new DialogueAudioManager();
     var timeSource = ServiceLocator.getTimeSource();
     this.originalTimeScale = timeSource != null ? timeSource.getTimeScale() : 1f;
   }
@@ -57,6 +59,7 @@ public class IntroDialogueComponent extends UIComponent {
     }
 
     preloadPortraits();
+    audioManager.preloadSounds(entries); // 预加载音频
     pauseGameTime();
     buildOverlay();
     advanceDialogue();
@@ -174,6 +177,9 @@ public class IntroDialogueComponent extends UIComponent {
       return;
     }
 
+    // 停止之前的音频
+    audioManager.stopCurrentSound();
+
     currentIndex++;
     if (currentIndex >= entries.size()) {
       finishDialogue();
@@ -189,6 +195,9 @@ public class IntroDialogueComponent extends UIComponent {
     } else {
       portraitImage.setDrawable(null);
     }
+
+    // 播放对话音频
+    audioManager.playSound(entry.soundPath());
   }
 
   private Texture resolveTexture(String path) {
@@ -207,6 +216,9 @@ public class IntroDialogueComponent extends UIComponent {
       return;
     }
     finished = true;
+
+    // 停止当前播放的音频并清理资源
+    audioManager.dispose();
 
     if (overlayRoot != null) {
       overlayRoot.remove();
@@ -240,6 +252,19 @@ public class IntroDialogueComponent extends UIComponent {
     }
     super.dispose();
   }
-  public record DialogueEntry(String text, String portraitPath) {
+
+  /**
+   * 对话条目记录
+   * @param text 对话文本
+   * @param portraitPath 头像图片路径（可选，传null表示不显示头像）
+   * @param soundPath 对话音频路径（可选，传null表示无音频）
+   */
+  public record DialogueEntry(String text, String portraitPath, String soundPath) {
+    /**
+     * 创建不带音频的对话条目（向后兼容）
+     */
+    public DialogueEntry(String text, String portraitPath) {
+      this(text, portraitPath, null);
+    }
   }
 }

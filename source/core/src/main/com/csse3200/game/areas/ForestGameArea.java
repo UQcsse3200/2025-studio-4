@@ -837,10 +837,19 @@ public class ForestGameArea extends GameArea {
     private void spawnIntroDialogue() {
         java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
                 java.util.List.of(
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("1111111111111111", "images/talker1.png"),
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("2222222222222222", "images/hero/Heroshoot.png"),
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("3333333333333333", "images/talker1.png"),
-                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("4444444444444444", "images/hero/Heroshoot.png")
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry
+                        ("1111111111111111", 
+                        "images/talker1.png", 
+                        "sounds/map/man.mp3"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry
+                        ("2222222222222222", 
+                        "images/hero/Heroshoot.png",
+                        "sounds/map/say.mp3"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry
+                        ("3333333333333333", 
+                        "images/talker1.png", 
+                        "sounds/map/out.mp3"),
+                        new com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry("4444444444444444", "images/hero/Heroshoot.png", "sounds/page_flip.mp3")
                 );
 
         Entity dialogueEntity = new Entity().addComponent(

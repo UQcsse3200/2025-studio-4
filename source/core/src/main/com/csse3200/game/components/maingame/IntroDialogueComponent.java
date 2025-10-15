@@ -94,7 +94,7 @@ public class IntroDialogueComponent extends UIComponent {
     overlayRoot.setFillParent(true);
     overlayRoot.setTouchable(Touchable.enabled);
     overlayRoot.defaults().pad(20f);
-    overlayRoot.align(Align.topRight);
+    overlayRoot.align(Align.bottomRight);
     overlayRoot.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.45f)));
     overlayRoot.addListener(new InputListener() {
       @Override
@@ -139,7 +139,7 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueTable.add(continueButton)
             .width(260f)
             .height(70f)
-            .padTop(160f)
+            .padTop(220f)
             .center()
             .expandX();
     dialogueTable.row();
@@ -150,10 +150,10 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueTable.add(skipRow).growX();
     Table topRow = new Table();
     topRow.align(Align.topLeft);
-    topRow.add(portraitImage).width(200f).height(220f).left().top().padRight(30f);
+    topRow.add(portraitImage).width(400f).height(440f).left().top().padRight(30f);
     topRow.add(dialogueTable).width(1200f).minHeight(320f).top().left();
 
-    overlayRoot.add(topRow).expand().top().right().padTop(40f).padRight(300f);
+    overlayRoot.add(topRow).expand().bottom().right().padBottom(40f).padRight(300f);
     dialogueTable.addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {

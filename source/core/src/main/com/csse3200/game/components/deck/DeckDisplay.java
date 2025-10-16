@@ -68,7 +68,7 @@ public class DeckDisplay extends UIComponent {
 
         Table layout = new Table();
         layout.setFillParent(true);
-        layout.top().right().padTop(150f).padRight(5f);
+        layout.bottom().right().padBottom(325f).padRight(30f);
 
         table = new Table();
         table.pad(10f);

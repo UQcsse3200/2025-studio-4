@@ -32,6 +32,8 @@ public class UpgradeMenuDisplay extends UIComponent {
     private Map<GameStateService.HeroType, Boolean> heroUnlocks;
 
     private TextButton.TextButtonStyle btnStyle;
+    private TextButton.TextButtonStyle unlockBtnStyle;
+    private TextButton.TextButtonStyle selectedBtnStyle;
     private Label.LabelStyle nameStyle;
 
     private static final String HERO_IMG = "images/hero/Heroshoot.png";
@@ -59,7 +61,13 @@ public class UpgradeMenuDisplay extends UIComponent {
         heroUnlocks = gameState.getHeroUnlocks();
 
         // ===== styles (match main menu) =====
-        btnStyle = createCustomButtonStyle();
+                // 普通样式（与你现有主菜单一致）
+                        btnStyle = createCustomButtonStyle();
+                // 点击/状态样式：需要把 up/over/down 都染色以便呈现纯色按钮
+                        Color green = new Color(0.20f, 1.00f, 0.20f, 1f); // 绿色：点击/刚解锁
+                Color red   = new Color(1.00f, 0.30f, 0.30f, 1f); // 红色：Selected
+                unlockBtnStyle   = createSolidTintStyle(green);
+                selectedBtnStyle = createSolidTintStyle(red);
         nameStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
 
         heroButtons = new HashMap<>();
@@ -125,7 +133,12 @@ public class UpgradeMenuDisplay extends UIComponent {
             }
         }
 
-        TextButton heroBtn = new TextButton(heroBtnText, btnStyle);
+        // 初始样式：Selected 用红色，其它用普通棕色（未解锁不变绿）
+        TextButton heroBtn = new TextButton(
+                heroBtnText,
+                "Selected".equals(heroBtnText) ? selectedBtnStyle : btnStyle
+        );
+
         heroBtn.addListener(e -> {
             if (!heroBtn.isPressed()) return false;
             if (heroUnlocks.get(heroType)) {
@@ -136,8 +149,12 @@ public class UpgradeMenuDisplay extends UIComponent {
                     if (heroUnlocks.get(btnHeroType)) {
                         if (btnHeroType == heroType) {
                             button.setText("Selected");
+                            // 当前选中的按钮变红
+                            button.setStyle(selectedBtnStyle);
                         } else {
                             button.setText("Select");
+                            // 其它已解锁按钮恢复普通样式
+                             button.setStyle(btnStyle);
                         }
                     }
                 }
@@ -145,7 +162,9 @@ public class UpgradeMenuDisplay extends UIComponent {
                 if (gameState.spendStars(heroCost)) {
                     gameState.setHeroUnlocked(heroType);
                     heroBtn.setText("Select");
-                    starsLabel.setText(gameState.getStars());
+                    // 解锁成功：该按钮显示绿色，提示“已解锁但未选择”
+                    heroBtn.setStyle(unlockBtnStyle);
+                    starsLabel.setText(String.valueOf(gameState.getStars()));
                 }
             }
             return true;
@@ -248,40 +267,73 @@ public class UpgradeMenuDisplay extends UIComponent {
     /**
      * Create custom button style using button background image
      */
+    // 原默认样式（悬停更亮、按下更暗）——用于普通棕色按钮
     private TextButton.TextButtonStyle createCustomButtonStyle() {
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+               return createCustomButtonStyle(null, null);
+            }
 
-        // Use Segoe UI font
-        style.font = skin.getFont("segoe_ui");
+            /**
+      * 可指定悬停/按下时的背景色叠加，用于 Unlock 绿色高亮。
+      * @param hoverTint 悬停颜色叠加；null 使用默认更亮
+      * @param downTint  按下颜色叠加；null 使用默认更暗
+      */
+            private TextButton.TextButtonStyle createCustomButtonStyle(Color hoverTint, Color downTint) {
+                TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+                style.font = skin.getFont("segoe_ui");
 
-        // Load button background image
-        Texture buttonTexture = ServiceLocator.getResourceService()
-                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
-        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+                        Texture buttonTexture = ServiceLocator.getResourceService()
+                                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+                TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-        // Create NinePatch for scalable button background
-        NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+                        NinePatch upPatch   = new NinePatch(buttonRegion, 10, 10, 10, 10);
+                NinePatch overPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+                NinePatch downPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
 
-        // Create pressed state NinePatch (slightly darker)
-        NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+                        if (hoverTint == null) {
+                        overPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f)); // 默认更亮
+                    } else {
+                        overPatch.setColor(hoverTint);                        // 自定义（绿色）
+                    }
+                if (downTint == null) {
+                        downPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));  // 默认更暗
+                    } else {
+                        downPatch.setColor(downTint);                         // 自定义（绿色）
+                    }
 
-        // Create hover state NinePatch (slightly brighter)
-        NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+                style.up   = new NinePatchDrawable(upPatch);
+                style.over = new NinePatchDrawable(overPatch);
+                style.down = new NinePatchDrawable(downPatch);
 
-        // Set button states
-        style.up = new NinePatchDrawable(buttonPatch);
-        style.down = new NinePatchDrawable(pressedPatch);
-        style.over = new NinePatchDrawable(hoverPatch);
+                style.fontColor     = Color.WHITE;
+                style.overFontColor = Color.WHITE;
+                style.downFontColor = Color.LIGHT_GRAY;
+                return style;
+            }
+    /**
+     +     * 生成“纯色按钮”样式：up/over/down 全部按指定颜色染色。
+     +     * 用于：绿色(解锁但未选择)、红色(已选择)。
+     +     */
+   private TextButton.TextButtonStyle createSolidTintStyle(Color tint) {
+                TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+                style.font = skin.getFont("segoe_ui");
 
-        // Set font colors
-        style.fontColor = Color.WHITE;
-        style.downFontColor = Color.LIGHT_GRAY;
-        style.overFontColor = Color.WHITE;
+                        Texture buttonTexture = ServiceLocator.getResourceService()
+                                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+                TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-        return style;
-    }
+                        NinePatch up   = new NinePatch(buttonRegion, 10, 10, 10, 10);
+                NinePatch over = new NinePatch(buttonRegion, 10, 10, 10, 10);
+                NinePatch down = new NinePatch(buttonRegion, 10, 10, 10, 10);
+                up.setColor(tint);
+                over.setColor(tint);
+                down.setColor(tint);
+
+                style.up   = new NinePatchDrawable(up);
+                style.over = new NinePatchDrawable(over);
+                style.down = new NinePatchDrawable(down);
+                style.fontColor = Color.WHITE;
+                return style;
+            }
 
     @Override
     protected void draw(SpriteBatch batch) {

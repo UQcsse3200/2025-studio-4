@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -138,6 +140,25 @@ public class UpgradeMenuDisplay extends UIComponent {
                 heroBtnText,
                 "Selected".equals(heroBtnText) ? selectedBtnStyle : btnStyle
         );
+// ====== 悬停：进入→绿色；离开→按当前状态恢复 ======
+        heroBtn.addListener(new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                // 鼠标移入，一律高亮为绿色
+                heroBtn.setStyle(unlockBtnStyle);
+            }
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                // 鼠标移出，按状态恢复
+                boolean unlocked = heroUnlocks.get(heroType);
+                boolean isSelected = unlocked && gameState.getSelectedHero() == heroType;
+                if (isSelected) {
+                    heroBtn.setStyle(selectedBtnStyle);   // 红色（当前选中）
+                } else {
+                    heroBtn.setStyle(btnStyle);           // 普通（未选中 or 未解锁）
+                }
+            }
+        });
 
         heroBtn.addListener(e -> {
             if (!heroBtn.isPressed()) return false;

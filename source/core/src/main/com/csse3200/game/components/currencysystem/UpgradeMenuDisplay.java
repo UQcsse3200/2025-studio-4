@@ -228,12 +228,17 @@ public class UpgradeMenuDisplay extends UIComponent {
      +     */
     private Table buildCustomizationTable(GameStateService.HeroType heroType) {
                 Table customTable = new Table();
-                customTable.defaults().left().pad(2f).growX();
-
+             //   customTable.defaults().left().pad(2f).growX();
+        // 去掉 growX，避免控件无上限扩展导致文字被挤
+      //  customTable.defaults().left().pad(2f);
+        // 去掉 growX，避免文字列被挤压；并固定两列宽度
+                customTable.defaults().left().pad(2f);
+                customTable.columnDefaults(0).width(150f).right().padRight(8f); // 标签列
+                customTable.columnDefaults(1).width(240f).left();               // 选择框列
                         Label title = new Label("Hero Customization", new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE));
                 title.setAlignment(Align.left);
-                customTable.add(title).colspan(2).padTop(2f).padBottom(4f).row();
-
+              //  customTable.add(title).colspan(2).padTop(2f).padBottom(4f).row();
+        customTable.add(title).colspan(2).padTop(2f).padBottom(4f).left().row();
                         // --- Weapon / Loadout 下拉 ---
                 Label weaponLbl = new Label("Weapon:", nameStyle);
                 SelectBox<String> weaponBox = new SelectBox<>(skin);
@@ -251,17 +256,24 @@ public class UpgradeMenuDisplay extends UIComponent {
                                 break;
                     }
                         weaponBox.setMaxListCount(5);
-                customTable.add(weaponLbl).width(110f).padRight(6f);
-                customTable.add(weaponBox).height(36f).padBottom(4f).width(220f).row();
-
+               // customTable.add(weaponLbl).width(110f).padRight(6f);
+              //  customTable.add(weaponBox).height(36f).padBottom(4f).width(220f).row();
+        // 标签列加宽并右对齐；选择框也稍加宽
+             //       customTable.add(weaponLbl).width(150f).padRight(8f).right();
+             //       customTable.add(weaponBox).height(36f).padBottom(4f).width(240f).row();
+        // 列宽由 columnDefaults 控制，这里不再重复设置
+                customTable.add(weaponLbl).right();
+                customTable.add(weaponBox).height(36f).padBottom(4f).left().row();
                         // --- Attack Sound 下拉 ---
                         Label soundLbl = new Label("Attack Sound:", nameStyle);
                 SelectBox<String> soundBox = new SelectBox<>(skin);
                 soundBox.setItems("Sound 1", "Sound 2", "Sound 3");
-                soundBox.setMaxListCount(5);
-                customTable.add(soundLbl).width(110f).padRight(6f);
-                customTable.add(soundBox).height(36f).padBottom(6f).width(220f).row();
-
+           //     soundBox.setMaxListCount(5);
+           //     customTable.add(soundLbl).width(150f).padRight(8f).right();
+           //     customTable.add(soundBox).height(36f).padBottom(6f).width(240f).row();
+        soundBox.setMaxListCount(5);
+        customTable.add(soundLbl).right();
+        customTable.add(soundBox).height(36f).padBottom(6f).left().row();
                         // 保存引用（之后二阶段可读）
                         weaponBoxes.put(heroType, weaponBox);
                 soundBoxes.put(heroType, soundBox);

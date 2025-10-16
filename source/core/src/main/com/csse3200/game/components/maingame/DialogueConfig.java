@@ -18,28 +18,32 @@ public class DialogueConfig {
                 "1111111111111111", 
                 "images/talker1.png", 
                 "sounds/map/man.mp3",   
-                "left"
+                "left",
+                "images/talker.png"  // 使用talker.png作为对话框背景
             ),
             
             new IntroDialogueComponent.DialogueEntry(
                 "2222222222222222", 
                 "images/hero/Heroshoot.png",
-                "sounds/map/say.mp3",
-                "right"
+                "sounds/map/man.mp3",
+                "right",
+                "images/talker2.png"  // 使用talker.png作为对话框背景
             ),
             
             new IntroDialogueComponent.DialogueEntry(
                 "3333333333333333", 
                 "images/talker1.png", 
-                "sounds/map/out.mp3",
-                "left"
+                "sounds/map/say.mp3",
+                "left",
+                "images/talker.png"  // 使用talker.png作为对话框背景
             ),
             
             new IntroDialogueComponent.DialogueEntry(
                 "4444444444444444", 
                 "images/hero/Heroshoot.png", 
-                "sounds/page_flip.mp3",
-                "right"
+                "sounds/map/out.mp3",
+                "right",
+                "images/talker2.png"  // 使用talker.png作为对话框背景
             )
         );
     }
@@ -51,32 +55,37 @@ public class DialogueConfig {
     public static List<IntroDialogueComponent.DialogueEntry> getMap2Dialogue() {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
-                "111111111111111111", 
-                "images/talker1.png",
-                null,
-                "left"
+                "1111111111111111", 
+                "images/talker1.png", 
+                "sounds/map/man.mp3",   
+                "left",
+                "images/talker.png"  // 使用talker.png作为对话框背景
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "222222222222222222", 
+                "2222222222222222", 
                 "images/hero/Heroshoot.png",
-                null,
-                "right"
+                "sounds/map/man.mp3",
+                "right",
+                "images/talker2.png"  // 使用talker.png作为对话框背景
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "333333333333333333", 
-                "images/talker1.png",
-                null,
-                "left"
+                "3333333333333333", 
+                "images/talker1.png", 
+                "sounds/map/say.mp3",
+                "left",
+                "images/talker.png"  // 使用talker.png作为对话框背景
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "444444444444444444", 
-                "images/hero/Heroshoot.png",
-                null,
-                "right"
+                "4444444444444444", 
+                "images/hero/Heroshoot.png", 
+                "sounds/map/out.mp3",
+                "right",
+                "images/talker2.png"  // 使用talker.png作为对话框背景
             )
+            
         );
     }
 }

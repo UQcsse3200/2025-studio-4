@@ -3,6 +3,8 @@ package com.csse3200.game.components.maingame;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
@@ -15,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
@@ -45,6 +48,9 @@ public class IntroDialogueComponent extends UIComponent {
   private TextButton skipButton;
   private int currentIndex = -1;
   private boolean finished = false;
+  
+  // 字体样式选择
+  private BitmapFont dialogueFont;
 
   public IntroDialogueComponent(List<DialogueEntry> entries, Runnable onComplete) {
     this.entries = Objects.requireNonNull(entries, "entries");
@@ -78,7 +84,10 @@ public class IntroDialogueComponent extends UIComponent {
     }
 
     Set<String> textures = new LinkedHashSet<>();
+    // 预加载头像纹理
     entries.stream().map(DialogueEntry::portraitPath).filter(Objects::nonNull).forEach(textures::add);
+    // 预加载对话框背景纹理
+    entries.stream().map(DialogueEntry::dialogueBackgroundPath).filter(Objects::nonNull).forEach(textures::add);
     if (textures.isEmpty()) {
       return;
     }
@@ -116,15 +125,16 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueTable = new Table();
     dialogueTable.align(Align.center);
     dialogueTable.defaults().pad(screenWidth * 0.005f);
-    dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
-            new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
+    
+    // 初始不设置背景，在advanceDialogue中根据每条对话动态设置
     dialogueTable.setTouchable(Touchable.enabled);
 
-    dialogueLabel = new Label("", SimpleUI.label());
+    // 创建自定义字体样式
+    createDialogueFont();
+    
+    dialogueLabel = new Label("", new Label.LabelStyle(dialogueFont, Color.WHITE));
     dialogueLabel.setWrap(true);
     dialogueLabel.setAlignment(Align.center, Align.center);
-    dialogueLabel.setColor(Color.BLACK);
-    dialogueLabel.setFontScale(1.1f);
 
     continueButton = new TextButton("continue", UIStyleHelper.orangeButtonStyle());
     continueButton.getLabel().setColor(Color.WHITE);
@@ -153,6 +163,7 @@ public class IntroDialogueComponent extends UIComponent {
             .expand()
             .fill()
             .center()
+            .padTop(screenHeight * 0.05f)  // 添加顶部间距，让文字往下移动
             .row();
 
     float continueButtonWidth = screenWidth * 0.135f;
@@ -230,6 +241,9 @@ public class IntroDialogueComponent extends UIComponent {
     DialogueEntry entry = entries.get(currentIndex);
     dialogueLabel.setText(entry.text());
 
+    // 更新对话框背景
+    updateDialogueBackground(entry.dialogueBackgroundPath());
+
     Texture portraitTexture = resolveTexture(entry.portraitPath());
     if (portraitTexture != null) {
       portraitImage.setDrawable(new Image(portraitTexture).getDrawable());
@@ -254,6 +268,28 @@ public class IntroDialogueComponent extends UIComponent {
       return null;
     }
     return resourceService.getAsset(path, Texture.class);
+  }
+
+  /**
+   * 更新对话框背景
+   * @param backgroundPath 背景图片路径（可选，传null使用默认背景）
+   */
+  private void updateDialogueBackground(String backgroundPath) {
+    if (backgroundPath != null && !backgroundPath.isBlank()) {
+      Texture backgroundTexture = resolveTexture(backgroundPath);
+      if (backgroundTexture != null) {
+        TextureRegion textureRegion = new TextureRegion(backgroundTexture);
+        TextureRegionDrawable drawable = new TextureRegionDrawable(textureRegion);
+        dialogueTable.setBackground(drawable);
+        return;
+      } else {
+        logger.warn("Failed to load dialogue background: {}", backgroundPath);
+      }
+    }
+    
+    // 使用默认背景
+    dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
+            new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
   }
 
   /**
@@ -330,10 +366,36 @@ public class IntroDialogueComponent extends UIComponent {
     // Stage handles drawing
   }
 
+  /**
+   * 创建对话框字体样式
+   * 您可以选择不同的字体风格：
+   * 1. pixel_32.fnt - 像素风格字体（推荐用于游戏对话）
+   * 2. arial_black_32.fnt - 粗体Arial字体（清晰易读）
+   * 3. segoe_ui_18.fnt - 现代UI字体
+   * 4. 默认字体 - 简单默认字体
+   */
+  private void createDialogueFont() {
+    try {
+      // 选择字体风格 - 您可以修改这里来改变字体
+      dialogueFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/pixel_32.fnt"));
+      dialogueFont.getData().setScale(0.8f); // 调整字体大小
+      dialogueFont.setColor(Color.WHITE);
+    } catch (Exception e) {
+      logger.warn("Failed to load custom font, using default font", e);
+      // 如果加载失败，使用默认字体
+      dialogueFont = SimpleUI.font();
+      dialogueFont.setColor(Color.WHITE);
+    }
+  }
+
   @Override
   public void dispose() {
     if (!finished) {
       finishDialogue();
+    }
+    // 释放自定义字体资源
+    if (dialogueFont != null && dialogueFont != SimpleUI.font()) {
+      dialogueFont.dispose();
     }
     super.dispose();
   }
@@ -344,20 +406,28 @@ public class IntroDialogueComponent extends UIComponent {
    * @param portraitPath 头像图片路径（可选，传null表示不显示头像）
    * @param soundPath 对话音频路径（可选，传null表示无音频）
    * @param portraitSide 头像位置（"left"或"right"，可选，默认为"left"）
+   * @param dialogueBackgroundPath 对话框背景图片路径（可选，传null使用默认背景）
    */
-  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide) {
+  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath) {
     /**
      * 创建不带音频的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath) {
-      this(text, portraitPath, null, "left");
+      this(text, portraitPath, null, "left", null);
     }
     
     /**
      * 创建带音频的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath, String soundPath) {
-      this(text, portraitPath, soundPath, "left");
+      this(text, portraitPath, soundPath, "left", null);
+    }
+    
+    /**
+     * 创建带头像位置的对话条目（向后兼容）
+     */
+    public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide) {
+      this(text, portraitPath, soundPath, portraitSide, null);
     }
   }
 }

@@ -59,6 +59,7 @@ public class DeckDisplay extends UIComponent {
      * Adds the table actor to the stage and positions it.
      */
     private void addActors() {
+        // create texture for the background that matches other UI
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
         pixmap.fill();
@@ -68,7 +69,7 @@ public class DeckDisplay extends UIComponent {
 
         Table layout = new Table();
         layout.setFillParent(true);
-        layout.bottom().right().padBottom(325f).padRight(30f);
+        layout.bottom().right().padBottom(325f).padRight(30f); // align with upgrade UI
 
         table = new Table();
         table.pad(10f);
@@ -97,7 +98,7 @@ public class DeckDisplay extends UIComponent {
         deck.updateStats();
 
         table.clear();
-        table.setBackground(backgroundDrawable);
+        table.setBackground(backgroundDrawable); // set background when table is populated
 
         // 1. If a TEXTURE_PATH stat exists, render the image first
         String texturePath = deck.getStats().get(DeckComponent.StatType.TEXTURE_PATH);
@@ -158,6 +159,7 @@ public class DeckDisplay extends UIComponent {
      */
     public void hide() {
         table.clear();
+        // remove background on deck clear as the background would still be visible if not
         table.setBackground((Drawable) null);
         this.deck = null;
     }

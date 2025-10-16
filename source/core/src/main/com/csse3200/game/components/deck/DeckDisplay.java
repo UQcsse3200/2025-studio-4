@@ -1,10 +1,15 @@
 package com.csse3200.game.components.deck;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
@@ -21,6 +26,7 @@ import java.util.Map;
 public class DeckDisplay extends UIComponent {
     private Table table;
     private DeckComponent deck;
+    private Drawable backgroundDrawable;
 
     /**
      * Initializes this UI component, creating the UI table and registering listeners
@@ -53,12 +59,23 @@ public class DeckDisplay extends UIComponent {
      * Adds the table actor to the stage and positions it.
      */
     private void addActors() {
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
+        pixmap.fill();
+        Texture bgTexture = new Texture(pixmap);
+        pixmap.dispose();
+        backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
+
+        Table layout = new Table();
+        layout.setFillParent(true);
+        layout.top().right().padTop(150f).padRight(5f);
+
         table = new Table();
-        table.top().right();
-        table.setFillParent(true);
         table.pad(10f);
-        table.padTop(150f);
-        stage.addActor(table);
+
+        layout.add(table).pad(10f);
+
+        stage.addActor(layout);
     }
 
     /**
@@ -80,6 +97,7 @@ public class DeckDisplay extends UIComponent {
         deck.updateStats();
 
         table.clear();
+        table.setBackground(backgroundDrawable);
 
         // 1. If a TEXTURE_PATH stat exists, render the image first
         String texturePath = deck.getStats().get(DeckComponent.StatType.TEXTURE_PATH);
@@ -140,6 +158,7 @@ public class DeckDisplay extends UIComponent {
      */
     public void hide() {
         table.clear();
+        table.setBackground((Drawable) null);
         this.deck = null;
     }
 

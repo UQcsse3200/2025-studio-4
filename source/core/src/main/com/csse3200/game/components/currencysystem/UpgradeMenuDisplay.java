@@ -277,6 +277,47 @@ public class UpgradeMenuDisplay extends UIComponent {
                         // 保存引用（之后二阶段可读）
                         weaponBoxes.put(heroType, weaponBox);
                 soundBoxes.put(heroType, soundBox);
+        if (heroType == GameStateService.HeroType.SAMURAI) {
+            try {
+                com.csse3200.game.files.UserSettings.Settings us = com.csse3200.game.files.UserSettings.get();
+                if (us != null && us.heroWeapon != null) {
+                    // 用设置里的值作为默认
+                    for (String v : weaponBox.getItems()) {
+                        if (v.equalsIgnoreCase(us.heroWeapon)) {
+                            weaponBox.setSelected(v);
+                            break;
+                        }
+                    }
+                } else {
+                    weaponBox.setSelected("Normal Sword");
+                }
+            } catch (Throwable ignored) {}
+
+            weaponBox.addListener(new ChangeListener() {
+                @Override public void changed(ChangeEvent event, Actor actor) {
+                    String chosen = weaponBox.getSelected();
+
+                    // 1) 写入用户设置，供下次开局用
+                    try {
+                        var us = com.csse3200.game.files.UserSettings.get();
+                        if (us != null) {
+                            us.heroWeapon = chosen;
+                            // 没有 UserSettings.save() 的话，这行删掉或注释
+                            // com.csse3200.game.files.UserSettings.save();
+                        }
+                    } catch (Throwable ignored) {}
+
+
+                    // 2) 广播到当前世界（如果已有武士，立刻换皮）
+                    try {
+                        var es = ServiceLocator.getEntityService();
+                        if (es != null) {
+                            es.getEntities().forEach(e -> e.getEvents().trigger("samurai:weapon:set", chosen));
+                        }
+                    } catch (Throwable ignored) {}
+                }
+            });
+        }
                 return customTable;
             }
 

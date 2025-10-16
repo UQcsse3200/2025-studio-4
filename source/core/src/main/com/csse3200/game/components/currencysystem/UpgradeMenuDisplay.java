@@ -37,6 +37,9 @@ public class UpgradeMenuDisplay extends UIComponent {
     private TextButton.TextButtonStyle unlockBtnStyle;
     private TextButton.TextButtonStyle selectedBtnStyle;
     private Label.LabelStyle nameStyle;
+    // === Customization boxes per hero (shell only) ===
+    private Map<GameStateService.HeroType, SelectBox<String>> weaponBoxes = new HashMap<>();
+    private Map<GameStateService.HeroType, SelectBox<String>> soundBoxes  = new HashMap<>();
 
     private static final String HERO_IMG = "images/hero/Heroshoot.png";
     private static final String ENG_IMG = "images/engineer/Engineer.png";
@@ -210,10 +213,60 @@ public class UpgradeMenuDisplay extends UIComponent {
         heroStarCost.addActor(new Label(Integer.toString(heroCost), nameStyle));
 
         heroCol.add(heroStarCost).padBottom(6f).row();
-        heroCol.add(heroBtn).width(220f).height(56f);
+        // 先把“Select/Unlock/Selected”按钮放上面
+        heroCol.add(heroBtn).width(220f).height(56f).padBottom(8f).row();
+
+                // ===== 所有英雄都显示两个下拉，放在按钮下面（外壳）=====
+                Table customTable = buildCustomizationTable(heroType);
+        heroCol.add(customTable).padBottom(6f).row();
+
 
         return heroCol;
     }
+    /**
+     +     * 为指定英雄构建两个下拉框（外壳）。始终显示，不依赖是否选中/解锁。
+     +     */
+    private Table buildCustomizationTable(GameStateService.HeroType heroType) {
+                Table customTable = new Table();
+                customTable.defaults().left().pad(2f).growX();
+
+                        Label title = new Label("Hero Customization", new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE));
+                title.setAlignment(Align.left);
+                customTable.add(title).colspan(2).padTop(2f).padBottom(4f).row();
+
+                        // --- Weapon / Loadout 下拉 ---
+                Label weaponLbl = new Label("Weapon:", nameStyle);
+                SelectBox<String> weaponBox = new SelectBox<>(skin);
+                switch (heroType) {
+                        case SAMURAI:
+                                weaponBox.setItems("Normal Sword", "Weapon 2", "Weapon 3");
+                                break;
+                        case ENGINEER:
+                                // 外壳：名称随意，二阶段再接功能
+                                        weaponBox.setItems("Loadout 1", "Loadout 2", "Loadout 3");
+                                break;
+                        case HERO:
+                            default:
+                                weaponBox.setItems("Weapon 1", "Weapon 2", "Weapon 3");
+                                break;
+                    }
+                        weaponBox.setMaxListCount(5);
+                customTable.add(weaponLbl).width(110f).padRight(6f);
+                customTable.add(weaponBox).height(36f).padBottom(4f).width(220f).row();
+
+                        // --- Attack Sound 下拉 ---
+                        Label soundLbl = new Label("Attack Sound:", nameStyle);
+                SelectBox<String> soundBox = new SelectBox<>(skin);
+                soundBox.setItems("Sound 1", "Sound 2", "Sound 3");
+                soundBox.setMaxListCount(5);
+                customTable.add(soundLbl).width(110f).padRight(6f);
+                customTable.add(soundBox).height(36f).padBottom(6f).width(220f).row();
+
+                        // 保存引用（之后二阶段可读）
+                        weaponBoxes.put(heroType, weaponBox);
+                soundBoxes.put(heroType, soundBox);
+                return customTable;
+            }
 
     private Table makeUpgradeTable() {
         // ===== hero card =====
@@ -396,7 +449,8 @@ public class UpgradeMenuDisplay extends UIComponent {
                 root.setFillParent(true);
                 root.bottom().padBottom(12f);
                 root.add(banner).center();
-                return root;
+              //  return root;
+                return new Table();
             }
 
     private void exitMenu() {

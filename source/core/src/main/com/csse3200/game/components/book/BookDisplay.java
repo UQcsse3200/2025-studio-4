@@ -74,7 +74,7 @@ public class BookDisplay extends UIComponent {
             this.book = new BookComponent.TowerBookComponent();
             maxWordsLore = 25;
         } else if (bookPage == BookPage.HERO_PAGE) {
-            this.book = new BookComponent.CurrencyBookComponent();
+            this.book = new BookComponent.HeroBookComponent();
             maxWordsLore = 15;
         }
         this.decks = book == null ? null : book.getDecks();

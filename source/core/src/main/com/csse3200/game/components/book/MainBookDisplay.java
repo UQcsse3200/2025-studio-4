@@ -32,7 +32,7 @@ public class MainBookDisplay extends UIComponent {
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
             "images/book/hologram.png",
-            "images/book/hologram.png" // hero display add this later
+            "images/book/heroes_book.png"
     };
 
     private Table contentTable;
@@ -113,7 +113,7 @@ public class MainBookDisplay extends UIComponent {
         TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
         TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
         TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
-        TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[0]); //change index later
+        TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
 
         TextButton enemyButton = new TextButton("", enemyButtonStyle);
         enemyButton.getLabel().setColor(Color.WHITE);
@@ -150,7 +150,7 @@ public class MainBookDisplay extends UIComponent {
         heroButton.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
                 logger.debug("Go to hero clicked");
-                entity.getEvents().trigger("goToHero");  // ← NEW EVENT
+                entity.getEvents().trigger("goToHero");
             }
         });
 

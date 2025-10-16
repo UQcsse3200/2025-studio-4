@@ -53,7 +53,7 @@ public class BookDisplay extends UIComponent {
     /**
      * Constructs a BookDisplay for a specific page type.
      *
-     * @param bookPage the type of book page to display (TOWER_PAGE, ENEMY_PAGE, or CURRENCY_PAGE)
+     * @param bookPage the type of book page to display (TOWER_PAGE, ENEMY_PAGE, CURRENCY_PAGE, or ACHIEVEMENT_PAGE)
      */
     public BookDisplay(BookPage bookPage) {
         super();
@@ -65,6 +65,9 @@ public class BookDisplay extends UIComponent {
             maxWordsLore = 15;
         } else if (bookPage == BookPage.TOWER_PAGE) {
             this.book = new BookComponent.TowerBookComponent();
+            maxWordsLore = 25;
+        } else if (bookPage == BookPage.ACHIEVEMENT_PAGE) {
+            this.book = new BookComponent.AchievementBookComponent();
             maxWordsLore = 25;
         }
         this.decks = book == null ? null : book.getDecks();

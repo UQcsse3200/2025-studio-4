@@ -1,5 +1,6 @@
 package com.csse3200.game.components;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -10,18 +11,15 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 
 /**
- * When this entity touches a valid enemy's hitbox, deal damage to them and apply a knockback.
- *
- * <p>Requires CombatStatsComponent, HitboxComponent on this entity.
- *
- * <p>Damage is only applied if target entity has a CombatStatsComponent. Knockback is only applied
- * if target entity has a PhysicsComponent.
+ * When this entity touches a valid enemy's hitbox, deal damage and optional knockback.
+ * Compatible with pooled projectiles by resetting per-shot state on "projectile.activated".
  */
 public class TouchAttackComponent extends Component {
   private short targetLayer;
   private float knockbackForce = 0f;
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
+  private boolean hasAttacked = false;
 
   /**
    * Create a component which attacks entities on collision, without knockback.
@@ -41,14 +39,35 @@ public class TouchAttackComponent extends Component {
     this.knockbackForce = knockback;
   }
 
+  /**
+   * Register collision and animation listeners and cache required components.
+   * Resets one-shot attack state when the projectile is reactivated from the pool.
+   */
   @Override
   public void create() {
     entity.getEvents().addListener("collisionStart", this::onCollisionStart);
     combatStats = entity.getComponent(CombatStatsComponent.class);
     hitboxComponent = entity.getComponent(HitboxComponent.class);
+    
+    entity.getEvents().addListener("attackAnimationComplete", this::onAttackComplete);
+
+    // Reset per-shot state when a pooled projectile is reactivated
+    entity.getEvents().addListener("projectile.activated", () -> {
+      hasAttacked = false;
+    });
   }
 
+  /**
+   * Handle collision start events. Applies damage once per shot to the first valid target,
+   * triggers attack animation hooks, and optionally applies knockback if the target has physics.
+   * @param me    this entity's fixture
+   * @param other the other entity's fixture
+   */
   private void onCollisionStart(Fixture me, Fixture other) {
+    if (hasAttacked) {
+      return;
+    }
+    
     if (hitboxComponent.getFixture() != me) {
       // Not triggered by hitbox, ignore
       return;
@@ -64,14 +83,21 @@ public class TouchAttackComponent extends Component {
     CombatStatsComponent targetStats = target.getComponent(CombatStatsComponent.class);
     if (targetStats != null) {
       targetStats.hit(combatStats);
-      // Add trigger damage popup on target
       target.getEvents().trigger("showDamage", combatStats.getBaseAttack(), target.getCenterPosition().cpy());
+      entity.getEvents().trigger("attackStart");
+      hasAttacked = true;
+      Gdx.app.log("ATTACK", "attackStart fired by " + entity.getId() + " on enemy");
     } else {
       Entity target2 = ((BodyUserData) other.getBody().getUserData()).entity;
       PlayerCombatStatsComponent playerStats = target2.getComponent(PlayerCombatStatsComponent.class);
       if (playerStats != null) {
         playerStats.hit(combatStats);
-        entity.getEvents().trigger("entityDeath");
+        hasAttacked = true;
+        
+        //Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
+
+        entity.getEvents().trigger("attackStart");
+
       }
     }
 
@@ -83,5 +109,13 @@ public class TouchAttackComponent extends Component {
       Vector2 impulse = direction.setLength(knockbackForce);
       targetBody.applyLinearImpulse(impulse, targetBody.getWorldCenter(), true);
     }
+  }
+  
+  /**
+   * Called when the attack animation finishes to trigger the entity's death event.
+   */
+  private void onAttackComplete() {
+    Gdx.app.log("ATTACK", "Attack animation complete for " + entity.getId() + " - triggering entityDeath");
+    entity.getEvents().trigger("entityDeath");
   }
 }

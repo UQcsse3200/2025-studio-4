@@ -8,6 +8,7 @@ import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.raycast.RaycastHit;
 import com.csse3200.game.rendering.DebugRenderer;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
 /** Chases a target entity until they get too far away or line of sight is lost */
@@ -22,13 +23,11 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   private final RaycastHit hit = new RaycastHit();
   private MovementTask movementTask;
   public boolean finished = false;
+  
+  // Prevent instant completion when task starts at target
+  private static final float MIN_ACTIVE_TIME = 0.05f; // 50ms minimum
+  private float activeTime = 0f;
 
-  /**
-   * @param target The entity to chase.
-   * @param priority Task priority when chasing (0 when not chasing).
-   * @param viewDistance Maximum distance from the entity at which chasing can start.
-   * @param maxChaseDistance Maximum distance from the entity while chasing before giving up.
-   */
   public ChaseTask(Entity target, int priority, float viewDistance, float maxChaseDistance, Vector2 speed) {
     this.target = target;
     this.priority = priority;
@@ -46,6 +45,7 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   @Override
   public void start() {
     super.start();
+    activeTime = 0f; // Reset timer when task starts
     movementTask = new MovementTask(target.getPosition(), speed);
     movementTask.create(owner);
     movementTask.start();
@@ -55,13 +55,27 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   @Override
   public void update() {
+    GameTime time = ServiceLocator.getTimeSource();
+    if (time != null && time.getTimeScale() == 0f) {
+      return; // Don't process anything while paused
+    }
+    
+    // Track active time
+    if (time != null) {
+      activeTime += time.getDeltaTime();
+    }
+    
     movementTask.setTarget(target.getPosition());
     movementTask.update();
+    
     if (movementTask.getStatus() != Status.ACTIVE) {
-      finished = true;
-      this.owner.getEntity().getEvents().trigger("chaseTaskFinished");
-      stop();
-      //movementTask.start();
+      // Only complete if we've been active for minimum time
+      // This prevents instant completion when already at target
+      if (activeTime >= MIN_ACTIVE_TIME) {
+        finished = true;
+        this.owner.getEntity().getEvents().trigger("chaseTaskFinished");
+        stop();
+      }
     }
   }
 
@@ -76,7 +90,6 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
     if (status == Status.ACTIVE) {
       return getActivePriority();
     }
-
     return getInactivePriority();
   }
 
@@ -93,7 +106,6 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
   }
 
   private int getInactivePriority() {
-    // Only start chasing when within view distance
     float dst = getDistanceToTarget();
     if (dst <= viewDistance) {
       return priority;
@@ -103,16 +115,5 @@ public class ChaseTask extends DefaultTask implements PriorityTask {
 
   private boolean isTargetVisible() {
     return true;
-
-    //Vector2 from = owner.getEntity().getCenterPosition();
-    //Vector2 to = target.getCenterPosition();
-
-    // If there is an obstacle in the path to the player, not visible.
-    //if (physics.raycast(from, to, PhysicsLayer.OBSTACLE, hit)) {
-      //debugRenderer.drawLine(from, hit.point);
-      //return false;
-    //}
-    //debugRenderer.drawLine(from, to);
-    //return true;
   }
 }

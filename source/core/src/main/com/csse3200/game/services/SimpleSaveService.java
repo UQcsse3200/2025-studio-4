@@ -7,6 +7,8 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
+import com.csse3200.game.components.towers.TowerComponent;
+import com.csse3200.game.components.towers.TowerStatsComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,27 @@ public class SimpleSaveService {
     }
   }
 
+  /** Save to a specific filename under saves/, using provided name (without extension or with). */
+  public boolean saveAs(String name) {
+    try {
+      SaveData data = collect();
+      String safe = sanitize(name);
+      if (safe.endsWith(".json")) {
+        safe = safe.substring(0, safe.length() - 5);
+      }
+      FileHandle dir = Gdx.files.absolute("./saves");
+      if (!dir.exists()) dir.mkdirs();
+      String target = "saves/" + safe + ".json";
+      Gdx.files.absolute("./" + target).writeString(json.toJson(data), false);
+      logger.info("Saved to ./{} (players={}, towers={}, enemies={})", target,
+              data.player != null, data.towers.size(), data.enemies.size());
+      return true;
+    } catch (Exception e) {
+      logger.error("SaveAs failed", e);
+      return false;
+    }
+  }
+
   public boolean loadToPending() {
     try {
       FileHandle fh = Gdx.files.absolute("./" + SAVE_FILE);
@@ -52,6 +75,28 @@ public class SimpleSaveService {
       return true;
     } catch (Exception e) {
       logger.error("Load failed", e);
+      return false;
+    }
+  }
+
+  /** Load a specific save file by name (with or without .json) into pending. */
+  public boolean loadToPending(String name) {
+    try {
+      String safe = sanitize(name);
+      if (safe.endsWith(".json")) {
+        safe = safe.substring(0, safe.length() - 5);
+      }
+      String target = "saves/" + safe + ".json";
+      FileHandle fh = Gdx.files.absolute("./" + target);
+      if (!fh.exists()) fh = Gdx.files.local(target);
+      if (!fh.exists()) {
+        logger.warn("Named save not found: {}", target);
+        return false;
+      }
+      pending = json.fromJson(SaveData.class, fh.readString());
+      return true;
+    } catch (Exception e) {
+      logger.error("Load (named) failed", e);
       return false;
     }
   }
@@ -106,12 +151,12 @@ public class SimpleSaveService {
     }
 
     for (Entity e : entityService.getEntities()) {
-      if (e.getComponent(com.csse3200.game.components.TowerComponent.class) != null) {
+      if (e.getComponent(TowerComponent.class) != null) {
         SaveData.Tower t = new SaveData.Tower();
         t.pos = e.getPosition();
-        var tc = e.getComponent(com.csse3200.game.components.TowerComponent.class);
+        var tc = e.getComponent(TowerComponent.class);
         t.type = tc != null ? tc.getType() : "bone";
-        var ts = e.getComponent(com.csse3200.game.components.TowerStatsComponent.class);
+        var ts = e.getComponent(TowerStatsComponent.class);
         if (ts != null) {
           t.hp = ts.getHealth();
           t.cd = ts.getAttackCooldown();
@@ -167,7 +212,7 @@ public class SimpleSaveService {
     // clear current towers/enemies
     List<Entity> toRemove = new ArrayList<>();
     for (Entity e : entityService.getEntities()) {
-      if (e.getComponent(com.csse3200.game.components.TowerComponent.class) != null
+      if (e.getComponent(TowerComponent.class) != null
               || e.getComponent(com.csse3200.game.components.enemy.EnemyTypeComponent.class) != null) {
         toRemove.add(e);
       }
@@ -179,19 +224,23 @@ public class SimpleSaveService {
       var type = t.type == null ? "bone" : t.type;
       Entity tower = null;
       var defaultCurrency = com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
-      switch (type) {
-        case "bone":
-          tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower(defaultCurrency); break;
-        case "dino":
-          tower = com.csse3200.game.entities.factories.TowerFactory.createDinoTower(defaultCurrency); break;
-        case "cavemen":
-          tower = com.csse3200.game.entities.factories.TowerFactory.createCavemenTower(defaultCurrency); break;
-        default:
-          tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower(defaultCurrency);
-      }
-      if (tower != null) {
+        switch (type) {
+            case "bone":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
+                break;
+            case "dino":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createDinoTower();
+                break;
+            case "cavemen":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createCavemenTower();
+                break;
+            default:
+                tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
+        }
+
+        if (tower != null) {
         tower.setPosition(t.pos);
-        var ts = tower.getComponent(com.csse3200.game.components.TowerStatsComponent.class);
+        var ts = tower.getComponent(TowerStatsComponent.class);
         if (ts != null) {
           ts.setHealth(t.hp);
           ts.setAttackCooldown(t.cd);
@@ -315,6 +364,11 @@ public class SimpleSaveService {
     float x = Math.max(0f, Math.min(15f, p.x));
     float y = Math.max(0f, Math.min(15f, p.y));
     return new Vector2(x, y);
+  }
+
+  private static String sanitize(String name) {
+    if (name == null) return "save";
+    return name.replaceAll("[^a-zA-Z0-9 _-]", "_");
   }
 
   // --- DTO ---

@@ -69,13 +69,53 @@ public class SaveSelectionActions extends Component {
 
   
   private void onNewSave() {
-    logger.info("Starting new game for save creation");
-    
+    logger.info("Creating new save (out-of-game)");
     try {
-      
-      game.setScreen(GdxGame.ScreenType.MAIN_GAME, false);
+      com.badlogic.gdx.scenes.scene2d.Stage stage = com.csse3200.game.services.ServiceLocator.getRenderService().getStage();
+      com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
+          "New Save", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
+            @Override public void onConfirmed(String name) {
+              // Directly write a minimal template saves/<name>.json for out-of-game creation
+              writeInitialSaveTemplate(name);
+              entity.getEvents().trigger("refreshSaveList");
+            }
+            @Override public void onCancelled() { /* no-op */ }
+          }
+      );
+      dialog.show(stage);
     } catch (Exception e) {
-      logger.error("Error starting new game for save", e);
+      logger.error("Error creating out-of-game save", e);
     }
+  }
+
+
+  /**
+   * Write a minimal usable save template.
+   */
+  private void writeInitialSaveTemplate(String name) {
+    try {
+      String safe = sanitize(name);
+      java.io.File dir = new java.io.File("saves");
+      if (!dir.exists()) dir.mkdirs();
+      java.io.File f = new java.io.File(dir, safe + ".json");
+      String json = "{\n" +
+          "  \"version\":1,\n" +
+          "  \"timestamp\":\"" + new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new java.util.Date()) + "\",\n" +
+          "  \"mapId\":null,\n" +
+          "  \"difficulty\":\"EASY\",\n" +
+          "  \"player\":{\"pos\":{\"x\":7.5,\"y\":7.5},\"hp\":100,\"gold\":0},\n" +
+          "  \"towers\":[],\n" +
+          "  \"enemies\":[]\n" +
+          "}";
+      try (java.io.FileOutputStream out = new java.io.FileOutputStream(f)) {
+        out.write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      }
+    } catch (Exception e) {
+      logger.error("Write initial save template failed", e);
+    }
+  }
+
+  private String sanitize(String name) {
+    return name.replaceAll("[^a-zA-Z0-9 _-]", "_");
   }
 }

@@ -26,18 +26,15 @@ import com.csse3200.game.utils.StringDecorator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// Added imports for overlay dim generation + panel background
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
-// Added imports for ESC handling in overlay mode
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 
-// Added import for overlay stacking
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 
 /**
@@ -48,6 +45,11 @@ public class SettingsMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(SettingsMenuDisplay.class);
     private final GdxGame game;
 
+    // UI color palette (high-contrast, matches orange/wood buttons)
+    private static final Color TITLE_COLOR = Color.valueOf("CFF2FF");   // pale teal
+    private static final Color LABEL_COLOR = Color.valueOf("B0E0E6");   // muted cyan
+    private static final Color SECTION_COLOR = Color.valueOf("FFE8B0"); // warm cream
+
     private Table rootTable;
     private TextField fpsText;
     private CheckBox fullScreenCheck;
@@ -56,28 +58,27 @@ public class SettingsMenuDisplay extends UIComponent {
     private Slider musicVolumeSlider;
     private Slider soundVolumeSlider;
     private SelectBox<StringDecorator<DisplayMode>> displayModeSelect;
-    private SelectBox<String> difficultySelect;
-    private SelectBox<String> languageSelect;
+
+    private SelectBox<String> difficultySelect; // currently unused (kept for compatibility)
+    private SelectBox<String> languageSelect;   // currently unused
+    private SelectBox<String> heroWeaponSelect;
+    private SelectBox<String> heroEffectSelect;
     private boolean overlayMode = false;
 
-    // Added: references used in overlay mode
     private Image backgroundImage;    // main-menu background (hidden in overlay mode)
     private Image dimImage;           // semi-transparent dim layer for overlay
     private Texture dimTexHandle;     // generated 1x1 texture; disposed in dispose()
 
-    // Added: for fallback boxed panel background
     private Texture panelTexHandle;
 
-    // Added: single container to keep dim behind panel but above other UI
     private Stack overlayStack;
 
     public SettingsMenuDisplay(GdxGame game) {
         super();
         this.game = game;
-        this.overlayMode = false; // Default to non-overlay mode
+        this.overlayMode = false;
     }
 
-    // Added: overlay-mode constructor
     public SettingsMenuDisplay(GdxGame game, boolean overlayMode) {
         this(game);
         this.overlayMode = overlayMode;
@@ -90,7 +91,6 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     private void addActors() {
-        // Background image (only create when not overlaying in-game)
         if (!overlayMode) {
             backgroundImage =
                     new Image(
@@ -104,7 +104,7 @@ public class SettingsMenuDisplay extends UIComponent {
         Table settingsTable = makeSettingsTable();
         Table menuBtns = makeMenuBtns();
 
-        // Boxed panel with settings + buttons
+        // Panel background (fallbacks if skin has no dialog/window)
         Table panel = new Table(skin);
         panel.defaults().pad(12f);
         if (skin.has("window", Drawable.class)) {
@@ -113,7 +113,7 @@ public class SettingsMenuDisplay extends UIComponent {
             panel.setBackground(skin.getDrawable("dialog"));
         } else {
             Pixmap pm = new Pixmap(8, 8, Format.RGBA8888);
-            pm.setColor(new Color(0f, 0f, 0f, 0.35f)); // translucent box
+            pm.setColor(new Color(0f, 0f, 0f, 0.35f));
             pm.fill();
             panelTexHandle = new Texture(pm);
             pm.dispose();
@@ -122,7 +122,6 @@ public class SettingsMenuDisplay extends UIComponent {
         panel.add(settingsTable).row();
         panel.add(menuBtns).fillX();
 
-        // Root table holds title + panel
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.add(title).expandX().top().padTop(20f);
@@ -131,28 +130,23 @@ public class SettingsMenuDisplay extends UIComponent {
                 .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
 
         if (overlayMode) {
-            // Stronger dim so it's clearly visible behind the panel
             Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
-            px.setColor(new Color(0f, 0f, 0f, 0.70f)); // 70% black
+            px.setColor(new Color(0f, 0f, 0f, 0.70f));
             dimTexHandle = new Texture(px);
             px.dispose();
             dimImage = new Image(dimTexHandle);
             dimImage.setFillParent(true);
 
-            // Stack keeps dim under the panel but together as one overlay
             overlayStack = new Stack();
             overlayStack.setFillParent(true);
-            overlayStack.add(dimImage);   // bottom
-            overlayStack.add(rootTable);  // top
+            overlayStack.add(dimImage);
+            overlayStack.add(rootTable);
 
-            // Add overlay last and bring to front so it covers other UI
             stage.addActor(overlayStack);
             overlayStack.toFront();
 
-            // Start hidden; Pause overlay will toggle us
             overlayStack.setVisible(false);
 
-            // Events used by Pause overlay to toggle Settings overlay
             entity.getEvents().addListener("showSettingsOverlay", () -> {
                 if (overlayStack != null) overlayStack.setVisible(true);
             });
@@ -160,35 +154,36 @@ public class SettingsMenuDisplay extends UIComponent {
                 if (overlayStack != null) overlayStack.setVisible(false);
             });
 
-            // Handle ESC/P while settings overlay is visible: behave like "Back"
             stage.addListener(new InputListener() {
                 @Override
                 public boolean keyDown(InputEvent event, int keycode) {
-                    if (overlayStack == null || !overlayStack.isVisible()) return false; // only if overlay is up
+                    if (overlayStack == null || !overlayStack.isVisible()) return false;
                     if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) {
                         entity.getEvents().trigger("hideSettingsOverlay");
                         entity.getEvents().trigger("showPauseUI");
-                        return true; // consume so PauseInput doesn't also toggle
+                        return true;
                     }
                     return false;
                 }
             });
 
-            // Hide main-menu background if it exists (overlay uses dim instead)
             if (backgroundImage != null) {
                 backgroundImage.setVisible(false);
             }
         } else {
-            // Non-overlay (main menu): show settings without dim
             stage.addActor(rootTable);
+        }
+
+        UserSettings.Settings currentSettings = UserSettings.get();
+        if (rootTable != null) {
+            rootTable.setTransform(true);  // Enable transformation
+            rootTable.setScale(currentSettings.uiScale);
         }
     }
 
     private Table makeSettingsTable() {
-        // Get current values
         UserSettings.Settings settings = UserSettings.get();
 
-        // Create components
         Label fpsLabel = new Label("FPS Cap:", skin);
         fpsText = new TextField(Integer.toString(settings.fps), skin);
 
@@ -215,23 +210,28 @@ public class SettingsMenuDisplay extends UIComponent {
         soundVolumeSlider.setValue(settings.soundVolume);
         Label soundVolumeValue = new Label(String.format("%.0f%%", settings.soundVolume * 100), skin);
 
-        Label difficultyLabel = new Label("Difficulty:", skin);
-        difficultySelect = new SelectBox<>(skin);
-        difficultySelect.setItems("Easy", "Normal", "Hard");
-        difficultySelect.setSelected(settings.difficulty);
-
-        Label languageLabel = new Label("Language:", skin);
-        languageSelect = new SelectBox<>(skin);
-        languageSelect.setItems("English", "中文", "Español");
-        languageSelect.setSelected(settings.language);
-
         Label displayModeLabel = new Label("Resolution:", skin);
         displayModeSelect = new SelectBox<>(skin);
         Monitor selectedMonitor = Gdx.graphics.getMonitor();
         displayModeSelect.setItems(getDisplayModes(selectedMonitor));
         displayModeSelect.setSelected(getActiveMode(displayModeSelect.getItems()));
 
-        // Position Components on table
+
+        Label heroCustomizationTitle = new Label("Hero Customization", skin);
+
+        Label heroWeaponLabel = new Label("Hero Weapon:", skin);
+        heroWeaponSelect = new SelectBox<>(skin);
+        heroWeaponSelect.setItems("Normal Sword", "Weapon 2", "Weapon 3");
+        heroWeaponSelect.setSelected(settings.heroWeapon.equals("default") ? "Normal Sword" : settings.heroWeapon);
+
+        Label heroEffectLabel = new Label("Weapon Sound:", skin);
+        heroEffectSelect = new SelectBox<>(skin);
+        heroEffectSelect.setItems("Sound 1", "Sound 2", "Sound 3");
+
+        heroEffectSelect.setSelected(settings.heroEffect.equals("default") ? "Sound 1" : settings.heroEffect);
+
+        // Layout
+
         Table table = new Table();
 
         table.add(fpsLabel).right().padRight(15f);
@@ -270,18 +270,24 @@ public class SettingsMenuDisplay extends UIComponent {
         table.add(soundVolumeTable).left();
 
         table.row().padTop(10f);
-        table.add(difficultyLabel).right().padRight(15f);
-        table.add(difficultySelect).left();
-
-        table.row().padTop(10f);
-        table.add(languageLabel).right().padRight(15f);
-        table.add(languageSelect).left();
-
-        table.row().padTop(10f);
         table.add(displayModeLabel).right().padRight(15f);
         table.add(displayModeSelect).left();
 
-        // Events on inputs
+        table.row().padTop(20f);
+
+        heroCustomizationTitle.setColor(SECTION_COLOR);
+        table.add(heroCustomizationTitle).colspan(2).center().padBottom(10f);
+
+        table.row().padTop(10f);
+        table.add(heroWeaponLabel).right().padRight(15f);
+        table.add(heroWeaponSelect).left();
+
+        table.row().padTop(10f);
+        table.add(heroEffectLabel).right().padRight(15f);
+        table.add(heroEffectSelect).left();
+
+
+        // Live label values
         uiScaleSlider.addListener(
                 (Event event) -> {
                     float value = uiScaleSlider.getValue();
@@ -293,9 +299,6 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = musicVolumeSlider.getValue();
                     musicVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    if (ServiceLocator.getAudioService() != null) {
-                        ServiceLocator.getAudioService().setMusicVolume(value);
-                    }
                     return true;
                 });
 
@@ -303,11 +306,11 @@ public class SettingsMenuDisplay extends UIComponent {
                 (Event event) -> {
                     float value = soundVolumeSlider.getValue();
                     soundVolumeValue.setText(String.format("%.0f%%", value * 100));
-                    if (ServiceLocator.getAudioService() != null) {
-                        ServiceLocator.getAudioService().setSoundVolume(value);
-                    }
                     return true;
                 });
+
+        // Tint all labels to the unified color scheme
+        tintLabelsRecursive(table, LABEL_COLOR);
 
         return table;
     }
@@ -342,13 +345,11 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     private Table makeMenuBtns() {
-        // Create custom button style
         TextButtonStyle customButtonStyle = createCustomButtonStyle();
 
         TextButton backBtn = new TextButton("Back", customButtonStyle);
         TextButton applyBtn = new TextButton("Apply", customButtonStyle);
 
-        // Set button size
         float buttonWidth = 150f;
         float buttonHeight = 50f;
 
@@ -361,11 +362,9 @@ public class SettingsMenuDisplay extends UIComponent {
                     public void changed(ChangeEvent changeEvent, Actor actor) {
                         logger.debug("Back button clicked");
                         if (overlayMode) {
-                            // Return to Pause overlay (stay in-game)
                             entity.getEvents().trigger("hideSettingsOverlay");
                             entity.getEvents().trigger("showPauseUI");
                         } else {
-                            // From main menu settings, Back behaves like Exit
                             exitMenu();
                         }
                     }
@@ -398,30 +397,52 @@ public class SettingsMenuDisplay extends UIComponent {
         settings.displayMode = new DisplaySettings(displayModeSelect.getSelected().object);
         settings.vsync = vsyncCheck.isChecked();
 
-        // Audio settings
         settings.musicVolume = musicVolumeSlider.getValue();
         settings.soundVolume = soundVolumeSlider.getValue();
 
-        // Gameplay settings
-        settings.difficulty = difficultySelect.getSelected();
-        settings.language = languageSelect.getSelected();
+        // settings.difficulty = difficultySelect.getSelected(); // not used here
 
+        settings.heroWeapon = heroWeaponSelect.getSelected().toLowerCase();
+        settings.heroEffect = heroEffectSelect.getSelected().toLowerCase();
+
+
+        // Persist
         UserSettings.set(settings, true);
+
+        // Apply non-disruptive runtime changes
+        Gdx.graphics.setVSync(settings.vsync);
+        Gdx.graphics.setForegroundFPS(settings.fps);
 
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().updateSettings();
+        }
+
+        applyUiScale(settings.uiScale);
+
+        // Broadcast that settings changed
+        if (ServiceLocator.getEntityService() != null) {
+            for (var entity : ServiceLocator.getEntityService().getEntities()) {
+                entity.getEvents().trigger("settingsApplied", settings);
+            }
+        }
+    }
+
+    private void applyUiScale(float scale) {
+        if (rootTable != null) {
+            rootTable.setTransform(true);
+            rootTable.validate();
+            rootTable.setOrigin(rootTable.getWidth() / 2f, rootTable.getHeight() / 2f);
+            rootTable.setScale(scale);
         }
     }
 
     private void exitMenu() {
         if (overlayMode) {
-            // Close settings overlay and fully resume gameplay
-            entity.getEvents().trigger("hideSettingsOverlay"); // hide our panel + dim
-            entity.getEvents().trigger("hidePauseUI");         // ensure pause overlay is hidden
-            entity.getEvents().trigger("resume");              // timeScale = 1f (game continues)
+            entity.getEvents().trigger("hideSettingsOverlay");
+            entity.getEvents().trigger("hidePauseUI");
+            entity.getEvents().trigger("resume");
             return;
         }
-        // Original behaviour (main menu)
         game.setScreen(ScreenType.MAIN_MENU);
     }
 
@@ -434,57 +455,44 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     @Override
-    protected void draw(SpriteBatch batch) {
-        // draw is handled by the stage
-    }
+    protected void draw(SpriteBatch batch) { }
 
     @Override
     public void update() {
         stage.act(ServiceLocator.getTimeSource().getDeltaTime());
     }
 
-    /**
-     * Create title label using Arial Black font
-     */
+    /** Create title label using Arial Black font with high-contrast color */
     private Label createTitleLabel() {
         BitmapFont arialBlackFont = skin.getFont("arial_black");
-        Label titleLabel = new Label("Settings", new Label.LabelStyle(arialBlackFont, Color.WHITE));
-        titleLabel.setFontScale(1.5f);
-        titleLabel.setColor(Color.WHITE);
+        Label titleLabel = new Label("Settings", new Label.LabelStyle(arialBlackFont, TITLE_COLOR));
+        titleLabel.setFontScale(1.8f);  // makes the title more prominent
+        titleLabel.setColor(new Color(1f, 0.9f, 0.6f, 1f)); // warm pale orange tone for better contrast
         return titleLabel;
     }
 
-    /**
-     * Create custom button style using button background image
-     */
+    /** Create custom button style using the shared orange button texture */
     private TextButtonStyle createCustomButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
 
-        // Use Segoe UI font
         style.font = skin.getFont("segoe_ui");
 
-        // Load button background image
         Texture buttonTexture = ServiceLocator.getResourceService()
                 .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-        // Create NinePatch for scalable button background
         NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
 
-        // Create pressed state NinePatch (slightly darker)
         NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+        pressedPatch.setColor(new Color(0.9f, 0.7f, 0.5f, 1f)); // subtle darken
 
-        // Create hover state NinePatch (slightly brighter)
         NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+        hoverPatch.setColor(new Color(1.05f, 1.05f, 1.05f, 1f)); // subtle brighten
 
-        // Set button states
         style.up = new NinePatchDrawable(buttonPatch);
         style.down = new NinePatchDrawable(pressedPatch);
         style.over = new NinePatchDrawable(hoverPatch);
 
-        // Set font colors
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
@@ -492,7 +500,6 @@ public class SettingsMenuDisplay extends UIComponent {
         return style;
     }
 
-    // Keep this overlay above HUD/pause layers
     @Override
     public float getZIndex() {
         return 150f;
@@ -510,5 +517,17 @@ public class SettingsMenuDisplay extends UIComponent {
             panelTexHandle = null;
         }
         super.dispose();
+    }
+
+    /** Recursively set label font colors inside a container */
+    private void tintLabelsRecursive(Actor actor, Color color) {
+        if (actor instanceof Label) {
+            ((Label) actor).getStyle().fontColor = color;
+            actor.setColor(color);
+        } else if (actor instanceof Table) {
+            for (Actor child : ((Table) actor).getChildren()) {
+                tintLabelsRecursive(child, color);
+            }
+        }
     }
 }

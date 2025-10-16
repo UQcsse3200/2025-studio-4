@@ -20,6 +20,7 @@ public class MainMenuActions extends Component {
     this.game = game;
   }
 
+
   @Override
   public void create() {
     entity.getEvents().addListener("start", this::onStart);
@@ -30,6 +31,7 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("ranking", this::onRanking);
   }
 
+
   /**
    * Shows name input dialog before starting new game.
    */
@@ -37,7 +39,7 @@ public class MainMenuActions extends Component {
     logger.info("New Game clicked, showing name input dialog");
     showNameInputDialog();
   }
-
+  
   /**
    * Shows the name input dialog for new game.
    */
@@ -46,21 +48,22 @@ public class MainMenuActions extends Component {
     if (ServiceLocator.getPlayerNameService() == null) {
       ServiceLocator.registerPlayerNameService(new PlayerNameServiceImpl());
     }
-
+    
     // Create and show name input dialog with callback
-    NameInputDialog nameDialog = new NameInputDialog("Player Name", com.csse3200.game.ui.SimpleUI.windowStyle(),
+    NameInputDialog nameDialog = new NameInputDialog("Player Name", 
+        com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(),
         new NameInputDialog.NameInputCallback() {
           @Override
           public void onNameConfirmed(String name, String avatarId) {
             handleNameConfirmed(name, avatarId);
           }
-
+          
           @Override
           public void onNameCancelled() {
             handleNameCancelled();
           }
         });
-
+    
     // Get the current stage from the render service
     if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
       ServiceLocator.getRenderService().getStage().addActor(nameDialog);
@@ -71,7 +74,7 @@ public class MainMenuActions extends Component {
       game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
     }
   }
-
+  
   /**
    * Handles when player confirms their name and avatar.
    */
@@ -86,14 +89,14 @@ public class MainMenuActions extends Component {
     // Proceed to map selection
     game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
   }
-
+  
   /**
    * Handles when player cancels name input.
    */
   private void handleNameCancelled() {
-    logger.info("Name input cancelled, proceeding to map selection with default name");
-    // Proceed to map selection with default name
-    game.setScreen(GdxGame.ScreenType.MAP_SELECTION);
+    logger.info("Name input cancelled, returning to main menu");
+    // Return to main menu - dialog will close automatically
+    // No need to change screen since we're already on main menu
   }
 
 
@@ -127,6 +130,8 @@ public class MainMenuActions extends Component {
     game.setScreen(GdxGame.ScreenType.BOOK);
   }
 
+
+
   /**
    * Shows the leaderboard/ranking screen.
    */
@@ -137,6 +142,7 @@ public class MainMenuActions extends Component {
     showLeaderboard();
   }
 
+
   /**
    * Shows the leaderboard popup.
    */
@@ -145,9 +151,9 @@ public class MainMenuActions extends Component {
       logger.info("Attempting to show leaderboard popup");
       
       // Use the global leaderboard service (already registered in GdxGame)
-      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService =
+      com.csse3200.game.services.leaderboard.LeaderboardService leaderboardService = 
         ServiceLocator.getLeaderboardService();
-
+      
       if (leaderboardService == null) {
         logger.error("Leaderboard service not available, registering fallback service");
         // Register a fallback service if none exists
@@ -157,10 +163,10 @@ public class MainMenuActions extends Component {
       }
       
       // Create and show leaderboard popup
-      com.csse3200.game.ui.leaderboard.LeaderboardController controller =
+      com.csse3200.game.ui.leaderboard.LeaderboardController controller = 
         new com.csse3200.game.ui.leaderboard.LeaderboardController(leaderboardService);
-
-      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup =
+      
+      com.csse3200.game.ui.leaderboard.LeaderboardPopup popup = 
         new com.csse3200.game.ui.leaderboard.LeaderboardPopup(
           com.csse3200.game.ui.leaderboard.MinimalSkinFactory.create(), controller);
       

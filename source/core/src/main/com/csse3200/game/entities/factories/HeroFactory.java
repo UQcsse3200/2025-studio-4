@@ -3,13 +3,12 @@ package com.csse3200.game.entities.factories;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.Color;
 import com.csse3200.game.components.hero.HeroAppearanceComponent;
+import com.csse3200.game.components.hero.samurai.SamuraiSpinAttackComponent;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
+import com.csse3200.game.components.hero.HeroCustomizationComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.HeroConfig;
-import com.csse3200.game.entities.configs.HeroConfig2;
-import com.csse3200.game.entities.configs.HeroConfig3;
+import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.ColliderComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -18,8 +17,11 @@ import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
+import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
 
 import java.util.LinkedHashSet;
+
 import com.csse3200.game.components.hero.HeroUltimateComponent;
 import com.csse3200.game.ui.UltimateButtonComponent;
 
@@ -37,64 +39,34 @@ public final class HeroFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 
-    public static void loadAssets(ResourceService rs, HeroConfig cfg, HeroConfig2 cfg2, HeroConfig3 cfg3) {
+    public static void loadAssets(ResourceService rs,
+                                  BaseEntityConfig... configs) {
         LinkedHashSet<String> textures = new LinkedHashSet<>();
+        for (BaseEntityConfig base : configs) {
+            if (base == null) continue;
 
-        if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) {
-            textures.add(cfg.heroTexture);
-        }
-        if (cfg.levelTextures != null) {
-            for (String s : cfg.levelTextures) {
-                if (s != null && !s.isBlank()) {
-                    textures.add(s);
+            if (base instanceof HeroConfig cfg) {
+                if (cfg.heroTexture != null && !cfg.heroTexture.isBlank()) textures.add(cfg.heroTexture);
+                if (cfg.levelTextures != null) {
+                    for (String s : cfg.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
                 }
-            }
-        }
-        if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) {
-            textures.add(cfg.bulletTexture);
-        }
+                if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) textures.add(cfg.bulletTexture);
 
-        if (!textures.isEmpty()) {
-            rs.loadTextures(textures.toArray(new String[0]));
-        }
-
-        // Repeat similar for cfg2 and cfg3
-        if (cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) {
-            textures.add(cfg2.heroTexture);
-        }
-        if (cfg2.levelTextures != null) {
-            for (String s : cfg2.levelTextures) {
-                if (s != null && !s.isBlank()) {
-                    textures.add(s);
+                if (cfg instanceof EngineerConfig ec) {
+                    if (ec.summonTexture != null && !ec.summonTexture.isBlank()) textures.add(ec.summonTexture);
                 }
-            }
-        }
-        if (cfg2.bulletTexture != null && !cfg2.bulletTexture.isBlank()) {
-            textures.add(cfg2.bulletTexture);
-        }
-
-        if (!textures.isEmpty()) {
-            rs.loadTextures(textures.toArray(new String[0]));
-        }
-
-        if (cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) {
-            textures.add(cfg3.heroTexture);
-        }
-        if (cfg3.levelTextures != null) {
-            for (String s : cfg3.levelTextures) {
-                if (s != null && !s.isBlank()) {
-                    textures.add(s);
+            } else if (base instanceof SamuraiConfig sc) {
+                if (sc.heroTexture != null && !sc.heroTexture.isBlank()) textures.add(sc.heroTexture);
+                if (sc.levelTextures != null) {
+                    for (String s : sc.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
                 }
+                if (sc.swordTexture != null && !sc.swordTexture.isBlank()) textures.add(sc.swordTexture);
             }
+            // 未来还要加别的职业/形态就在这里继续 instanceof ...
         }
-        if (cfg3.bulletTexture != null && !cfg3.bulletTexture.isBlank()) {
-            textures.add(cfg3.bulletTexture);
-        }
-
-        if (!textures.isEmpty()) {
-            rs.loadTextures(textures.toArray(new String[0]));
-        }
+        if (!textures.isEmpty()) rs.loadTextures(textures.toArray(new String[0]));
     }
+
 
     /**
      * Create a hero entity based on a {@link HeroConfig}.
@@ -107,8 +79,8 @@ public final class HeroFactory {
      *       {@link HeroTurretAttackComponent}.</li>
      * </ul>
      *
-     * @param cfg     hero configuration (stats, cooldown, bullet properties, textures)
-     * @param camera  the active game camera (used for aiming and rotation)
+     * @param cfg    hero configuration (stats, cooldown, bullet properties, textures)
+     * @param camera the active game camera (used for aiming and rotation)
      * @return a new hero entity configured as a turret-style shooter
      */
     public static Entity createHero(HeroConfig cfg, Camera camera) {
@@ -134,8 +106,10 @@ public final class HeroFactory {
                 ))
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
+
                 .addComponent(new UltimateButtonComponent())
-                .addComponent(new HeroAppearanceComponent(cfg));
+                .addComponent(new HeroAppearanceComponent(cfg))
+                .addComponent(new HeroCustomizationComponent());
 
         // Default scale to 1x1 so the hero is visible during testing
         hero.setScale(1f, 1f);
@@ -166,6 +140,158 @@ public final class HeroFactory {
         e.addComponent(texture);
         return e;
     }
+
+
+    // === HeroFactory.createEngineerHero(...) ===
+
+    /**
+     * Creates and configures an Engineer hero entity.
+     * <p>
+     * The Engineer specializes in deploying turrets, melee bots, and resource-generating summons.
+     * This factory method assembles the hero with its necessary gameplay components, such as
+     * summoning logic, ranged attack, upgrade, and ultimate abilities.
+     * </p>
+     *
+     * @param cfg    The {@link EngineerConfig} containing hero stats and asset references.
+     * @param camera The active camera, used for attack targeting or rotation.
+     * @return A fully initialized Engineer hero entity.
+     */
+    public static Entity createEngineerHero(EngineerConfig cfg, Camera camera) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        Entity hero = new Entity()
+                // === Core physics & collision setup ===
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent().setSensor(true))
+                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+
+                // === Rendering ===
+                .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
+
+                // === Core stats ===
+                .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
+
+                // === Engineer’s summon logic ===
+                .addComponent(new EngineerSummonComponent(
+                        cfg.summonCooldown,
+                        cfg.maxSummons,
+                        cfg.summonTexture,
+                        new Vector2(cfg.summonSpeed, cfg.summonSpeed)
+                ))
+
+                // === Optional: Engineer’s ranged turret attack ===
+                // Handles rotating aim and shooting bullets toward cursor direction
+                .addComponent(new HeroTurretAttackComponent(
+                        cfg.attackCooldown,
+                        cfg.bulletSpeed,
+                        cfg.bulletLife,
+                        cfg.bulletTexture, // Engineer-specific bullet texture
+                        camera
+                ))
+
+                // === Hero upgrade and ultimate systems ===
+                .addComponent(new HeroUpgradeComponent())
+                .addComponent(new HeroUltimateComponent())
+
+                // === Visual appearance customization ===
+                .addComponent(new HeroAppearanceComponent(cfg));
+
+        hero.setScale(1f, 1f);
+        return hero;
+    }
+
+// Required imports:
+// SamuraiConfig, PhysicsLayer, PhysicsComponent, ColliderComponent, HitboxComponent,
+// RotatingTextureRenderComponent, CombatStatsComponent, DamageTypeConfig, Camera, Entity, etc.
+
+
+    /**
+     * Creates and configures a Samurai hero entity.
+     * <p>
+     * The Samurai specializes in close-range melee combat using a spinning sword
+     * that orbits around the hero. This factory method assembles the hero with all
+     * required gameplay and rendering components.
+     * </p>
+     *
+     * <ul>
+     *   <li>Includes sword rotation via {@link SamuraiSpinAttackComponent}.</li>
+     *   <li>Centers the sword’s visual origin to ensure smooth rotation.</li>
+     *   <li>Supports fine pivot adjustments for precise visual alignment.</li>
+     * </ul>
+     *
+     * @param cfg    The {@link SamuraiConfig} containing hero stats and asset paths.
+     * @param camera The active camera for rendering or camera-relative effects.
+     * @return A fully initialized Samurai hero entity.
+     */
+    public static Entity createSamuraiHero(SamuraiConfig cfg, Camera camera) {
+        var resistance = DamageTypeConfig.None;
+        var weakness = DamageTypeConfig.None;
+
+        // (1) Create a shared rendering component (avoid creating duplicates later)
+        RotatingTextureRenderComponent body = new RotatingTextureRenderComponent(cfg.heroTexture);
+
+        Entity hero = new Entity()
+                // === Core components ===
+                .addComponent(new PhysicsComponent())
+                .addComponent(new ColliderComponent().setSensor(true))
+                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+
+                // === Rendering ===
+                .addComponent(body) // Only one rendering component is needed
+
+                // === Combat stats ===
+                .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
+
+                // === Sword attack logic (rotation & collision) ===
+                .addComponent(new SamuraiSpinAttackComponent(
+                        cfg.swordRadius,   // Sword orbit radius
+                        cfg.swordTexture,  // Sword texture
+                        cfg,
+                        camera             // Camera reference
+                ))
+
+                // === Upgrade and ultimate abilities ===
+                .addComponent(new HeroUpgradeComponent())
+                .addComponent(new HeroUltimateComponent());
+
+        hero.setScale(1f, 1f);
+
+        // (2) Attempt to set the texture’s origin to its center
+        //     This ensures the Samurai rotates around its middle instead of the bottom-left corner.
+        try {
+            // Common case: directly supported by RotatingTextureRenderComponent
+            body.getClass().getMethod("setOriginToCenter").invoke(body);
+        } catch (Throwable ignore) {
+            try {
+                // Fallback: manually calculate the center point using width/height
+                float w = (float) body.getClass().getMethod("getTextureWidth").invoke(body);
+                float h = (float) body.getClass().getMethod("getTextureHeight").invoke(body);
+                body.getClass().getMethod("setOrigin", float.class, float.class).invoke(body, w / 2f, h / 2f);
+            } catch (Throwable ignore2) {
+                // If the render component doesn’t support setting origin,
+                // the sword’s orbit pivot can be adjusted manually (see step 3 below)
+            }
+        }
+
+        // (3) Optional fine-tuning: adjust sword rotation alignment if visuals look off-center
+        SamuraiSpinAttackComponent spin = hero.getComponent(SamuraiSpinAttackComponent.class);
+        if (spin != null) {
+            // Controls which direction the sword texture faces by default:
+            // → = 0°, ↑ = 90°, ← = 180°, ↓ = 270°
+            spin.setSpriteForwardOffsetDeg(0f);
+
+            // If the sword still appears offset, adjust its orbit pivot:
+            // Retrieve the SwordOrbitPhysicsComponent (within SamuraiSpinAttackComponent)
+            // and call orbit.setPivotOffset(ox, oy), e.g., (0f, 0f) or slightly adjusted.
+            // Example:
+            // orbit.setPivotOffset(0.1f, -0.1f);
+        }
+
+        return hero;
+    }
+
+
 }
 
 

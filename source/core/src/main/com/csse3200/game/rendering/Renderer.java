@@ -110,6 +110,7 @@ public class Renderer implements Disposable {
     batch.setProjectionMatrix(projMatrix);
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+    // Render all registered renderables
     batch.begin();
     renderService.render(batch);
     batch.end();

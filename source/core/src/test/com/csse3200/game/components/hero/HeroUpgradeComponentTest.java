@@ -178,9 +178,6 @@ public class HeroUpgradeComponentTest {
         b.hero.getEvents().trigger("requestUpgrade", player); // 1 -> 2
         assertEquals(2, b.upgrade.getLevel());
 
-        b.hero.getEvents().trigger("requestUpgrade", player); // 2 -> 3
-        assertEquals(3, b.upgrade.getLevel());
-
         // Attempt another upgrade (should fail)
         failedCalled.set(false);
         reason[0] = null;

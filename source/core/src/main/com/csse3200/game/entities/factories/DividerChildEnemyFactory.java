@@ -1,20 +1,23 @@
 package com.csse3200.game.entities.factories;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
-import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
@@ -26,13 +29,18 @@ public class DividerChildEnemyFactory {
     private static final int DEFAULT_DAMAGE = 20;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
-    private static final Vector2 DEFAULT_SPEED = new Vector2(2f, 2f);
-    private static final String DEFAULT_TEXTURE = "images/Divider_enemy.png";
+    private static final Vector2 DEFAULT_SPEED = new Vector2(1.5f, 1.5f);
+    private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.METAL_SCRAP;
+    private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
+    CurrencyType.METAL_SCRAP, 15,
+    CurrencyType.TITANIUM_CORE, 10,
+    CurrencyType.NEUROCHIP, 5
+    );
     private static final int DEFAULT_POINTS = 100;
+    private static final float SPEED_EPSILON = 0.001f;
+    private static final String DEFAULT_DEATH_SOUND_PATH = "sounds/mixkit-arcade-game-explosion-2759.wav";
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -44,13 +52,12 @@ public class DividerChildEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
-    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
-
     private static Entity self;
     private static Entity currentTarget;
     private static int priorityTaskCount = 1;
+    private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
 
     /**
      * Creates a DividerChild enemy with current configuration.
@@ -58,9 +65,9 @@ public class DividerChildEnemyFactory {
      * @param target entity to chase
      * @return entity
      */
-    public static Entity createDividerChildChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
+    public static Entity createDividerChildEnemy(Entity target, java.util.List<Entity> waypoints, int waypointIndex, Difficulty difficulty) {
         Entity DividerChild = EnemyFactory.createBaseEnemyAnimated(waypoints.get(waypointIndex), new Vector2(speed), waypoints,
-        "images/Divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
+        "images/divider_enemy_spritesheet.atlas", 0.5f, 0.18f, waypointIndex);
 
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, target, speed);
         waypointComponent.setCurrentWaypointIndex(waypointIndex);
@@ -71,16 +78,54 @@ public class DividerChildEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius));
+            CombatStatsComponent combatStats = DividerChild.getComponent(CombatStatsComponent.class);
+            if (combatStats != null) combatStats.setIsEnemy(true);
+
 
         DividerChild.getEvents().addListener("entityDeath", () -> destroyEnemy(DividerChild));
 
+        // Each DividerChild handles its own waypoint progression
         DividerChild.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = DividerChild.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    updateChaseTarget(DividerChild, nextTarget);
+            WaypointComponent dwc = DividerChild.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = DividerChild.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(DividerChild, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = DividerChild.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(DividerChild, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(DividerChild, dwc, nextTarget);
+                updateChaseTarget(DividerChild, nextTarget);
             }
         });
 
@@ -95,9 +140,33 @@ public class DividerChildEnemyFactory {
         return DividerChild;
     }
 
+    private static void applySpeedModifier(Entity DividerChild, WaypointComponent waypointComponent, Entity waypoint) {
+        if (waypointComponent == null || waypoint == null) {
+            return;
+        }
+
+        SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
+        Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
+        if (speedMarker != null) {
+            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+        }
+
+        if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
+            updateSpeed(DividerChild, desiredSpeed);
+        }
+    }
+
     private static void destroyEnemy(Entity entity) {
-        ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
-        ForestGameArea.checkEnemyCount();
+        // Check which game area is active and use its counters
+        if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
+            // We're in ForestGameArea2
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
+            com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
+        } else {
+            // Default to ForestGameArea (original behavior)
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
+        }
 
         // Award points to player upon defeating enemy
         if (currentTarget != null) {
@@ -113,24 +182,42 @@ public class DividerChildEnemyFactory {
             }
         }
 
+        playDeathSound(deathSoundPath);
+
         // Drop currency upon defeat
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
         if (wc != null && wc.getPlayerRef() != null) {
             Entity player = wc.getPlayerRef();
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
-                player.getEvents().trigger("dropCurrency", drops);
+                player.getEvents().trigger("dropCurrency", currencyDrops);
             }
         }
-
-        Gdx.app.postRunnable(entity::dispose);
+        
+        //Gdx.app.postRunnable(entity::dispose);
         //Eventually add point/score logic here maybe?
     }
 
-    private static void updateSpeed(Vector2 speed) {
-        priorityTaskCount += 1;
-        self.getComponent(AITaskComponent.class).addTask(new ChaseTask(currentTarget, priorityTaskCount, 100f, 100f, speed));
+    private static void playDeathSound(String soundPath) {
+        ServiceLocator.getResourceService()
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
+    }
+
+    /**
+     * Updates the speed of a specific DividerChild.
+     *
+     * @param DividerChild The DividerChild entity to update
+     * @param newSpeed The new speed vector
+     */
+    private static void updateSpeed(Entity DividerChild, Vector2 newSpeed) {
+        WaypointComponent dwc = DividerChild.getComponent(WaypointComponent.class);
+        if (dwc != null) {
+            dwc.incrementPriorityTaskCount();
+            dwc.setSpeed(newSpeed);
+            DividerChild.getComponent(AITaskComponent.class).addTask(
+                new ChaseTask(dwc.getCurrentTarget(), dwc.getPriorityTaskCount(), 100f, 100f, newSpeed));
+        }
     }
 
     private static void updateChaseTarget(Entity entity, Entity newTarget) {
@@ -199,7 +286,7 @@ public class DividerChildEnemyFactory {
     }
     
     /**
-     * Resets all drone configuration to default values.
+     * Resets all DividerChild configuration to default values.
      */
     public static void resetToDefaults() {
         health = DEFAULT_HEALTH;

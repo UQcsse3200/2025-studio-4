@@ -6,19 +6,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.rendering.Renderer;
-import com.csse3200.game.ui.HeroStatsDialog;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.services.ServiceLocator;
 import com.badlogic.gdx.Input;
 
 /**
- * 左键点击英雄，弹出英雄数值与升级界面。
+ * Hero clickable component - currently disabled.
+ * Clicking the hero no longer opens any UI dialog.
+ * All hero management functions are now available in the left status panel.
  */
 public class HeroClickableComponent extends Component {
     private float clickRadius = 0.8f;
-    private HeroStatsDialog dialog; // 保证同一时间只存在一个
 
-    // 防抖：避免放置时的同一次点击立刻打开
+    //Anti-shake: Avoid opening the app immediately with the same click when placing it
     private boolean waitRelease = true;
     private float armDelaySec = 0.2f; // 200ms
 
@@ -33,12 +32,12 @@ public class HeroClickableComponent extends Component {
 
     @Override
     public void update() {
-        // 先等待鼠标松开或过了延迟时间
+        // Wait until the mouse is released or the delay time has passed
         if (waitRelease) {
             if (!Gdx.input.isButtonPressed(Input.Buttons.LEFT) && !Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
                 waitRelease = false;
             } else {
-                // 仍在按压，继续等待
+                // Still pressing, waiting
                 return;
             }
         }
@@ -61,17 +60,8 @@ public class HeroClickableComponent extends Component {
 
         Vector2 epos = entity.getPosition();
         if (Math.abs(worldClick.x - epos.x) <= clickRadius && Math.abs(worldClick.y - epos.y) <= clickRadius) {
-            Stage stage = ServiceLocator.getRenderService().getStage();
-
-            // 若已有窗口且仍在舞台上，则置顶并返回
-            if (dialog != null && dialog.getStage() != null) {
-                dialog.toFront();
-                return;
-            }
-
-            // 否则创建新窗口并缓存
-            dialog = new HeroStatsDialog(entity);
-            dialog.showOn(stage);
+            // 点击英雄的逻辑已移除，现在点击英雄不会有任何反应
+            // 升级功能已移动到左侧状态栏中
         }
     }
 

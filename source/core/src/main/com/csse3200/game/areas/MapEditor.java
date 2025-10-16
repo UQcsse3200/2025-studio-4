@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.csse3200.game.areas.terrain.TerrainComponent;
 import com.csse3200.game.entities.Entity;
+import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.Set;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class MapEditor extends InputAdapter {
+public class MapEditor extends InputAdapter implements IMapEditor {
     private TerrainComponent terrain;
 
     // Tree / Path / Placement Area records树 / 路径 / 可放置区域 记录
@@ -36,8 +37,9 @@ public class MapEditor extends InputAdapter {
     // Key path points list关键路径点列表
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
+    private java.util.List<GridPoint2> waterTiles = new java.util.ArrayList<>();
 
-    public java.util.List<Entity> waypointList = new java.util.ArrayList<>();
+    public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
     public MapEditor(TerrainComponent terrain, Entity player) {
         this.terrain = terrain;
@@ -178,7 +180,7 @@ public class MapEditor extends InputAdapter {
                 {25, 12}, {25, 11}, {25, 10}, {25, 9}, {25, 8}, {25, 7}, {25, 6},
 
                 // Finally walk to the right for 4 coordinates
-                {26, 6}, {27, 6}, {28, 6}, {29, 6}
+                {26, 6}, {27, 6}, {28, 6}
         };
 
         // Create path tiles based on predefined path根据预定义路径创建路径瓦片
@@ -192,22 +194,47 @@ public class MapEditor extends InputAdapter {
         keyWaypoints.add(new GridPoint2(0, 10));    // Start
         keyWaypoints.add(new GridPoint2(5, 10));    // First turn
         keyWaypoints.add(new GridPoint2(5, 6));     // Up turn completed
+        keyWaypoints.add(new GridPoint2(6, 6));
+        keyWaypoints.add(new GridPoint2(7, 6));
+        keyWaypoints.add(new GridPoint2(8, 6));
+        keyWaypoints.add(new GridPoint2(9, 6));
         keyWaypoints.add(new GridPoint2(12, 6));    // Walk to the right completed
         keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
+        keyWaypoints.add(new GridPoint2(18, 12));
+        keyWaypoints.add(new GridPoint2(19, 12));
+        keyWaypoints.add(new GridPoint2(20, 12));
+        keyWaypoints.add(new GridPoint2(21, 12));
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
-        keyWaypoints.add(new GridPoint2(29, 6));    // End
+        keyWaypoints.add(new GridPoint2(32, 6));    // End - extended past base to ensure enemies reach it
+        Map<String, Float> speedModifiers = Map.of(
+            "6,6", 0.5f,
+            "7,6", 0.5f,
+            "8,6", 0.5f,
+            "9,6", 0.5f,
+            "18,12", 0.5f,
+            "19,12", 0.5f,
+            "20,12", 0.5f,
+            "21,12", 0.5f
+        );
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {
-            markKeypoint(wp);
+            String key = wp.x + "," + wp.y;
+            Float modifier = speedModifiers.get(key);
+            if (modifier == null) {
+                markKeypoint(wp);
+            }
             Entity waypoint = new Entity();
-            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypoint.setPosition(wp.x / 2f, wp.y / 2f);
+            if (modifier != null) {
+                waypoint.addComponent(new SpeedWaypointComponent(modifier));
+            }
             waypointList.add(waypoint);
         }
         int[][] redCircledArea = {
-            {12, 17, 5, 12}, 
-            {9,17,3,5}, 
+            {12, 17, 5, 12},
+            {9,17,3,5},
             {21,23,10,19},
                 {24,26,16,19},
                 {25,31,18,20},
@@ -221,23 +248,48 @@ public class MapEditor extends InputAdapter {
                 {30,31,2,5},
                 {30,31,6,7},
         };
-        
+
+
+        //Invalid area
         for (int[] range : redCircledArea) {
-            int startX = range[0];
-            int endX = range[1];
-            int startY = range[2];
-            int endY = range[3];
-            
-            System.out.println("🔴InvalidTiles: x=" + startX + "-" + endX + ", y=" + startY + "-" + endY);
-            
-            for (int x = startX; x <= endX; x++) {
-                for (int y = startY; y <= endY; y++) {
+            for (int x = range[0]; x <= range[1]; x++) {
+                for (int y = range[2]; y <= range[3]; y++) {
                     addSnow(x, y);
                 }
             }
         }
 
-       // generatePlaceableAreas();
+        // water area
+        int[][] waterArea = {
+                {21,23,10,19},
+                {24,26,16,19},
+                {25,31,18,20},
+                {27,31,21,22},
+                {20,24,9,12},
+                {18,22,6,9},
+                {0,12,0,2},
+                {13,21,0,1},
+                {0,4,4,9},
+                {22,24,0,2},
+                {25,31,0,1},
+                {30,32,2,5},
+                {30,32,6,7},
+                {17,22,0,4},
+                {32,33,0,5}
+        };
+
+        // Water tile
+        for (int[] range : waterArea) {
+            for (int x = range[0]; x <= range[1]; x++) {
+                for (int y = range[2]; y <= range[3]; y++) {
+                    waterTiles.add(new GridPoint2(x, y));
+                }
+            }
+        }
+
+
+
+        // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());
         System.out.println("✅ Snow coordinates number=" + snowCoords.size());
@@ -269,6 +321,7 @@ public class MapEditor extends InputAdapter {
         System.out.println("🧹 MapEditor cleaned up");
     }
 
+    @Override
     public Map<String, GridPoint2> getInvalidTiles() {
         invalidTiles.clear();
         invalidTiles.putAll(pathTiles);
@@ -332,6 +385,16 @@ public class MapEditor extends InputAdapter {
             String key = p[0] + "," + p[1];
             snowTreeTiles.put(key, new GridPoint2(p[0], p[1]));
         }
+    }
+
+    @Override
+    public java.util.List<GridPoint2> getWaterTiles() {
+        return waterTiles;
+    }
+
+    @Override
+    public java.util.List<Entity> getWaypointList() {
+        return waypointList;
     }
 
 

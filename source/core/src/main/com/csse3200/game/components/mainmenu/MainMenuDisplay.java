@@ -11,9 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.csse3200.game.areas.ForestGameArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +48,7 @@ public class MainMenuDisplay extends UIComponent {
     stage.addActor(backgroundImage);
 
     // 创建自定义按钮样式
-    TextButtonStyle customButtonStyle = createCustomButtonStyle();
-    
+    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
     TextButton startBtn = new TextButton("New Game", customButtonStyle);
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
@@ -55,18 +56,6 @@ public class MainMenuDisplay extends UIComponent {
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
     TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
-    // stars display
-    Image starImage = new Image(
-            ServiceLocator.getResourceService().getAsset(
-                    "images/star.png",
-                    Texture.class
-            )
-    );
-    Label starsLabel = new Label(
-            Integer.toString(ServiceLocator.getGameStateService().getStars()),
-            skin,
-            "large"
-    );
 
     // 设置按钮大小
     float buttonWidth = 200f;
@@ -137,12 +126,6 @@ public class MainMenuDisplay extends UIComponent {
 
 
     table.add().expandY().row();
-    HorizontalGroup group = new HorizontalGroup();
-    group.space(5);
-    group.addActor(starImage);
-    group.addActor(starsLabel);
-    table.add(group);
-    table.row();
     table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
     table.row();
     table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);
@@ -158,6 +141,17 @@ public class MainMenuDisplay extends UIComponent {
     table.add().expandY(); 
 
     stage.addActor(table);
+    applyUiScale();
+  }
+
+  private void applyUiScale() {
+    UserSettings.Settings settings = UserSettings.get();
+    if (table != null) {
+      table.setTransform(true);
+      table.validate();
+      table.setOrigin(table.getWidth() / 2f, table.getHeight() / 2f);
+      table.setScale(settings.uiScale);
+    }
   }
 
   @Override

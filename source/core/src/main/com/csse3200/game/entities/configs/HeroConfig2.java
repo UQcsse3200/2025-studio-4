@@ -10,12 +10,12 @@ package com.csse3200.game.entities.configs;
  * Values can be loaded from JSON via {@code FileLoader}.
  * </p>
  */
-public class HeroConfig2 extends BaseEntityConfig {
+public class HeroConfig2 extends HeroConfig {
   /** Movement speed in pixels per second */
   public float moveSpeed = 220f;
 
   /** Attack cooldown (seconds per shot) — lower values mean faster attack speed */
-  public float attackCooldown = 0.08f;
+  public float attackCooldown = 0.20f;
 
   /** Bullet lifetime (seconds) */
   public float bulletLife = 1.6f;
@@ -45,7 +45,7 @@ public class HeroConfig2 extends BaseEntityConfig {
    */
   public HeroConfig2() {
     this.health = 100;
-    this.baseAttack = 5;
+    this.baseAttack = 2;
   }
 }
 

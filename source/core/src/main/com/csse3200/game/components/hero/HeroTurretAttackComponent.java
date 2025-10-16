@@ -10,13 +10,12 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.ProjectileFactory;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.GameTime;
 
 /**
- * Hero turret-style attack component:
- * - Does not handle movement.
- * - Fires bullets towards the mouse cursor when cooldown expires.
- * - Rotates the hero sprite to face the mouse direction.
- * - Bullet damage is computed from CombatStatsComponent (baseAttack) at fire time.
+ * Turret-style attack component for the hero:
+ * fires bullets toward the mouse cursor on cooldown, rotates to face aim direction,
+ * and computes damage from CombatStatsComponent at fire time.
  */
 public class HeroTurretAttackComponent extends Component {
   private float cooldown;
@@ -37,6 +36,13 @@ public class HeroTurretAttackComponent extends Component {
   /** Adjust based on default sprite orientation: 0 if facing right, -90 if facing up. */
   private static final float SPRITE_FACING_OFFSET_DEG = -90f;
 
+  /**
+   * @param cooldown      seconds between shots
+   * @param bulletSpeed   bullet speed in world units per second
+   * @param bulletLife    bullet lifetime in seconds
+   * @param bulletTexture bullet sprite texture path
+   * @param camera        world camera used to unproject mouse coordinates
+   */
   public HeroTurretAttackComponent(float cooldown, float bulletSpeed, float bulletLife,
                                    String bulletTexture, Camera camera) {
     this.cooldown = cooldown;
@@ -45,21 +51,41 @@ public class HeroTurretAttackComponent extends Component {
     this.bulletTexture = bulletTexture;
     this.camera = camera;
   }
+
+  /**
+   * Change the bullet texture at runtime.
+   * @param bulletTexture new sprite path for bullets
+   */
   public void setBulletTexture(String bulletTexture) {
       this.bulletTexture = bulletTexture;
   }
+
+  /**
+   * Set the firing cooldown.
+   * @param s seconds between shots
+   * @return this for chaining
+   */
   public HeroTurretAttackComponent setCooldown(float s) {
       this.cooldown = s;
       return this;
   }
+
+  /**
+   * Set bullet speed and lifetime.
+   * @param speed speed in world units per second
+   * @param life  lifetime in seconds
+   * @return this for chaining
+   */
   public HeroTurretAttackComponent setBulletParams(float speed, float life) {
       this.bulletSpeed = speed;
       this.bulletLife = life;
       return this;
   }
 
-
-    @Override
+  /**
+   * Subscribe to attack multiplier events used by ultimates/buffs.
+   */
+  @Override
   public void create() {
     // Listen for ultimate ability multipliers (HeroUltimateComponent triggers "attack.multiplier")
     entity.getEvents().addListener("attack.multiplier", (Float mul) -> {
@@ -68,11 +94,18 @@ public class HeroTurretAttackComponent extends Component {
     });
   }
 
+  /**
+   * Rotate to face the mouse, and when off cooldown spawn a bullet with computed damage.
+   * No-ops while paused (time scale == 0).
+   */
   @Override
   public void update() {
     if (entity == null) return;
 
-    float dt = (Gdx.graphics != null) ? Gdx.graphics.getDeltaTime() : (1f / 60f);
+    // Use GameTime's delta time which respects time scale (paused = 0, double speed = 2x)
+    GameTime gameTime = ServiceLocator.getTimeSource();
+    float dt = gameTime != null ? gameTime.getDeltaTime() : 0f;
+    
     if (cdTimer > 0f) {
       cdTimer -= dt;
     }
@@ -83,13 +116,13 @@ public class HeroTurretAttackComponent extends Component {
 
     // Rotate sprite to face aim direction
     RotatingTextureRenderComponent rot = entity.getComponent(RotatingTextureRenderComponent.class);
-    if (rot != null) {
+    if (rot != null && gameTime.getTimeScale() > 0f) {
       float angleDeg = dir.angleDeg() + SPRITE_FACING_OFFSET_DEG;
       rot.setRotation(angleDeg);
     }
 
-    // Fire when cooldown expires
-    if (cdTimer <= 0f) {
+    // Only fire if game is not paused (time scale > 0) and cooldown has expired
+    if (gameTime != null && gameTime.getTimeScale() > 0f && cdTimer <= 0f) {
       float vx = dir.x * bulletSpeed;
       float vy = dir.y * bulletSpeed;
 
@@ -112,9 +145,8 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * Compute damage based on combat stats:
-   * baseAttack (from CombatStatsComponent) * attackScale + flatBonusDamage.
-   * Rounded to nearest integer, minimum value = 1.
+   * Compute bullet damage from base attack and modifiers.
+   * @return non-negative integer damage (min 1)
    */
   private int computeDamageFromStats() {
     CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
@@ -124,7 +156,10 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * Compute normalized direction vector from fire position to mouse world coordinates.
+   * Compute a normalized direction from the given fire position to the mouse in world space.
+   * @param firePos origin point for the shot
+   * @param outDir  output normalized direction
+   * @return true if a valid direction was computed, false otherwise
    */
   private boolean computeAimDirection(Vector2 firePos, Vector2 outDir) {
     if (camera == null) return false;
@@ -139,9 +174,9 @@ public class HeroTurretAttackComponent extends Component {
   }
 
   /**
-   * Get entity center:
-   * - Prefer using getCenterPosition() if available.
-   * - Otherwise, fall back to position + half-scale.
+   * Utility to get the entity's center if available; otherwise approximates from position/scale.
+   * @param e entity
+   * @return center position
    */
   private static Vector2 getEntityCenter(Entity e) {
     try {
@@ -155,18 +190,23 @@ public class HeroTurretAttackComponent extends Component {
     return new Vector2(cx, cy);
   }
 
-  // ===== Optional: chainable API for setting damage modifiers (useful for passives, items, buffs) =====
-
-  /** Set flat bonus damage (+X). */
+  /**
+   * Add flat bonus damage to each shot.
+   * @param flatBonusDamage additive damage
+   * @return this for chaining
+   */
   public HeroTurretAttackComponent setFlatBonusDamage(int flatBonusDamage) {
     this.flatBonusDamage = flatBonusDamage;
     return this;
   }
 
-  /** Set damage multiplier (×Y). */
+  /**
+   * Apply a multiplicative damage scale to base attack.
+   * @param attackScale multiplier
+   * @return this for chaining
+   */
   public HeroTurretAttackComponent setAttackScale(float attackScale) {
     this.attackScale = attackScale;
     return this;
   }
 }
-

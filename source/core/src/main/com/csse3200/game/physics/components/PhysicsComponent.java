@@ -9,6 +9,7 @@ import com.csse3200.game.physics.BodyUserData;
 import com.csse3200.game.physics.PhysicsContactListener;
 import com.csse3200.game.physics.PhysicsEngine;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.ComponentPriority;
 
 /**
  * Lets an entity be controlled by physics. Do not directly modify the position of a physics-enabled
@@ -25,6 +26,7 @@ public class PhysicsComponent extends Component {
   /** Create a physics component with default settings. */
   public PhysicsComponent() {
     this(ServiceLocator.getPhysicsService().getPhysics());
+    this.prio = ComponentPriority.HIGH;
   }
 
   /**

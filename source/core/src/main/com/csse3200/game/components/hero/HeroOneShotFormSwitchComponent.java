@@ -16,27 +16,23 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.events.listeners.EventListener1;
+import com.csse3200.game.events.listeners.EventListener3; // 用于 upgraded 三参数事件
+
 
 import java.util.ArrayList;
 
 /**
- * One-shot component for switching hero form (weapon/skin).
- *
- * <p>Features:
- * <ul>
- *   <li>Preloads hero textures to avoid missing assets when switching.</li>
- *   <li>Polls for the hero entity until it is found.</li>
- *   <li>If no manual input is received within 5 seconds, defaults to form-1 automatically.</li>
- *   <li>Intercepts keys 1/2/3 by registering an InputAdapter at index 0 of the InputMultiplexer
- *       (highest priority, ensures events are not consumed by UI or camera).</li>
- *   <li>Switch is one-shot: after applying a form, the component locks and disposes itself.</li>
- * </ul>
+ * Hero form switcher:
+ * - Boot to form-1 immediately (texture + bullet + params) once hero is available.
+ * - No time limit for the first manual switch.
+ * - Locks after the first successful manual switch.
+ * - Also locks immediately after the hero upgrades (level > 1 or "upgraded" event).
  */
 public class HeroOneShotFormSwitchComponent extends InputComponent {
     private static final Logger logger = LoggerFactory.getLogger(HeroOneShotFormSwitchComponent.class);
 
-    private static final float POLL_INTERVAL_SEC = 0.25f;     // Interval for polling hero existence
-    private static final float AUTO_DEFAULT_DELAY_SEC = 5f;   // Delay before auto-default to form 1
+    private static final float POLL_INTERVAL_SEC = 0.25f; // Poll hero existence
 
     // Configs for different hero forms
     private final HeroConfig cfg1;   // Form 1
@@ -44,14 +40,16 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     private final HeroConfig3 cfg3;  // Form 3
 
     private Entity hero;              // Reference to the hero entity
-    private boolean locked = false;   // Lock once a form is selected
+    private boolean locked = false;   // Lock after first manual switch or any upgrade
 
-    // Timers for polling and auto-default
+    // Polling timer (no auto-default timer anymore)
     private Timer.Task pollTask;
-    private Timer.Task autoDefaultTask;
 
-    // InputAdapter registered at index 0 to capture keys 1/2/3
+    // InputAdapter registered at index 0 to intercept keys 1/2/3
     private InputAdapter hotkeyAdapter;
+
+    // Track current form (1/2/3). 0 means not initialized yet.
+    private int currentForm = 0;
 
     public HeroOneShotFormSwitchComponent(HeroConfig cfg1, HeroConfig2 cfg2, HeroConfig3 cfg3) {
         super(1000); // High priority, but actual capture is via mux[0]
@@ -75,11 +73,12 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             while (!rs.loadForMillis(10)) { /* wait until loaded */ }
         }
 
-        // === Check if hero already exists; start polling or auto-default ===
+        // === Find hero; if not ready, poll; when ready, hook upgrade lock & boot to form-1 ===
         if (!tryFindHero()) {
-            armHeroPolling();
+            armHeroPolling(); // will call hookUpgradeLock() + bootToForm1() when hero is found
         } else {
-            armAutoDefaultTimer();
+            hookUpgradeLock();
+            bootToForm1();
         }
 
         // === Register hotkeyAdapter at index 0 to intercept keys 1/2/3 ===
@@ -90,41 +89,29 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                     if (locked) return true; // already locked → swallow event
                     if (hero == null && !tryFindHero()) return false;
 
-                    if (keycode == Input.Keys.NUM_1 || keycode == Input.Keys.NUMPAD_1) {
-                        boolean ok = switchOnce(cfg1 != null ? cfg1.heroTexture : null, "1");
-                        if (ok) {
-                            updateBulletTexture(cfg1 != null ? cfg1.bulletTexture : null);
-                            applyConfigToHero(cfg1);
-                        }
-                        return ok;
+                    int target = 0;
+                    if (keycode == Input.Keys.NUM_1 || keycode == Input.Keys.NUMPAD_1) target = 1;
+                    else if (keycode == Input.Keys.NUM_2 || keycode == Input.Keys.NUMPAD_2) target = 2;
+                    else if (keycode == Input.Keys.NUM_3 || keycode == Input.Keys.NUMPAD_3) target = 3;
+                    else return false; // let other keys pass through
+
+                    // Pressing the same form does nothing (and does NOT lock)
+                    if (target == currentForm) return true;
+
+                    boolean ok = applyForm(target, "hotkey-" + target);
+                    if (ok) {
+                        // First successful manual switch → lock
+                        locked = true;
+                        // Optional: remove input hook to behave like a one-shot component
+                        dispose();
+                        Gdx.app.log("HeroSkinSwitch", "locked by manual switch to form " + target);
                     }
-                    if (keycode == Input.Keys.NUM_2 || keycode == Input.Keys.NUMPAD_2) {
-                        boolean ok = switchOnce(cfg2 != null ? cfg2.heroTexture : null, "2");
-                        if (ok) {
-                            updateBulletTexture(cfg2 != null ? cfg2.bulletTexture : null);
-                            applyConfigToHero2(cfg2);
-                        }
-                        return ok;
-                    }
-                    if (keycode == Input.Keys.NUM_3 || keycode == Input.Keys.NUMPAD_3) {
-                        boolean ok = switchOnce(cfg3 != null ? cfg3.heroTexture : null, "3");
-                        if (ok) {
-                            updateBulletTexture(cfg3 != null ? cfg3.bulletTexture : null);
-                            applyConfigToHero3(cfg3);
-                        }
-                        return ok;
-                    }
-                    return false; // let other keys pass through
+                    return ok;
                 }
 
                 @Override
                 public boolean keyTyped(char character) {
-                    // Optional: not strictly necessary since keyDown is enough
-                    if (locked) return true;
-                    if (hero == null && !tryFindHero()) return false;
-                    if (character == '1') return switchOnce(cfg1 != null ? cfg1.heroTexture : null, "1");
-                    if (character == '2') return switchOnce(cfg2 != null ? cfg2.heroTexture : null, "2");
-                    if (character == '3') return switchOnce(cfg3 != null ? cfg3.heroTexture : null, "3");
+                    // Not needed; keyDown is sufficient
                     return false;
                 }
             };
@@ -142,7 +129,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     }
 
     /**
-     * Start polling for hero entity; once found, start auto-default timer.
+     * Start polling for hero entity; once found, hook upgrade lock & boot to form-1.
      */
     private void armHeroPolling() {
         if (pollTask != null) return;
@@ -157,7 +144,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 if (tryFindHero()) {
                     cancel();
                     pollTask = null;
-                    armAutoDefaultTimer();
+                    hookUpgradeLock();
+                    bootToForm1();
                 }
             }
         }, 0f, POLL_INTERVAL_SEC);
@@ -173,7 +161,6 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             return false;
         }
         for (Entity e : entityService.getEntities()) {
-
             if (e.getComponent(HeroTurretAttackComponent.class) != null) {
                 hero = e;
                 return true;
@@ -183,67 +170,99 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     }
 
     /**
-     * Schedule auto-default to form 1 after a delay, if no manual selection occurs.
+     * Hook listeners that lock switching as soon as the hero upgrades.
+     * Locks when hero.level > 1 or upgraded is triggered.
      */
-    private void armAutoDefaultTimer() {
-        if (autoDefaultTask != null || locked || hero == null) return;
-        autoDefaultTask = Timer.schedule(new Timer.Task() {
-            @Override
-            public void run() {
-                if (locked || hero == null) return;
-                boolean ok = switchOnce(cfg1 != null ? cfg1.heroTexture : null, "auto-1");
-                if (!ok) logger.warn("[HeroSkinSwitch] auto-default to form-1 failed");
+    private void hookUpgradeLock() {
+        if (hero == null) return;
+
+        // Lock when hero.level > 1
+        // --- Hero is locked after leveling up (hero.level event has only one parameter)---
+        hero.getEvents().addListener("hero.level", (EventListener1<Integer>) newLevel -> {
+            if (!locked && newLevel > 1) {
+                locked = true;
+                dispose(); // optional
+                Gdx.app.log("HeroSkinSwitch", "locked by levelUp: level=" + newLevel);
             }
-        }, AUTO_DEFAULT_DELAY_SEC);
+        });
+
+// --- Hero upgrade completed and locked (upgraded event has three parameters)---
+        hero.getEvents().addListener("upgraded",
+                (EventListener3<Integer, Object, Integer>) (newLevel, _costType, _cost) -> {
+                    if (!locked && newLevel > 1) {
+                        locked = true;
+                        dispose();
+                        Gdx.app.log("HeroSkinSwitch", "locked by upgraded: level=" + newLevel);
+                    }
+                });
+
     }
 
-    /** Cancel any scheduled timers. */
-    private void cancelTimers() {
-        if (pollTask != null) {
-            pollTask.cancel();
-            pollTask = null;
+    /**
+     * Boot to form-1 once hero is ready (texture + bullet + params).
+     */
+    private void bootToForm1() {
+        if (hero == null || cfg1 == null) {
+            logger.warn("[HeroSkinSwitch] bootToForm1 skipped: hero or cfg1 is null");
+            return;
         }
-        if (autoDefaultTask != null) {
-            autoDefaultTask.cancel();
-            autoDefaultTask = null;
+        boolean ok = switchTexture(cfg1.heroTexture, "boot-1");
+        if (ok) {
+            updateBulletTexture(cfg1.bulletTexture);
+            applyConfigToHero(cfg1);
+            currentForm = 1;
+            logger.info("[HeroSkinSwitch] booted with form-1");
+        } else {
+            logger.warn("[HeroSkinSwitch] boot form-1 failed (texture unavailable?)");
         }
     }
 
-    /** Update bullet texture for the current hero attack component. */
+    /**
+     * Apply target form (used by the first manual switch).
+     */
+    private boolean applyForm(int form, String tag) {
+        String tex = null;
+        switch (form) {
+            case 1 -> tex = (cfg1 != null ? cfg1.heroTexture : null);
+            case 2 -> tex = (cfg2 != null ? cfg2.heroTexture : null);
+            case 3 -> tex = (cfg3 != null ? cfg3.heroTexture : null);
+            default -> {
+                return false;
+            }
+        }
+        if (tex == null || tex.isBlank()) return false;
+
+        boolean ok = switchTexture(tex, tag);
+        if (!ok) return false;
+
+        if (form == 1 && cfg1 != null) {
+            updateBulletTexture(cfg1.bulletTexture);
+            applyConfigToHero(cfg1);
+        } else if (form == 2 && cfg2 != null) {
+            updateBulletTexture(cfg2.bulletTexture);
+            applyConfigToHero2(cfg2);
+        } else if (form == 3 && cfg3 != null) {
+            updateBulletTexture(cfg3.bulletTexture);
+            applyConfigToHero3(cfg3);
+        }
+        currentForm = form;
+        return true;
+    }
+
+    /**
+     * Update bullet texture for the current hero attack component.
+     */
     private void updateBulletTexture(String bulletTexture) {
+        if (hero == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
         if (atc != null) atc.setBulletTexture(bulletTexture);
     }
 
-    /** Apply config values (form 1) to hero attack and combat stats. */
+    /**
+     * Apply config values (form 1) to hero attack and combat stats.
+     */
     private void applyConfigToHero(HeroConfig cfg) {
-        if (cfg == null) return;
-        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
-        CombatStatsComponent stats = hero.getComponent(CombatStatsComponent.class);
-        if (atc != null) {
-            atc.setCooldown(cfg.attackCooldown)
-                    .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
-                    .setBulletTexture(cfg.bulletTexture);
-        }
-        if (stats != null) stats.setBaseAttack(cfg.baseAttack);
-    }
-
-    /** Apply config values (form 2) to hero attack and combat stats. */
-    private void applyConfigToHero2(HeroConfig2 cfg) {
-        if (cfg == null) return;
-        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
-        CombatStatsComponent stats = hero.getComponent(CombatStatsComponent.class);
-        if (atc != null) {
-            atc.setCooldown(cfg.attackCooldown)
-                    .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
-                    .setBulletTexture(cfg.bulletTexture);
-        }
-        if (stats != null) stats.setBaseAttack(cfg.baseAttack);
-    }
-
-    /** Apply config values (form 3) to hero attack and combat stats. */
-    private void applyConfigToHero3(HeroConfig3 cfg) {
-        if (cfg == null) return;
+        if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
         CombatStatsComponent stats = hero.getComponent(CombatStatsComponent.class);
         if (atc != null) {
@@ -255,14 +274,46 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     }
 
     /**
-     * Switch hero texture once (one-shot).
-     * - Applies new texture to RotatingTextureRenderComponent.
-     * - Cancels timers and locks further changes.
-     * - Disposes this component to unregister from input system.
+     * Apply config values (form 2) to hero attack and combat stats.
      */
-    private boolean switchOnce(String texturePath, String keyTag) {
+    private void applyConfigToHero2(HeroConfig2 cfg) {
+        if (hero == null || cfg == null) return;
+        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
+        CombatStatsComponent stats = hero.getComponent(CombatStatsComponent.class);
+        if (atc != null) {
+            atc.setCooldown(cfg.attackCooldown)
+                    .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
+                    .setBulletTexture(cfg.bulletTexture);
+        }
+        if (stats != null) stats.setBaseAttack(cfg.baseAttack);
+    }
+
+    /**
+     * Apply config values (form 3) to hero attack and combat stats.
+     */
+    private void applyConfigToHero3(HeroConfig3 cfg) {
+        if (hero == null || cfg == null) return;
+        HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
+        CombatStatsComponent stats = hero.getComponent(CombatStatsComponent.class);
+        if (atc != null) {
+            atc.setCooldown(cfg.attackCooldown)
+                    .setBulletParams(cfg.bulletSpeed, cfg.bulletLife)
+                    .setBulletTexture(cfg.bulletTexture);
+        }
+        if (stats != null) stats.setBaseAttack(cfg.baseAttack);
+    }
+
+    /**
+     * Just switch the texture on RotatingTextureRenderComponent.
+     * No lock or timers here (locking is controlled by manual switch or upgrade events).
+     */
+    private boolean switchTexture(String texturePath, String keyTag) {
         if (texturePath == null || texturePath.isBlank()) {
             logger.warn("[HeroSkinSwitch] empty texture for {}", keyTag);
+            return false;
+        }
+        if (hero == null) {
+            logger.warn("[HeroSkinSwitch] switchTexture failed: hero is null");
             return false;
         }
         RotatingTextureRenderComponent rot = hero.getComponent(RotatingTextureRenderComponent.class);
@@ -271,11 +322,18 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             return false;
         }
         rot.setTexture(texturePath);
-        locked = true;
-        cancelTimers();
-        logger.info("[HeroSkinSwitch] switched by {} -> {}, locked", keyTag, texturePath);
-        this.entity.dispose();
+        logger.info("[HeroSkinSwitch] switched by {} -> {}", keyTag, texturePath);
         return true;
+    }
+
+    /**
+     * Cancel any scheduled timers.
+     */
+    private void cancelTimers() {
+        if (pollTask != null) {
+            pollTask.cancel();
+            pollTask = null;
+        }
     }
 
     @Override
@@ -288,5 +346,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         hotkeyAdapter = null;
     }
 }
+
+
 
 

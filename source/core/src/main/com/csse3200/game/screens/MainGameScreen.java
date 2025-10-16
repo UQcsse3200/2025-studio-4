@@ -53,10 +53,10 @@ public class MainGameScreen extends ScreenAdapter {
           "images/scrap.png",
           "images/Game_Over.png",
           "images/Game_Victory.png",
-          "images/profile1.png",
-          "images/profile2.png",
-          "images/profile3.png",
-          "images/profile4.png"
+          "images/homebase1.png",
+          "images/homebase2.png",
+          "images/basement.png",
+          "images/Background4.png"
   };
 
   private static final Vector2 CAMERA_POSITION = new Vector2(7.5f, 7.5f);
@@ -126,7 +126,7 @@ public class MainGameScreen extends ScreenAdapter {
     boolean hasExistingPlayer = false;
     if (isContinue && startupArg != null) {
       logger.info("Loading specific save file: {}", startupArg);
-      boolean success = simpleSave.loadToPending();
+      boolean success = simpleSave.loadToPending(startupArg);
       if (success) {
         logger.info("Save file loaded successfully");
         hasExistingPlayer = true;
@@ -170,10 +170,8 @@ public class MainGameScreen extends ScreenAdapter {
 
     // If continuing from a save, avoid auto-starting waves to prevent duplicate enemies.
     if (gameArea instanceof ForestGameArea) {
-      ((ForestGameArea) gameArea).setAutoStartWaves(!hasExistingPlayer);
       ((ForestGameArea) gameArea).create();
     } else if (gameArea instanceof ForestGameArea2) {
-      ((ForestGameArea2) gameArea).setAutoStartWaves(!hasExistingPlayer);
       ((ForestGameArea2) gameArea).create();
     }
 

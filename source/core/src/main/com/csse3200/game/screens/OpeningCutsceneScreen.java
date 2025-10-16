@@ -163,14 +163,18 @@ public class OpeningCutsceneScreen implements Screen {
     }
     
     private void setupScrollingText() {
-        // Create scrolling text label
-        String scrollText = "In a distant future, Earth has been conquered by a mechanical army...\n\n" +
-                           "As the last resistance commander, you must establish the final defense line\n" +
-                           "in the Box Forest against the invasion of the mechanical forces.\n\n" +
-                           "Face the aerial threats of drone swarms, the frontal assault of grunts,\n" +
-                           "the crushing force of heavy tanks, and mysterious dividers...\n\n" +
-                           "Build defensive towers, deploy hero units, and use strategy and wisdom\n" +
-                           "to protect your base and fight for humanity's future!";
+        String scrollText = "Year 2157. The AI Uprising has devastated Earth...\n\n" +
+                           "After humanity lost control of its own creations,\n" +
+                           "corrupted military AI systems turned their weapons against their makers.\n\n" +
+                           "You are Commander, tasked with defending the last two strongholds:\n" +
+                           "The Forest Demo Sector - a winding maze of natural barriers,\n" +
+                           "and Map Two Sector - an open battlefield testing your strategic mastery.\n\n" +
+                           "Face relentless waves: swift Drone swarms from neon megacities,\n" +
+                           "mass-produced Grunt cyber-soldiers, armored Tank siegebreakers,\n" +
+                           "unstable Dividers that split into deadly offspring,\n" +
+                           "and the corrupted Boss - once humanity's defender, now its greatest threat.\n\n" +
+                           "Deploy defensive towers, command elite hero units,\n" +
+                           "and hold the line. The fate of humanity rests in your hands!";
         
         // Create a custom font for better rendering
         scrollFont = new BitmapFont();

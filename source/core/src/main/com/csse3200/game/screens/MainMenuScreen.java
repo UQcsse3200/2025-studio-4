@@ -1,8 +1,10 @@
 package com.csse3200.game.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.components.BackgroundDecorator;
 import com.csse3200.game.components.mainmenu.MainMenuActions;
 import com.csse3200.game.components.mainmenu.MainMenuDisplay;
 import com.csse3200.game.entities.Entity;
@@ -29,11 +31,13 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/main_menu_background.png",
     "images/Main_Menu_Button_Background.png",
     "images/star.png",
+    "images/sun.png",
     "images/tough survivor.jpg",
     "images/speed runner.jpg",
     "images/slayer.jpg",
     "images/perfect clear.jpg",
-    "images/participation.jpg"
+    "images/participation.jpg",
+    "images/name and leaderbooard background.png"
   };
   
   private static final String[] mainMenuMusic = {
@@ -60,6 +64,7 @@ public class MainMenuScreen extends ScreenAdapter {
     if (ServiceLocator.getAudioService() == null) {
       ServiceLocator.registerAudioService(new AudioService());
     }
+
 
     renderer = RenderFactory.createRenderer();
 
@@ -113,18 +118,19 @@ public class MainMenuScreen extends ScreenAdapter {
   
   private void registerAudioAssets() {
     if (ServiceLocator.getAudioService() != null) {
-      ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/BGM_03_mp3.mp3");
+      //ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/BGM_03_mp3.mp3");
+      ServiceLocator.getAudioService().registerMusic("menu_bgm", "sounds/new_menutheme.mp3");
     }
   }
   
   private void playMenuMusic() {
-    if (GdxGame.musicON == 0) {
+    //if (GdxGame.musicON == 0) {
       if (ServiceLocator.getAudioService() != null) {
         ServiceLocator.getAudioService().playMusic("menu_bgm", true);
         // Set the flag to indicate music is now on
         GdxGame.musicON = 1;
       }
-    }
+    //}
   }
 
   private void unloadAssets() {
@@ -140,6 +146,12 @@ public class MainMenuScreen extends ScreenAdapter {
   private void createUI() {
     logger.debug("Creating ui");
     Stage stage = ServiceLocator.getRenderService().getStage();
+    
+    // Add background decorations (stars and clouds)
+    Entity backgroundDecorations = new Entity();
+    backgroundDecorations.addComponent(new BackgroundDecorator());
+    ServiceLocator.getEntityService().register(backgroundDecorations);
+    
     Entity ui = new Entity();
     ui.addComponent(new MainMenuDisplay())
         .addComponent(new InputDecorator(stage, 10))

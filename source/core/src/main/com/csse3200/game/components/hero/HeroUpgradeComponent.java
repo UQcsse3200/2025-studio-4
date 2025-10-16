@@ -21,7 +21,7 @@ import java.util.Map;
 public class HeroUpgradeComponent extends Component {
     /** Current level and maximum level cap */
     private int level = 1;
-    private final int maxLevel = 3;
+    private final int maxLevel = 2;
 
     /** Currency type and cost formula */
     private final CurrencyType costType = CurrencyType.METAL_SCRAP;
@@ -52,6 +52,21 @@ public class HeroUpgradeComponent extends Component {
             if (p != null && p != this.player) attachPlayer(p);
             tryUpgrade();
         });
+
+        broadcastSnapshot();
+    }
+
+    private void broadcastSnapshot() {
+        CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            // grade
+            entity.getEvents().trigger("hero.level", level);
+            // Damage (change according to your field: baseAttack / totalAttack)
+            entity.getEvents().trigger("hero.damage", stats.getBaseAttack());
+        }
+        //
+        //Energy/rage can also be broadcast once if there is a corresponding component (for example)
+        // entity.getEvents().trigger("hero.energy", curEnergy, maxEnergy);
     }
 
     @Override
@@ -102,6 +117,14 @@ public class HeroUpgradeComponent extends Component {
         applyStatGrowth(level);
         Gdx.app.log("HeroUpgrade", "success: level=" + level + ", cost=" + cost);
         entity.getEvents().trigger("upgraded", level, costType, cost);
+
+
+        // ✅ 广播新数值，供UI刷新
+        entity.getEvents().trigger("hero.level", level);
+        CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            entity.getEvents().trigger("hero.damage", stats.getBaseAttack());
+        }
     }
 
     /** Applies stat growth when hero levels up (customizable). */

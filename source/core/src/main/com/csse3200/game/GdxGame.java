@@ -7,6 +7,7 @@ import com.csse3200.game.components.book.BookPage;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.screens.*;
 // NEW: Map selection screen
+import com.csse3200.game.screens.MapSelectionScreen;
 
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
@@ -31,12 +32,13 @@ public class GdxGame extends Game {
     logger.info("Creating game");
     loadSettings();
 
-    // Sets background to light yellow
-    Gdx.gl.glClearColor(248f/255f, 249/255f, 178/255f, 1);
+    // Sets background to dark theme color (matching system theme)
+    // Using Theme.WINDOW_BG color: #0c1116
+    Gdx.gl.glClearColor(12f/255f, 17f/255f, 22f/255f, 1);
 
     // instantiate game state
     ServiceLocator.registerGameStateService(new GameStateService());
-    
+
     // Register player name service
     ServiceLocator.registerPlayerNameService(new com.csse3200.game.services.PlayerNameServiceImpl());
     
@@ -133,7 +135,7 @@ public class GdxGame extends Game {
         if (ServiceLocator.getGameSessionManager() != null) {
           ServiceLocator.getGameSessionManager().startNewSession();
         }
-        
+
         // Start score tracking for new game
         if (ServiceLocator.getGameScoreService() != null) {
           ServiceLocator.getGameScoreService().startNewGame();
@@ -149,6 +151,8 @@ public class GdxGame extends Game {
         return new VictoryScreen(this);
       case MAP_SELECTION: // NEW
         return new MapSelectionScreen(this);
+      case UPGRADES:
+        return new UpgradeScreen(this);
       case BOOK:
         return new MainBookScreen(this);
       case CURRENCY_BOOK:
@@ -166,7 +170,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
-    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, ACHIEVEMENT_BOOK
+    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, ACHIEVEMENT_BOOK, UPGRADES
   }
 
   /**

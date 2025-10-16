@@ -30,7 +30,7 @@ public class DroneEnemyFactoryTest {
         ServiceLocator.registerResourceService(resourceService);
         
         // Load assets needed for PlayerFactory
-        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png"});
+        resourceService.loadTextures(new String[]{"images/basement.png", "images/grunt_enemy.png", "images/boss_enemy.png", "images/drone_enemy.png", "images/tank_enemy.png", "images/divider_enemy.png"});
         resourceService.loadAll();
 
         DroneEnemyFactory.resetToDefaults();
@@ -44,10 +44,10 @@ public class DroneEnemyFactoryTest {
         Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(50, stats.getHealth());
+        assertEquals(25, stats.getHealth());
         assertEquals(10, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
-        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(DamageTypeConfig.Fire, stats.getWeaknesses());
         assertEquals(new Vector2(1.2f, 1.2f), DroneEnemyFactory.getSpeed());
     }
 
@@ -80,7 +80,7 @@ public class DroneEnemyFactoryTest {
         assertEquals(DamageTypeConfig.Electricity, DroneEnemyFactory.getWeakness());
         // Setting weakness to null should default to None
         DroneEnemyFactory.setWeakness(null);
-        assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getWeakness());
+        assertEquals(DamageTypeConfig.Fire, DroneEnemyFactory.getWeakness());
     }
 
     @Test
@@ -153,7 +153,7 @@ public class DroneEnemyFactoryTest {
 
         // Verify the values have actually been reset to default values
         assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getResistance());
-        assertEquals(DamageTypeConfig.None, DroneEnemyFactory.getWeakness());
+        assertEquals(DamageTypeConfig.Fire, DroneEnemyFactory.getWeakness());
         assertEquals(new Vector2(1.2f, 1.2f), DroneEnemyFactory.getSpeed());
         assertEquals("images/drone_enemy.png", DroneEnemyFactory.getTexturePath());
         assertEquals("Drone Enemy", DroneEnemyFactory.getDisplayName());
@@ -168,10 +168,10 @@ public class DroneEnemyFactoryTest {
         Entity drone = DroneEnemyFactory.createDroneEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = drone.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(200, stats.getHealth());
+        assertEquals(100, stats.getHealth());
         assertEquals(40, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
-        assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
+        assertEquals(DamageTypeConfig.Fire, stats.getWeaknesses());
         assertEquals(new Vector2(1.2f, 1.2f), DroneEnemyFactory.getSpeed());
     }
 

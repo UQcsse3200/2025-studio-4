@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
-import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 
 import com.csse3200.game.ui.UIComponent;
@@ -52,13 +52,13 @@ public class SaveSelectionDisplay extends UIComponent {
     Label title = new Label("Select Save File", skin, "title");
     title.setColor(Color.WHITE);
     
-    // 创建自定义按钮样式
+    // Create custom button style
     TextButtonStyle customButtonStyle = createCustomButtonStyle();
     
     TextButton newSaveBtn = new TextButton("New Save", customButtonStyle);
     newSaveBtn.getLabel().setColor(Color.WHITE);
     
-    // 设置按钮大小
+    // Set button size
     float buttonWidth = 200f;
     float buttonHeight = 50f;
     
@@ -93,6 +93,18 @@ public class SaveSelectionDisplay extends UIComponent {
     table.add(backBtn).size(buttonWidth, buttonHeight).padBottom(30f);
 
     stage.addActor(table);
+
+    applyUiScale();
+  }
+
+  private void applyUiScale() {
+    UserSettings.Settings settings = UserSettings.get();
+    if (table != null) {
+      table.setTransform(true);
+      table.validate();
+      table.setOrigin(table.getWidth() / 2f, table.getHeight() / 2f);
+      table.setScale(settings.uiScale);
+    }
   }
 
   private Table createSaveFileList() {
@@ -132,10 +144,8 @@ public class SaveSelectionDisplay extends UIComponent {
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateStr = sdf.format(new Date(saveFile.lastModified()));
     Label dateLabel = new Label(dateStr, skin);
-    Label nameLabel1 = new Label("Save point:", skin);
     dateLabel.setColor(Color.WHITE);
-    nameLabel1.setColor(Color.RED);
-    // 创建自定义按钮样式
+
     TextButtonStyle customButtonStyle = createCustomButtonStyle();
     
     TextButton loadBtn = new TextButton("Load", customButtonStyle);
@@ -159,7 +169,8 @@ public class SaveSelectionDisplay extends UIComponent {
           }
         });
 
-    rowTable.add(nameLabel1).width(200f).left();
+    // Show save file name exactly as created (without .json)
+    rowTable.add(nameLabel).width(260f).left();
     rowTable.add(dateLabel).width(150f).left();
     rowTable.add(loadBtn).size(80f, 40f).padLeft(20f);
     rowTable.add(deleteBtn).size(80f, 40f).padLeft(10f);
@@ -185,36 +196,36 @@ public class SaveSelectionDisplay extends UIComponent {
   }
 
   /**
-   * 创建自定义按钮样式，使用按钮背景图片
+   * Create custom button style using a background image
    */
   private TextButtonStyle createCustomButtonStyle() {
     TextButtonStyle style = new TextButtonStyle();
     
-    // 使用Segoe UI字体
+    // Use Segoe UI font
     style.font = skin.getFont("segoe_ui");
     
-    // 加载按钮背景图片
+    // Load button background image
     Texture buttonTexture = ServiceLocator.getResourceService()
         .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
     TextureRegion buttonRegion = new TextureRegion(buttonTexture);
     
-    // 创建NinePatch用于可缩放的按钮背景
+    // Create NinePatch for scalable button background
     NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     
-    // 创建按下状态的NinePatch（稍微变暗）
+    // Create NinePatch for pressed state (slightly darker)
     NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
     
-    // 创建悬停状态的NinePatch（稍微变亮）
+    // Create NinePatch for hover state (slightly brighter)
     NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
     hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
     
-    // 设置按钮状态
+    // Set button states
     style.up = new NinePatchDrawable(buttonPatch);
     style.down = new NinePatchDrawable(pressedPatch);
     style.over = new NinePatchDrawable(hoverPatch);
     
-    // 设置字体颜色
+    // Set font colors
     style.fontColor = Color.WHITE;
     style.downFontColor = Color.LIGHT_GRAY;
     style.overFontColor = Color.WHITE;

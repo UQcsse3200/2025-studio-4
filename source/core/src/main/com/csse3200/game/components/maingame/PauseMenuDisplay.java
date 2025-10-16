@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.ui.UiStyles;
 
 public class PauseMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(PauseMenuDisplay.class);
@@ -65,18 +66,20 @@ public class PauseMenuDisplay extends UIComponent {
         Table window = new Table(skin);
         window.defaults().pad(10f);
 
-        Label title = new Label("Paused", skin, "title");
-        
+        Label title = new Label("Paused", skin);
+        title.setFontScale(1.8f);
+        title.setColor(new Color(1f, 0.9f, 0.6f, 1f));
+        title.getStyle().fontColor = Color.valueOf("CFF2FF");
+
         // Add player info section (avatar + name)
         Table playerInfoTable = createPlayerInfoSection();
 
         // Create custom button style
-        TextButtonStyle customButtonStyle = createCustomButtonStyle();
-
-        TextButton resumeBtn = new TextButton("Resume", customButtonStyle);
-        TextButton settingsBtn = new TextButton("Settings", customButtonStyle);
-        TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
-        TextButton quitBtn = new TextButton("Quit to Main Menu", customButtonStyle);
+        var style = UiStyles.orangeButton(skin);
+        TextButton resumeBtn   = new TextButton("Resume", style);
+        TextButton settingsBtn = new TextButton("Settings", style);
+        TextButton rankingBtn  = new TextButton("Ranking", style);
+        TextButton quitBtn     = new TextButton("Quit to Main Menu", style);
 
         resumeBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
@@ -118,11 +121,11 @@ public class PauseMenuDisplay extends UIComponent {
         Texture pauseTex = ServiceLocator.getResourceService()
                 .getAsset("images/pause_button.png", Texture.class);
         pauseIcon = new Image(pauseTex);
-        Table topLeft = new Table();
-        topLeft.setFillParent(true);
-        topLeft.top().left().pad(12f);
-        topLeft.add(pauseIcon).size(48f, 48f);
-        stage.addActor(topLeft);
+        Table topRight = new Table();
+        topRight.setFillParent(true);
+        topRight.top().right();
+        topRight.add(pauseIcon).size(48f, 48f).padTop(12f).padRight(150f);
+        stage.addActor(topRight);
 
         
         pauseIcon.addListener(new ChangeListener() {

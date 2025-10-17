@@ -177,7 +177,7 @@ public class BookDisplay extends UIComponent {
         table.setFillParent(true);
 
         // Left content list
-        table.top().left().padLeft(stageWidth * 0.18f).padTop(stageHeight * 0.2f);
+        table.top().left().padLeft(stageWidth * 0.2f).padTop(stageHeight * 0.2f);
 
         // Book title
         Label labelTitle = new Label(this.book.getTitle(), skin, "large");
@@ -235,7 +235,7 @@ public class BookDisplay extends UIComponent {
             ));
             borderedButton.add(button).size(buttonSize, buttonSize).pad(2);
 
-            table.add(borderedButton).padRight(stageWidth * 0.1f / imagesPerRow);
+            table.add(borderedButton).padRight(stageWidth * 0.08f / imagesPerRow);
         }
 
         stage.addActor(titleTable);

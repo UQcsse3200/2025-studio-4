@@ -352,15 +352,17 @@ public class TowerFactory {
                 .addComponent(new DeckComponent.TowerDeckComponent(
                         "frozenmamoothskull", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
-                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"))
-                .addComponent(new EnemyFreezeComponent());
+                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+
 
         // TEMPORARY: use bone tower atlas for now
         com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/mammoth/mammothlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
-        Entity head = new Entity().addComponent(headAnim);
+        Entity head = new Entity()
+                .addComponent(new EnemyFreezeComponent())
+                .addComponent(headAnim);
         headAnim.addAnimation("idle", 0.2f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
         headAnim.startAnimation("idle");

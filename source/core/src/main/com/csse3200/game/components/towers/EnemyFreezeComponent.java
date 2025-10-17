@@ -29,14 +29,42 @@ public class EnemyFreezeComponent extends Component {
     private final Map<Entity, Float> freezeTimers = new WeakHashMap<>();
 
     // Track enemies that have already been frozen while they remain inside this tower's range.
-    // Use a weak-key set to avoid preventing GC of entities.
     private final Set<Entity> hasFrozenWhileInRange = Collections.newSetFromMap(new WeakHashMap<>());
+
+    // Cached link back to the base tower (which holds the TowerStatsComponent)
+    private Entity baseTower;
+    private TowerStatsComponent cachedStats;
+
+    /** Resolve and cache stats from the base tower that owns this head entity. */
+    private TowerStatsComponent resolveStats() {
+        // Still valid?
+        if (cachedStats != null && baseTower != null && baseTower.isActive()) {
+            return cachedStats;
+        }
+
+        var es = ServiceLocator.getEntityService();
+        if (es == null) return null;
+
+        // Find the tower whose head is this entity
+        for (Entity e : es.getEntitiesCopy()) {
+            if (e == null) continue;
+            TowerComponent tc = e.getComponent(TowerComponent.class);
+            if (tc == null) continue;
+            if (tc.hasHead() && tc.getHeadEntity() == this.entity) {
+                baseTower = e;
+                cachedStats = e.getComponent(TowerStatsComponent.class);
+                break;
+            }
+        }
+        return cachedStats;
+    }
 
     @Override
     public void update() {
         if (!entity.isActive()) return;
 
-        TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
+        // Get stats from the owning base tower (not the head)
+        TowerStatsComponent stats = resolveStats();
         if (stats == null) return;
 
         float dt = 0f;
@@ -109,8 +137,7 @@ public class EnemyFreezeComponent extends Component {
                 if (hasFrozenWhileInRange.contains(other)) {
                     hasFrozenWhileInRange.remove(other);
                 }
-                // If an entity somehow left while frozen (shouldn't be frozenTimers.containsKey now because handled above),
-                // ensure any lingering data is cleaned up.
+                // If an entity somehow left while frozen, ensure data is cleaned up.
                 if (freezeTimers.containsKey(other)) {
                     Vector2 orig = originalSpeeds.remove(other);
                     freezeTimers.remove(other);

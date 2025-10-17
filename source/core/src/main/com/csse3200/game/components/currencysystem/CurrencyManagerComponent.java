@@ -29,7 +29,7 @@ public class CurrencyManagerComponent extends Component {
             this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
         }
         this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
-        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 50);
+        this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 500);
         this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);
         if (this.entity != null) {
             this.updateAllCurrencyUI();

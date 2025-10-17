@@ -261,7 +261,7 @@ public class ForestGameArea2 extends GameArea2 {
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
+        ui.addComponent(new GameAreaDisplay("Ascent")); // Shows the game area's name
         ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
         SimplePlacementController placementController = new SimplePlacementController();
@@ -372,7 +372,7 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private void spawnTerrain() {
-        terrain = terrainFactory.createTerrain(TerrainType.MAP_TWO);
+        terrain = terrainFactory.createTerrain(TerrainType.ASCENT);
         spawnEntity(new Entity().addComponent(terrain));
         // Create boundary walls
         createBoundaryWalls();

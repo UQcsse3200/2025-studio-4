@@ -96,16 +96,16 @@ public class MapSelectionDisplay extends UIComponent {
         // Default Forest map
         MapEntry defaultMap = new MapEntry();
         defaultMap.mapId = null;                     // null means default ForestGameArea
-        defaultMap.displayName = "Forest Demo";
+        defaultMap.displayName = "Icebox";
         defaultMap.thumbTex = thumbTexMap1;
         entries.add(defaultMap);
         
-        // MapTwo
-        MapEntry mapTwo = new MapEntry();
-        mapTwo.mapId = "MapTwo";                     // This will trigger ForestGameArea2
-        mapTwo.displayName = "Map Two";
-        mapTwo.thumbTex = thumbTexMap2;
-        entries.add(mapTwo);
+        // Ascent
+        MapEntry ascent = new MapEntry();
+        ascent.mapId = "Ascent";                     // This will trigger ForestGameArea2
+        ascent.displayName = "Ascent";
+        ascent.thumbTex = thumbTexMap2;
+        entries.add(ascent);
     }
 
     private void addActors() {

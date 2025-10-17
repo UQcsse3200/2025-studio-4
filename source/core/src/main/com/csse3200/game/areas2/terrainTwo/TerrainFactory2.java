@@ -48,11 +48,11 @@ public class TerrainFactory2 {
    */
   public TerrainComponent2 createTerrain(TerrainType terrainType) {
     switch (terrainType) {
-      case FOREST_DEMO:
+      case ICEBOX:
         // Use a simplified map creation method (with only mmap2 layers)使用简化的地图创建方式（只有 mmap2 图层）
-        return createForestDemoTerrain(0.5f);
-      case MAP_TWO:
-        return createMapTwoTerrain(0.5f);
+        return createIceboxTerrain(0.5f);
+      case ASCENT:
+        return createAscentTerrain(0.5f);
       default:
         return null;
         
@@ -60,14 +60,14 @@ public class TerrainFactory2 {
   }
 
   // A simplified terrain creation method (with only mmap2 layers)简化的地形创建方法（只有 mmap2 图层）
-  private TerrainComponent2 createForestDemoTerrain(float tileWorldSize) {
+  private TerrainComponent2 createIceboxTerrain(float tileWorldSize) {
     // 根据mmap2原始尺寸与MAP_SIZE计算每格像素尺寸，确保贴图严格覆盖31x30格
     Texture mmap2Tex = ServiceLocator.getResourceService().getAsset("images/mmap2.png", Texture.class);
     int tilePixelW = Math.max(1, Math.round((float) mmap2Tex.getWidth() / MAP_SIZE.x));
     int tilePixelH = Math.max(1, Math.round((float) mmap2Tex.getHeight() / MAP_SIZE.y));
     GridPoint2 tilePixelSize = new GridPoint2(tilePixelW, tilePixelH);
 
-    TiledMap tiledMap = createForestDemoTiles(tilePixelSize, mmap2Tex);
+    TiledMap tiledMap = createIceboxTiles(tilePixelSize, mmap2Tex);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent2(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
@@ -82,7 +82,7 @@ public class TerrainFactory2 {
   }
 
   // Create a map with only mmap2 layers只包含 mmap2 图层的地图
-  private TiledMap createForestDemoTiles(GridPoint2 tileSize, Texture mmap2Tex) {
+  private TiledMap createIceboxTiles(GridPoint2 tileSize, Texture mmap2Tex) {
     TiledMap tiledMap = new TiledMap();
     TiledMapTileLayer dummyLayer =
         new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
@@ -96,18 +96,18 @@ public class TerrainFactory2 {
     return tiledMap;
   }
 
-  private TerrainComponent2 createMapTwoTerrain(float tileWorldSize) {
+  private TerrainComponent2 createAscentTerrain(float tileWorldSize) {
     Texture mmap2Tex = ServiceLocator.getResourceService().getAsset("images/mmap2.png", Texture.class);
     int tilePixelW = Math.max(1, Math.round((float) mmap2Tex.getWidth() / MAP_SIZE.x));
     int tilePixelH = Math.max(1, Math.round((float) mmap2Tex.getHeight() / MAP_SIZE.y));
     GridPoint2 tilePixelSize = new GridPoint2(tilePixelW, tilePixelH);
 
-    TiledMap tiledMap = createMapTwoTiles(tilePixelSize, mmap2Tex);
+    TiledMap tiledMap = createAscentTiles(tilePixelSize, mmap2Tex);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent2(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
 
-  private TiledMap createMapTwoTiles(GridPoint2 tileSize, Texture mmap2Tex) {
+  private TiledMap createAscentTiles(GridPoint2 tileSize, Texture mmap2Tex) {
     TiledMap tiledMap = new TiledMap();
     TiledMapTileLayer dummyLayer =
         new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
@@ -123,7 +123,7 @@ public class TerrainFactory2 {
 
   /** Only keep the simplified version (mmap2)只保留简化版（mmap2） */
   public enum TerrainType {
-    FOREST_DEMO,  // Only mmap2 layers仅 mmap2 图层
-    MAP_TWO
+    ICEBOX,  // Only mmap2 layers仅 mmap2 图层
+    ASCENT
   }
 }

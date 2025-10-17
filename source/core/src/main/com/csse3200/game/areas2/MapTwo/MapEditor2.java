@@ -143,23 +143,23 @@ public class MapEditor2 extends InputAdapter {
 
         // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
-        keyWaypoints.add(new GridPoint2(5, 0));     // Start
-        keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
-        keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
-        keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
-        keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints.add(new GridPoint2(6, 36));    // End
+        keyWaypoints.add(new GridPoint2(5, 0));    
+        keyWaypoints.add(new GridPoint2(5, 10));   
+        keyWaypoints.add(new GridPoint2(10, 10));  
+        keyWaypoints.add(new GridPoint2(15, 14));  
+        keyWaypoints.add(new GridPoint2(15, 25));  
+        keyWaypoints.add(new GridPoint2(6, 25));   
+        keyWaypoints.add(new GridPoint2(6, 36));   
         
-        // 新增的5个关键点
-        keyWaypoints2.add(new GridPoint2(27, 5));    // 新坐标5
-        keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
-        keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
-        keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
-        keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
-        keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 25));    // Fourth waypoint
-        keyWaypoints2.add(new GridPoint2(6, 36));    // End
+        // 新增的5个关键点 add 5 new waypoints
+        keyWaypoints2.add(new GridPoint2(27, 5));    
+        keyWaypoints2.add(new GridPoint2(33, 12));   
+        keyWaypoints2.add(new GridPoint2(33, 21));   
+        keyWaypoints2.add(new GridPoint2(28, 27));   
+        keyWaypoints2.add(new GridPoint2(18, 27));   
+        keyWaypoints2.add(new GridPoint2(15, 25));   
+        keyWaypoints2.add(new GridPoint2(6, 25));    
+        keyWaypoints2.add(new GridPoint2(6, 36));    
 
         // Mark key path points标记关键路径点
         for (GridPoint2 wp : keyWaypoints) {

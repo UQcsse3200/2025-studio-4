@@ -48,9 +48,9 @@ public class TerrainFactory {
    */
   public TerrainComponent createTerrain(TerrainType terrainType) {
     switch (terrainType) {
-      case FOREST_DEMO:
+      case ICEBOX:
         // Use a simplified map creation method (with only mmap layers)使用简化的地图创建方式（只有 mmap 图层）
-        return createForestDemoTerrain(0.5f);
+        return createIceboxTerrain(0.5f);
       default:
         return null;
         
@@ -58,14 +58,14 @@ public class TerrainFactory {
   }
 
   // A simplified terrain creation method (with only mmap layers)简化的地形创建方法（只有 mmap 图层）
-  private TerrainComponent createForestDemoTerrain(float tileWorldSize) {
+  private TerrainComponent createIceboxTerrain(float tileWorldSize) {
     // 根据mmap原始尺寸与MAP_SIZE计算每格像素尺寸，确保贴图严格覆盖31x30格
     Texture mmapTex = ServiceLocator.getResourceService().getAsset("images/mmap.png", Texture.class);
     int tilePixelW = Math.max(1, Math.round((float) mmapTex.getWidth() / MAP_SIZE.x));
     int tilePixelH = Math.max(1, Math.round((float) mmapTex.getHeight() / MAP_SIZE.y));
     GridPoint2 tilePixelSize = new GridPoint2(tilePixelW, tilePixelH);
 
-    TiledMap tiledMap = createForestDemoTiles(tilePixelSize, mmapTex);
+    TiledMap tiledMap = createIceboxTiles(tilePixelSize, mmapTex);
     TiledMapRenderer renderer = createRenderer(tiledMap, tileWorldSize / tilePixelSize.x);
     return new TerrainComponent(camera, tiledMap, renderer, orientation, tileWorldSize);
   }
@@ -80,7 +80,7 @@ public class TerrainFactory {
   }
 
   // Create a map with only mmap layers只包含 mmap 图层的地图
-  private TiledMap createForestDemoTiles(GridPoint2 tileSize, Texture mmapTex) {
+  private TiledMap createIceboxTiles(GridPoint2 tileSize, Texture mmapTex) {
     TiledMap tiledMap = new TiledMap();
     TiledMapTileLayer dummyLayer =
         new TiledMapTileLayer(MAP_SIZE.x, MAP_SIZE.y, tileSize.x, tileSize.y);
@@ -96,6 +96,6 @@ public class TerrainFactory {
 
   /** Only keep the simplified version (mmap)只保留简化版（mmap） */
   public enum TerrainType {
-    FOREST_DEMO,  // Only mmap layers仅 mmap 图层
+    ICEBOX,  // Only mmap layers仅 mmap 图层
   }
 }

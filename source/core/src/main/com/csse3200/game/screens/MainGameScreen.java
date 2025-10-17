@@ -337,12 +337,12 @@ public class MainGameScreen extends ScreenAdapter {
 
   /**
    * Create the appropriate game area based on the selected mapId.
-   * Returns ForestGameArea2 for "MapTwo", otherwise ForestGameArea.
+   * Returns ForestGameArea2 for "Ascent", otherwise ForestGameArea.
    */
   private Object createGameAreaBasedOnMap() {
-    // Check if MapTwo is selected
-    if (startupArg != null && "MapTwo".equalsIgnoreCase(startupArg)) {
-      logger.info("Creating ForestGameArea2 for MapTwo");
+    // Check if Ascent is selected
+    if (startupArg != null && "Ascent".equalsIgnoreCase(startupArg)) {
+      logger.info("Creating ForestGameArea2 for Ascent");
       TerrainFactory2 terrainFactory2 = new TerrainFactory2(renderer.getCamera());
       return new ForestGameArea2(terrainFactory2);
     } else {

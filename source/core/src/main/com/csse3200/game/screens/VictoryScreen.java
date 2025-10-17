@@ -154,7 +154,7 @@ public class VictoryScreen implements Screen {
         mainTable.row();
         
         // Victory message
-        messageLabel = new Label("You have successfully defended the Box Forest!\n" +
+        messageLabel = new Label("You have successfully defended the Icebox!\n" +
                                "Your strategic prowess and courage have saved the realm.\n\n" +
                                "The ancient enemies have been vanquished,\n" +
                                "and peace has been restored to the mystical lands.",

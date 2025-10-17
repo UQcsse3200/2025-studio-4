@@ -166,7 +166,7 @@ public class OpeningCutsceneScreen implements Screen {
         // Create scrolling text label
         String scrollText = "In a distant future, Earth has been conquered by a mechanical army...\n\n" +
                            "As the last resistance commander, you must establish the final defense line\n" +
-                           "in the Box Forest against the invasion of the mechanical forces.\n\n" +
+                           "in the Icebox against the invasion of the mechanical forces.\n\n" +
                            "Face the aerial threats of drone swarms, the frontal assault of grunts,\n" +
                            "the crushing force of heavy tanks, and mysterious dividers...\n\n" +
                            "Build defensive towers, deploy hero units, and use strategy and wisdom\n" +

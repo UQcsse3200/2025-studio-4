@@ -87,8 +87,7 @@ public class PlayerFactory {
             .addComponent(new DamagePopupComponent())
             .addComponent(healthBar)
             .addComponent(new PlayerRankingComponent())
-            .addComponent(new HealthBarComponent())
-            .addComponent(new DeckDisplay());
+            .addComponent(new HealthBarComponent());
 
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(scale, scale);

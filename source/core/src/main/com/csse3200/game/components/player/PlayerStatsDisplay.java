@@ -52,9 +52,11 @@ public class PlayerStatsDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.top().left();
+    float screenWidth = stage.getWidth();
+    float screenHeight = stage.getHeight();
+    float rowWidth =  screenWidth * 0.03f;
 
     // Heart image
-    float heartSideLength = 60f;
     heartImage = new Image(ServiceLocator.getResourceService().getAsset("images/heart.png", Texture.class));
 
     // Health text
@@ -63,7 +65,6 @@ public class PlayerStatsDisplay extends UIComponent {
     healthLabel = new Label(healthText, skin, "large");
 
     // Score image (trophy)
-    float scoreSideLength = 64f;
     scoreImage = new Image(ServiceLocator.getResourceService().getAsset("images/score_trophy.png", Texture.class));
 
     // Score text
@@ -71,7 +72,7 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence scoreText = String.format("Score: %d", score);
     scoreLabel = new Label(scoreText, skin, "large");
 
-    table.add(heartImage).size(heartSideLength).pad(5);
+    table.add(heartImage).size(rowWidth).pad(5);
     table.add(healthLabel);
     table.row();
 
@@ -93,15 +94,14 @@ public class PlayerStatsDisplay extends UIComponent {
       currencyImages.put(currencyType, currencyImage);
       currencyLabels.put(currencyType, currencyLabel);
 
-      float sideLength = 64f;
-      table.add(currencyImage).size(sideLength).pad(5);
+      table.add(currencyImage).size(rowWidth).pad(5);
       table.add(currencyLabel).left();
       table.row();
     }
 
     // Score text position
     table.row();
-    table.add(scoreImage).size(scoreSideLength).pad(5);
+    table.add(scoreImage).size(rowWidth).pad(5);
     table.add(scoreLabel).left().padTop(5f);
 
     // set table’s background
@@ -121,8 +121,8 @@ public class PlayerStatsDisplay extends UIComponent {
     rootTable.top().left(); // this line ensures it's anchored to top-left
     rootTable.setFillParent(true);
     rootTable.add(container)
-            .width(stage.getWidth() * 0.15f)
-            .height(stage.getHeight() * 0.3f)
+            .width(screenWidth * 0.15f)
+            .height(screenHeight * 0.3f)
             .left().top();
 
     stage.addActor(rootTable);

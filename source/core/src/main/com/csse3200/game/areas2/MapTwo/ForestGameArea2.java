@@ -9,7 +9,10 @@ import com.csse3200.game.components.hero.engineer.SummonPlacementComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.ui.Hero.DefaultHeroStatusPanelComponent;
+import com.csse3200.game.ui.Hero.EngineerStatusPanelComponent;
 import com.csse3200.game.ui.Hero.HeroStatusPanelComponent;
+import com.csse3200.game.ui.Hero.SamuraiStatusPanelComponent;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -455,7 +458,7 @@ public class ForestGameArea2 extends GameArea2 {
 
         Entity placementEntity = new Entity().addComponent(
                 new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
-        );
+        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
 
         // --- ADD: MapHighlighter for tower placement preview ---
@@ -639,17 +642,28 @@ public class ForestGameArea2 extends GameArea2 {
         HeroConfig heroCfg = new HeroConfig();
         heroCfg.heroTexture = "images/hero/Heroshoot.png";
         heroCfg.bulletTexture = "images/hero/Bullet.png";
-
+        heroCfg.shootSfx = "sounds/Explosion_sfx.ogg";
+        heroCfg.shootSfxVolume = 1.0f;
         HeroConfig2 heroCfg2 = new HeroConfig2();
         heroCfg2.heroTexture = "images/hero2/Heroshoot.png";
         heroCfg2.bulletTexture = "images/hero2/Bullet.png";
-
+        heroCfg2.shootSfx = "sounds/Explosion_sfx2.ogg";
+        heroCfg2.shootSfxVolume = 1.0f;
         HeroConfig3 heroCfg3 = new HeroConfig3();
         heroCfg3.heroTexture = "images/hero3/Heroshoot.png";
         heroCfg3.bulletTexture = "images/hero3/Bullet.png";
-
+        heroCfg3.shootSfx = "sounds/Explosion_sfx3.ogg";
+        heroCfg3.shootSfxVolume = 1.0f;
         // 2️⃣ 加载贴图资源（不放 create() 全局加载）
         ResourceService rs = ServiceLocator.getResourceService();
+        java.util.ArrayList<String> sfx = new java.util.ArrayList<>();
+        if (heroCfg.shootSfx != null && !heroCfg.shootSfx.isBlank()) sfx.add(heroCfg.shootSfx);
+        if (heroCfg2.shootSfx != null && !heroCfg2.shootSfx.isBlank()) sfx.add(heroCfg2.shootSfx);
+        if (heroCfg3.shootSfx != null && !heroCfg3.shootSfx.isBlank()) sfx.add(heroCfg3.shootSfx);
+        if (!sfx.isEmpty()) {
+            rs.loadSounds(sfx.toArray(new String[0]));
+            while (!rs.loadForMillis(10)) { /* wait */ }
+        }
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
@@ -671,8 +685,21 @@ public class ForestGameArea2 extends GameArea2 {
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
         hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
 
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(hero, "Hero"));
+        Entity heroStatusUI = new Entity()
+                .addComponent(new DefaultHeroStatusPanelComponent(hero, "Hero"));
         spawnEntity(heroStatusUI);
+
+        Entity heroWeaponBar = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.HeroWeaponSwitcherToolbarComponent(
+                        hero,
+                        /* 建议使用独立图标（小尺寸方图） */
+                        "images/hero/gun1.png",
+                        "images/hero2/gun2.png",
+                        "images/hero3/gun3.png",
+                        // 也可以暂时用 heroCfg.heroTexture 等
+                        "images/hero/Final_gun.png"
+                ));
+        spawnEntity(heroWeaponBar);
 
         spawnEntityAt(hero, cell, true, true);
 
@@ -711,9 +738,14 @@ public class ForestGameArea2 extends GameArea2 {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 创建状态栏UI
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(engineer, "Engineer"));
+        // 4) 工程师 UI：状态栏 + 工具条（点击图标放置三类召唤）
+        Entity heroStatusUI = new Entity()
+                .addComponent(new EngineerStatusPanelComponent(engineer, "Engineer"));
         spawnEntity(heroStatusUI);
+
+        Entity engineerToolbarUI = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.EngineerSummonToolbarComponent(engineer));
+        spawnEntity(engineerToolbarUI);
 
         // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
@@ -737,6 +769,9 @@ public class ForestGameArea2 extends GameArea2 {
         // 2) 预加载 samurai 资源（主体 + 刀）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, samCfg);
+        rs.loadTextures(new String[]{
+                "images/samurai/slash_sheet_6x1_64.png"
+        });
         while (!rs.loadForMillis(10)) {
             logger.info("Loading samurai assets... {}%", rs.getProgress());
         }
@@ -756,8 +791,14 @@ public class ForestGameArea2 extends GameArea2 {
         samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
         // 5) 创建状态栏UI
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(samurai, "Samurai"));
+        Entity heroStatusUI = new Entity()
+                .addComponent(new SamuraiStatusPanelComponent(samurai, "Samurai"));
         spawnEntity(heroStatusUI);
+
+        // 5.5) ★ 新增：创建“武士攻击工具条”UI（带 1/2/3 提示）
+        Entity samuraiAttackUI = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.SamuraiAttackToolbarComponent(samurai));
+        spawnEntity(samuraiAttackUI);
 
         // 6) 放置
         spawnEntityAt(samurai, cell, true, true);

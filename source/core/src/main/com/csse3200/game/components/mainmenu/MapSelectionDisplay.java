@@ -74,13 +74,13 @@ public class MapSelectionDisplay extends UIComponent {
     private void buildEntries() {
         MapEntry defaultMap = new MapEntry();
         defaultMap.mapId = null;            // default game area
-        defaultMap.displayName = "Forest Demo";
+        defaultMap.displayName = "Icebox";
         defaultMap.thumbTex = thumbTexMap1;
         entries.add(defaultMap);
 
         MapEntry mapTwo = new MapEntry();
         mapTwo.mapId = "MapTwo";
-        mapTwo.displayName = "Map Two";
+        mapTwo.displayName = "Ascent";
         mapTwo.thumbTex = thumbTexMap2;
         entries.add(mapTwo);
 

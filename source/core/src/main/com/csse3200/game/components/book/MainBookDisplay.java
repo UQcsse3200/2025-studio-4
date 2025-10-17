@@ -104,8 +104,8 @@ public class MainBookDisplay extends UIComponent {
         float stageHeight = stage.getViewport().getWorldHeight();
 
         // Scale buttons relative to stage size
-        float buttonWidth = stageWidth * 0.3f;   // 8% of stage width
-        float buttonHeight = stageHeight * 0.4f; // 12% of stage height
+        float buttonWidth = stageWidth * 0.2f;   // 8% of stage width
+        float buttonHeight = stageHeight * 0.26f; // 12% of stage height
 
         Table table = new Table();
         table.setFillParent(true);
@@ -154,12 +154,32 @@ public class MainBookDisplay extends UIComponent {
             }
         });
 
+        TextButton tmpButton1 = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+
+        TextButton tmpButton2 = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+
         table.row().padTop(stageHeight * 0.02f);
-        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
-        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
+        table.add(enemyButton).size(buttonWidth, buttonHeight);
+        table.add(currencyButton).size(buttonWidth, buttonHeight);
+        table.add(tmpButton1).size(buttonWidth, buttonHeight);
         table.row().padTop(stageHeight * 0.02f);
         table.add(towerButton).size(buttonWidth, buttonHeight);
         table.add(heroButton).size(buttonWidth, buttonHeight);
+        table.add(tmpButton2).size(buttonWidth, buttonHeight);
 
         table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 

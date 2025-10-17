@@ -153,7 +153,7 @@ public class SummonPlacementComponent extends Component {
             created = SummonFactory.createCurrencyBot(
                     pendingTexture, 1f, player,
                     com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP,
-                    300, 2f
+                    50, 2f
             );
         } else {
             created = SummonFactory.createMeleeSummon(pendingTexture, false, 1f);

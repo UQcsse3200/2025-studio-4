@@ -103,10 +103,7 @@ public class BaseHeroStatusPanelComponent extends Component {
 
         // 文本与按钮
         nameLabel   = new Label(heroName, skin);
-        hpLabel     = new Label("HP: 100/100", skin);
-        energyLabel = new Label("Energy: 50/50", skin);
         levelLabel  = new Label("Lv. 1", skin);
-        damageLabel = new Label("DMG: -", skin);
         costLabel   = new Label("Upgrade cost: 200", skin);
 
         ultBtn = UltimateButtonComponent.createUltimateButton(hero);
@@ -124,8 +121,6 @@ public class BaseHeroStatusPanelComponent extends Component {
 
         // 组装公共区
         card.add(info).left().row();
-        card.add(hpLabel).left().row();
-        card.add(damageLabel).left().row();
         card.add(energyLabel).left().row();
 
         // —— 子类扩展区（容量/冷却等） —— //
@@ -148,20 +143,6 @@ public class BaseHeroStatusPanelComponent extends Component {
         stage.addActor(root);
 
         // ===== 公共事件 =====
-        hero.getEvents().addListener("hero.hp", (Integer cur, Integer max) -> {
-            if (cur == null || max == null) return;
-            hpLabel.setText("HP: " + cur + "/" + max);
-        });
-
-        hero.getEvents().addListener("hero.damage", (Integer dmg) -> {
-            if (dmg == null) return;
-            damageLabel.setText("DMG: " + dmg);
-        });
-
-        hero.getEvents().addListener("hero.energy", (Integer cur, Integer max) -> {
-            if (cur == null || max == null) return;
-            energyLabel.setText("Energy: " + cur + "/" + max);
-        });
 
         hero.getEvents().addListener("hero.level", (Integer lv) -> {
             if (lv == null) return;
@@ -209,15 +190,29 @@ public class BaseHeroStatusPanelComponent extends Component {
         return s;
     }
 
+    /** 根据当前等级刷新升级信息与按钮状态 */
     protected void refreshUpgradeInfo() {
         com.csse3200.game.components.hero.HeroUpgradeComponent up =
                 hero.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class);
+
         int lvl = (up != null) ? up.getLevel() : 1;
         int next = lvl + 1;
-        int cost = (next <= 3) ? next * 200 : 0;
-        costLabel.setText(next <= 3 ? ("Upgrade cost: " + cost) : "Already reach the max Level");
-        upgradeBtn.setDisabled(next > 3);
+
+        // ★ 英雄最高等级为 2 → 只升级一次
+        if (lvl >= 2) {
+            costLabel.setText("MAX LEVEL");
+            costLabel.setColor(accentColor.cpy().lerp(Color.GRAY, 0.4f));
+
+            upgradeBtn.setDisabled(true);
+            upgradeBtn.setText("Maxed");
+            upgradeBtn.getStyle().fontColor = Color.GRAY;
+            upgradeBtn.getStyle().overFontColor = Color.GRAY;
+            upgradeBtn.getStyle().downFontColor = Color.GRAY;
+            return;
+        }
+
     }
+
 
     protected Entity findPlayer() {
         for (Entity e : ServiceLocator.getEntityService().getEntities()) {

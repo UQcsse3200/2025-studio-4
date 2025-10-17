@@ -104,7 +104,7 @@ public class BaseHeroStatusPanelComponent extends Component {
         // 文本与按钮
         nameLabel   = new Label(heroName, skin);
         levelLabel  = new Label("Lv. 1", skin);
-        costLabel   = new Label("Upgrade cost: 200", skin);
+        costLabel   = new Label("Upgrade cost: 400", skin);
 
         ultBtn = UltimateButtonComponent.createUltimateButton(hero);
 

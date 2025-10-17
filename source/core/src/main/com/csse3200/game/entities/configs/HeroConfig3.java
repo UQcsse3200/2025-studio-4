@@ -28,6 +28,7 @@ public class HeroConfig3 extends HeroConfig {
 
   /** Path to bullet sprite texture (relative to assets) */
   public String bulletTexture = "images/hero3/Bullet.png";
+  public String bulletTextureLv2 = "images/hero/Super_Bullet.png";
 
   public String[] levelTextures = {
           "images/hero3/Heroshoot.png",

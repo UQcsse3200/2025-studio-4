@@ -119,7 +119,7 @@ public final class SummonFactory {
         turret.addComponent(new FourWayCycleComponent(attackCooldown, fireDirection));
         // 先创建组件
         TurretAttackComponent tac = new TurretAttackComponent(
-                fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/hero/Bullet.png"
+                fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/engineer/Turret_Bullet.png"
         ).setShootSfxKey("sounds/turret_shoot.ogg")  // ★ 音效路径（放你项目的 assets）
                 .setShootSfxVolume(0.9f)                    // 可调
                 .setShootSfxMinInterval(0.05f);             // 可调

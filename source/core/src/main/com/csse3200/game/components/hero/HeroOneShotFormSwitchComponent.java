@@ -51,6 +51,11 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (cfg1 != null && cfg1.heroTexture != null && !cfg1.heroTexture.isBlank()) textures.add(cfg1.heroTexture);
         if (cfg2 != null && cfg2.heroTexture != null && !cfg2.heroTexture.isBlank()) textures.add(cfg2.heroTexture);
         if (cfg3 != null && cfg3.heroTexture != null && !cfg3.heroTexture.isBlank()) textures.add(cfg3.heroTexture);
+
+        addBulletTextures(textures, cfg1);
+        addBulletTextures(textures, cfg2);
+        addBulletTextures(textures, cfg3);
+
         if (!textures.isEmpty()) {
             ResourceService rs = ServiceLocator.getResourceService();
             rs.loadTextures(textures.toArray(new String[0]));
@@ -89,6 +94,67 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         });
     }
 
+    private static void addBulletTextures(ArrayList<String> textures, Object cfg) {
+        if (cfg == null) return;
+        try {
+            var single = cfg.getClass().getField("bulletTexture");
+            Object v = single.get(cfg);
+            if (v instanceof String s && !s.isBlank()) textures.add(s);
+        } catch (Exception ignored) {}
+
+        try {
+            var arr = cfg.getClass().getField("bulletTextures");
+            Object v = arr.get(cfg);
+            if (v instanceof String[] a) {
+                for (String s : a) if (s != null && !s.isBlank()) textures.add(s);
+            }
+        } catch (Exception ignored) {}
+
+        // ★ 新增：升级后的单贴图
+        try {
+            var lv2 = cfg.getClass().getField("bulletTextureLv2");
+            Object v = lv2.get(cfg);
+            if (v instanceof String s && !s.isBlank()) textures.add(s);
+        } catch (Exception ignored) {}
+    }
+
+    private String pickUpgradedBulletTexture(int form, int level) {
+        if (level <= 1) return null;
+        Object cfg = switch (form) {
+            case 1 -> cfg1;
+            case 2 -> cfg2;
+            case 3 -> cfg3;
+            default -> null;
+        };
+        if (cfg == null) return null;
+
+        // 1) 优先用 bulletTextureLv2
+        try {
+            var lv2 = cfg.getClass().getField("bulletTextureLv2");
+            Object v = lv2.get(cfg);
+            if (v instanceof String s && s != null && !s.isBlank()) return s;
+        } catch (Exception ignored) {}
+
+        // 2) 其次用数组的第二张 bulletTextures[1]
+        try {
+            var arrField = cfg.getClass().getField("bulletTextures");
+            Object v = arrField.get(cfg);
+            if (v instanceof String[] arr && arr.length > 1 && arr[1] != null && !arr[1].isBlank()) {
+                return arr[1];
+            }
+        } catch (Exception ignored) {}
+
+        // 3) 最后兜底回到原 bulletTexture（如果你想强制升级必须换贴图，可以把这个兜底去掉）
+        try {
+            var singleField = cfg.getClass().getField("bulletTexture");
+            Object v = singleField.get(cfg);
+            if (v instanceof String s && s != null && !s.isBlank()) return s;
+        } catch (Exception ignored) {}
+
+        return null;
+    }
+
+
     private void armHeroPolling() {
         if (pollTask != null) return;
         pollTask = Timer.schedule(new Timer.Task() {
@@ -123,6 +189,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
 
         hero.getEvents().addListener("hero.level", (EventListener1<Integer>) newLevel -> {
             if (!locked && newLevel != null && newLevel > 1) {
+                switchToUpgradedBulletIfAvailable(newLevel);
                 locked = true;
                 hero.getEvents().trigger("ui:weapon:locked");
                 dispose();
@@ -133,6 +200,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         hero.getEvents().addListener("upgraded",
                 (EventListener3<Integer, Object, Integer>) (newLevel, _costType, _cost) -> {
                     if (!locked && newLevel != null && newLevel > 1) {
+                        switchToUpgradedBulletIfAvailable(newLevel);
                         locked = true;
                         hero.getEvents().trigger("ui:weapon:locked");
                         dispose();
@@ -181,6 +249,14 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         }
         currentForm = form;
         return true;
+    }
+
+    private void switchToUpgradedBulletIfAvailable(int newLevel) {
+        String upgraded = pickUpgradedBulletTexture(currentForm, newLevel);
+        if (upgraded != null && !upgraded.isBlank()) {
+            updateBulletTexture(upgraded);
+            Gdx.app.log("HeroSkinSwitch", "bullet texture upgraded -> " + upgraded + " at level " + newLevel);
+        }
     }
 
     private void updateBulletTexture(String bulletTexture) {

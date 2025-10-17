@@ -30,6 +30,63 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 0.32f                                  // 面板高度略高一些
         );
     }
+    @Override
+    public void create() {
+        super.create();
+        // 把基类里初始化写死的“200”替换成占位符
+        if (costLabel != null) {
+            costLabel.setText("Upgrade cost: —");
+        }
+        // 立刻按工程师组件的真实价格刷新一次
+        refreshUpgradeInfo();
+    }
+    @Override
+    protected void refreshUpgradeInfo() {
+        var engUp = hero.getComponent(
+                com.csse3200.game.components.hero.engineer.EngineerUpgradeComponent.class);
+
+        if (engUp == null) { // 兜底：不是工程师就走基类逻辑
+            super.refreshUpgradeInfo();
+            return;
+        }
+
+        int lvl   = engUp.getLevel();
+        int maxLv = engUp.getMaxLevel();
+        int cost  = engUp.getNextCost(); // -1 表示无下一次（满级或异常）
+
+        if (levelLabel != null) levelLabel.setText("Lv. " + lvl);
+
+        if (lvl >= maxLv || cost < 0) {
+            if (costLabel != null) {
+                costLabel.setText("MAX LEVEL");
+                costLabel.setColor(accentColor.cpy().lerp(Color.GRAY, 0.4f));
+            }
+            if (upgradeBtn != null) {
+                upgradeBtn.setDisabled(true);
+                upgradeBtn.setText("Maxed");
+                var st = upgradeBtn.getStyle();
+                st.fontColor = Color.GRAY;
+                st.overFontColor = Color.GRAY;
+                st.downFontColor = Color.GRAY;
+            }
+            return;
+        }
+
+        // 只显示价格数字
+        if (costLabel != null) {
+            costLabel.setText("Upgrade cost: " + cost);
+            costLabel.setColor(textColor);
+        }
+        if (upgradeBtn != null) {
+            upgradeBtn.setDisabled(false);
+            upgradeBtn.setText("Upgrade");
+            var st = upgradeBtn.getStyle();
+            st.fontColor = Color.BLACK;
+            st.overFontColor = Color.BLACK;
+            st.downFontColor = Color.BLACK;
+        }
+    }
+
 
     @Override
     protected void buildExtraSections(Table card, Skin skin, float sw, float sh) {

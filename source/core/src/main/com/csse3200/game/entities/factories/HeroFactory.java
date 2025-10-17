@@ -233,7 +233,7 @@ public final class HeroFactory {
         hero.addComponent(atc)
 
                 // === Hero upgrade and ultimate systems ===
-                .addComponent(new HeroUpgradeComponent())
+                .addComponent(new com.csse3200.game.components.hero.engineer.EngineerUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
 
                 // === Visual appearance customization ===

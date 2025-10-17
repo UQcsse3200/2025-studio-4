@@ -476,7 +476,14 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         } else {
             stats.incrementLevel_B();
-            if ("bank".equalsIgnoreCase(currentTowerType)) {
+            // Frozen mammoth skull uses Path B to control freeze time (projectileLife),
+            // rather than attack cooldown / projectile speed.
+            if ("frozenmamoothskull".equalsIgnoreCase(currentTowerType)) {
+                // Increase freeze duration by 0.3 seconds per Path B upgrade (stacking)
+                float increment = 0.3f;
+                float current = stats.getProjectileLife() > 0f ? stats.getProjectileLife() : 1.0f;
+                stats.setProjectileLife(current + increment);
+            } else if ("bank".equalsIgnoreCase(currentTowerType)) {
                 // Bank Path B: unlock currencies; do not alter range/speed here
                 stats.setRange(0f); // ensure stays zero
             } else {
@@ -645,7 +652,15 @@ public class TowerUpgradeMenu extends UIComponent {
         int maxLevelB = getMaxLevelForPath(currentTowerType, false);  // <-- max per-path
 
         pathALevelLabel.setText("Level: " + (levelA >= maxLevelA ? "MAX" : levelA));
-        pathBLevelLabel.setText("Level: " + (levelB >= maxLevelB ? "MAX" : levelB));
+        // For frozen mammoth skull show the freeze duration instead of a generic label
+        if ("frozenmamoothskull".equalsIgnoreCase(currentTowerType)) {
+            float freezeTime = stats.getProjectileLife() > 0f ? stats.getProjectileLife() : 1.0f;
+            String freezeText = String.format("Freeze: %.1fs", freezeTime);
+            String levelText = (levelB >= maxLevelB) ? "MAX" : String.valueOf(levelB);
+            pathBLevelLabel.setText(freezeText + "  (Level: " + levelText + ")");
+        } else {
+            pathBLevelLabel.setText("Level: " + (levelB >= maxLevelB ? "MAX" : levelB));
+        }
 
         int nextLevelA = levelA + 1;
         int nextLevelB = levelB + 1;

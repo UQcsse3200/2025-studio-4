@@ -139,13 +139,13 @@
       "level_A": 1,
       "level_B": 1,
       "damage": 22,
-      "range": 4.0,
+      "range": 1.5,
       "cooldown": 1.3,
       "metalScrapCost": 0,
       "titaniumCoreCost": 300,
       "neurochipCost": 0,
       "projectileSpeed": 6.0,
-      "projectileLife": 2,
+      "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/icecube.png",
       "image": "images/towers/mammoth/frozenmamoothskull.png"
     }

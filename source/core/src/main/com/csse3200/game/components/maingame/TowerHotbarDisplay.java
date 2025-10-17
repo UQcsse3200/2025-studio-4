@@ -53,7 +53,7 @@ public class TowerHotbarDisplay extends UIComponent {
 
         Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
-        title.setColor(Color.WHITE); // make the label white
+        title.getStyle().fontColor = Color.valueOf("#FFFFFF");
 
         // 图标资源（如路径不同，请按资源实际位置调整）
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bones/boneicon.png")));

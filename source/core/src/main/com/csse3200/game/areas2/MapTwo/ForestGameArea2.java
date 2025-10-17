@@ -464,6 +464,7 @@ public class ForestGameArea2 extends GameArea2 {
         registerBarrierAndSpawn(BARRIER_COORDS);
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
+        spawnSlowZoneEffects();
 
         // Register pause/resume listeners for wave system
         Entity pauseListener = new Entity();
@@ -607,6 +608,31 @@ public class ForestGameArea2 extends GameArea2 {
         }
         if (mapEditor != null) {
             mapEditor.registerSnowTreeCoords(coords);
+        }
+    }
+
+    private void spawnSlowZoneEffects() {
+        if (mapEditor == null || terrain == null) {
+            return;
+        }
+        float tileSize = terrain.getTileSize();
+        java.util.Set<String> spawned = new java.util.HashSet<>();
+        for (GridPoint2 tile : mapEditor.getSlowZoneTiles()) {
+            Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
+            spawnEntityAt(effect, tile, false, false);
+            spawned.add(tile.x + "," + tile.y);
+        }
+        java.util.List<GridPoint2> manualTiles = java.util.Arrays.asList(
+                new GridPoint2(12, 12),
+                new GridPoint2(5, 6)
+        );
+        for (GridPoint2 tile : manualTiles) {
+            String key = tile.x + "," + tile.y;
+            if (spawned.contains(key)) {
+                continue;
+            }
+            Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
+            spawnEntityAt(effect, tile, false, false);
         }
     }
 

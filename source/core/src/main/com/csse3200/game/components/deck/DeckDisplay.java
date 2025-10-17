@@ -61,7 +61,7 @@ public class DeckDisplay extends UIComponent {
     private void addActors() {
         // create texture for the background that matches other UI
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
+        pixmap.setColor(new Color(0.15f, 0.15f, 0.18f, 0.6f));
         pixmap.fill();
         Texture bgTexture = new Texture(pixmap);
         pixmap.dispose();
@@ -69,7 +69,7 @@ public class DeckDisplay extends UIComponent {
 
         Table layout = new Table();
         layout.setFillParent(true);
-        layout.bottom().right().padBottom(325f).padRight(30f); // align with upgrade UI
+        layout.top().right().padTop(200f).padRight(20f); // align with upgrade UI
 
         table = new Table();
         table.pad(10f);
@@ -114,7 +114,8 @@ public class DeckDisplay extends UIComponent {
         // 2. Render NAME as a big title row
         String name = deck.getStats().get(DeckComponent.StatType.NAME);
         if (name != null) {
-            Label title = new Label(name, skin, "large");
+            Label title = new Label(name, skin, "default");
+            title.setColor(Color.WHITE);
             table.add(title).padBottom(15f);
             table.row();
         }

@@ -105,7 +105,7 @@ public class MainBookDisplay extends UIComponent {
 
         // Scale buttons relative to stage size
         float buttonWidth = stageWidth * 0.3f;   // 8% of stage width
-        float buttonHeight = stageHeight * 0.45f; // 12% of stage height
+        float buttonHeight = stageHeight * 0.4f; // 12% of stage height
 
         Table table = new Table();
         table.setFillParent(true);
@@ -157,6 +157,7 @@ public class MainBookDisplay extends UIComponent {
         table.row().padTop(stageHeight * 0.02f);
         table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
         table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
+        table.row().padTop(stageHeight * 0.02f);
         table.add(towerButton).size(buttonWidth, buttonHeight);
         table.add(heroButton).size(buttonWidth, buttonHeight);
 

@@ -39,6 +39,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> keyWaypoints2 = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
+    private final java.util.List<GridPoint2> slowZoneTiles = new java.util.ArrayList<>();
 
     public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
     public static java.util.List<Entity> waypointList2 = new java.util.ArrayList<>();
@@ -143,6 +144,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         pathTiles.clear();
         keyWaypoints.clear();
         keyWaypoints2.clear();
+        slowZoneTiles.clear();
 
         // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
@@ -193,6 +195,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             waypoint.setPosition(wp.x / 2f, wp.y / 2f);
             if (modifier != null) {
                 waypoint.addComponent(new SpeedWaypointComponent(modifier));
+                slowZoneTiles.add(new GridPoint2(wp));
             }
             waypointList.add(waypoint);
         }
@@ -494,6 +497,11 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     @Override
     public java.util.List<Entity> getWaypointList() {
         return waypointList;
+    }
+
+    @Override
+    public java.util.List<GridPoint2> getSlowZoneTiles() {
+        return new java.util.ArrayList<>(slowZoneTiles);
     }
 
 }

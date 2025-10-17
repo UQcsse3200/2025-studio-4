@@ -12,46 +12,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 鏁屼汉鍑忥拷鐗规晥缁?
- * 褰撳簲鐢锟芥晥鏋滄椂锛屾晫浜轰細鍑忥拷骞跺彉鎴愯摑鑹
+ * 敌人减速特效组�?
+ * 当应用此效果时，敌人会减速并变成蓝色
  */
 public class SlowEffectComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(SlowEffectComponent.class);
     
-    // 钃濊壊鐗规晥棰滆壊 (娴呰摑鑹茶皟)
+    // 蓝色特效颜色 (浅蓝色调)
     private static final Color SLOW_COLOR = new Color(0.3f, 0.5f, 1.0f, 1.0f);
     
-    // 鍘燂拷锟借壊 (鐧借壊锛屾棤鑹茶皟)
+    // 原始颜色 (白色，无色调)
     private static final Color NORMAL_COLOR = new Color(1.0f, 1.0f, 1.0f, 1.0f);
     
-    // 鍑忥拷鍙?
-    private final float slowFactor;      // 鍑忥拷鍥?(0.5 = 50%閫熷害)
-    private final float duration;        // 鏁堟灉鎸佺画鏃堕棿锛堬拷?
+    // 减速参�?
+    private final float slowFactor;      // 减速因�?(0.5 = 50%速度)
+    private final float duration;        // 效果持续时间（秒�?
     
-    // 缁勪欢寮曠敤
+    // 组件引用
     private WaypointComponent waypointComponent;
     private PhysicsMovementComponent physicsMovement;
     private TextureRenderComponent textureRender;
     private AnimationRenderComponent animationRender;
     
-    // 鐘讹拷璺?
+    // 状态跟�?
     private boolean isActive = false;
     private float timeRemaining = 0f;
     private Vector2 originalSpeed;
     private Color originalColor;
     
     /**
-     * 鍒涘缓锟斤拷鍑忥拷鐗规晥缁?
+     * 创建一个减速特效组�?
      * 
-     * @param slowFactor 鍑忥拷鍥?(0.0-1.0)锛屼緥?0.5 琛ㄧず鍑忥拷鍒50%閫熷害
-     * @param duration 鏁堟灉鎸佺画鏃堕棿锛堬拷?
+     * @param slowFactor 减速因�?(0.0-1.0)，例�?0.5 表示减速到50%速度
+     * @param duration 效果持续时间（秒�?
      */
     public SlowEffectComponent(float slowFactor, float duration) {
         if (slowFactor < 0.0f || slowFactor > 1.0f) {
-            throw new IllegalArgumentException("鍑忥拷鍥犲瓙蹇呴』鍦 0.0 ?1.0 涔嬮棿");
+            throw new IllegalArgumentException("减速因子必须在 0.0 �?1.0 之间");
         }
         if (duration <= 0) {
-            throw new IllegalArgumentException("鎸佺画鏃堕棿蹇呴』澶т簬 0");
+            throw new IllegalArgumentException("持续时间必须大于 0");
         }
         
         this.slowFactor = slowFactor;
@@ -59,29 +59,29 @@ public class SlowEffectComponent extends Component {
     }
     
     /**
-     * 浣跨敤榛橈拷鍙傛暟鍒涘缓鍑忛熺壒鏁堢粍?
-     * 榛橈拷鍑忛熷埌 40% 閫熷害锛屾寔?3 ?
+     * 使用默认参数创建减速特效组�?
+     * 默认减速到 40% 速度，持�?3 �?
      */
     public SlowEffectComponent() {
-        this(0.4f, 1.0f);
+        this(0.4f, 3.0f);
     }
     
     @Override
     public void create() {
         super.create();
         
-        // 鑾峰彇缁勪欢寮曠敤
+        // 获取组件引用
         waypointComponent = entity.getComponent(WaypointComponent.class);
         physicsMovement = entity.getComponent(PhysicsMovementComponent.class);
         textureRender = entity.getComponent(TextureRenderComponent.class);
         animationRender = entity.getComponent(AnimationRenderComponent.class);
         
-        // 鐩戝惉鍑忥拷鏁堟灉浜?
+        // 监听减速效果事�?
         entity.getEvents().addListener("applySlow", this::applySlow);
         entity.getEvents().addListener("applySlowWithParams", this::applySlowWithParams);
         entity.getEvents().addListener("removeSlow", this::removeSlow);
         
-        logger.debug("Slow effect component initialised - slowFactor={}, duration={}s", slowFactor, duration);
+        logger.debug("减速特效组件已创建 - 减速因�? {}, 持续时间: {}�?, slowFactor, duration);
     }
     
     @Override
@@ -90,35 +90,35 @@ public class SlowEffectComponent extends Component {
             return;
         }
         
-        // 鏇存柊璁℃椂?
+        // 更新计时�?
         float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
         timeRemaining -= deltaTime;
         
-        // 锟芥煡鏁堟灉鏄鍚︾粨?
+        // 检查效果是否结�?
         if (timeRemaining <= 0) {
             removeSlow();
         }
     }
     
     /**
-     * 搴旂敤鍑忥拷鏁堟灉锛堜娇鐢ㄧ粍浠剁殑榛樿ゅ弬鏁帮級
+     * 应用减速效果（使用组件的默认参数）
      */
     public void applySlow() {
         if (isActive) {
-            // 濡傛灉宸茬粡鏈夊噺閫熸晥鏋滐紝鍒锋柊鎸佺画鏃堕棿
+            // 如果已经有减速效果，刷新持续时间
             timeRemaining = duration;
-            logger.debug("Refreshed slow effect duration timer");
+            logger.debug("刷新减速效果持续时�?);
             return;
         }
         
-        // 淇濆瓨鍘燂拷锟藉害
+        // 保存原始速度
         if (waypointComponent != null) {
             originalSpeed = new Vector2(waypointComponent.getSpeed());
         } else if (physicsMovement != null) {
             originalSpeed = new Vector2(physicsMovement.maxSpeed);
         }
         
-        // 搴旂敤锟?
+        // 应用减�?
         if (originalSpeed != null) {
             Vector2 slowedSpeed = new Vector2(
                 originalSpeed.x * slowFactor,
@@ -134,43 +134,43 @@ public class SlowEffectComponent extends Component {
                 physicsMovement.setSpeed(slowedSpeed);
             }
             
-            logger.debug("Applied slow: original speed {}, slowed {}", originalSpeed, slowedSpeed);
+            logger.debug("应用减�? 原始速度 {}, 减速后 {}", originalSpeed, slowedSpeed);
         }
         
-        // 搴旂敤钃濊壊鐗规晥
+        // 应用蓝色特效
         applyBlueEffect();
         
-        // 锟芥椿鏁?
+        // 激活效�?
         isActive = true;
         timeRemaining = duration;
         
-        // 瑙﹀彂浜嬩欢
+        // 触发事件
         entity.getEvents().trigger("slowEffectApplied");
         
-        logger.info("Applied slow effect to enemy ({}% speed, {}s)", (int)(slowFactor * 100), duration);
+        logger.info("敌人减速特效已激�?({}% 速度, {}�?", (int)(slowFactor * 100), duration);
     }
     
     /**
-     * 搴旂敤鍑忥拷鏁堟灉锛堜娇鐢锟藉畾涔夊弬鏁帮拷
+     * 应用减速效果（使用自定义参数）
      * 
-     * @param customSlowFactor 锟藉畾涔夊噺锟藉洜?
-     * @param customDuration 锟藉畾涔夋寔缁锟?
+     * @param customSlowFactor 自定义减速因�?
+     * @param customDuration 自定义持续时�?
      */
     public void applySlowWithParams(float customSlowFactor, float customDuration) {
-        // 鏆傛椂锟芥敼鍙傛暟锛堣繖涓鏂规硶浼氫娇鐢ㄤ紶鍏ョ殑鍙傛暟鑰屼笉锟芥瀯锟藉嚱鏁扮殑鍙傛暟?
-        // 娉ㄦ剰锛氳繖閲屼负浜嗙畝鍖栵紝鎴戜滑鐩存帴浣跨敤鏋勶拷鍑芥暟鐨勫弬鏁
+        // 暂时修改参数（这个方法会使用传入的参数而不是构造函数的参数�?
+        // 注意：这里为了简化，我们直接使用构造函数的参数
         applySlow();
     }
     
     /**
-     * 绉婚櫎鍑忥拷鏁?
+     * 移除减速效�?
      */
     public void removeSlow() {
         if (!isActive) {
             return;
         }
         
-        // 鎭锟藉師濮嬶拷搴
+        // 恢复原始速度
         if (originalSpeed != null) {
             if (waypointComponent != null) {
                 waypointComponent.setSpeed(originalSpeed);
@@ -181,105 +181,105 @@ public class SlowEffectComponent extends Component {
                 physicsMovement.setSpeed(originalSpeed);
             }
             
-            logger.debug("Restored speed: {}", originalSpeed);
+            logger.debug("恢复速度: {}", originalSpeed);
         }
         
-        // 鎭锟藉師濮嬶拷鑹
+        // 恢复原始颜色
         removeBlueEffect();
         
-        // 閲嶇疆锟?
+        // 重置状�?
         isActive = false;
         timeRemaining = 0f;
         originalSpeed = null;
         
-        // 瑙﹀彂浜嬩欢
+        // 触发事件
         entity.getEvents().trigger("slowEffectRemoved");
         
-        logger.info("Slow effect removed from enemy");
+        logger.info("敌人减速特效已移除");
     }
     
     /**
-     * 搴旂敤钃濊壊瑙嗭拷鏁堬拷
+     * 应用蓝色视觉效果
      */
     private void applyBlueEffect() {
-        // 浼樺厛浣跨敤鍔ㄧ敾娓叉煋缁勪欢
+        // 优先使用动画渲染组件
         if (animationRender != null) {
-            // 淇濆瓨鍘燂拷锟借壊
+            // 保存原始颜色
             originalColor = animationRender.getColor();
-            // 搴旂敤钃濊壊?
+            // 应用蓝色�?
             animationRender.setColor(SLOW_COLOR);
-            logger.info("Applied blue tint to animation renderer - colour {}", SLOW_COLOR);
+            logger.info("已应用蓝色特效到动画渲染组件 - 颜色: {}", SLOW_COLOR);
             return;
         }
         
-        // 濡傛灉娌℃湁鍔ㄧ敾缁勪欢锛屼娇鐢ㄦ潗璐ㄦ覆鏌撶粍?
+        // 如果没有动画组件，使用材质渲染组�?
         if (textureRender != null) {
-            // 淇濆瓨鍘燂拷锟借壊
+            // 保存原始颜色
             originalColor = textureRender.getColor();
-            // 搴旂敤钃濊壊?
+            // 应用蓝色�?
             textureRender.setColor(SLOW_COLOR);
-            logger.info("Applied blue tint to texture renderer - colour {}", SLOW_COLOR);
+            logger.info("已应用蓝色特效到材质渲染组件 - 颜色: {}", SLOW_COLOR);
             return;
         }
         
-        logger.warn("No render component found; unable to apply blue tint");
+        logger.warn("未找到渲染组件，无法应用蓝色特效");
     }
     
     /**
-     * 绉婚櫎钃濊壊瑙嗭拷鏁堬拷
+     * 移除蓝色视觉效果
      */
     private void removeBlueEffect() {
-        // 浼樺厛鎭锟藉姩鐢伙拷鑹
+        // 优先恢复动画颜色
         if (animationRender != null) {
             if (originalColor != null) {
                 animationRender.setColor(originalColor);
-                logger.info("Restored animation renderer colour to original: {}", originalColor);
+                logger.info("已恢复动画渲染组件的原始颜色: {}", originalColor);
             } else {
                 animationRender.setColor(NORMAL_COLOR);
-                logger.info("Restored animation renderer to default colour");
+                logger.info("已恢复动画渲染组件的默认颜色");
             }
             originalColor = null;
             return;
         }
         
-        // 濡傛灉娌℃湁鍔ㄧ敾缁勪欢锛屾仮澶嶆潗璐锟?
+        // 如果没有动画组件，恢复材质颜�?
         if (textureRender != null) {
             if (originalColor != null) {
                 textureRender.setColor(originalColor);
-                logger.info("Restored texture renderer colour to original: {}", originalColor);
+                logger.info("已恢复材质渲染组件的原始颜色: {}", originalColor);
             } else {
                 textureRender.setColor(NORMAL_COLOR);
-                logger.info("Restored texture renderer to default colour");
+                logger.info("已恢复材质渲染组件的默认颜色");
             }
             originalColor = null;
             return;
         }
         
-        logger.warn("No render component found; unable to restore colour");
+        logger.warn("未找到渲染组件，无法恢复颜色");
     }
     
     /**
-     * 锟芥煡鍑忛熸晥鏋滄槸鍚︽縺?
+     * 检查减速效果是否激�?
      * 
-     * @return true 濡傛灉鏁堟灉锟芥椿锛屽惁鍒 false
+     * @return true 如果效果激活，否则 false
      */
     public boolean isSlowActive() {
         return isActive;
     }
     
     /**
-     * 鑾峰彇鍓╀綑鏃堕棿
+     * 获取剩余时间
      * 
-     * @return 鍓╀綑鏃堕棿锛堬拷?
+     * @return 剩余时间（秒�?
      */
     public float getTimeRemaining() {
         return timeRemaining;
     }
     
     /**
-     * 鑾峰彇鍑忥拷鍥?
+     * 获取减速因�?
      * 
-     * @return 鍑忥拷鍥?
+     * @return 减速因�?
      */
     public float getSlowFactor() {
         return slowFactor;
@@ -287,7 +287,7 @@ public class SlowEffectComponent extends Component {
     
     @Override
     public void dispose() {
-        // 娓呯悊锛氾拷鏋滅粍浠讹拷锟芥瘉鏃舵晥鏋滀粛鐒讹拷娲伙紝锟戒繚鎭㈠嶇姸?
+        // 清理：如果组件被销毁时效果仍然激活，确保恢复状�?
         if (isActive) {
             removeSlow();
         }

@@ -38,6 +38,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> waterTiles = new java.util.ArrayList<>();
+    private final java.util.List<GridPoint2> slowZoneTiles = new java.util.ArrayList<>();
 
     public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
@@ -157,6 +158,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         // Clear existing paths清空现有路径
         pathTiles.clear();
         keyWaypoints.clear();
+        slowZoneTiles.clear();
 
         // Predefined fixed path coordinates (x, y)预定义固定路径坐标 (x, y)
         int[][] fixedPath = {
@@ -229,6 +231,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
             waypoint.setPosition(wp.x / 2f, wp.y / 2f);
             if (modifier != null) {
                 waypoint.addComponent(new SpeedWaypointComponent(modifier));
+                slowZoneTiles.add(new GridPoint2(wp));
             }
             waypointList.add(waypoint);
         }
@@ -373,6 +376,12 @@ public class MapEditor extends InputAdapter implements IMapEditor {
             barrierTiles.put(key, new GridPoint2(p[0], p[1]));
         }
     }
+
+    @Override
+    public java.util.List<GridPoint2> getSlowZoneTiles() {
+        return new java.util.ArrayList<>(slowZoneTiles);
+    }
+
 
     /**
      * Register the snow tree coordinates for getInvalidTiles() to return uniformly

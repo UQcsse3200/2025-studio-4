@@ -136,7 +136,7 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueLabel.setWrap(true);
     dialogueLabel.setAlignment(Align.center, Align.center);
 
-    continueButton = new TextButton("continue", UIStyleHelper.orangeButtonStyle());
+    continueButton = new TextButton("continue", UIStyleHelper.continueButtonStyle());
     continueButton.getLabel().setColor(Color.WHITE);
     continueButton.addListener(new ChangeListener() {
       @Override
@@ -145,7 +145,7 @@ public class IntroDialogueComponent extends UIComponent {
       }
     });
 
-    skipButton = new TextButton("skip", SimpleUI.darkButton());
+     skipButton = new TextButton("skip", UIStyleHelper.skipButtonStyle());
     skipButton.getLabel().setColor(Color.WHITE);
     skipButton.addListener(new ChangeListener() {
       @Override
@@ -166,41 +166,49 @@ public class IntroDialogueComponent extends UIComponent {
             .padTop(screenHeight * 0.05f)  // 添加顶部间距，让文字往下移动
             .row();
 
-    float continueButtonWidth = screenWidth * 0.135f;
-    float continueButtonHeight = screenHeight * 0.065f;
-    float skipButtonWidth = screenWidth * 0.094f;
-    float skipButtonHeight = screenHeight * 0.056f;
-    float buttonRowHeight = Math.max(continueButtonHeight, skipButtonHeight);
+    float continueButtonWidth = screenWidth * 0.18f;  // 从0.135f增加到0.18f
+    float continueButtonHeight = screenHeight * 0.2f;  // 从0.065f增加到0.08f
+    float skipButtonWidth = screenWidth * 0.13f;
+    float skipButtonHeight = screenHeight * 0.15f;
 
+    // 对话框固定在底部中央（保持原始位置）
+    overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.037f);
+    
+    // 创建独立的按钮容器，直接放在屏幕底部
+    Table buttonContainer = new Table();
+    buttonContainer.setFillParent(true);
+    buttonContainer.align(Align.bottom);
+    
+    // continue按钮居中
     Table continueRow = new Table();
-    continueRow.align(Align.bottom);
-    continueRow.setFillParent(true);
     continueRow.add().expandX();
     continueRow.add(continueButton)
             .width(continueButtonWidth)
             .height(continueButtonHeight)
             .center();
     continueRow.add().expandX();
-
+    
+    // skip按钮右对齐
     Table skipRow = new Table();
-    skipRow.align(Align.bottomRight);
-    skipRow.setFillParent(true);
+    skipRow.add().expandX();
     skipRow.add(skipButton)
             .width(skipButtonWidth)
             .height(skipButtonHeight)
-            .right();
-
+            .right()
+            .padRight(screenWidth * 0.15f);
+    
+    // 将两个按钮行叠加
     Stack buttonStack = new Stack();
     buttonStack.add(continueRow);
     buttonStack.add(skipRow);
-
-    dialogueTable.add(buttonStack)
-            .growX()
-            .height(buttonRowHeight)
-            .padTop(screenHeight * 0.02f);
     
-    // 对话框固定在底部中央
-    overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.037f);
+    buttonContainer.add(buttonStack)
+            .growX()
+            .height(continueButtonHeight)
+            .padBottom(screenHeight * 0.005f);
+    
+    // 将按钮容器添加到overlayRoot
+    overlayRoot.addActor(buttonContainer);
     
     // 头像单独添加到stage，初始隐藏
     portraitImage.setSize(screenWidth * 0.21f, screenHeight * 0.41f);

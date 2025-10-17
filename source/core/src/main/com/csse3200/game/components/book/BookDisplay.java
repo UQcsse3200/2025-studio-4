@@ -197,8 +197,7 @@ public class BookDisplay extends UIComponent {
         }
         
         // Scale buttons relative to screen width
-        float buttonW = stageWidth * 0.24f / imagesPerRow;
-        float buttonH = stageHeight * 0.24f / imagesPerRow;
+        float buttonSize = stageWidth * 0.20f / imagesPerRow;
 
         int count = 0;
 
@@ -234,9 +233,9 @@ public class BookDisplay extends UIComponent {
             borderedButton.setBackground(new TextureRegionDrawable(
                     new TextureRegion(createBorderTexture(borderColor, 2))
             ));
-            borderedButton.add(button).size(buttonW, buttonH).pad(2);
+            borderedButton.add(button).size(buttonSize, buttonSize).pad(2);
 
-            table.add(borderedButton).padRight(stageWidth * 0.02f / imagesPerRow);
+            table.add(borderedButton).padRight(stageWidth * 0.1f / imagesPerRow);
         }
 
         stage.addActor(titleTable);

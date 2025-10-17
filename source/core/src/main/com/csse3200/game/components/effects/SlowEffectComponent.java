@@ -12,286 +12,253 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 鏁屼汉鍑忥拷鐗规晥缁?
- * 褰撳簲鐢锟芥晥鏋滄椂锛屾晫浜轰細鍑忥拷骞跺彉鎴愯摑鑹
+ * Applies a temporary slow effect to an entity. While the effect is active the entity is tinted blue
+ * and its movement speed is reduced by a configurable factor.
  */
 public class SlowEffectComponent extends Component {
-    private static final Logger logger = LoggerFactory.getLogger(SlowEffectComponent.class);
-    
-    // 钃濊壊鐗规晥棰滆壊 (娴呰摑鑹茶皟)
-    private static final Color SLOW_COLOR = new Color(0.3f, 0.5f, 1.0f, 1.0f);
-    
-    // 鍘燂拷锟借壊 (鐧借壊锛屾棤鑹茶皟)
-    private static final Color NORMAL_COLOR = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-    
-    // 鍑忥拷鍙?
-    private final float slowFactor;      // 鍑忥拷鍥?(0.5 = 50%閫熷害)
-    private final float duration;        // 鏁堟灉鎸佺画鏃堕棿锛堬拷?
-    
-    // 缁勪欢寮曠敤
-    private WaypointComponent waypointComponent;
-    private PhysicsMovementComponent physicsMovement;
-    private TextureRenderComponent textureRender;
-    private AnimationRenderComponent animationRender;
-    
-    // 鐘讹拷璺?
-    private boolean isActive = false;
-    private float timeRemaining = 0f;
-    private Vector2 originalSpeed;
-    private Color originalColor;
-    
-    /**
-     * 鍒涘缓锟斤拷鍑忥拷鐗规晥缁?
-     * 
-     * @param slowFactor 鍑忥拷鍥?(0.0-1.0)锛屼緥?0.5 琛ㄧず鍑忥拷鍒50%閫熷害
-     * @param duration 鏁堟灉鎸佺画鏃堕棿锛堬拷?
-     */
-    public SlowEffectComponent(float slowFactor, float duration) {
-        if (slowFactor < 0.0f || slowFactor > 1.0f) {
-            throw new IllegalArgumentException("鍑忥拷鍥犲瓙蹇呴』鍦 0.0 ?1.0 涔嬮棿");
-        }
-        if (duration <= 0) {
-            throw new IllegalArgumentException("鎸佺画鏃堕棿蹇呴』澶т簬 0");
-        }
-        
-        this.slowFactor = slowFactor;
-        this.duration = duration;
-    }
-    
-    /**
-     * 浣跨敤榛橈拷鍙傛暟鍒涘缓鍑忛熺壒鏁堢粍?
-     * 榛橈拷鍑忛熷埌 40% 閫熷害锛屾寔?3 ?
-     */
-    public SlowEffectComponent() {
-        this(0.4f, 1.0f);
-    }
-    
-    @Override
-    public void create() {
-        super.create();
-        
-        // 鑾峰彇缁勪欢寮曠敤
-        waypointComponent = entity.getComponent(WaypointComponent.class);
-        physicsMovement = entity.getComponent(PhysicsMovementComponent.class);
-        textureRender = entity.getComponent(TextureRenderComponent.class);
-        animationRender = entity.getComponent(AnimationRenderComponent.class);
-        
-        // 鐩戝惉鍑忥拷鏁堟灉浜?
-        entity.getEvents().addListener("applySlow", this::applySlow);
-        entity.getEvents().addListener("applySlowWithParams", this::applySlowWithParams);
-        entity.getEvents().addListener("removeSlow", this::removeSlow);
-        
-        logger.debug("Slow effect component initialised - slowFactor={}, duration={}s", slowFactor, duration);
-    }
-    
-    @Override
-    public void update() {
-        if (!isActive) {
-            return;
-        }
-        
-        // 鏇存柊璁℃椂?
-        float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
-        timeRemaining -= deltaTime;
-        
-        // 锟芥煡鏁堟灉鏄鍚︾粨?
-        if (timeRemaining <= 0) {
-            removeSlow();
-        }
-    }
-    
-    /**
-     * 搴旂敤鍑忥拷鏁堟灉锛堜娇鐢ㄧ粍浠剁殑榛樿ゅ弬鏁帮級
-     */
-    public void applySlow() {
-        if (isActive) {
-            // 濡傛灉宸茬粡鏈夊噺閫熸晥鏋滐紝鍒锋柊鎸佺画鏃堕棿
-            timeRemaining = duration;
-            logger.debug("Refreshed slow effect duration timer");
-            return;
-        }
-        
-        // 淇濆瓨鍘燂拷锟藉害
-        if (waypointComponent != null) {
-            originalSpeed = new Vector2(waypointComponent.getSpeed());
-        } else if (physicsMovement != null) {
-            originalSpeed = new Vector2(physicsMovement.maxSpeed);
-        }
-        
-        // 搴旂敤锟?
-        if (originalSpeed != null) {
-            Vector2 slowedSpeed = new Vector2(
-                originalSpeed.x * slowFactor,
-                originalSpeed.y * slowFactor
-            );
-            
-            if (waypointComponent != null) {
-                waypointComponent.setSpeed(slowedSpeed);
-            }
-            
-            if (physicsMovement != null) {
-                physicsMovement.maxSpeed.set(slowedSpeed);
-                physicsMovement.setSpeed(slowedSpeed);
-            }
-            
-            logger.debug("Applied slow: original speed {}, slowed {}", originalSpeed, slowedSpeed);
-        }
-        
-        // 搴旂敤钃濊壊鐗规晥
-        applyBlueEffect();
-        
-        // 锟芥椿鏁?
-        isActive = true;
-        timeRemaining = duration;
-        
-        // 瑙﹀彂浜嬩欢
-        entity.getEvents().trigger("slowEffectApplied");
-        
-        logger.info("Applied slow effect to enemy ({}% speed, {}s)", (int)(slowFactor * 100), duration);
-    }
-    
-    /**
-     * 搴旂敤鍑忥拷鏁堟灉锛堜娇鐢锟藉畾涔夊弬鏁帮拷
-     * 
-     * @param customSlowFactor 锟藉畾涔夊噺锟藉洜?
-     * @param customDuration 锟藉畾涔夋寔缁锟?
-     */
-    public void applySlowWithParams(float customSlowFactor, float customDuration) {
-        // 鏆傛椂锟芥敼鍙傛暟锛堣繖涓鏂规硶浼氫娇鐢ㄤ紶鍏ョ殑鍙傛暟鑰屼笉锟芥瀯锟藉嚱鏁扮殑鍙傛暟?
-        // 娉ㄦ剰锛氳繖閲屼负浜嗙畝鍖栵紝鎴戜滑鐩存帴浣跨敤鏋勶拷鍑芥暟鐨勫弬鏁
-        applySlow();
-    }
-    
-    /**
-     * 绉婚櫎鍑忥拷鏁?
-     */
-    public void removeSlow() {
-        if (!isActive) {
-            return;
-        }
-        
-        // 鎭锟藉師濮嬶拷搴
-        if (originalSpeed != null) {
-            if (waypointComponent != null) {
-                waypointComponent.setSpeed(originalSpeed);
-            }
-            
-            if (physicsMovement != null) {
-                physicsMovement.maxSpeed.set(originalSpeed);
-                physicsMovement.setSpeed(originalSpeed);
-            }
-            
-            logger.debug("Restored speed: {}", originalSpeed);
-        }
-        
-        // 鎭锟藉師濮嬶拷鑹
-        removeBlueEffect();
-        
-        // 閲嶇疆锟?
-        isActive = false;
-        timeRemaining = 0f;
-        originalSpeed = null;
-        
-        // 瑙﹀彂浜嬩欢
-        entity.getEvents().trigger("slowEffectRemoved");
-        
-        logger.info("Slow effect removed from enemy");
-    }
-    
-    /**
-     * 搴旂敤钃濊壊瑙嗭拷鏁堬拷
-     */
-    private void applyBlueEffect() {
-        // 浼樺厛浣跨敤鍔ㄧ敾娓叉煋缁勪欢
-        if (animationRender != null) {
-            // 淇濆瓨鍘燂拷锟借壊
-            originalColor = animationRender.getColor();
-            // 搴旂敤钃濊壊?
-            animationRender.setColor(SLOW_COLOR);
-            logger.info("Applied blue tint to animation renderer - colour {}", SLOW_COLOR);
-            return;
-        }
-        
-        // 濡傛灉娌℃湁鍔ㄧ敾缁勪欢锛屼娇鐢ㄦ潗璐ㄦ覆鏌撶粍?
-        if (textureRender != null) {
-            // 淇濆瓨鍘燂拷锟借壊
-            originalColor = textureRender.getColor();
-            // 搴旂敤钃濊壊?
-            textureRender.setColor(SLOW_COLOR);
-            logger.info("Applied blue tint to texture renderer - colour {}", SLOW_COLOR);
-            return;
-        }
-        
-        logger.warn("No render component found; unable to apply blue tint");
-    }
-    
-    /**
-     * 绉婚櫎钃濊壊瑙嗭拷鏁堬拷
-     */
-    private void removeBlueEffect() {
-        // 浼樺厛鎭锟藉姩鐢伙拷鑹
-        if (animationRender != null) {
-            if (originalColor != null) {
-                animationRender.setColor(originalColor);
-                logger.info("Restored animation renderer colour to original: {}", originalColor);
-            } else {
-                animationRender.setColor(NORMAL_COLOR);
-                logger.info("Restored animation renderer to default colour");
-            }
-            originalColor = null;
-            return;
-        }
-        
-        // 濡傛灉娌℃湁鍔ㄧ敾缁勪欢锛屾仮澶嶆潗璐锟?
-        if (textureRender != null) {
-            if (originalColor != null) {
-                textureRender.setColor(originalColor);
-                logger.info("Restored texture renderer colour to original: {}", originalColor);
-            } else {
-                textureRender.setColor(NORMAL_COLOR);
-                logger.info("Restored texture renderer to default colour");
-            }
-            originalColor = null;
-            return;
-        }
-        
-        logger.warn("No render component found; unable to restore colour");
-    }
-    
-    /**
-     * 锟芥煡鍑忛熸晥鏋滄槸鍚︽縺?
-     * 
-     * @return true 濡傛灉鏁堟灉锟芥椿锛屽惁鍒 false
-     */
-    public boolean isSlowActive() {
-        return isActive;
-    }
-    
-    /**
-     * 鑾峰彇鍓╀綑鏃堕棿
-     * 
-     * @return 鍓╀綑鏃堕棿锛堬拷?
-     */
-    public float getTimeRemaining() {
-        return timeRemaining;
-    }
-    
-    /**
-     * 鑾峰彇鍑忥拷鍥?
-     * 
-     * @return 鍑忥拷鍥?
-     */
-    public float getSlowFactor() {
-        return slowFactor;
-    }
-    
-    @Override
-    public void dispose() {
-        // 娓呯悊锛氾拷鏋滅粍浠讹拷锟芥瘉鏃舵晥鏋滀粛鐒讹拷娲伙紝锟戒繚鎭㈠嶇姸?
-        if (isActive) {
-            removeSlow();
-        }
-        super.dispose();
-    }
-}
+  private static final Logger logger = LoggerFactory.getLogger(SlowEffectComponent.class);
 
+  /** Light blue tint used while the effect is active. */
+  private static final Color SLOW_COLOR = new Color(0.3f, 0.5f, 1.0f, 1.0f);
+  /** Neutral colour used when the effect is not active. */
+  private static final Color NORMAL_COLOR = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+  /** Slow factor applied to the entity (0.5 = 50% speed). */
+  private final float slowFactor;
+  /** Duration of the effect in seconds. */
+  private final float duration;
+
+  private WaypointComponent waypointComponent;
+  private PhysicsMovementComponent physicsMovement;
+  private TextureRenderComponent textureRender;
+  private AnimationRenderComponent animationRender;
+
+  private boolean isActive = false;
+  private float timeRemaining = 0f;
+  private Vector2 originalSpeed;
+  private Color originalColor;
+
+  /**
+   * Creates a slow effect with custom parameters.
+   *
+   * @param slowFactor factor to apply (0.0 - 1.0). For example 0.5 halves the speed.
+   * @param duration duration in seconds.
+   */
+  public SlowEffectComponent(float slowFactor, float duration) {
+    if (slowFactor < 0.0f || slowFactor > 1.0f) {
+      throw new IllegalArgumentException("Slow factor must be between 0.0 and 1.0");
+    }
+    if (duration <= 0f) {
+      throw new IllegalArgumentException("Duration must be greater than zero");
+    }
+
+    this.slowFactor = slowFactor;
+    this.duration = duration;
+  }
+
+  /**
+   * Creates a slow effect that reduces speed to 40% for one second.
+   */
+  public SlowEffectComponent() {
+    this(0.4f, 1.0f);
+  }
+
+  @Override
+  public void create() {
+    super.create();
+
+    waypointComponent = entity.getComponent(WaypointComponent.class);
+    physicsMovement = entity.getComponent(PhysicsMovementComponent.class);
+    textureRender = entity.getComponent(TextureRenderComponent.class);
+    animationRender = entity.getComponent(AnimationRenderComponent.class);
+
+    entity.getEvents().addListener("applySlow", this::applySlow);
+    entity.getEvents().addListener("applySlowWithParams", this::applySlowWithParams);
+    entity.getEvents().addListener("removeSlow", this::removeSlow);
+
+    logger.debug("Slow effect initialised - slowFactor={}, duration={}s", slowFactor, duration);
+  }
+
+  @Override
+  public void update() {
+    if (!isActive) {
+      return;
+    }
+
+    float deltaTime = ServiceLocator.getTimeSource().getDeltaTime();
+    timeRemaining -= deltaTime;
+    if (timeRemaining <= 0f) {
+      removeSlow();
+    }
+  }
+
+  /**
+   * Applies the slow effect using the default parameters specified for this component instance.
+   * If the effect is already active only the duration is refreshed.
+   */
+  public void applySlow() {
+    if (isActive) {
+      timeRemaining = duration;
+      logger.debug("Refreshed slow effect duration timer");
+      return;
+    }
+
+    cacheOriginalSpeed();
+    applySlowFactor();
+
+    applyBlueEffect();
+    isActive = true;
+    timeRemaining = duration;
+    entity.getEvents().trigger("slowEffectApplied");
+    logger.debug("Slow effect applied ({}% speed, {}s)", (int) (slowFactor * 100), duration);
+  }
+
+  /**
+   * Applies the slow effect using custom parameters. Currently this implementation simply falls back
+   * to {@link #applySlow()} after refreshing with the component defaults.
+   *
+   * @param customSlowFactor custom slow factor.
+   * @param customDuration custom effect duration.
+   */
+  public void applySlowWithParams(float customSlowFactor, float customDuration) {
+    // Simplified implementation: we keep behaviour aligned with the default parameters.
+    applySlow();
+  }
+
+  /**
+   * Removes the slow effect and restores the entity's original movement speed and colour.
+   */
+  public void removeSlow() {
+    if (!isActive) {
+      return;
+    }
+
+    restoreOriginalSpeed();
+    removeBlueEffect();
+
+    isActive = false;
+    timeRemaining = 0f;
+    originalSpeed = null;
+    originalColor = null;
+
+    entity.getEvents().trigger("slowEffectRemoved");
+    logger.info("Slow effect removed from entity");
+  }
+
+  private void cacheOriginalSpeed() {
+    if (waypointComponent != null) {
+      originalSpeed = new Vector2(waypointComponent.getSpeed());
+    } else if (physicsMovement != null) {
+      originalSpeed = new Vector2(physicsMovement.maxSpeed);
+    }
+  }
+
+  private void applySlowFactor() {
+    if (originalSpeed == null) {
+      return;
+    }
+
+    Vector2 slowedSpeed = new Vector2(originalSpeed.x * slowFactor, originalSpeed.y * slowFactor);
+
+    if (waypointComponent != null) {
+      waypointComponent.setSpeed(slowedSpeed);
+    }
+
+    if (physicsMovement != null) {
+      physicsMovement.maxSpeed.set(slowedSpeed);
+      physicsMovement.setSpeed(slowedSpeed);
+    }
+
+    logger.debug("Applied slow: original speed {}, slowed {}", originalSpeed, slowedSpeed);
+  }
+
+  private void restoreOriginalSpeed() {
+    if (originalSpeed == null) {
+      return;
+    }
+
+    if (waypointComponent != null) {
+      waypointComponent.setSpeed(originalSpeed);
+    }
+
+    if (physicsMovement != null) {
+      physicsMovement.maxSpeed.set(originalSpeed);
+      physicsMovement.setSpeed(originalSpeed);
+    }
+
+    logger.debug("Restored speed {}", originalSpeed);
+  }
+
+  private void applyBlueEffect() {
+    if (animationRender != null) {
+      originalColor = animationRender.getColor();
+      animationRender.setColor(SLOW_COLOR);
+      logger.info("Applied blue tint to animation renderer - {}", SLOW_COLOR);
+      return;
+    }
+
+    if (textureRender != null) {
+      originalColor = textureRender.getColor();
+      textureRender.setColor(SLOW_COLOR);
+      logger.info("Applied blue tint to texture renderer - {}", SLOW_COLOR);
+      return;
+    }
+
+    logger.warn("Unable to apply blue tint: no renderer component found");
+  }
+
+  private void removeBlueEffect() {
+    if (animationRender != null) {
+      if (originalColor != null) {
+        animationRender.setColor(originalColor);
+        logger.info("Restored animation renderer colour to {}", originalColor);
+      } else {
+        animationRender.setColor(NORMAL_COLOR);
+        logger.info("Restored animation renderer colour to default");
+      }
+      return;
+    }
+
+    if (textureRender != null) {
+      if (originalColor != null) {
+        textureRender.setColor(originalColor);
+        logger.info("Restored texture renderer colour to {}", originalColor);
+      } else {
+        textureRender.setColor(NORMAL_COLOR);
+        logger.info("Restored texture renderer colour to default");
+      }
+      return;
+    }
+
+    logger.warn("Unable to restore colour: no renderer component found");
+  }
+
+  /**
+   * @return {@code true} if the slow effect is currently active.
+   */
+  public boolean isSlowActive() {
+    return isActive;
+  }
+
+  /**
+   * @return remaining effect duration in seconds.
+   */
+  public float getTimeRemaining() {
+    return timeRemaining;
+  }
+
+  /**
+   * @return configured slow factor.
+   */
+  public float getSlowFactor() {
+    return slowFactor;
+  }
+
+  @Override
+  public void dispose() {
+    if (isActive) {
+      removeSlow();
+    }
+    super.dispose();
+  }
+}

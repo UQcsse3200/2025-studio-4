@@ -154,6 +154,7 @@ public class MainBookDisplay extends UIComponent {
             }
         });
 
+        /* Map book -> replace this
         TextButton tmpMapButton = new TextButton("", heroButtonStyle);
         heroButton.getLabel().setColor(Color.WHITE);
         heroButton.addListener(new ChangeListener() {
@@ -162,7 +163,9 @@ public class MainBookDisplay extends UIComponent {
                 entity.getEvents().trigger("goToHero");
             }
         });
+         */
 
+        /* Achievement book -> replace this
         TextButton tmpAchievementButton = new TextButton("", heroButtonStyle);
         heroButton.getLabel().setColor(Color.WHITE);
         heroButton.addListener(new ChangeListener() {
@@ -171,15 +174,16 @@ public class MainBookDisplay extends UIComponent {
                 entity.getEvents().trigger("goToHero");
             }
         });
+         */
 
-        table.row().padTop(stageHeight * 0.02f);
+        table.row().padTop(stageHeight * 0.02f); // First row of books
         table.add(enemyButton).size(buttonWidth, buttonHeight);
         table.add(currencyButton).size(buttonWidth, buttonHeight);
-        table.add(tmpMapButton).size(buttonWidth, buttonHeight);
-        table.row().padTop(stageHeight * 0.02f);
         table.add(towerButton).size(buttonWidth, buttonHeight);
+        table.row().padTop(stageHeight * 0.02f); // Second row of books
         table.add(heroButton).size(buttonWidth, buttonHeight);
-        table.add(tmpAchievementButton).size(buttonWidth, buttonHeight);
+        // table.add(tmpMapButton).size(buttonWidth, buttonHeight);
+        // table.add(tmpAchievementButton).size(buttonWidth, buttonHeight);
 
         table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 

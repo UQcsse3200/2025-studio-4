@@ -176,8 +176,18 @@ public class BookDisplay extends UIComponent {
         Table table = new Table();
         table.setFillParent(true);
 
+        int imagesPerRow = 4;
+        float padLeftFactor = 0.16f;
+        if (decks.size() <= 8) {
+            imagesPerRow = 2;
+            padLeftFactor = 0.2f;
+        } else if (decks.size() <= 15) {
+            imagesPerRow = 3;
+            padLeftFactor = 0.18f;
+        }
+        
         // Left content list
-        table.top().left().padLeft(stageWidth * 0.2f).padTop(stageHeight * 0.2f);
+        table.top().left().padLeft(stageWidth * padLeftFactor).padTop(stageHeight * 0.2f);
 
         // Book title
         Label labelTitle = new Label(this.book.getTitle(), skin, "large");
@@ -189,12 +199,6 @@ public class BookDisplay extends UIComponent {
                 .padTop(stageHeight * 0.12f);
         titleTable.add(labelTitle);
 
-        int imagesPerRow = 4;
-        if (decks.size() <= 8) {
-            imagesPerRow = 2;
-        } else if (decks.size() <= 15) {
-            imagesPerRow = 3;
-        }
         
         // Scale buttons relative to screen width
         float buttonSize = stageWidth * 0.20f / imagesPerRow;

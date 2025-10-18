@@ -16,10 +16,12 @@ import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.rendering.RotatingAnimationRenderComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.services.GameTime;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.towers.OrbitComponent;
 import com.csse3200.game.components.towers.BeamAttackComponent;
+import com.csse3200.game.entities.EntityService;
 
 import java.util.Map;
 
@@ -70,10 +72,15 @@ public class TowerComponent extends Component {
 
     private int level = 1;
     /**
-     level getter
+     * Current upgrade level of the tower. Minimum 1.
+     * @return tower level
      */
     public int getLevel() {return level;}
 
+    /**
+     * Set the tower's level. Values less than 1 are clamped to 1.
+     * @param lvl desired level
+     */
     public void setLevel(int lvl) { this.level = Math.max(1, lvl); }
 
     /**
@@ -311,7 +318,10 @@ public class TowerComponent extends Component {
         TowerStatsComponent stats = entity.getComponent(TowerStatsComponent.class);
         if (stats == null) return;
 
-        float dt = Gdx.graphics != null ? Gdx.graphics.getDeltaTime() : (1f / 60f);
+        // Use GameTime's delta time which respects time scale (paused = 0, double speed = 2x)
+        GameTime gameTime = ServiceLocator.getTimeSource();
+        float dt = gameTime != null ? gameTime.getDeltaTime() : 0f;
+
         stats.updateAttackTimer(dt);
 
         // Update head position only if it does NOT have an OrbitComponent
@@ -420,12 +430,50 @@ public class TowerComponent extends Component {
                 String tex = stats.getProjectileTexture() != null ? stats.getProjectileTexture() : "images/bullet.png";
                 int damage = (int) stats.getDamage();
 
-                Entity bullet = ProjectileFactory.createBullet(tex, spawnOrigin, dir.x * speed, dir.y * speed, life, damage);
-                var es = ServiceLocator.getEntityService();
-                if (es != null) Gdx.app.postRunnable(() -> es.register(bullet));
+                final String poolKey = "bullet:" + tex;
+                EntityService es = ServiceLocator.getEntityService();
 
-                if (headRenderer != null) {
-                    headRenderer.startAnimation("fire");
+                if (es != null) {
+                    // Make captured values final/effectively final for the lambda
+                    final Vector2 originFinal = spawnOrigin;
+                    final float vxFinal = dir.x * speed;
+                    final float vyFinal = dir.y * speed;
+                    final float lifeFinal = life;
+                    final int dmgFinal = damage;
+                    final String texFinal = tex;
+
+                    Entity bullet = es.obtain(poolKey, () -> {
+                        Entity b = ProjectileFactory.createBullet(
+                                texFinal, originFinal, vxFinal, vyFinal, lifeFinal, dmgFinal
+                        );
+                        ProjectileComponent pc0 = b.getComponent(ProjectileComponent.class);
+                        if (pc0 != null) pc0.setPoolKey(poolKey);
+                        Gdx.app.postRunnable(() -> es.register(b));
+                        return b;
+                    });
+
+                    // If coming from pool, reactivate/reset
+                    ProjectileComponent pc = bullet.getComponent(ProjectileComponent.class);
+                    if (pc != null && pc.isInactive()) {
+                        // IMPORTANT: set position BEFORE activate so body starts at the spawn point
+                        bullet.setPosition(originFinal);
+                        pc.setPoolKey(poolKey).activate(vxFinal, vyFinal, lifeFinal);
+                        // Optional: update damage if supported
+                        CombatStatsComponent bStats = bullet.getComponent(CombatStatsComponent.class);
+                        if (bStats != null) {
+                            try { bStats.setBaseAttack(dmgFinal); } catch (Throwable ignored) {}
+                        }
+                    }
+
+                    if (headRenderer != null) {
+                        headRenderer.startAnimation("fire");
+                    }
+                } else {
+                    // Fallback: original create/register path
+                    Entity bullet = ProjectileFactory.createBullet(tex, spawnOrigin, dir.x * speed, dir.y * speed, life, damage);
+                    var svc = ServiceLocator.getEntityService();
+                    if (svc != null) Gdx.app.postRunnable(() -> svc.register(bullet));
+                    if (headRenderer != null) headRenderer.startAnimation("fire");
                 }
             }
 

@@ -58,18 +58,18 @@ public class TowerHotbarDisplay extends UIComponent {
         title.setAlignment(Align.center);
 
         // 图标资源（如路径不同，请按资源实际位置调整）
-        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/boneicon.png")));
-        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dinoicon.png")));
-        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/cavemenicon.png")));
-        TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/supercavemenicon.png")));
+        TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bones/boneicon.png")));
+        TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dino/dinoicon.png")));
+        TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/cavemen/cavemenicon.png")));
+        TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/super/supercavemenicon.png")));
         TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
-        TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pterodactylicon.png")));
-        TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totemicon.png")));
-        TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bankicon.png")));
-        TextureRegionDrawable raftImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/rafticon.png")));
-        TextureRegionDrawable frozenmamoothskullImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/frozenmamoothskullicon.png")));
-        TextureRegionDrawable bouldercatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bouldercatapulticon.png")));
-        TextureRegionDrawable villageshamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/villageshamanicon.png")));
+        TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pteradactyl/pterodactylicon.png")));
+        TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totem/totemicon.png")));
+        TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank/bankicon.png")));
+        TextureRegionDrawable raftImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/viking/rafticon.png")));
+        TextureRegionDrawable frozenmamoothskullImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/mammoth/frozenmamoothskullicon.png")));
+        TextureRegionDrawable bouldercatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/catapault/bouldercatapulticon.png")));
+        TextureRegionDrawable villageshamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/shaman/villageshamanicon.png")));
 
         // 按钮
         ImageButton boneBtn = new ImageButton(boneImage);

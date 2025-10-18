@@ -14,10 +14,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Fires interceptor at nearest tower projectile. Interception/destruction
- * handled by InterceptOnHitComponent radius-overlap logic.
+ * Periodically searches for the nearest active tower projectile within range and fires
+ * an interceptor toward it. Interception and destruction are handled by
+ * InterceptOnHitComponent on the interceptor via radius overlap checks.
+ * <p>
+ * Uses EntityService pooling with key "interceptor:&lt;spritePath&gt;" and
+ * ProjectileComponent.activate()/deactivate() to reuse entities efficiently.
  */
-public class AntiProjectileShooterComponent extends Component {
+public class
+AntiProjectileShooterComponent extends Component {
     private final float range;
     private final float cooldown;
     private final float speed;
@@ -27,6 +32,14 @@ public class AntiProjectileShooterComponent extends Component {
     private float timer = 0f;
     private static final Logger logger = LoggerFactory.getLogger(AntiProjectileShooterComponent.class);
 
+    /**
+     * Create a shooter that launches interceptors on a cooldown toward hostile projectiles.
+     * @param range      maximum search radius in world units
+     * @param cooldown   seconds between interceptor launches
+     * @param speed      interceptor linear speed in world units per second
+     * @param lifetime   interceptor lifetime in seconds before auto-despawn
+     * @param spritePath texture path used for the interceptor
+     */
     public AntiProjectileShooterComponent(float range, float cooldown, float speed, float lifetime, String spritePath) {
         this.range = range;
         this.cooldown = cooldown;
@@ -35,6 +48,10 @@ public class AntiProjectileShooterComponent extends Component {
         this.spritePath = spritePath;
     }
 
+    /**
+     * Advance the internal timer and, when off cooldown, acquire a target and fire
+     * an interceptor. No-ops if required services are unavailable.
+     */
     @Override
     public void update() {
         var time = ServiceLocator.getTimeSource();
@@ -53,6 +70,11 @@ public class AntiProjectileShooterComponent extends Component {
         fireInterceptorToward(target);
     }
 
+    /**
+     * Scan registered entities for the closest valid tower projectile in range.
+     * Interceptor-tagged entities and inactive projectiles are ignored.
+     * @return nearest target or null if none found within range
+     */
     private Entity findNearestTowerProjectile() {
         EntityService es = ServiceLocator.getEntityService();
         if (es == null) return null;
@@ -62,7 +84,8 @@ public class AntiProjectileShooterComponent extends Component {
         Entity best = null;
         for (int i = 0; i < all.size; i++) {
             Entity e = all.get(i);
-            if (e.getComponent(ProjectileComponent.class) == null) continue; // must be projectile
+            ProjectileComponent pc = e.getComponent(ProjectileComponent.class);
+            if (pc == null || pc.isInactive()) continue; // only live projectiles
             if (e.getComponent(InterceptorTagComponent.class) != null) continue; // skip own interceptors
             float d2 = e.getPosition().dst2(myPos);
             if (d2 <= bestD2) { bestD2 = d2; best = e; }
@@ -70,6 +93,11 @@ public class AntiProjectileShooterComponent extends Component {
         return best;
     }
 
+    /**
+     * Obtain or create an interceptor entity, position it at this shooter, and activate
+     * its ProjectileComponent toward the target. Preserves pool key and reuses entities.
+     * @param target projectile entity to intercept
+     */
     private void fireInterceptorToward(Entity target) {
         Vector2 from = entity.getPosition();
         Vector2 to = target.getPosition();
@@ -77,21 +105,37 @@ public class AntiProjectileShooterComponent extends Component {
         if (dir.isZero()) return;
         dir.nor();
 
-        Entity interceptor = new Entity();
-        interceptor.addComponent(new TextureRenderComponent(spritePath));
-        interceptor.setScale(0.5f, 0.5f); // radius for collision overlap
-
-        PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);
-        interceptor.addComponent(physics);
-
-        interceptor.addComponent(new ProjectileComponent(dir.x * speed, dir.y * speed, lifetime));
-        interceptor.addComponent(new InterceptorTagComponent());
-        interceptor.addComponent(new InterceptOnHitComponent());
-        interceptor.setPosition(from);
-
+        final String poolKey = "interceptor:" + spritePath;
         EntityService es = ServiceLocator.getEntityService();
-        if (es != null) {
-            es.register(interceptor);
+        if (es == null) return;
+
+        // Obtain from pool or create/register a new one
+        Entity interceptor = es.obtain(poolKey, () -> {
+            Entity ent = new Entity();
+            ent.addComponent(new TextureRenderComponent(spritePath));
+            ent.setScale(0.5f, 0.5f);
+
+            PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);
+            ent.addComponent(physics);
+
+            ProjectileComponent proj = new ProjectileComponent(0f, 0f, lifetime).setPoolKey(poolKey);
+            ent.addComponent(proj);
+            ent.addComponent(new InterceptorTagComponent());
+            ent.addComponent(new InterceptOnHitComponent());
+            ent.setPosition(from);
+
+            // Register once on first creation
+            es.register(ent);
+            return ent;
+        });
+
+        // Reactivate/reset pooled interceptor
+        ProjectileComponent pc = interceptor.getComponent(ProjectileComponent.class);
+        if (pc != null) {
+            pc.setPoolKey(poolKey).activate(dir.x * speed, dir.y * speed, lifetime);
         }
+        interceptor.setPosition(from);
+        // Ensure consistent size (in case deactivated changed scale elsewhere)
+        interceptor.setScale(0.5f, 0.5f);
     }
 }

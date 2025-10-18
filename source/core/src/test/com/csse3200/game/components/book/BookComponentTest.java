@@ -30,7 +30,7 @@ class BookComponentTest {
         assertNotNull(towers.boneTower);
         // Update expected damage and image to match your actual config:
         assertEquals(towers.boneTower.base.damage, 5); // If not 10, update to actual value
-        assertEquals(towers.boneTower.base.image, "images/towers/bone.png"); // If not "images/bone.png", update to actual value
+        assertEquals(towers.boneTower.base.image, "images/towers/bones/bonelvl1.png"); // If not "images/bone.png", update to actual value
     }
 
     @Test

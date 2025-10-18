@@ -1,5 +1,6 @@
 package com.csse3200.game.entities.factories;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
@@ -14,7 +15,10 @@ import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
@@ -30,10 +34,14 @@ public class TankEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 50;
-    private static final CurrencyType DEFAULT_CURRENCY_TYPE = CurrencyType.TITANIUM_CORE;
+    private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
+    CurrencyType.METAL_SCRAP, 150,
+    CurrencyType.TITANIUM_CORE, 100,
+    CurrencyType.NEUROCHIP, 50
+    );
     private static final int DEFAULT_POINTS = 300;
     private static final float SPEED_EPSILON = 0.001f;
+    private static final String DEFAULT_DEATH_SOUND_PATH = "sounds/mixkit-arcade-game-explosion-2759.wav";
     ///////////////////////////////////////////////////////////////////////////////////////////////
     
     // Configurable properties
@@ -45,9 +53,9 @@ public class TankEnemyFactory {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
-    private static CurrencyType currencyType = DEFAULT_CURRENCY_TYPE;
+    private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
+    private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
 
     /**
      * Creates a tank enemy with current configuration.
@@ -84,15 +92,48 @@ public class TankEnemyFactory {
 
         tank.getEvents().addListener("entityDeath", () -> destroyEnemy(tank));
 
-        // Handle waypoint progression for this specific tank
+        // Each tank handles its own waypoint progression
         tank.getEvents().addListener("chaseTaskFinished", () -> {
-            WaypointComponent wc = tank.getComponent(WaypointComponent.class);
-            if (wc != null && wc.hasMoreWaypoints()) {
-                Entity nextTarget = wc.getNextWaypoint();
-                if (nextTarget != null) {
-                    applySpeedModifier(tank, wc, nextTarget);
-                    updateChaseTarget(tank, nextTarget);
+            WaypointComponent dwc = tank.getComponent(WaypointComponent.class);
+            
+            if (dwc == null) {
+                return;
+            }
+            
+            Entity currentTarget = dwc.getCurrentTarget();
+            
+            // Check if we've reached the final waypoint
+            if (!dwc.hasMoreWaypoints()) {
+                
+                // If we're far from the final waypoint, keep chasing it
+                if (currentTarget != null) {
+                    float distanceToTarget = tank.getPosition().dst(currentTarget.getPosition());
+                    
+                    if (distanceToTarget > 0.5f) {
+                        updateChaseTarget(tank, currentTarget);
+                        return;
+                    }
                 }
+                
+                return;
+            }
+            
+            if (currentTarget != null) {
+                float distanceToTarget = tank.getPosition().dst(currentTarget.getPosition());
+                
+                // If we're far from current waypoint (happens after unpause), 
+                // create a new task to continue toward CURRENT waypoint
+                if (distanceToTarget > 0.5f) {
+                    updateChaseTarget(tank, currentTarget);
+                    return;
+                }
+            }
+            
+            // We're close to current waypoint, advance to next
+            Entity nextTarget = dwc.getNextWaypoint();
+            if (nextTarget != null) {
+                applySpeedModifier(tank, dwc, nextTarget);
+                updateChaseTarget(tank, nextTarget);
             }
         });
 
@@ -130,16 +171,24 @@ public class TankEnemyFactory {
                 prc.addKill();
             }
 
-            // Drop currency upon defeating enemy
+            // Drop currency upon defeat
             CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
             if (currencyManager != null) {
-                Map<CurrencyType, Integer> drops = Map.of(currencyType, currencyAmount);
-                player.getEvents().trigger("dropCurrency", drops);
+                player.getEvents().trigger("dropCurrency", currencyDrops);
             }
         }
 
+
+        playDeathSound(deathSoundPath);
         //Gdx.app.postRunnable(entity::dispose);
-}
+        //Eventually add point/score logic here maybe?
+    }
+
+    private static void playDeathSound(String soundPath) {
+        ServiceLocator.getResourceService()
+                .getAsset(soundPath, Sound.class)
+                .play(2.0f);
+    }
 
     private static void applySpeedModifier(Entity tank, WaypointComponent waypointComponent, Entity waypoint) {
         if (waypointComponent == null || waypoint == null) {

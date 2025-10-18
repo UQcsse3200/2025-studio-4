@@ -64,8 +64,9 @@ public class PlayerNameDisplay extends UIComponent {
         avatarImage = createAvatarImage(avatarId);
         
         // Create player name label
-        playerNameLabel = new Label(playerName, skin, "large");
-        playerNameLabel.setColor(Color.WHITE);
+        Label.LabelStyle labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+        labelStyle.fontColor = Color.WHITE;
+        playerNameLabel = new Label(playerName, labelStyle);
         
         // Add padding and positioning
         table.pad(20f, 20f, 0f, 20f);

@@ -52,7 +52,7 @@ public class PlayerStatsDisplay extends UIComponent {
     table = new Table();
     table.top().left();
     table.setFillParent(true);
-    table.padTop(45f).padLeft(5f);
+    table.padTop(60f).padLeft(5f);
 
     float screenWidth = stage.getWidth();
     float screenHeight = stage.getHeight();

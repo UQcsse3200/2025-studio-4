@@ -95,7 +95,8 @@ public class TowerUpgradeData {
         superCavemenA.put(5, new UpgradeStats(130, 10.0f, 1.0f, 10.0f, 3500, "images/towers/super/superlvl4"));
         pathA.put("supercavemen", superCavemenA);
 
-        // Bank tower — Path A: Speed (support). Range must always be 0.
+        // Bank tower — Path A entries remain; generator maps level_A -> interval internally.
+        // Bank tower — Path B capped at 3 in this file to represent unlock tiers.
         Map<Integer, UpgradeStats> bankA = new HashMap<>();
         bankA.put(2, new UpgradeStats(0, 0f, 0f, 1.0f, 250, "images/towers/bank/banklvl2"));
         bankA.put(3, new UpgradeStats(0, 0f, 0f, 1.25f, 300, "images/towers/bank/banklvl3"));

@@ -22,10 +22,23 @@ public class CurrencyFactory {
      * @return a fully initialized currency entity
      */
     public static Entity createCurrency(CurrencyType type, int value, float x, float y) {
+        return createCurrency(type, value, x, y, 0f); // 0 -> no TTL auto-despawn
+    }
+
+    /**
+     * Overload that allows specifying a TTL (seconds) after which the currency despawns automatically.
+     *
+     * @param type  currency type
+     * @param value currency value
+     * @param x     world x
+     * @param y     world y
+     * @param ttlSeconds time to live in seconds; <= 0 means no auto-despawn
+     */
+    public static Entity createCurrency(CurrencyType type, int value, float x, float y, float ttlSeconds) {
         Entity currency = new Entity()
                 .addComponent(new TextureRenderComponent(type.getTexturePath()))
                 .addComponent(new CurrencyComponent(type, value))
-                .addComponent(new CollectibleComponent());
+                .addComponent(ttlSeconds > 0f ? new CollectibleComponent(ttlSeconds) : new CollectibleComponent());
 
         currency.setPosition(x, y);
         currency.getComponent(TextureRenderComponent.class).scaleEntity();
@@ -33,5 +46,3 @@ public class CurrencyFactory {
         return currency;
     }
 }
-
-

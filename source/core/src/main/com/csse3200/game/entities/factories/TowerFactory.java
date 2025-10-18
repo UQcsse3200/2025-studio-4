@@ -271,7 +271,7 @@ public class TowerFactory {
         TowerConfig.TowerStats stats = towers.bankTower.base;
 
         Entity base = new Entity()
-                .addComponent(new TowerComponent("bank", 2, 2))
+                .addComponent(new TowerComponent("bank", 4, 4))
                 .addComponent(new TowerStatsComponent(
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
@@ -281,10 +281,11 @@ public class TowerFactory {
                         stats.projectileSpeed, stats.image))
                 // Set the floor image to match other towers
                 .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"))
+                // Level 1 behavior: 50 scrap every 5 seconds (interval will be driven by level_A dynamically)
                 .addComponent(new CurrencyGeneratorComponent(
                         CurrencyComponent.CurrencyType.METAL_SCRAP,
                         50,
-                        3f
+                        5f
                 ));
 
         // Use the correct bank tower atlas for head animation
@@ -299,7 +300,7 @@ public class TowerFactory {
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new Vector2(0f, 0f), 0.01f);
 
-        scaleToFootprint(base, head, 2, 2);
+        scaleToFootprint(base, head, 4, 4);
         return base;
     }
 

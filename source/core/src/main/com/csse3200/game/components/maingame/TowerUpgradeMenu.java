@@ -590,9 +590,9 @@ public class TowerUpgradeMenu extends UIComponent {
             if (pathATitleLabel != null) pathATitleLabel.setText("Range");
             if (pathBTitleLabel != null) pathBTitleLabel.setText("Freeze Time");
         } else if ("bank".equalsIgnoreCase(currentTowerType)) {
-            // Bank: Path A = Speed, Path B = Unlock Currency
+            // Bank: Path A = Speed, Path B title set below based on current level_B
             if (pathATitleLabel != null) pathATitleLabel.setText("Speed");
-            if (pathBTitleLabel != null) pathBTitleLabel.setText("Unlock Currency");
+            // pathBTitleLabel set later using current level_B
         } else {
             if (pathATitleLabel != null) pathATitleLabel.setText("Damage & Range");
             if (pathBTitleLabel != null) pathBTitleLabel.setText("Cooldown & Speed");
@@ -648,8 +648,19 @@ public class TowerUpgradeMenu extends UIComponent {
         // --- existing upgrade labels and buttons ---
         int levelA = stats.getLevel_A();
         int levelB = stats.getLevel_B();
-        int maxLevelA = getMaxLevelForPath(currentTowerType, true);   // <-- max per-path
-        int maxLevelB = getMaxLevelForPath(currentTowerType, false);  // <-- max per-path
+        int maxLevelA = getMaxLevelForPath(currentTowerType, true);
+        int maxLevelB = getMaxLevelForPath(currentTowerType, false);
+
+        // Bank Path B label text based on current level
+        if ("bank".equalsIgnoreCase(currentTowerType) && pathBTitleLabel != null) {
+            if (levelB == 1) {
+                pathBTitleLabel.setText("Unlock Titanium Core");
+            } else if (levelB == 2) {
+                pathBTitleLabel.setText("Unlock Neuro Core");
+            } else {
+                pathBTitleLabel.setText("Unlock Currency");
+            }
+        }
 
         pathALevelLabel.setText("Level: " + (levelA >= maxLevelA ? "MAX" : levelA));
         // For frozen mammoth skull show the freeze duration instead of a generic label
@@ -665,37 +676,12 @@ public class TowerUpgradeMenu extends UIComponent {
         int nextLevelA = levelA + 1;
         int nextLevelB = levelB + 1;
 
-        // Debug: Print tower type and available upgrades
-        System.out.println("DEBUG: Tower type = '" + currentTowerType + "'");
-        System.out.println("DEBUG: Available upgrade types: " + pathAUpgradesPerTower.keySet());
-        System.out.println("DEBUG: Current levels - A: " + levelA + ", B: " + levelB);
-        System.out.println("DEBUG: Next levels - A: " + nextLevelA + ", B: " + nextLevelB);
-        
         Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(currentTowerType);
         Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(currentTowerType);
-        
-        System.out.println("DEBUG: upgradesA = " + (upgradesA != null ? "found" : "null"));
-        System.out.println("DEBUG: upgradesB = " + (upgradesB != null ? "found" : "null"));
-        
-        if (upgradesA != null) {
-            System.out.println("DEBUG: upgradesA keys: " + upgradesA.keySet());
-            System.out.println("DEBUG: upgradesA contains nextLevelA(" + nextLevelA + "): " + upgradesA.containsKey(nextLevelA));
-            if (upgradesA.containsKey(nextLevelA)) {
-                System.out.println("DEBUG: upgradesA[" + nextLevelA + "].cost = " + upgradesA.get(nextLevelA).cost);
-            }
-        }
-        
-        if (upgradesB != null) {
-            System.out.println("DEBUG: upgradesB keys: " + upgradesB.keySet());
-            System.out.println("DEBUG: upgradesB contains nextLevelB(" + nextLevelB + "): " + upgradesB.containsKey(nextLevelB));
-            if (upgradesB.containsKey(nextLevelB)) {
-                System.out.println("DEBUG: upgradesB[" + nextLevelB + "].cost = " + upgradesB.get(nextLevelB).cost);
-            }
-        }
 
-        // determine currency for current tower type
         CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
 
+        // Path A button
         pathAButton.clearChildren();
         if (levelA >= maxLevelA) {
             // Center "MAX" content
@@ -707,21 +693,22 @@ public class TowerUpgradeMenu extends UIComponent {
             pathAButton.setDisabled(false);
         }
 
+        // Path B button
         pathBButton.clearChildren();
         if (levelB >= maxLevelB) {
             // Center "MAX" content
             setButtonCenteredText(pathBButton, "MAX");
             pathBButton.setDisabled(true);
         } else {
-            // Special UI for Bank Path B: show "Unlock" + currency icon instead of text cost
+            int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
             if ("bank".equalsIgnoreCase(currentTowerType)) {
+                // Show the icon of the currency being unlocked at the next level
                 CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
                         : nextLevelB == 3 ? CurrencyType.NEUROCHIP
-                        : null;
-                setupButtonUnlockContent(pathBButton, unlockCurrency);
+                        : displayCurrency;
+                setupButtonContent(pathBButton, costB, unlockCurrency);
                 pathBButton.setDisabled(false);
             } else {
-                int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
                 setupButtonContent(pathBButton, costB, displayCurrency);
                 pathBButton.setDisabled(false);
             }

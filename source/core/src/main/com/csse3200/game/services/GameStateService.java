@@ -25,6 +25,19 @@ public class GameStateService {
     private int stars;
     private Map<HeroType, Boolean> heroUnlocks;
     private HeroType selectedHero = HeroType.HERO;
+    private final java.util.List<java.util.function.BiConsumer<HeroType, String>> skinChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private final java.util.List<java.util.function.Consumer<HeroType>> selectedHeroChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    // ====== 新增：皮肤状态 ======
+    /**
+     * 每个英雄当前选择的皮肤 key（如 "default", "crimson", ...）
+     */
+    private final Map<HeroType, String> selectedSkins = new HashMap<>();
+
+    /**
+     * 每个英雄可用皮肤列表（如需换成从 JSON 读取，也能很方便替换）
+     */
+    private final Map<HeroType, String[]> availableSkins = new HashMap<>();
 
     public GameStateService() {
         // should load from save file later
@@ -35,6 +48,15 @@ public class GameStateService {
         heroUnlocks.put(HeroType.HERO, true);
         heroUnlocks.put(HeroType.ENGINEER, false);
         heroUnlocks.put(HeroType.SAMURAI, false);
+
+        availableSkins.put(HeroType.HERO, new String[]{"default", "purple", "neo"});
+        availableSkins.put(HeroType.ENGINEER, new String[]{"default", "khaki", "steel"});
+        availableSkins.put(HeroType.SAMURAI, new String[]{"default", "purple", "azure"});
+
+        // 默认全部使用 "default"
+        for (HeroType ht : HeroType.values()) {
+            selectedSkins.put(ht, "default");
+        }
     }
 
     /**
@@ -159,6 +181,11 @@ public class GameStateService {
         if (type == null) return;
         selectedHero = type;
         logger.info("Set hero to {}", type);
+
+        // ★ 通知所有监听者
+        for (var l : selectedHeroChangedListeners) {
+            try { l.accept(selectedHero); } catch (Exception ignore) {}
+        }
     }
 
     /**
@@ -170,4 +197,65 @@ public class GameStateService {
         return selectedHero;
     }
 
+
+    // ====== 新增：皮肤 API ======
+
+    /**
+     * 返回某个英雄的可用皮肤列表
+     */
+    public String[] getAvailableSkins(HeroType hero) {
+        String[] arr = availableSkins.get(hero);
+        return (arr != null && arr.length > 0) ? arr : new String[]{"default"};
+        // 如果想保护不可变性，可返回 Arrays.copyOf(arr, arr.length)
+    }
+
+    /**
+     * 获取某个英雄当前选择的皮肤 key（默认 "default"）
+     */
+    public String getSelectedSkin(HeroType hero) {
+        return selectedSkins.getOrDefault(hero, "default");
+    }
+
+    /**
+     * 设置某个英雄当前皮肤（UI 下拉调用这里）
+     * 可在这里做合法性校验（是否在 availableSkins 里）
+     */
+    public void setSelectedSkin(HeroType hero, String skinKey) {
+        if (hero == null || skinKey == null || skinKey.isBlank()) return;
+        // 合法性（如需严格校验）：
+        String[] allow = availableSkins.get(hero);
+        if (allow != null) {
+            boolean ok = false;
+            for (String s : allow) {
+                if (s.equals(skinKey)) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (!ok) {
+                logger.warn("Skin '{}' is not in available list for {}. Ignored.", skinKey, hero);
+                return;
+            }
+        }
+        selectedSkins.put(hero, skinKey);
+        logger.info("Set skin for {} -> {}", hero, skinKey);
+
+        // ★ 通知所有监听者
+        for (var l : skinChangedListeners) {
+            try { l.accept(hero, skinKey); } catch (Exception ignore) {}
+        }
+
+    }
+
+    /** 订阅：皮肤变化（返回一个 AutoCloseable，方便在 dispose() 里注销） */
+    public AutoCloseable onSkinChanged(java.util.function.BiConsumer<HeroType, String> l) {
+        skinChangedListeners.add(l);
+        return () -> skinChangedListeners.remove(l);
+    }
+
+    /** 订阅：选中英雄变化 */
+    public AutoCloseable onSelectedHeroChanged(java.util.function.Consumer<HeroType> l) {
+        selectedHeroChangedListeners.add(l);
+        return () -> selectedHeroChangedListeners.remove(l);
+    }
 }

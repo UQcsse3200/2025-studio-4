@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.hero.engineer.SummonPlacementComponent;
 import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.Hero.DefaultHeroStatusPanelComponent;
 import com.csse3200.game.ui.Hero.EngineerStatusPanelComponent;
@@ -32,14 +33,9 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.entities.configs.HeroConfig;
-import com.csse3200.game.entities.configs.HeroConfig2;
-import com.csse3200.game.entities.configs.HeroConfig3;
-import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
-import com.csse3200.game.entities.configs.SamuraiConfig;
 
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -713,6 +709,38 @@ public class ForestGameArea extends GameArea {
         }
     }
 
+    private void applySkinToHeroForms(String skinKey, HeroConfig c1, HeroConfig2 c2, HeroConfig3 c3) {
+        // 形态1
+        c1.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 1);
+        if (c1.levelTextures != null && c1.levelTextures.length > 0) c1.levelTextures[0] = c1.heroTexture;
+        else c1.levelTextures = new String[]{ c1.heroTexture };
+
+        // 形态2
+        c2.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 2);
+        if (c2.levelTextures != null && c2.levelTextures.length > 0) c2.levelTextures[0] = c2.heroTexture;
+        else c2.levelTextures = new String[]{ c2.heroTexture };
+
+        // 形态3
+        c3.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 3);
+        if (c3.levelTextures != null && c3.levelTextures.length > 0) c3.levelTextures[0] = c3.heroTexture;
+        else c3.levelTextures = new String[]{ c3.heroTexture };
+    }
+
+    private void applySkinToEngineer(String skinKey, EngineerConfig cfg) {
+        cfg.heroTexture   = HeroSkinAtlas.body(GameStateService.HeroType.ENGINEER, skinKey);
+        cfg.bulletTexture = HeroSkinAtlas.bullet(GameStateService.HeroType.ENGINEER, skinKey);
+        // ★ 关键：避免 HeroAppearanceComponent 把皮肤“打回默认”
+        if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
+            cfg.levelTextures[0] = cfg.heroTexture;
+        } else {
+            cfg.levelTextures = new String[]{ cfg.heroTexture };
+        }
+    }
+    private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
+        cfg.heroTexture   = HeroSkinAtlas.body(GameStateService.HeroType.SAMURAI, skinKey);
+        // 如果武士的攻击是刀气贴图，暂时不变；需要皮肤化再加路由字段
+    }
+
     private void spawnHeroAt(GridPoint2 cell) {
         // 1️⃣ 加载配置（或直接手动创建，如你示例）
         HeroConfig heroCfg = new HeroConfig();
@@ -740,6 +768,11 @@ public class ForestGameArea extends GameArea {
             rs.loadSounds(sfx.toArray(new String[0]));
             while (!rs.loadForMillis(10)) { /* wait */ }
         }
+
+        String skinHero = ServiceLocator.getGameStateService()
+                .getSelectedSkin(GameStateService.HeroType.HERO);
+        applySkinToHeroForms(skinHero, heroCfg, heroCfg2, heroCfg3);
+
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
@@ -797,6 +830,11 @@ public class ForestGameArea extends GameArea {
             engCfg = new EngineerConfig();
         }
 
+        // ★ 2) 取当前选中的工程师皮肤，并覆盖到 Config
+        String skin = ServiceLocator.getGameStateService()
+                .getSelectedSkin(GameStateService.HeroType.ENGINEER);
+        applySkinToEngineer(skin, engCfg);
+
         // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, engCfg);  // 只传工程师
@@ -842,6 +880,10 @@ public class ForestGameArea extends GameArea {
             logger.warn("Failed to load configs/samurai.json, using default SamuraiConfig.");
             samCfg = new SamuraiConfig();
         }
+
+        String samSkin = ServiceLocator.getGameStateService()
+                .getSelectedSkin(GameStateService.HeroType.SAMURAI); // 自己已有的方法/字段
+        applySkinToSamurai(samSkin, samCfg);
 
         // 2) 预加载 samurai 资源（主体 + 刀）
         ResourceService rs = ServiceLocator.getResourceService();

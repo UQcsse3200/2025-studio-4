@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.entities.configs.HeroSkinAtlas;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
@@ -36,6 +37,11 @@ public class HeroHotbarDisplay extends UIComponent {
     private Texture engTex;
     private Texture samTex;
     private Texture defTex;
+    private ImageButton chosenBtn;
+    private Table btnTable;
+    private AutoCloseable unsubSkinChanged;
+    private AutoCloseable unsubSelectedHeroChanged;
+
 
     @Override
     public void create() {
@@ -98,42 +104,52 @@ public class HeroHotbarDisplay extends UIComponent {
         // .padBottom(Value.percentHeight(0.01f, rootTable))
 
         applyUiScale(); // 维持你原先的 UI 缩放逻辑
+        GameStateService gs = ServiceLocator.getGameStateService();
+
+// 皮肤变化：如果变的是当前选中英雄，就刷新热键图标
+        unsubSkinChanged = gs.onSkinChanged((who, newSkin) -> {
+            if (gs.getSelectedHero() == who) {
+                refreshChosenHeroIcon(); // 只换图，不重建按钮
+            }
+        });
+
+// 选中英雄变化：重建按钮（图标与点击逻辑一起变）
+        unsubSelectedHeroChanged = gs.onSelectedHeroChanged(nowSelected -> {
+            rebuildChosenHeroButton();   // 重建 UI 上的按钮
+        });
     }
 
     /**
      * 根据当前 GameStateService 选择的英雄，创建对应的图标按钮并挂载点击逻辑。
      */
     private ImageButton buildChosenHeroButton() {
-        // 注意：这里使用独立纹理，便于统一释放
-        engTex = safeLoad("images/engineer/Engineer.png");
-        samTex = safeLoad("images/samurai/Samurai.png");
-        defTex = safeLoad("images/hero/Heroshoot.png");
-
-        TextureRegionDrawable engIcon   = new TextureRegionDrawable(new TextureRegion(engTex));
-        TextureRegionDrawable samIcon   = new TextureRegionDrawable(new TextureRegion(samTex));
-        TextureRegionDrawable defaultIc = new TextureRegionDrawable(new TextureRegion(defTex));
-
         GameStateService gs = ServiceLocator.getGameStateService();
         GameStateService.HeroType chosen =
                 (gs != null) ? gs.getSelectedHero() : GameStateService.HeroType.HERO;
 
-        ImageButton chosenBtn;
-        switch (chosen) {
-            case ENGINEER -> {
-                chosenBtn = new ImageButton(engIcon);
-                addHeroClick(chosenBtn, "engineer");
-            }
-            case SAMURAI -> {
-                chosenBtn = new ImageButton(samIcon);
-                addHeroClick(chosenBtn, "samurai");
-            }
-            default -> {
-                chosenBtn = new ImageButton(defaultIc);
-                addHeroClick(chosenBtn, "default");
-            }
+        String skinKey = (gs != null) ? gs.getSelectedSkin(chosen) : "default";
+        String iconPath = HeroSkinAtlas.body(chosen, skinKey);
+
+        // 建议用 ResourceService 避免重复 new Texture
+        var rs = ServiceLocator.getResourceService();
+        Texture tex = rs.getAsset(iconPath, Texture.class);
+        if (tex == null) {
+            rs.loadTextures(new String[]{iconPath});
+            while (!rs.loadForMillis(10)) {}
+            tex = rs.getAsset(iconPath, Texture.class);
         }
-        return chosenBtn;
+
+        ImageButton btn = new ImageButton(new TextureRegionDrawable(new TextureRegion(tex)));
+
+        // 点击回调（保持你原来的逻辑）
+        switch (chosen) {
+            case ENGINEER -> addHeroClick(btn, "engineer");
+            case SAMURAI  -> addHeroClick(btn, "samurai");
+            default       -> addHeroClick(btn, "default");
+        }
+        return btn;
     }
+
 
     /**
      * 点击回调：请求/取消放置对应英雄。
@@ -196,6 +212,36 @@ public class HeroHotbarDisplay extends UIComponent {
         }
     }
 
+    private void refreshChosenHeroIcon() {
+        if (chosenBtn == null) return;
+        GameStateService gs = ServiceLocator.getGameStateService();
+        if (gs == null) return;
+
+        GameStateService.HeroType chosen = gs.getSelectedHero();
+        String skinKey = gs.getSelectedSkin(chosen);
+        String iconPath = HeroSkinAtlas.body(chosen, skinKey);
+
+        Texture tex = safeLoad(iconPath); // 或用 ResourceService 方案
+        chosenBtn.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(tex));
+        chosenBtn.invalidateHierarchy();
+    }
+
+    private void rebuildChosenHeroButton() {
+        if (chosenBtn == null) return;
+        Actor parent = chosenBtn.getParent();
+        if (!(parent instanceof Table btnTable)) return;
+
+        ImageButton newBtn = buildChosenHeroButton();
+        btnTable.clearChildren();
+        btnTable.add(newBtn)
+                .width(Value.percentWidth(0.08f, rootTable))
+                .height(Value.percentHeight(0.12f, rootTable))
+                .center();
+        btnTable.invalidateHierarchy();
+        chosenBtn = newBtn;
+    }
+
+
     @Override
     public void draw(SpriteBatch batch) {
         // UI 用 Stage 渲染，这里无需额外绘制
@@ -204,6 +250,9 @@ public class HeroHotbarDisplay extends UIComponent {
     @Override
     public void dispose() {
         if (rootTable != null) rootTable.clear();
+        try { if (unsubSkinChanged != null) unsubSkinChanged.close(); } catch (Exception ignore) {}
+        try { if (unsubSelectedHeroChanged != null) unsubSelectedHeroChanged.close(); } catch (Exception ignore) {}
+
         // 释放手动创建/加载的纹理
         if (bgTexture != null) { bgTexture.dispose(); bgTexture = null; }
         if (engTex != null) { engTex.dispose(); engTex = null; }

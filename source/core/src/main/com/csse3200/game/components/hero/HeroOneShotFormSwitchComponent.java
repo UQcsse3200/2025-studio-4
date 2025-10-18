@@ -34,6 +34,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     private long nextSwitchAtMs = 0L;
 
     private int currentForm = 0;
+    private AutoCloseable unsubSkinChanged;
+
 
     public HeroOneShotFormSwitchComponent(HeroConfig cfg1, HeroConfig2 cfg2, HeroConfig3 cfg3) {
         super(1000);
@@ -92,7 +94,92 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 Gdx.app.log("HeroSkinSwitch", "switched by UI to form " + target + " (cooldown 3s)");
             }
         });
+
+        // ===== ★ 在这里：注册皮肤变更监听 =====
+        var gs = ServiceLocator.getGameStateService();
+        if (gs != null) {
+            unsubSkinChanged = gs.onSkinChanged((who, newSkin) -> {
+                // 仅主角：工程师/武士请在各自组件里监听
+                if (who != com.csse3200.game.services.GameStateService.HeroType.HERO) return;
+
+                // 1) 套新皮肤到三套表单
+                applySkinToForm(cfg1, newSkin);
+                applySkinToForm(cfg2, newSkin);
+                applySkinToForm(cfg3, newSkin);
+
+                // 2) 预加载新贴图/子弹，避免立即切换时报空
+                preloadFormTextures(cfg1, cfg2, cfg3);
+
+                // 3) 若当前正在使用某形态，立刻热刷新
+                HeroConfig cur = switch (currentForm) {
+                    case 1 -> cfg1;
+                    case 2 -> cfg2;
+                    case 3 -> cfg3;
+                    default -> null;
+                };
+                if (cur != null) {
+                    switchTexture(cur.heroTexture, "skin-changed");
+                    updateBulletTexture(cur.bulletTexture);
+                }
+            });
+        }
+
     }
+
+    private void applySkinToForm(Object formCfg, String skinKey) {
+        if (formCfg == null || skinKey == null || skinKey.isBlank()) return;
+
+        // 你的三套配置类字段名一致（heroTexture / bulletTexture / levelTextures）
+        // 所以用反射写一份即可复用（你也可以为 HeroConfig2/3 各写一个重载）
+        try {
+            // 本体纹理
+            var heroTexF = formCfg.getClass().getField("heroTexture");
+            String newHeroTex = com.csse3200.game.entities.configs.HeroSkinAtlas.body(
+                    com.csse3200.game.services.GameStateService.HeroType.HERO, skinKey);
+            heroTexF.set(formCfg, newHeroTex);
+
+            // 子弹纹理（如果你的皮肤也映射了子弹）
+            var bulletTexF = formCfg.getClass().getField("bulletTexture");
+            String newBulletTex = com.csse3200.game.entities.configs.HeroSkinAtlas.bullet(
+                    com.csse3200.game.services.GameStateService.HeroType.HERO, skinKey);
+            bulletTexF.set(formCfg, newBulletTex);
+
+            // levelTextures[0] 也同步，避免外观/升级组件把贴图打回默认
+            try {
+                var levelsF = formCfg.getClass().getField("levelTextures");
+                Object arr = levelsF.get(formCfg);
+                if (arr instanceof String[] levels) {
+                    if (levels.length > 0) levels[0] = newHeroTex;
+                    else levelsF.set(formCfg, new String[]{ newHeroTex });
+                } else {
+                    levelsF.set(formCfg, new String[]{ newHeroTex });
+                }
+            } catch (NoSuchFieldException ignore) {}
+        } catch (Exception e) {
+            Gdx.app.error("HeroSkinSwitch", "applySkinToForm failed", e);
+        }
+    }
+
+    private void preloadFormTextures(Object... forms) {
+        var rs = ServiceLocator.getResourceService();
+        java.util.ArrayList<String> toLoad = new java.util.ArrayList<>();
+        for (Object f : forms) {
+            if (f == null) continue;
+            try {
+                var ht = (String) f.getClass().getField("heroTexture").get(f);
+                if (ht != null && !ht.isBlank()) toLoad.add(ht);
+            } catch (Exception ignore) {}
+            try {
+                var bt = (String) f.getClass().getField("bulletTexture").get(f);
+                if (bt != null && !bt.isBlank()) toLoad.add(bt);
+            } catch (Exception ignore) {}
+        }
+        if (!toLoad.isEmpty()) {
+            rs.loadTextures(toLoad.toArray(new String[0]));
+            while (!rs.loadForMillis(10)) { /* wait */ }
+        }
+    }
+
 
     private static void addBulletTextures(ArrayList<String> textures, Object cfg) {
         if (cfg == null) return;
@@ -354,5 +441,6 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     public void dispose() {
         super.dispose();
         cancelTimers();
+        try { if (unsubSkinChanged != null) unsubSkinChanged.close(); } catch (Exception ignore) {}
     }
 }

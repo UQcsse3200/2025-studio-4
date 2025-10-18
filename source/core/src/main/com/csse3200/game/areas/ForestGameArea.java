@@ -432,7 +432,7 @@ public class ForestGameArea extends GameArea {
 
         // Create background entity (renders behind everything)
         Entity background = new Entity();
-        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/game background.jpg"));
+        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/main_game_background.png"));
         background.setPosition(0, 0); // Set position at origin
         spawnEntity(background);
 

@@ -26,6 +26,16 @@ public final class HeroSkinAtlas {
         };
     }
 
+    // ★ 新增：武士“刀身贴图”
+    public static String sword(GameStateService.HeroType t, String skin) {
+        if (t != GameStateService.HeroType.SAMURAI) return null;
+        return switch (skin) {
+            case "crimson" -> "images/samurai/sword2.png";
+            case "azure"   -> "images/samurai/sword3.png";
+            default        -> "images/samurai/sword.png"; // 你的默认刀贴图
+        };
+    }
+
     // ★ 新增：针对 HERO 的“形态化”身体贴图
     public static String bodyForForm(GameStateService.HeroType t, String skin, int form) {
         if (t != GameStateService.HeroType.HERO) {

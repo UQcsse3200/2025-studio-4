@@ -20,6 +20,7 @@ public class GameStateService {
         ENGINEER,
         SAMURAI
     }
+    public enum SkinSlot { BODY, WEAPON /*, SLASH */ }
 
     private Entity base;
     private int stars;
@@ -27,6 +28,13 @@ public class GameStateService {
     private HeroType selectedHero = HeroType.HERO;
     private final java.util.List<java.util.function.BiConsumer<HeroType, String>> skinChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
     private final java.util.List<java.util.function.Consumer<HeroType>> selectedHeroChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    // ===== 新增：武器皮肤 =====
+    /** 仅对需要“武器独立皮肤”的英雄建表；目前只做 SAMURAI */
+    private final Map<HeroType, String> selectedWeaponSkins = new HashMap<>();
+    private final Map<HeroType, String[]> availableWeaponSkins = new HashMap<>();
+    private final java.util.List<java.util.function.BiConsumer<HeroType, String>> weaponSkinChangedListeners =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
 
     // ====== 新增：皮肤状态 ======
     /**
@@ -53,11 +61,57 @@ public class GameStateService {
         availableSkins.put(HeroType.ENGINEER, new String[]{"default", "khaki", "steel"});
         availableSkins.put(HeroType.SAMURAI, new String[]{"default", "purple", "azure"});
 
+        availableWeaponSkins.put(HeroType.SAMURAI, new String[]{"default", "crimson", "azure"});
+        selectedWeaponSkins.put(HeroType.SAMURAI, "default");
+
         // 默认全部使用 "default"
         for (HeroType ht : HeroType.values()) {
             selectedSkins.put(ht, "default");
         }
     }
+
+    // 可用武器皮肤列表
+    public String[] getAvailableWeaponSkins(HeroType hero) {
+        String[] arr = availableWeaponSkins.get(hero);
+        return (arr != null && arr.length > 0) ? arr : new String[]{"default"};
+    }
+
+    // 获取/设置当前武器皮肤
+    public String getSelectedWeaponSkin(HeroType hero) {
+        return selectedWeaponSkins.getOrDefault(hero, "default");
+    }
+
+    public void setSelectedWeaponSkin(HeroType hero, String skinKey) {
+        if (hero == null || skinKey == null || skinKey.isBlank()) return;
+        String[] allow = availableWeaponSkins.get(hero);
+        if (allow != null) {
+            boolean ok = false;
+            for (String s : allow)
+                if (s.equals(skinKey)) {
+                    ok = true;
+                    break;
+                }
+            if (!ok) {
+                logger.warn("Weapon skin '{}' is not in available list for {}. Ignored.", skinKey, hero);
+                return;
+            }
+        }
+        selectedWeaponSkins.put(hero, skinKey);
+        logger.info("Set WEAPON skin for {} -> {}", hero, skinKey);
+        for (var l : weaponSkinChangedListeners) {
+            try {
+                l.accept(hero, skinKey);
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+
+        /** 订阅：武器皮肤变化 */
+        public AutoCloseable onWeaponSkinChanged (java.util.function.BiConsumer < HeroType, String > l){
+            weaponSkinChangedListeners.add(l);
+            return () -> weaponSkinChangedListeners.remove(l);
+        }
 
     /**
      * Sets the current Base entity to track health

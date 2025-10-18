@@ -274,74 +274,73 @@ public class UpgradeMenuDisplay extends UIComponent {
      */
     private Table buildCustomizationTable(GameStateService.HeroType heroType) {
         Table customTable = new Table();
-        //   customTable.defaults().left().pad(2f).growX();
-        // 去掉 growX，避免控件无上限扩展导致文字被挤
-        //  customTable.defaults().left().pad(2f);
-        // 去掉 growX，避免文字列被挤压；并固定两列宽度
         customTable.defaults().left().pad(2f);
-        customTable.columnDefaults(0).width(150f).right().padRight(8f); // 标签列
-        customTable.columnDefaults(1).width(240f).left();               // 选择框列
-        Label title = new Label("Hero Customization", new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE));
-        title.setAlignment(Align.left);
-        //  customTable.add(title).colspan(2).padTop(2f).padBottom(4f).row();
-        customTable.add(title).colspan(2).padTop(2f).padBottom(4f).left().row();
-        // --- Weapon / Loadout 下拉 ---
-        Label weaponLbl = new Label("Weapon:", nameStyle);
-        SelectBox<String> weaponBox = new SelectBox<>(skin);
-        switch (heroType) {
-            case SAMURAI:
-                weaponBox.setItems("Normal Sword", "Weapon 2", "Weapon 3");
-                break;
-            case ENGINEER:
-                // 外壳：名称随意，二阶段再接功能
-                weaponBox.setItems("Loadout 1", "Loadout 2", "Loadout 3");
-                break;
-            case HERO:
-            default:
-                weaponBox.setItems("Weapon 1", "Weapon 2", "Weapon 3");
-                break;
-        }
-        weaponBox.setMaxListCount(5);
-        // customTable.add(weaponLbl).width(110f).padRight(6f);
-        //  customTable.add(weaponBox).height(36f).padBottom(4f).width(220f).row();
-        // 标签列加宽并右对齐；选择框也稍加宽
-        //       customTable.add(weaponLbl).width(150f).padRight(8f).right();
-        //       customTable.add(weaponBox).height(36f).padBottom(4f).width(240f).row();
-        // 列宽由 columnDefaults 控制，这里不再重复设置
-        customTable.add(weaponLbl).right();
-        customTable.add(weaponBox).height(36f).padBottom(4f).left().row();
-        // --- Attack Sound 下拉 ---
-        Label soundLbl = new Label("Attack Sound:", nameStyle);
-        SelectBox<String> soundBox = new SelectBox<>(skin);
-        soundBox.setItems("Sound 1", "Sound 2", "Sound 3");
-        //     soundBox.setMaxListCount(5);
-        //     customTable.add(soundLbl).width(150f).padRight(8f).right();
-        //     customTable.add(soundBox).height(36f).padBottom(6f).width(240f).row();
-        soundBox.setMaxListCount(5);
-        customTable.add(soundLbl).right();
-        customTable.add(soundBox).height(36f).padBottom(6f).left().row();
+        customTable.columnDefaults(0).width(150f).right().padRight(8f);
+        customTable.columnDefaults(1).width(240f).left();
 
-        // --- Skin 下拉 ---
+        Label title = new Label(
+                (heroType == GameStateService.HeroType.SAMURAI ? "Samurai Customization" : "Hero Customization"),
+                new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE)
+        );
+        title.setAlignment(Align.left);
+        customTable.add(title).colspan(2).padTop(2f).padBottom(4f).left().row();
+
+        // === SAMURAI 专属：Weapon 下拉 ===
+        if (heroType == GameStateService.HeroType.SAMURAI) {
+            Label weaponLbl = new Label("Weapon:", nameStyle);
+            SelectBox<String> weaponBox = new SelectBox<>(skin);
+            weaponBox.setItems("Normal Sword", "Weapon 2", "Weapon 3");
+            weaponBox.setMaxListCount(5);
+
+            // label <-> key 映射，需与 HeroSkinAtlas.sword(...) 对齐
+            java.util.function.Function<String, String> toWeaponKey = lbl -> switch (lbl) {
+                case "Weapon 2" -> "crimson";
+                case "Weapon 3" -> "azure";
+                default         -> "default"; // Normal Sword
+            };
+            java.util.function.Function<String, String> toLabel = key -> switch (key) {
+                case "crimson" -> "Weapon 2";
+                case "azure"   -> "Weapon 3";
+                default        -> "Normal Sword";
+            };
+
+            // 初始选中 = 全局当前武器皮肤
+            String currKey = gameState.getSelectedWeaponSkin(GameStateService.HeroType.SAMURAI);
+            weaponBox.setSelected(toLabel.apply(currKey));
+
+            // 选择变化 -> 写回全局
+            weaponBox.addListener(new ChangeListener() {
+                @Override public void changed(ChangeEvent event, Actor actor) {
+                    String key = toWeaponKey.apply(weaponBox.getSelected());
+                    gameState.setSelectedWeaponSkin(GameStateService.HeroType.SAMURAI, key);
+                    logger.info("UI: Samurai weapon skin -> {}", key);
+                }
+            });
+
+            customTable.add(weaponLbl).right();
+            customTable.add(weaponBox).height(36f).padBottom(6f).left().row();
+
+            // 保存引用，方便外部统一禁用/启用
+            weaponBoxes.put(heroType, weaponBox);
+        }
+
+        // === Skin 下拉（所有英雄都有） ===
         Label skinLbl = new Label("Skin:", nameStyle);
         SelectBox<String> skinBox = new SelectBox<>(skin);
 
-// 从全局状态拿可用皮肤列表 & 当前选择
         String[] skins = gameState.getAvailableSkins(heroType);
         skinBox.setItems(skins);
         skinBox.setSelected(gameState.getSelectedSkin(heroType));
 
-// 未解锁则禁用（只读）
-        boolean unlocked = heroUnlocks.get(heroType);
+        boolean unlocked = heroUnlocks.getOrDefault(heroType, false);
         skinBox.setDisabled(!unlocked);
 
-// 选择变化 -> 写回全局状态
         skinBox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
+            @Override public void changed(ChangeEvent event, Actor actor) {
                 String chosen = skinBox.getSelected();
                 gameState.setSelectedSkin(heroType, chosen);
 
-                // 预览头像换贴图
+                // 预览头像即时更新
                 Image preview = heroPreviewImages.get(heroType);
                 if (preview != null) {
                     String newPath = HeroSkinAtlas.body(heroType, chosen);
@@ -352,7 +351,6 @@ public class UpgradeMenuDisplay extends UIComponent {
                         while (!rs.loadForMillis(10)) {}
                         newTex = rs.getAsset(newPath, Texture.class);
                     }
-                    // 需要 TextureRegionDrawable
                     preview.setDrawable(new TextureRegionDrawable(new TextureRegion(newTex)));
                 }
             }
@@ -361,14 +359,12 @@ public class UpgradeMenuDisplay extends UIComponent {
         customTable.add(skinLbl).right();
         customTable.add(skinBox).height(36f).padBottom(6f).left().row();
 
-// 保存引用
         skinBoxes.put(heroType, skinBox);
 
-        // 保存引用（之后二阶段可读）
-        weaponBoxes.put(heroType, weaponBox);
-        soundBoxes.put(heroType, soundBox);
         return customTable;
     }
+
+
 
     private Table makeUpgradeTable() {
         // ===== hero card =====

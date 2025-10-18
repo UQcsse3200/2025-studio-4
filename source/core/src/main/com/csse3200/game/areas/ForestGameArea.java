@@ -736,10 +736,7 @@ public class ForestGameArea extends GameArea {
             cfg.levelTextures = new String[]{ cfg.heroTexture };
         }
     }
-    private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
-        cfg.heroTexture   = HeroSkinAtlas.body(GameStateService.HeroType.SAMURAI, skinKey);
-        // 如果武士的攻击是刀气贴图，暂时不变；需要皮肤化再加路由字段
-    }
+
 
     private void spawnHeroAt(GridPoint2 cell) {
         // 1️⃣ 加载配置（或直接手动创建，如你示例）
@@ -872,6 +869,28 @@ public class ForestGameArea extends GameArea {
             heroHintShown = true;
         }
     }
+
+    private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
+        // 本体随 BODY 皮肤
+        cfg.heroTexture = HeroSkinAtlas.body(GameStateService.HeroType.SAMURAI, skinKey);
+
+        // 刀：独立读取 WEAPON 皮肤
+        String swordSkin = ServiceLocator.getGameStateService()
+                .getSelectedWeaponSkin(GameStateService.HeroType.SAMURAI);
+        String sword = HeroSkinAtlas.sword(GameStateService.HeroType.SAMURAI, swordSkin);
+        if (sword != null && !sword.isBlank()) {
+            cfg.swordTexture = sword;
+        }
+
+        // 防止外观被 levelTextures 还原
+        if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
+            cfg.levelTextures[0] = cfg.heroTexture;
+        } else {
+            cfg.levelTextures = new String[]{ cfg.heroTexture };
+        }
+    }
+
+
 
     private void spawnSamuraiAt(GridPoint2 cell) {
         // 1) 读 samurai 配置

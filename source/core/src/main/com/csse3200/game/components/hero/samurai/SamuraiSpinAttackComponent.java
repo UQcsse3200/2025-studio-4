@@ -93,11 +93,20 @@ public class SamuraiSpinAttackComponent extends Component {
         var lock = new AttackLockComponent();
 
         var jab = new JabAttackComponent(this.entity /*owner=武士本体*/, restRadius)
-                .setParams(jabDuration, jabExtra)        // 动作时长/位移感
-                .setMiniCooldown(jabCooldown)            // 内部最小间隔（可与 SkillCooldowns 并存）
+                .setParams(jabDuration, jabExtra)
+                .setMiniCooldown(jabCooldown)
                 .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                 .setCenterToHandle(centerToHandle)
-                .setPivotOffset(0f, 0f);
+                .setPivotOffset(0f, 0f)
+                // ✨ 注入：Jab 的“按等级伤害表” + 1级默认值兜底
+                .setDamageTable(
+                        (cfg.jabDamageByLevel != null && cfg.jabDamageByLevel.length > 0)
+                                ? cfg.jabDamageByLevel : cfg.swordDamageByLevel,
+                        (cfg.jabDamageByLevel != null && cfg.jabDamageByLevel.length > 0)
+                                ? cfg.jabDamageByLevel[0]
+                                : (cfg.swordDamageByLevel != null && cfg.swordDamageByLevel.length > 0
+                                ? cfg.swordDamageByLevel[0] : 10)
+                );
 
         var sweep = new SweepAttackComponent(this.entity, restRadius)
                 .setParams(sweepDuration, sweepExtra)
@@ -105,15 +114,33 @@ public class SamuraiSpinAttackComponent extends Component {
                 .setMiniCooldown(sweepCooldown)
                 .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                 .setCenterToHandle(centerToHandle)
-                .setPivotOffset(0f, 0f);
+                .setPivotOffset(0f, 0f)
+                // ✨ 注入：Sweep 的伤害表
+                .setDamageTable(
+                        (cfg.sweepDamageByLevel != null && cfg.sweepDamageByLevel.length > 0)
+                                ? cfg.sweepDamageByLevel : cfg.swordDamageByLevel,
+                        (cfg.sweepDamageByLevel != null && cfg.sweepDamageByLevel.length > 0)
+                                ? cfg.sweepDamageByLevel[0]
+                                : (cfg.swordDamageByLevel != null && cfg.swordDamageByLevel.length > 0
+                                ? cfg.swordDamageByLevel[0] : 10)
+                );
 
         var spin = new SpinAttackComponent(this.entity, restRadius)
-                .setParams(0.5f, 0.25f)       // duration, extra
+                .setParams(0.5f, 0.25f)
                 .setTurns(1f)
-                .setMiniCooldown(0.6f)        // 你原先的 spin 冷却
+                .setMiniCooldown(0.6f)
                 .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                 .setCenterToHandle(centerToHandle)
-                .setPivotOffset(0f, 0f);
+                .setPivotOffset(0f, 0f)
+                // ✨ 注入：Spin 的伤害表
+                .setDamageTable(
+                        (cfg.spinDamageByLevel != null && cfg.spinDamageByLevel.length > 0)
+                                ? cfg.spinDamageByLevel : cfg.swordDamageByLevel,
+                        (cfg.spinDamageByLevel != null && cfg.spinDamageByLevel.length > 0)
+                                ? cfg.spinDamageByLevel[0]
+                                : (cfg.swordDamageByLevel != null && cfg.swordDamageByLevel.length > 0
+                                ? cfg.swordDamageByLevel[0] : 10)
+                );
 
 
         ctrl = new SamuraiSwordController(jab, sweep, spin);
@@ -218,6 +245,7 @@ public class SamuraiSpinAttackComponent extends Component {
             Gdx.input.setInputProcessor(mux);
         }
     }
+
     // 更新每帧的 SFX 冷却（如果你本组件有 update，可放 update；没有就靠限频足够）
     private void tickSfxCooldowns(float dt) {
         if (jabSfxCd > 0f)   jabSfxCd   -= dt;

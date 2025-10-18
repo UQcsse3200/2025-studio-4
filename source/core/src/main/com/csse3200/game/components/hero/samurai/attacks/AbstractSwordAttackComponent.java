@@ -1,12 +1,15 @@
 package com.csse3200.game.components.hero.samurai.attacks;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.hero.samurai.SkillCooldowns;
+
 
 public abstract class AbstractSwordAttackComponent extends Component implements ISamuraiAttack {
     protected final Entity owner;
@@ -28,20 +31,70 @@ public abstract class AbstractSwordAttackComponent extends Component implements 
     protected float qiFanOffsetDeg = 15f;
     protected int   qiSpinCount = 8;
     protected float qiSpawnForward = 0.25f; // 注意：真正使用时会 + restRadius
+    // ===== 新增：从“武士本体”读数并缓存 =====
+    protected CombatStatsComponent heroStats; // owner=武士本体
+    private   int cachedDamage = 10;           // 当前缓存伤害
+    // ===== 新增：每个技能自己的伤害表 & 缓存 =====
+    protected int[] damageByLevel = null; // 由上层或子类注入
+
+    // ===== 在字段里新增：伤害倍率 =====
+    private float dmgMul = 1f;
 
     protected AbstractSwordAttackComponent(Entity owner, float restRadius) {
         this.owner = owner;
         this.restRadius = restRadius;
     }
 
+    // 允许外部注入：表 + 默认值（用于 level=1 或无表时）
+    public AbstractSwordAttackComponent setDamageTable(int[] table, int defaultAtLv1) {
+        this.damageByLevel = table;
+        this.cachedDamage  = Math.max(1, defaultAtLv1);
+        return this;
+    }
+
     @Override
     public void create() {
         physics = entity.getComponent(PhysicsComponent.class);
         if (physics == null) throw new IllegalStateException(getClass().getSimpleName()+" requires PhysicsComponent.");
-        cds = entity.getComponent(SkillCooldowns.class);
+        cds  = entity.getComponent(SkillCooldowns.class);
         lock = entity.getComponent(AttackLockComponent.class);
         autoCalibratePivotFromOwnerOrigin();
+
+        // ✅ 按 1 级从“本技能伤害表”初始化；无表用 qiDamage 兜底
+        cachedDamage = pickByLevel(damageByLevel, 1, Math.max(1, qiDamage));
+
+        // （可选兜底）只有当“没有伤害表”时，才尝试用 heroStats 作为 fallback
+        if ((damageByLevel == null || damageByLevel.length == 0) && owner != null) {
+            heroStats = owner.getComponent(CombatStatsComponent.class);
+            if (heroStats != null) cachedDamage = Math.max(1, heroStats.getBaseAttack());
+        }
+
+        // 升级：仅按“技能表”刷新
+        if (owner != null) {
+            owner.getEvents().addListener("upgraded",
+                    (Integer level, CurrencyComponent.CurrencyType t, Integer cost) -> {
+                        cachedDamage = pickByLevel(damageByLevel, level, cachedDamage);
+                    });
+            // ✨ 终极技能 → 刷新伤害倍率
+            owner.getEvents().addListener("attack.multiplier",
+                    (Float mul) -> { dmgMul = (mul != null && mul > 0f) ? mul : 1f; });
+        }
     }
+
+
+    // 子类统一调用，拿当前伤害
+    protected int currentDamage() {
+        return Math.max(1, Math.round(cachedDamage * dmgMul));   // 直接用表维护好的缓存
+    }
+
+
+    // 小工具：按等级从数组里取值（越界取最后一档；无表用 fallback）
+    protected static int pickByLevel(int[] arr, int level, int fallback) {
+        if (arr == null || arr.length == 0) return Math.max(1, fallback);
+        int idx = Math.max(0, Math.min(level - 1, arr.length - 1));
+        return Math.max(1, arr[idx]);
+    }
+
 
     protected void setPose(float workAngleDeg, float curRadius) {
         float rad = (float)Math.toRadians(workAngleDeg);
@@ -118,8 +171,11 @@ public abstract class AbstractSwordAttackComponent extends Component implements 
         float drawW = 1.2f, drawH = 1.2f;
         float baseRotation = 0f;
 
+
+        int dmg = currentDamage();
+
         Entity qi = com.csse3200.game.entities.factories.SwordQiFactory.createSwordQi(
-                spawn, ux*qiSpeed, uy*qiSpeed, qiLife, qiDamage,
+                spawn, ux*qiSpeed, uy*qiSpeed, qiLife, dmg,
                 drawW, drawH,
                 sheetPath, cols, rows, frameW, frameH, frameDur,
                 angleDeg + spriteForwardOffsetDeg, baseRotation, loop
@@ -150,8 +206,10 @@ public abstract class AbstractSwordAttackComponent extends Component implements 
 
         float baseRotation = 0f;
 
+        int dmg = currentDamage(); // ★ 这里：从缓存（监听升级）里取“当前伤害”
+
         Entity qi = com.csse3200.game.entities.factories.SwordQiFactory.createSwordQi(
-                spawn, ux*speed, uy*speed, life, damage,
+                spawn, ux*speed, uy*speed, life, dmg,
                 drawW, drawH,
                 sheetPath, cols, rows, frameW, frameH, frameDur,
                 angleDeg + spriteForwardOffsetDeg, baseRotation, loop

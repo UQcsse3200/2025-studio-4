@@ -81,10 +81,10 @@ public class TowerUpgradeData {
 
         // Totem tower (Path A: Range)
         Map<Integer, UpgradeStats> totemA = new HashMap<>();
-        totemA.put(2, new UpgradeStats(0, 5.0f, 0f, 5.0f, 200, "images/towers/totem/totemlvl2"));
-        totemA.put(3, new UpgradeStats(0, 6.0f, 0f, 5.0f, 300, "images/towers/totem/totemlvl3"));
-        totemA.put(4, new UpgradeStats(0, 7.0f, 0f, 5.0f, 400, "images/towers/totem/totemlvl4"));
-        totemA.put(5, new UpgradeStats(0, 8.0f, 0f, 5.0f, 500, "images/towers/totem/totemlvl4"));
+        totemA.put(2, new UpgradeStats(0, 1.75f, 0f, 5.0f, 200, "images/towers/totem/totemlvl2"));
+        totemA.put(3, new UpgradeStats(0, 2.0f, 0f, 5.0f, 300, "images/towers/totem/totemlvl3"));
+        totemA.put(4, new UpgradeStats(0, 2.25f, 0f, 5.0f, 400, "images/towers/totem/totemlvl4"));
+        totemA.put(5, new UpgradeStats(0, 2.5f, 0f, 5.0f, 500, "images/towers/totem/totemlvl4"));
         pathA.put("totem", totemA);
 
         // SuperCavemen tower (Path A: Damage & Range)
@@ -148,10 +148,10 @@ public class TowerUpgradeData {
 
         // Bone tower
         Map<Integer, UpgradeStats> boneB = new HashMap<>();
-        boneB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
-        boneB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
-        boneB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
-        boneB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        boneB.put(2, new UpgradeStats(5, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
+        boneB.put(3, new UpgradeStats(5, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
+        boneB.put(4, new UpgradeStats(5, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
+        boneB.put(5, new UpgradeStats(5, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
         pathB.put("bone", boneB);
 
         // Dino tower
@@ -180,10 +180,10 @@ public class TowerUpgradeData {
 
         // Totem tower (Path B: Speed)
         Map<Integer, UpgradeStats> totemB = new HashMap<>();
-        totemB.put(2, new UpgradeStats(0, 4.0f, 0f, 7.0f, 200, "images/towers/totem/totemlvl2"));
-        totemB.put(3, new UpgradeStats(0, 4.0f, 0f, 9.0f, 250, "images/towers/totem/totemlvl3"));
-        totemB.put(4, new UpgradeStats(0, 4.0f, 0f, 11.0f, 300, "images/towers/totem/totemlvl4"));
-        totemB.put(5, new UpgradeStats(0, 4.0f, 0f, 13.0f, 400, "images/towers/totem/totemlvl4"));
+        totemB.put(2, new UpgradeStats(0, 4.0f, 0f, 0.0f, 200, "images/towers/totem/totemlvl2"));
+        totemB.put(3, new UpgradeStats(0, 4.0f, 0f, 0.0f, 250, "images/towers/totem/totemlvl3"));
+        totemB.put(4, new UpgradeStats(0, 4.0f, 0f, 0.0f, 300, "images/towers/totem/totemlvl4"));
+        totemB.put(5, new UpgradeStats(0, 4.0f, 0f, 0.0f, 400, "images/towers/totem/totemlvl4"));
         pathB.put("totem", totemB);
 
         // SuperCavemen tower (Path B: Cooldown & Speed)

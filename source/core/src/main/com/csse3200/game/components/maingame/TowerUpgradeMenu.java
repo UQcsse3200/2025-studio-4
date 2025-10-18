@@ -30,6 +30,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.maingame.TowerUpgradeData.UpgradeStats;
 import com.csse3200.game.components.towers.BeamAttackComponent;
+import com.csse3200.game.components.towers.StatsBoostComponent; // NEW: notify totems
 
 import java.util.Map;
 import java.util.EnumMap;
@@ -533,6 +534,9 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         }
 
+        // NEW: notify all active totem boosters to reapply their boost to this upgraded tower
+        notifyTotemBoostersOfUpgrade(selectedTower);
+
         updateLabels();
         System.out.println("Upgrade successful!");
         
@@ -540,6 +544,19 @@ public class TowerUpgradeMenu extends UIComponent {
         upgradeInProgress = false;
     }
 
+    // NEW: inform all totems to refresh boost for the given tower
+    private void notifyTotemBoostersOfUpgrade(Entity target) {
+        if (target == null) return;
+        var entities = safeEntities();
+        if (entities == null) return;
+        for (Entity e : entities) {
+            if (e == null) continue;
+            StatsBoostComponent boost = e.getComponent(StatsBoostComponent.class);
+            if (boost != null) {
+                boost.onTargetStatsChanged(target);
+            }
+        }
+    }
 
     /**
      * Finds and returns the player entity that has a CurrencyManagerComponent.

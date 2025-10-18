@@ -4,7 +4,6 @@ import com.csse3200.game.components.HealthBarComponent;
 import com.csse3200.game.components.HomebaseDamageEffectComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.deck.DeckDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerStatsDisplay;

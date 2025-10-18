@@ -31,7 +31,8 @@ public class MainBookDisplay extends UIComponent {
             "images/book/enemies_book.png",
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
-            "images/book/hologram.png"
+            "images/book/hologram.png",
+            "images/book/heroes_book.png"
     };
 
     private Table contentTable;
@@ -103,8 +104,8 @@ public class MainBookDisplay extends UIComponent {
         float stageHeight = stage.getViewport().getWorldHeight();
 
         // Scale buttons relative to stage size
-        float buttonWidth = stageWidth * 0.3f;   // 8% of stage width
-        float buttonHeight = stageHeight * 0.45f; // 12% of stage height
+        float buttonWidth = stageWidth * 0.2f;   // 8% of stage width
+        float buttonHeight = stageHeight * 0.26f; // 12% of stage height
 
         Table table = new Table();
         table.setFillParent(true);
@@ -112,6 +113,7 @@ public class MainBookDisplay extends UIComponent {
         TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
         TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
         TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
+        TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
 
         TextButton enemyButton = new TextButton("", enemyButtonStyle);
         enemyButton.getLabel().setColor(Color.WHITE);
@@ -143,10 +145,45 @@ public class MainBookDisplay extends UIComponent {
             }
         });
 
-        table.row().padTop(stageHeight * 0.02f);
-        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
-        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
+        TextButton heroButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+
+        /* Map book -> replace this
+        TextButton tmpMapButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+         */
+
+        /* Achievement book -> replace this
+        TextButton tmpAchievementButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+         */
+
+        table.row().padTop(stageHeight * 0.02f); // First row of books
+        table.add(enemyButton).size(buttonWidth, buttonHeight);
+        table.add(currencyButton).size(buttonWidth, buttonHeight);
         table.add(towerButton).size(buttonWidth, buttonHeight);
+        table.row().padTop(stageHeight * 0.02f); // Second row of books
+        table.add(heroButton).size(buttonWidth, buttonHeight);
+        // table.add(tmpMapButton).size(buttonWidth, buttonHeight);
+        // table.add(tmpAchievementButton).size(buttonWidth, buttonHeight);
 
         table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 

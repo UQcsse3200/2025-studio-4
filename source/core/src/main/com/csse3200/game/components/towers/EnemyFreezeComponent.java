@@ -11,6 +11,7 @@ import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.Component;
+import com.csse3200.game.rendering.RotatingAnimationRenderComponent; // added
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -23,6 +24,10 @@ import java.util.Collections;
  */
 public class EnemyFreezeComponent extends Component {
     private static final float FREEZE_DURATION = 1.0f;
+    private static final float ATTACK_COOLDOWN = 5.0f;
+    // NEW: number of enemies to freeze per attack window
+    private static final int MAX_FREEZES_PER_ATTACK = 5;
+    private float attackCooldownRemaining = 0f;
 
     // Save original speeds and remaining freeze time per-entity. WeakHashMap prevents leaks.
     private final Map<Entity, Vector2> originalSpeeds = new WeakHashMap<>();
@@ -59,6 +64,23 @@ public class EnemyFreezeComponent extends Component {
         return cachedStats;
     }
 
+    // Helper: rotate head towards a target and play fire animation
+    private void playHeadFireTowards(Vector2 targetWorldPos) {
+        RotatingAnimationRenderComponent headAnim = entity.getComponent(RotatingAnimationRenderComponent.class);
+        if (headAnim == null) return;
+        Vector2 myCenter = entity.getCenterPosition();
+        if (myCenter == null || targetWorldPos == null) return;
+
+        Vector2 dir = targetWorldPos.cpy().sub(myCenter);
+        if (dir.len2() < 1e-6f) {
+            dir.set(1f, 0f);
+        } else {
+            dir.nor();
+        }
+        headAnim.setRotation(dir.angleDeg());
+        headAnim.startAnimation("fire");
+    }
+
     @Override
     public void update() {
         if (!entity.isActive()) return;
@@ -72,8 +94,17 @@ public class EnemyFreezeComponent extends Component {
             dt = ServiceLocator.getTimeSource().getDeltaTime();
         }
 
+        // NEW: tick attack cooldown
+        if (attackCooldownRemaining > 0f) {
+            attackCooldownRemaining = Math.max(0f, attackCooldownRemaining - dt);
+        }
+
         float range = stats.getRange();
         Vector2 myCenter = entity.getCenterPosition();
+
+        // NEW: track how many we froze this frame and the first target for animation facing
+        int frozeThisFrame = 0;
+        Vector2 firstTargetCenter = null;
 
         // Iterate all entities and freeze/restore as needed
         for (Entity other : ServiceLocator.getEntityService().getEntitiesCopy()) {
@@ -105,7 +136,8 @@ public class EnemyFreezeComponent extends Component {
                     if (other != null && orig != null) {
                         DroneEnemyFactory.updateSpeed(other, orig);
                     }
-                    // Keep hasFrozenWhileInRange entry so we don't re-freeze while they remain in range.
+                    // allow re-freeze while staying in range by clearing the guard
+                    hasFrozenWhileInRange.remove(other);
                 } else {
                     freezeTimers.put(other, remaining);
                 }
@@ -117,6 +149,11 @@ public class EnemyFreezeComponent extends Component {
             if (inRange) {
                 // If this enemy has already been frozen during this stay in range, do nothing.
                 if (hasFrozenWhileInRange.contains(other)) {
+                    continue;
+                }
+
+                // NEW: respect attack cooldown - skip freezing until ready
+                if (attackCooldownRemaining > 0f || frozeThisFrame >= MAX_FREEZES_PER_ATTACK) {
                     continue;
                 }
 
@@ -132,6 +169,13 @@ public class EnemyFreezeComponent extends Component {
 
                 hasFrozenWhileInRange.add(other);
                 DroneEnemyFactory.updateSpeed(other, new Vector2(0f, 0f));
+
+                if (firstTargetCenter == null) {
+                    firstTargetCenter = otherCenter.cpy();
+                }
+                frozeThisFrame++;
+                // Note: do NOT break; keep scanning to freeze up to MAX_FREEZES_PER_ATTACK this frame.
+                continue;
             } else {
                 // Enemy is outside range. If it was marked as frozen-while-in-range, clear that mark so future re-entry can freeze again.
                 if (hasFrozenWhileInRange.contains(other)) {
@@ -145,6 +189,27 @@ public class EnemyFreezeComponent extends Component {
                         DroneEnemyFactory.updateSpeed(other, orig);
                     }
                 }
+            }
+        }
+
+        // NEW: if we froze at least one enemy, play fire animation and start cooldown
+        if (frozeThisFrame > 0) {
+            if (firstTargetCenter != null) {
+                playHeadFireTowards(firstTargetCenter);
+            } else {
+                // fallback to straight fire if no target center captured
+                RotatingAnimationRenderComponent headAnim = entity.getComponent(RotatingAnimationRenderComponent.class);
+                if (headAnim != null) headAnim.startAnimation("fire");
+            }
+            attackCooldownRemaining = ATTACK_COOLDOWN;
+        }
+
+        // Auto-revert fire -> idle when a non-looping fire clip finishes
+        RotatingAnimationRenderComponent headAnim = entity.getComponent(RotatingAnimationRenderComponent.class);
+        if (headAnim != null) {
+            String curr = headAnim.getCurrentAnimation();
+            if (curr != null && curr.startsWith("fire") && headAnim.isFinished()) {
+                headAnim.startAnimation("idle");
             }
         }
 

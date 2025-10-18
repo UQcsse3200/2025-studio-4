@@ -311,7 +311,7 @@ public class TowerFactory {
         TowerConfig.TowerStats stats = towers.raftTower.base;
 
         Entity base = new Entity()
-                .addComponent(new TowerComponent("raft", 2, 2))
+                .addComponent(new TowerComponent("raft", 3, 2))
                 .addComponent(new TowerStatsComponent(
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
@@ -334,7 +334,7 @@ public class TowerFactory {
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
 
-        scaleToFootprint(base, head, 2, 2);
+        scaleToFootprint(base, head, 3, 2);
         return base;
     }
 
@@ -345,7 +345,7 @@ public class TowerFactory {
         TowerConfig.TowerStats stats = towers.frozenmamoothskullTower.base;
 
         Entity base = new Entity()
-                .addComponent(new TowerComponent("frozenmamoothskull", 2, 2))
+                .addComponent(new TowerComponent("frozenmamoothskull", 3, 3))
                 .addComponent(new TowerStatsComponent(
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
@@ -371,7 +371,7 @@ public class TowerFactory {
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
 
-        scaleToFootprint(base, head, 2, 2);
+        scaleToFootprint(base, head, 3, 3);
         return base;
     }
 
@@ -382,7 +382,7 @@ public class TowerFactory {
         TowerConfig.TowerStats stats = towers.bouldercatapultTower.base;
 
         Entity base = new Entity()
-                .addComponent(new TowerComponent("bouldercatapult", 2, 2))
+                .addComponent(new TowerComponent("bouldercatapult", 3, 2))
                 .addComponent(new TowerStatsComponent(
                         1, stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.projectileLife,
@@ -404,7 +404,7 @@ public class TowerFactory {
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);
 
-        scaleToFootprint(base, head, 2, 2);
+        scaleToFootprint(base, head, 3, 2);
         return base;
     }
 

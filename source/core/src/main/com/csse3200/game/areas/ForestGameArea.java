@@ -26,6 +26,7 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.configs.HeroConfig;
 import com.csse3200.game.entities.configs.HeroConfig2;
 import com.csse3200.game.entities.configs.HeroConfig3;
@@ -34,7 +35,14 @@ import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
 import com.csse3200.game.entities.configs.SamuraiConfig;
-
+import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.effects.PlasmaImpactComponent;
+import com.csse3200.game.components.effects.PlasmaStrikeComponent;
+import com.csse3200.game.components.effects.PlasmaWarningComponent;
+import com.csse3200.game.components.effects.PlasmaWeatherController;
+import com.csse3200.game.components.enemy.EnemyTypeComponent;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.towers.TowerComponent;
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -72,6 +80,7 @@ public class ForestGameArea extends GameArea {
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea currentGameArea;
+    private PlasmaWeatherController plasmaWeather;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(30, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -482,6 +491,19 @@ public class ForestGameArea extends GameArea {
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
         spawnSlowZoneEffects();
+        plasmaWeather = new PlasmaWeatherController(this::customSpawnEntityAt, mapEditor, terrain, this::handlePlasmaImpact);
+        if (plasmaWeather != null) {
+            Entity weatherEntity = new Entity();
+            weatherEntity.addComponent(new Component() {
+                @Override
+                public void update() {
+                    plasmaWeather.update(ServiceLocator.getTimeSource().getDeltaTime());
+                }
+            });
+            spawnEntity(weatherEntity);
+            Entity weatherDisplay = new Entity().addComponent(new WeatherStatusDisplay(plasmaWeather));
+            spawnEntity(weatherDisplay);
+        }
 
         // Register pause/resume listeners for wave system
         Entity pauseListener = new Entity();
@@ -621,6 +643,77 @@ public class ForestGameArea extends GameArea {
             Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
             spawnEntityAt(effect, tile, false, false);
         }
+    }
+
+    private void handlePlasmaImpact(Vector2 position) {
+        float radiusSquared = 0.75f * 0.75f;
+        Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
+        Array<Entity> towerTargets = new Array<>();
+        Array<Entity> enemyTargets = new Array<>();
+        for (int i = 0; i < entities.size; i++) {
+            Entity entity = entities.get(i);
+            if (entity == null || !entity.isActive()) {
+                continue;
+            }
+            if (entity.getComponent(PlasmaStrikeComponent.class) != null
+                    || entity.getComponent(PlasmaWarningComponent.class) != null
+                    || entity.getComponent(PlasmaImpactComponent.class) != null) {
+                continue;
+            }
+            Vector2 entityPosition = entity.getPosition();
+            if (entityPosition == null || entityPosition.dst2(position) > radiusSquared) {
+                continue;
+            }
+            if (entity.getComponent(TowerComponent.class) != null) {
+                towerTargets.add(entity);
+                continue;
+            }
+            if (entity.getComponent(EnemyTypeComponent.class) != null) {
+                enemyTargets.add(entity);
+            }
+        }
+        if (towerTargets.size > 0 || enemyTargets.size > 0) {
+            Gdx.app.postRunnable(() -> {
+                for (int i = 0; i < towerTargets.size; i++) {
+                    Entity target = towerTargets.get(i);
+                    if (target != null && target.isActive()) {
+                        dismantleTower(target);
+                    }
+                }
+                for (int i = 0; i < enemyTargets.size; i++) {
+                    Entity target = enemyTargets.get(i);
+                    if (target != null && target.isActive()) {
+                        eliminateEnemy(target);
+                    }
+                }
+            });
+        }
+    }
+
+    private void dismantleTower(Entity tower) {
+        TowerComponent towerComponent = tower.getComponent(TowerComponent.class);
+        if (towerComponent == null) {
+            tower.dispose();
+            return;
+        }
+        if (towerComponent.hasHead()) {
+            Entity head = towerComponent.getHeadEntity();
+            if (head != null && head.isActive()) {
+                head.dispose();
+                ServiceLocator.getEntityService().unregister(head);
+            }
+        }
+        tower.dispose();
+        ServiceLocator.getEntityService().unregister(tower);
+    }
+
+    private void eliminateEnemy(Entity enemy) {
+        CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            stats.setHealth(0);
+            return;
+        }
+        enemy.dispose();
     }
 
     private Entity spawnPlayer() {

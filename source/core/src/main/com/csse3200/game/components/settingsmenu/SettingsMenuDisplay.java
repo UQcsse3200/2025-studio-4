@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.GdxGame;
 import com.csse3200.game.GdxGame.ScreenType;
@@ -175,10 +176,13 @@ public class SettingsMenuDisplay extends UIComponent {
         }
 
         UserSettings.Settings currentSettings = UserSettings.get();
-        if (rootTable != null) {
-            rootTable.setTransform(true);  // Enable transformation
-            rootTable.setScale(currentSettings.uiScale);
-        }
+        applyUiScale(currentSettings.uiScale);
+
+        //UserSettings.Settings currentSettings = UserSettings.get();
+        //if (rootTable != null) {
+        //    rootTable.setTransform(true);  // Enable transformation
+        //    rootTable.setScale(currentSettings.uiScale);
+        //}
     }
 
     private Table makeSettingsTable() {
@@ -428,13 +432,34 @@ public class SettingsMenuDisplay extends UIComponent {
     }
 
     private void applyUiScale(float scale) {
-        if (rootTable != null) {
-            rootTable.setTransform(true);
+        if (rootTable == null) return;
+
+        // Reset before layout
+        rootTable.setTransform(true);
+        rootTable.setScale(1f);
+        rootTable.setOrigin(Align.center);
+        rootTable.setPosition(0, 0);
+
+        // Schedule the scaling to happen AFTER LibGDX lays out everything
+        Gdx.app.postRunnable(() -> {
+            if (rootTable == null) return;
+
+            rootTable.pack();
             rootTable.validate();
-            rootTable.setOrigin(rootTable.getWidth() / 2f, rootTable.getHeight() / 2f);
+
+            rootTable.setOrigin(Align.center);
             rootTable.setScale(scale);
-        }
+
+            // Center after scaling
+            rootTable.setPosition(
+                    stage.getWidth() / 2f - rootTable.getWidth() / 2f,
+                    stage.getHeight() / 2f - rootTable.getHeight() / 2f
+            );
+        });
     }
+
+
+
 
     private void exitMenu() {
         if (overlayMode) {

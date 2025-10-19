@@ -22,7 +22,7 @@ public class SlowZoneVisualComponent extends RenderComponent {
   private float elapsed = 0f;
 
   public SlowZoneVisualComponent(float tileSize) {
-    this(tileSize, new Color(0.15f, 0.4f, 0.2f, 1f));
+    this(tileSize, new Color(0.05f, 0.22f, 0.08f, 1f));
   }
 
   public SlowZoneVisualComponent(float tileSize, Color tint) {
@@ -60,7 +60,7 @@ public class SlowZoneVisualComponent extends RenderComponent {
     batch.setColor(tint.r, tint.g, tint.b, pulse);
     batch.draw(cachedRegion, entity.getPosition().x + offsetX, entity.getPosition().y + offsetY, width, height);
     float highlightAlpha = 0.25f + 0.15f * MathUtils.sin(elapsed * 2.4f + 1.3f);
-    batch.setColor(0.35f, 0.55f, 0.3f, MathUtils.clamp(highlightAlpha, 0.05f, 0.2f));
+    batch.setColor(0.30f, 0.65f, 0.28f, MathUtils.clamp(highlightAlpha, 0.15f, 0.35f));
     float innerScale = scale * 0.78f;
     float innerWidth = tileSize * innerScale;
     float innerHeight = tileSize * innerScale;

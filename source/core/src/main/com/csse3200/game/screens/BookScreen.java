@@ -38,7 +38,7 @@ public class BookScreen extends ScreenAdapter {
      * Constructs a BookScreen for a specific book page.
      *
      * @param game the main GdxGame instance
-     * @param bookType the type of book page to display (TOWER_PAGE, ENEMY_PAGE, CURRENCY_PAGE, NONE)
+     * @param bookType the type of book page to display (TOWER_PAGE, ENEMY_PAGE, CURRENCY_PAGE, HERO_PAGE, NONE)
      */
     public BookScreen(GdxGame game, BookPage bookType) {
         this.game = game;

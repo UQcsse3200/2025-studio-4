@@ -13,7 +13,8 @@ import com.csse3200.game.services.ServiceLocator;
 /**
  * A component that marks an entity as collectible by the player.
  *
- * Entities with this component can be picked up or collected during gameplay.
+ * Entities with this component can be picked up by hovering the cursor nearby,
+ * or by clicking within a smaller click radius. An optional lifetime can auto-despawn.
  */
 public class CollectibleComponent extends Component {
     private boolean isCollected;

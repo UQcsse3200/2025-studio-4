@@ -206,28 +206,23 @@ public class MainGameActions extends Component {
                 var entityService = ServiceLocator.getEntityService();
                 if (entityService == null) {
                   entity.getEvents().trigger("showSaveError");
-                  entity.getEvents().trigger("showPauseUI");
                   return;
                 }
                 var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
                 boolean success = saveService.saveAs(name);
                 if (success) {
                   logger.info("Saved as '{}' successfully", name);
-                  // Return to pause menu after successful save
-                  entity.getEvents().trigger("showPauseUI");
+                  entity.getEvents().trigger("showSaveSuccess");
                 } else {
                   entity.getEvents().trigger("showSaveError");
-                  entity.getEvents().trigger("showPauseUI");
                 }
               } catch (Exception ex) {
                 logger.error("Error during named save", ex);
                 entity.getEvents().trigger("showSaveError");
-                entity.getEvents().trigger("showPauseUI");
               }
             }
             @Override public void onCancelled() { 
-              // Return to pause menu if user cancels
-              entity.getEvents().trigger("showPauseUI");
+              // Dialog cancelled, no action needed
             }
           }
       );
@@ -235,7 +230,6 @@ public class MainGameActions extends Component {
     } catch (Exception e) {
       logger.error("Error opening SaveNameDialog", e);
       entity.getEvents().trigger("showSaveError");
-      entity.getEvents().trigger("showPauseUI");
     }
   }
 

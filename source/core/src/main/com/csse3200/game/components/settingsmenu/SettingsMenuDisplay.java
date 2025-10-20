@@ -96,7 +96,7 @@ public class SettingsMenuDisplay extends UIComponent {
             backgroundImage =
                     new Image(
                             ServiceLocator.getResourceService()
-                                    .getAsset("images/main_menu_background.png", Texture.class));
+                                    .getAsset("images/main_menu_notext.png", Texture.class));
             backgroundImage.setFillParent(true);
             stage.addActor(backgroundImage);
         }

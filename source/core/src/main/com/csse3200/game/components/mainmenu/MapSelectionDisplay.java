@@ -26,7 +26,7 @@ import java.util.List;
  * Map Selection UI using the universal orange button style and a neat centered layout.
  */
 public class MapSelectionDisplay extends UIComponent {
-    private static final String BG_TEX = "images/main_menu_background.png";
+    private static final String BG_TEX = "images/main_menu_notext.png";
     private static final String THUMB_TEX = "images/Main_Game_Button.png"; // fallback
     private String thumbTexMap1;
     private String thumbTexMap2;

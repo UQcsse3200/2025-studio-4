@@ -1,12 +1,7 @@
 package com.csse3200.game.components.book;
 
-import com.csse3200.game.components.deck.CurrencyBookDeckComponent;
-import com.csse3200.game.components.deck.DeckComponent;
-import com.csse3200.game.components.deck.EnemyBookDeckComponent;
-import com.csse3200.game.components.deck.TowerBookDeckComponent;
-import com.csse3200.game.entities.configs.CurrencyConfig;
-import com.csse3200.game.entities.configs.EnemyConfig;
-import com.csse3200.game.entities.configs.TowerConfig;
+import com.csse3200.game.components.deck.*;
+import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,6 +172,22 @@ public class BookComponent {
                         c.name, c.lore, c.image, c.sound
                 ));
             }
+
+            return decks;
+        }
+    }
+
+    public static class HeroBookComponent extends BookComponent {
+        public HeroBookComponent() {
+            super("HEROES", createDecks());
+        }
+
+        private static List<DeckComponent> createDecks() {
+            List<DeckComponent> decks = new ArrayList<>();
+
+            decks.add(HeroBookDeckComponent.from("Hero", new HeroConfig()));
+            decks.add(HeroBookDeckComponent.from("Engineer", new EngineerConfig()));
+            decks.add(HeroBookDeckComponent.from("Samurai", new SamuraiConfig()));
 
             return decks;
         }

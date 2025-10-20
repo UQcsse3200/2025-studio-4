@@ -6,7 +6,6 @@ import com.csse3200.game.components.HomebaseHealingEffectComponent;
 import com.csse3200.game.components.HomebaseRegenerationComponent;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
-import com.csse3200.game.components.deck.DeckDisplay;
 import com.csse3200.game.components.player.InventoryComponent;
 import com.csse3200.game.components.player.PlayerActions;
 import com.csse3200.game.components.player.PlayerStatsDisplay;
@@ -91,8 +90,7 @@ public class PlayerFactory {
             .addComponent(new DamagePopupComponent())
             .addComponent(healthBar)
             .addComponent(new PlayerRankingComponent())
-            .addComponent(new HealthBarComponent())
-            .addComponent(new DeckDisplay());
+            .addComponent(new HealthBarComponent());
 
     // 先设置显示尺寸，再按比例设置碰撞体，确保碰撞体随缩放一起变大
     basement.setScale(scale, scale);

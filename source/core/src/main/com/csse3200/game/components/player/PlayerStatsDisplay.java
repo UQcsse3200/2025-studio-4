@@ -2,9 +2,14 @@ package com.csse3200.game.components.player;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -47,11 +52,11 @@ public class PlayerStatsDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.top().left();
-    table.setFillParent(true);
-    table.padTop(45f).padLeft(5f);
+    float screenWidth = stage.getWidth();
+    float screenHeight = stage.getHeight();
+    float rowWidth =  screenWidth * 0.03f;
 
     // Heart image
-    float heartSideLength = 60f;
     heartImage = new Image(ServiceLocator.getResourceService().getAsset("images/heart.png", Texture.class));
 
     // Health text
@@ -60,7 +65,6 @@ public class PlayerStatsDisplay extends UIComponent {
     healthLabel = new Label(healthText, skin, "large");
 
     // Score image (trophy)
-    float scoreSideLength = 64f;
     scoreImage = new Image(ServiceLocator.getResourceService().getAsset("images/score_trophy.png", Texture.class));
 
     // Score text
@@ -68,7 +72,7 @@ public class PlayerStatsDisplay extends UIComponent {
     CharSequence scoreText = String.format("Score: %d", score);
     scoreLabel = new Label(scoreText, skin, "large");
 
-    table.add(heartImage).size(heartSideLength).pad(5);
+    table.add(heartImage).size(rowWidth).pad(5);
     table.add(healthLabel);
     table.row();
 
@@ -90,18 +94,38 @@ public class PlayerStatsDisplay extends UIComponent {
       currencyImages.put(currencyType, currencyImage);
       currencyLabels.put(currencyType, currencyLabel);
 
-      float sideLength = 64f;
-      table.add(currencyImage).size(sideLength).pad(5);
+      table.add(currencyImage).size(rowWidth).pad(5);
       table.add(currencyLabel).left();
       table.row();
     }
 
     // Score text position
     table.row();
-    table.add(scoreImage).size(scoreSideLength).pad(5);
+    table.add(scoreImage).size(rowWidth).pad(5);
     table.add(scoreLabel).left().padTop(5f);
 
-    stage.addActor(table);
+    // set table’s background
+    Texture bgTexture = ServiceLocator.getResourceService()
+            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+    Drawable background = new TextureRegionDrawable(new TextureRegion(bgTexture));
+    table.setBackground(background);
+
+    // Wrap table inside a container for background + positioning
+    Container<Table> container = new Container<>(table);
+    container.align(Align.topLeft); // align the content inside
+    container.top().left();         // align the container itself
+    container.padTop(60f);
+
+    // Add container to root layout
+    Table rootTable = new Table();
+    rootTable.top().left(); // this line ensures it's anchored to top-left
+    rootTable.setFillParent(true);
+    rootTable.add(container)
+            .width(screenWidth * 0.15f)
+            .height(screenHeight * 0.3f)
+            .left().top();
+
+    stage.addActor(rootTable);
 
     applyUiScale();
   }

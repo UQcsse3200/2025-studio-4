@@ -229,7 +229,7 @@ public class DroneEnemyFactory {
      * @param drone The drone entity to update
      * @param newSpeed The new speed vector
      */
-    private static void updateSpeed(Entity drone, Vector2 newSpeed) {
+    public static void updateSpeed(Entity drone, Vector2 newSpeed) {
         WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
         if (dwc != null) {
             dwc.incrementPriorityTaskCount();

@@ -22,7 +22,7 @@ import java.util.List;
  * Beam is purely visual (no damage).
  */
 public class BeamAttackComponent extends Component {
-    private final float range;
+    private float range;
     private final float damage;
     private final float cooldown;
     private final ShapeRenderer shapeRenderer = new ShapeRenderer();
@@ -285,5 +285,16 @@ public class BeamAttackComponent extends Component {
         protected void draw(SpriteBatch batch) {
             beam.draw(batch);
         }
+    }
+
+    /** Update the beam's effective range (e.g., after upgrades). */
+    public BeamAttackComponent setRange(float range) {
+        this.range = Math.max(0f, range);
+        return this;
+    }
+
+    /** Current effective range used for targeting and visuals. */
+    public float getRange() {
+        return range;
     }
 }

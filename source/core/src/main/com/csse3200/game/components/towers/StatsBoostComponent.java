@@ -11,25 +11,28 @@ import java.util.Map;
 
 /**
  * Applies a multiplicative boost from a totem to towers in range.
- * Path A controls the totem's range (already handled by TowerStatsComponent upgrades).
- * Path B controls the booster multiplier value (1.1, 1.2, ...).
+ * Path A controls the totem's aura range (via TowerStatsComponent upgrades).
+ * Path B controls the booster multiplier value (1.05, 1.10, ...), capped.
  *
- * Boosts applied:
- *  - damage *= booster
- *  - range *= booster
- *  - projectileSpeed *= booster
- *  - attackCooldown /= booster   (faster attacks)
+ * Boosts applied (nerfed):
+ *  - damage *= booster               (small increase)
+ *  - attackCooldown /= booster       (small attack speed increase)
  *
- * The component keeps track of the multiplier it applied per-target so it can
+ * Not boosted anymore (to avoid making totem overpowered):
+ *  - range (kept unchanged)
+ *  - projectileSpeed (kept unchanged)
+ *
+ * The component keeps track of the multiplier it applied per target so it can
  * remove/adjust only its own contribution (safe for overlapping totems).
  */
 public class StatsBoostComponent extends Component {
     private final Map<Entity, Float> appliedMultiplier = new HashMap<>();
     private float lastComputedBooster = -1f;
 
-    // Base booster when level_B == 1
-    private static final float BASE_BOOST = 1.1f;
-    private static final float BOOST_STEP = 0.1f;
+    // Nerfed booster tuning
+    private static final float BASE_BOOST = 1.05f;   // was 1.10f
+    private static final float BOOST_STEP = 0.05f;   // was 0.10f
+    private static final float MAX_BOOST  = 1.25f;   // hard cap to prevent OP stacking
     private static final float MIN_COOLDOWN = 0.001f;
 
     /**
@@ -53,14 +56,14 @@ public class StatsBoostComponent extends Component {
         // Path A should already change myStats.range via upgrades; use that for area.
         float range = myStats.getRange();
 
-        // Compute booster using level_B: 1.1 + 0.1*(level_B - 1)
+        // Compute booster using level_B and clamp it
         int levelB = Math.max(1, myStats.getLevel_B());
         float booster = BASE_BOOST + BOOST_STEP * (levelB - 1);
+        if (booster > MAX_BOOST) booster = MAX_BOOST;
 
         // If booster changed since last frame, adjust existing boosted targets by ratio
         if (lastComputedBooster > 0f && Math.abs(booster - lastComputedBooster) > 1e-6f) {
             float ratio = booster / lastComputedBooster;
-            // multiply damage/range/projSpeed by ratio, divide cooldown by ratio (faster)
             Iterator<Map.Entry<Entity, Float>> it = appliedMultiplier.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<Entity, Float> e = it.next();
@@ -74,11 +77,8 @@ public class StatsBoostComponent extends Component {
                     it.remove();
                     continue;
                 }
-                // Update stats by ratio
+                // Nerfed: only adjust damage and cooldown by ratio
                 tStats.setDamage(tStats.getDamage() * ratio);
-                tStats.setRange(tStats.getRange() * ratio);
-                tStats.setProjectileSpeed(tStats.getProjectileSpeed() * ratio);
-                // cooldown: we previously divided by old booster; to increase speed again divide by ratio
                 tStats.setAttackCooldown(Math.max(MIN_COOLDOWN, tStats.getAttackCooldown() / ratio));
 
                 // update stored multiplier to the new booster (this component's contribution)
@@ -88,11 +88,9 @@ public class StatsBoostComponent extends Component {
 
         lastComputedBooster = booster;
 
-        // Find towers in range and ensure they have the boost applied; remove for those leaving
         var es = ServiceLocator.getEntityService();
         if (es == null) return;
 
-        // Build set of currently in-range towers (we'll mark found ones)
         Map<Entity, Boolean> found = new HashMap<>();
 
         for (Entity other : es.getEntitiesCopy()) {
@@ -104,16 +102,13 @@ public class StatsBoostComponent extends Component {
             // Skip totems (do not boost other totem towers)
             if ("totem".equalsIgnoreCase(towerComp.getType())) continue;
 
-            // Check distance
             if (other.getCenterPosition() == null || entity.getCenterPosition() == null) continue;
             float d = other.getCenterPosition().dst(entity.getCenterPosition());
             if (d <= range) {
                 found.put(other, Boolean.TRUE);
                 if (!appliedMultiplier.containsKey(other)) {
-                    // Apply this component's booster
+                    // Nerfed: apply boost only to damage and cooldown
                     tStats.setDamage(tStats.getDamage() * booster);
-                    tStats.setRange(tStats.getRange() * booster);
-                    tStats.setProjectileSpeed(tStats.getProjectileSpeed() * booster);
                     tStats.setAttackCooldown(Math.max(MIN_COOLDOWN, tStats.getAttackCooldown() / booster));
                     appliedMultiplier.put(other, booster);
                 }
@@ -129,12 +124,8 @@ public class StatsBoostComponent extends Component {
             if (target == null || !found.containsKey(target)) {
                 TowerStatsComponent tStats = (target != null) ? target.getComponent(TowerStatsComponent.class) : null;
                 if (tStats != null) {
-                    // Revert this component's contribution
-                    // For damage/range/projSpeed divide by applied multiplier
+                    // Revert only this component's contribution (damage/cooldown)
                     tStats.setDamage(tStats.getDamage() / applied);
-                    tStats.setRange(tStats.getRange() / applied);
-                    tStats.setProjectileSpeed(tStats.getProjectileSpeed() / applied);
-                    // For cooldown, multiply back
                     tStats.setAttackCooldown(Math.max(MIN_COOLDOWN, tStats.getAttackCooldown() * applied));
                 }
                 it.remove();
@@ -143,11 +134,20 @@ public class StatsBoostComponent extends Component {
     }
 
     /**
+     * Notify this booster that a target tower's base stats changed externally (e.g., via upgrade).
+     * Clears cached application so on the next update, if still in range, the boost re-applies.
+     */
+    public void onTargetStatsChanged(Entity target) {
+        if (target == null) return;
+        appliedMultiplier.remove(target);
+    }
+
+    /**
      * Disposes of the component and reverts any applied boosts.
      */
     @Override
     public void dispose() {
-        // On dispose, revert any applied boosts
+        // On dispose, revert any applied boosts (damage/cooldown only)
         for (Map.Entry<Entity, Float> e : appliedMultiplier.entrySet()) {
             Entity target = e.getKey();
             float applied = e.getValue();
@@ -155,8 +155,6 @@ public class StatsBoostComponent extends Component {
             TowerStatsComponent tStats = target.getComponent(TowerStatsComponent.class);
             if (tStats == null) continue;
             tStats.setDamage(tStats.getDamage() / applied);
-            tStats.setRange(tStats.getRange() / applied);
-            tStats.setProjectileSpeed(tStats.getProjectileSpeed() / applied);
             tStats.setAttackCooldown(Math.max(MIN_COOLDOWN, tStats.getAttackCooldown() * applied));
         }
         appliedMultiplier.clear();

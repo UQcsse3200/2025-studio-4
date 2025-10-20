@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Align; // <-- add
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable; // <-- add
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;    // <-- add
@@ -57,6 +57,9 @@ public class TowerUpgradeMenu extends UIComponent {
     private Table sellRefundRow;   // <-- container for icon + amount
 
     private static final CurrencyType UPGRADE_CURRENCY = CurrencyType.METAL_SCRAP;
+    private static final Color GREYED_OUT_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+    private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f);
+    private static final Color INSUFFICIENT_FUNDS_COLOR = new Color(1f, 0.3f, 0.3f, 1f); // Red tint for cost label
 
     private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower;
     private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower;
@@ -398,6 +401,42 @@ public class TowerUpgradeMenu extends UIComponent {
     }
 
     /**
+     * Setup button content with affordability indication
+     */
+    private void applyButtonAffordabilityState(TextButton button, boolean canAfford) {
+        if (canAfford) {
+            button.setColor(NORMAL_COLOR);
+            button.setDisabled(false);
+        } else {
+            button.setColor(GREYED_OUT_COLOR);
+            button.setDisabled(true);
+        }
+    }
+
+    /**
+     * Setup button content with affordability indication
+     */
+    private void setupButtonContentWithAffordability(TextButton button, int cost, CurrencyType currency, boolean canAfford) {
+        Table content = new Table(skin);
+        button.setText("");
+        String texPath = currency != null ? currency.getTexturePath() : CurrencyType.METAL_SCRAP.getTexturePath();
+        Image icon = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(texPath))));
+        Label costLabel = new Label(String.valueOf(cost), skin);
+
+        // Tint the cost label red if player can't afford it
+        if (!canAfford) {
+            costLabel.setColor(INSUFFICIENT_FUNDS_COLOR);
+        } else {
+            costLabel.setColor(Color.WHITE);
+        }
+
+        content.add(icon).size(24, 24).padRight(5);
+        content.add(costLabel);
+        button.clearChildren();
+        button.add(content).expand().fill();
+    }
+
+    /**
      * Attempts to upgrade the selected tower along the specified path.
      *
      * @param isLevelA True for Path A, false for Path B.
@@ -464,7 +503,7 @@ public class TowerUpgradeMenu extends UIComponent {
             return;
         }
 
-        // 🔹 Apply stat upgrades
+        // Apply stat upgrades
         if (isLevelA) {
             stats.incrementLevel_A();
             stats.setDamage(upgrade.damage);
@@ -493,12 +532,12 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         }
 
-        // 🔹 Determine the higher level between A and B
+        //  Determine the higher level between A and B
         int levelA = stats.getLevel_A();
         int levelB = stats.getLevel_B();
         int highestLevel = Math.max(levelA, levelB);
 
-        // 🔹 Decide which upgrade path to pull the image from
+        //  Decide which upgrade path to pull the image from
         Map<Integer, UpgradeStats> highestUpgrades =
                 (levelA >= levelB) ? pathAUpgradesPerTower.get(currentTowerType)
                         : pathBUpgradesPerTower.get(currentTowerType);
@@ -665,8 +704,8 @@ public class TowerUpgradeMenu extends UIComponent {
         // --- existing upgrade labels and buttons ---
         int levelA = stats.getLevel_A();
         int levelB = stats.getLevel_B();
-        int maxLevelA = getMaxLevelForPath(currentTowerType, true);
-        int maxLevelB = getMaxLevelForPath(currentTowerType, false);
+        int maxLevelA = getMaxLevelForPath(currentTowerType, true);   // <-- max per-path
+        int maxLevelB = getMaxLevelForPath(currentTowerType, false);  // <-- max per-path
 
         // Bank Path B label text based on current level
         if ("bank".equalsIgnoreCase(currentTowerType) && pathBTitleLabel != null) {
@@ -693,41 +732,75 @@ public class TowerUpgradeMenu extends UIComponent {
         int nextLevelA = levelA + 1;
         int nextLevelB = levelB + 1;
 
+        // Debug: Print tower type and available upgrades
+        System.out.println("DEBUG: Tower type = '" + currentTowerType + "'");
+        System.out.println("DEBUG: Available upgrade types: " + pathAUpgradesPerTower.keySet());
+        System.out.println("DEBUG: Current levels - A: " + levelA + ", B: " + levelB);
+        System.out.println("DEBUG: Next levels - A: " + nextLevelA + ", B: " + nextLevelB);
+
         Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(currentTowerType);
         Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(currentTowerType);
+        
+        System.out.println("DEBUG: upgradesA = " + (upgradesA != null ? "found" : "null"));
+        System.out.println("DEBUG: upgradesB = " + (upgradesB != null ? "found" : "null"));
+        
+        if (upgradesA != null) {
+            System.out.println("DEBUG: upgradesA keys: " + upgradesA.keySet());
+            System.out.println("DEBUG: upgradesA contains nextLevelA(" + nextLevelA + "): " + upgradesA.containsKey(nextLevelA));
+            if (upgradesA.containsKey(nextLevelA)) {
+                System.out.println("DEBUG: upgradesA[" + nextLevelA + "].cost = " + upgradesA.get(nextLevelA).cost);
+            }
+        }
+        
+        if (upgradesB != null) {
+            System.out.println("DEBUG: upgradesB keys: " + upgradesB.keySet());
+            System.out.println("DEBUG: upgradesB contains nextLevelB(" + nextLevelB + "): " + upgradesB.containsKey(nextLevelB));
+            if (upgradesB.containsKey(nextLevelB)) {
+                System.out.println("DEBUG: upgradesB[" + nextLevelB + "].cost = " + upgradesB.get(nextLevelB).cost);
+            }
+        }
 
+        // determine currency for current tower type
         CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
 
-        // Path A button
         pathAButton.clearChildren();
         if (levelA >= maxLevelA) {
             // Center "MAX" content
             setButtonCenteredText(pathAButton, "MAX");
             pathAButton.setDisabled(true);
+            pathAButton.setColor(NORMAL_COLOR);
         } else {
             int costA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
-            setupButtonContent(pathAButton, costA, displayCurrency);
-            pathAButton.setDisabled(false);
+            boolean canAffordA = canAffordCost(costA, displayCurrency);
+            setupButtonContentWithAffordability(pathAButton, costA, displayCurrency, canAffordA);
+            applyButtonAffordabilityState(pathAButton, canAffordA);
         }
 
         // Path B button
         pathBButton.clearChildren();
         if (levelB >= maxLevelB) {
-            // Center "MAX" content
             setButtonCenteredText(pathBButton, "MAX");
             pathBButton.setDisabled(true);
+            pathBButton.setColor(NORMAL_COLOR);
         } else {
-            int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
             if ("bank".equalsIgnoreCase(currentTowerType)) {
-                // Show the icon of the currency being unlocked at the next level
+                // Use the already-declared upgradesB; don't redeclare it here
+                int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
+                        ? upgradesB.get(nextLevelB).cost : 0;
+
                 CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
                         : nextLevelB == 3 ? CurrencyType.NEUROCHIP
                         : displayCurrency;
-                setupButtonContent(pathBButton, costB, unlockCurrency);
-                pathBButton.setDisabled(false);
+
+                boolean canAffordB = canAffordCost(costB, displayCurrency);
+                setupButtonContentWithAffordability(pathBButton, costB, unlockCurrency, canAffordB);
+                applyButtonAffordabilityState(pathBButton, canAffordB);
             } else {
-                setupButtonContent(pathBButton, costB, displayCurrency);
-                pathBButton.setDisabled(false);
+                int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
+                        ? upgradesB.get(nextLevelB).cost : 0;
+                boolean canAffordB = canAffordCost(costB, displayCurrency);
+                setupButtonContentWithAffordability(pathBButton, costB, displayCurrency, canAffordB);
+                applyButtonAffordabilityState(pathBButton, canAffordB);
             }
         }
     }
@@ -820,6 +893,55 @@ public class TowerUpgradeMenu extends UIComponent {
         s.checked = tintDrawable(base.checked != null ? base.checked : base.up, color);
         s.disabled = tintDrawable(base.disabled != null ? base.disabled : base.up, color);
         return s;
+    }
+
+    // NEW: Check if the player can afford a given cost in a currency without spending it.
+    private boolean canAffordCost(int cost, CurrencyType currency) {
+        if (cost <= 0) return true;
+        if (currency == null) currency = CurrencyType.METAL_SCRAP;
+
+        Entity player = findPlayerEntity();
+        if (player == null) return false;
+        CurrencyManagerComponent cm = player.getComponent(CurrencyManagerComponent.class);
+        if (cm == null) return false;
+
+        // Try common getter: getCurrencyAmount(CurrencyType)
+        try {
+            java.lang.reflect.Method m = cm.getClass().getMethod("getCurrencyAmount", CurrencyType.class);
+            Object res = m.invoke(cm, currency);
+            if (res instanceof Number) {
+                return ((Number) res).intValue() >= cost;
+            }
+        } catch (Exception ignored) {
+            // fall through
+        }
+
+        // Try alternative: getAmount(CurrencyType)
+        try {
+            java.lang.reflect.Method m2 = cm.getClass().getMethod("getAmount", CurrencyType.class);
+            Object res2 = m2.invoke(cm, currency);
+            if (res2 instanceof Number) {
+                return ((Number) res2).intValue() >= cost;
+            }
+        } catch (Exception ignored) {
+            // fall through
+        }
+
+        // Try a read-only canAffordCurrency(Map<CurrencyType, Integer>)
+        try {
+            java.util.Map<CurrencyType, Integer> map = new java.util.EnumMap<>(CurrencyType.class);
+            map.put(currency, cost);
+            java.lang.reflect.Method m3 = cm.getClass().getMethod("canAffordCurrency", java.util.Map.class);
+            Object res3 = m3.invoke(cm, map);
+            if (res3 instanceof Boolean) {
+                return (Boolean) res3;
+            }
+        } catch (Exception ignored) {
+            // fall through
+        }
+
+        // Unknown API: don't block the UI
+        return true;
     }
 
     // Helper: derive max level for a tower path from its upgrade map (highest key)

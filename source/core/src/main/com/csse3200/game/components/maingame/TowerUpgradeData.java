@@ -57,34 +57,34 @@ public class TowerUpgradeData {
 
         // Dino tower
         Map<Integer, UpgradeStats> dinoA = new HashMap<>();
-        dinoA.put(2, new UpgradeStats(17, 2.5f, 0.8f, 2.0f, 1200, "images/towers/dino/dinolvl2"));
-        dinoA.put(3, new UpgradeStats(20, 3.0f, 0.8f, 2.0f, 1500, "images/towers/dino/dinolvl3"));
-        dinoA.put(4, new UpgradeStats(25, 3.5f, 0.8f, 2.0f, 1800, "images/towers/dino/dinolvl4"));
-        dinoA.put(5, new UpgradeStats(30, 4.0f, 0.8f, 2.0f, 2000, "images/towers/dino/dinolvl4"));
+        dinoA.put(2, new UpgradeStats(17, 2.5f, 0.8f, 2.0f, 800, "images/towers/dino/dinolvl2"));
+        dinoA.put(3, new UpgradeStats(20, 3.0f, 0.8f, 2.0f, 950, "images/towers/dino/dinolvl3"));
+        dinoA.put(4, new UpgradeStats(25, 3.5f, 0.8f, 2.0f, 1050, "images/towers/dino/dinolvl4"));
+        dinoA.put(5, new UpgradeStats(30, 4.0f, 0.8f, 2.0f, 1200, "images/towers/dino/dinolvl4"));
         pathA.put("dino", dinoA);
 
         // Cavemen tower
         Map<Integer, UpgradeStats> cavemenA = new HashMap<>();
-        cavemenA.put(2, new UpgradeStats(35, 6.0f, 0.8f, 6.0f, 900, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
-        cavemenA.put(3, new UpgradeStats(43, 7.0f, 0.8f, 6.0f, 1100, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
+        cavemenA.put(2, new UpgradeStats(35, 6.0f, 0.8f, 6.0f, 1100, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
+        cavemenA.put(3, new UpgradeStats(43, 7.0f, 0.8f, 6.0f, 1200, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
         cavemenA.put(4, new UpgradeStats(53, 8.0f, 0.8f, 6.0f, 1300, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         cavemenA.put(5, new UpgradeStats(65, 10.0f, 0.8f, 6.0f, 1450, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         pathA.put("cavemen", cavemenA);
 
         // Pteradactyl tower (Path A: Damage & Range)
         Map<Integer, UpgradeStats> pteroA = new HashMap<>();
-        pteroA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 4.0f, 60, "images/towers/pteradactyl/perolvl2"));
-        pteroA.put(3, new UpgradeStats(10, 4.2f, 1.0f, 4.0f, 70, "images/towers/pteradactyl/perolvl3"));
-        pteroA.put(4, new UpgradeStats(14, 5.1f, 1.0f, 4.0f, 110, "images/towers/pteradactyl/perolvl4"));
-        pteroA.put(5, new UpgradeStats(20, 6.2f, 1.0f, 4.0f, 190, "images/towers/pteradactyl/perolvl4"));
+        pteroA.put(2, new UpgradeStats(3, 3.5f, 1.0f, 4.0f, 60, "images/towers/pteradactyl/perolvl2"));
+        pteroA.put(3, new UpgradeStats(5, 4.2f, 1.0f, 4.0f, 70, "images/towers/pteradactyl/perolvl3"));
+        pteroA.put(4, new UpgradeStats(7, 5.1f, 1.0f, 4.0f, 110, "images/towers/pteradactyl/perolvl4"));
+        pteroA.put(5, new UpgradeStats(10, 6.2f, 1.0f, 4.0f, 190, "images/towers/pteradactyl/perolvl4"));
         pathA.put("pteradactyl", pteroA);
 
         // Totem tower (Path A: Range)
         Map<Integer, UpgradeStats> totemA = new HashMap<>();
-        totemA.put(2, new UpgradeStats(0, 5.0f, 0f, 5.0f, 900, "images/towers/totem/totemlvl2"));
-        totemA.put(3, new UpgradeStats(0, 6.0f, 0f, 5.0f, 1100, "images/towers/totem/totemlvl3"));
-        totemA.put(4, new UpgradeStats(0, 7.0f, 0f, 5.0f, 1300, "images/towers/totem/totemlvl4"));
-        totemA.put(5, new UpgradeStats(0, 8.0f, 0f, 5.0f, 1500, "images/towers/totem/totemlvl4"));
+        totemA.put(2, new UpgradeStats(0, 1.75f, 0f, 5.0f, 200, "images/towers/totem/totemlvl2"));
+        totemA.put(3, new UpgradeStats(0, 2.0f, 0f, 5.0f, 300, "images/towers/totem/totemlvl3"));
+        totemA.put(4, new UpgradeStats(0, 2.25f, 0f, 5.0f, 400, "images/towers/totem/totemlvl4"));
+        totemA.put(5, new UpgradeStats(0, 2.5f, 0f, 5.0f, 500, "images/towers/totem/totemlvl4"));
         pathA.put("totem", totemA);
 
         // SuperCavemen tower (Path A: Damage & Range)
@@ -95,27 +95,29 @@ public class TowerUpgradeData {
         superCavemenA.put(5, new UpgradeStats(130, 10.0f, 1.0f, 10.0f, 3500, "images/towers/super/superlvl4"));
         pathA.put("supercavemen", superCavemenA);
 
-        // Bank tower
+        // Bank tower — Path A entries remain; generator maps level_A -> interval internally.
+        // Bank tower — Path B capped at 3 in this file to represent unlock tiers.
         Map<Integer, UpgradeStats> bankA = new HashMap<>();
-        bankA.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
-        bankA.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl3"));
-        bankA.put(4, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
-        bankA.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
+        bankA.put(2, new UpgradeStats(0, 0f, 0f, 1.0f, 250, "images/towers/bank/banklvl2"));
+        bankA.put(3, new UpgradeStats(0, 0f, 0f, 1.25f, 300, "images/towers/bank/banklvl3"));
+        bankA.put(4, new UpgradeStats(0, 0f, 0f, 1.5f, 350, "images/towers/bank/banklvl4"));
+        bankA.put(5, new UpgradeStats(0, 0f, 0f, 1.75f, 400, "images/towers/bank/banklvl4"));
         pathA.put("bank", bankA);
 
 
         Map<Integer, UpgradeStats> raftA = new HashMap<>();
-        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/viking/vikinglvl2"));
-        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/viking/vikinglvl3"));
-        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/viking/vikinglvl4"));
-        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/viking/vikinglvl4"));
+        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 300, "images/towers/viking/vikinglvl2"));
+        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 350, "images/towers/viking/vikinglvl3"));
+        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 400, "images/towers/viking/vikinglvl4"));
+        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 450, "images/towers/viking/vikinglvl4"));
         pathA.put("raft", raftA);
 
         Map<Integer, UpgradeStats> frozenA = new HashMap<>();
-        frozenA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/mammoth/mammothlvl2"));
-        frozenA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/mammoth/mammothlvl3"));
-        frozenA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/mammoth/mammothlvl4"));
-        frozenA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/mammoth/mammothlvl4"));
+        // Ice tower Path A: Range only (no damage)
+        frozenA.put(2, new UpgradeStats(0, 3.5f, 1.0f, 2.0f, 350, "images/towers/mammoth/mammothlvl2"));
+        frozenA.put(3, new UpgradeStats(0, 4.0f, 1.0f, 2.0f, 400, "images/towers/mammoth/mammothlvl3"));
+        frozenA.put(4, new UpgradeStats(0, 4.5f, 1.0f, 2.0f, 450, "images/towers/mammoth/mammothlvl4"));
+        frozenA.put(5, new UpgradeStats(0, 5.0f, 1.0f, 2.0f, 500, "images/towers/mammoth/mammothlvl4"));
         pathA.put("frozenmamoothskull", frozenA);
 
         Map<Integer, UpgradeStats> boulderA = new HashMap<>();
@@ -146,24 +148,24 @@ public class TowerUpgradeData {
 
         // Bone tower
         Map<Integer, UpgradeStats> boneB = new HashMap<>();
-        boneB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
-        boneB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
-        boneB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
-        boneB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
+        boneB.put(2, new UpgradeStats(5, 3.0f, 0.9f, 5f, 650, "images/towers/bones/bonelvl2"));
+        boneB.put(3, new UpgradeStats(5, 3.0f, 0.8f, 6f, 800, "images/towers/bones/bonelvl3"));
+        boneB.put(4, new UpgradeStats(5, 3.0f, 0.7f, 7f, 1000, "images/towers/bones/bonelvl4"));
+        boneB.put(5, new UpgradeStats(5, 3.0f, 0.6f, 8f, 1250, "images/towers/bones/bonelvl4"));
         pathB.put("bone", boneB);
 
         // Dino tower
         Map<Integer, UpgradeStats> dinoB = new HashMap<>();
-        dinoB.put(2, new UpgradeStats(20, 2.0f, 1.8f, 2.2f, 1200, "images/towers/dino/dinolvl2"));
-        dinoB.put(3, new UpgradeStats(20, 2.0f, 1.6f, 2.5f, 1500, "images/towers/dino/dinolvl3"));
-        dinoB.put(4, new UpgradeStats(20, 2.0f, 1.4f, 2.8f, 1800, "images/towers/dino/dinolvl4"));
-        dinoB.put(5, new UpgradeStats(20, 2.0f, 1.0f, 3.2f, 2000, "images/towers/dino/dinolvl4"));
+        dinoB.put(2, new UpgradeStats(20, 2.0f, 1.8f, 2.2f, 800, "images/towers/dino/dinolvl2"));
+        dinoB.put(3, new UpgradeStats(20, 2.0f, 1.6f, 2.5f, 900, "images/towers/dino/dinolvl3"));
+        dinoB.put(4, new UpgradeStats(20, 2.0f, 1.4f, 2.8f, 1100, "images/towers/dino/dinolvl4"));
+        dinoB.put(5, new UpgradeStats(20, 2.0f, 1.0f, 3.2f, 1400, "images/towers/dino/dinolvl4"));
         pathB.put("dino", dinoB);
 
         // Cavemen tower
         Map<Integer, UpgradeStats> cavemenB = new HashMap<>();
-        cavemenB.put(2, new UpgradeStats(15, 5.0f, 4.75f, 6.5f, 900, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
-        cavemenB.put(3, new UpgradeStats(15, 5.0f, 4.5f, 7.0f, 1100, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
+        cavemenB.put(2, new UpgradeStats(15, 5.0f, 4.75f, 6.5f, 1100, "images/towers/cavemen/lvl2/caveman_lvl2.atlas"));
+        cavemenB.put(3, new UpgradeStats(15, 5.0f, 4.5f, 7.0f, 1200, "images/towers/cavemen/lvl3/caveman_lvl3.atlas"));
         cavemenB.put(4, new UpgradeStats(15, 5.0f, 4.25f, 7.5f, 1300, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         cavemenB.put(5, new UpgradeStats(15, 5.0f, 4.0f, 8.0f, 1500, "images/towers/cavemen/lvl4/caveman_lvl4.atlas"));
         pathB.put("cavemen", cavemenB);
@@ -178,10 +180,10 @@ public class TowerUpgradeData {
 
         // Totem tower (Path B: Speed)
         Map<Integer, UpgradeStats> totemB = new HashMap<>();
-        totemB.put(2, new UpgradeStats(0, 4.0f, 0f, 7.0f, 900, "images/towers/totem/totemlvl2"));
-        totemB.put(3, new UpgradeStats(0, 4.0f, 0f, 9.0f, 1100, "images/towers/totem/totemlvl3"));
-        totemB.put(4, new UpgradeStats(0, 4.0f, 0f, 11.0f, 1300, "images/towers/totem/totemlvl4"));
-        totemB.put(5, new UpgradeStats(0, 4.0f, 0f, 13.0f, 1500, "images/towers/totem/totemlvl4"));
+        totemB.put(2, new UpgradeStats(0, 4.0f, 0f, 0.0f, 200, "images/towers/totem/totemlvl2"));
+        totemB.put(3, new UpgradeStats(0, 4.0f, 0f, 0.0f, 250, "images/towers/totem/totemlvl3"));
+        totemB.put(4, new UpgradeStats(0, 4.0f, 0f, 0.0f, 300, "images/towers/totem/totemlvl4"));
+        totemB.put(5, new UpgradeStats(0, 4.0f, 0f, 0.0f, 400, "images/towers/totem/totemlvl4"));
         pathB.put("totem", totemB);
 
         // SuperCavemen tower (Path B: Cooldown & Speed)
@@ -193,17 +195,18 @@ public class TowerUpgradeData {
         pathB.put("supercavemen", superCavemenB);
 
         Map<Integer, UpgradeStats> raftB = new HashMap<>();
-        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/viking/vikinglvl2"));
-        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/viking/vikinglvl2"));
-        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/viking/vikinglvl3"));
-        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/viking/vikinglvl4"));
+        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 300, "images/towers/viking/vikinglvl2"));
+        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 400, "images/towers/viking/vikinglvl2"));
+        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 500, "images/towers/viking/vikinglvl3"));
+        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 600, "images/towers/viking/vikinglvl4"));
         pathB.put("raft", raftB);
 
         Map<Integer, UpgradeStats> frozenB = new HashMap<>();
-        frozenB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/mammoth/mammothlvl2"));
-        frozenB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/mammoth/mammothlvl2"));
-        frozenB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/mammoth/mammothlvl3"));
-        frozenB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/mammoth/mammothlvl4"));
+        // Ice tower Path B: Freeze Time (non-damaging). Keep numeric fields as-is; game logic reads them accordingly.
+        frozenB.put(2, new UpgradeStats(0, 3.0f, 0.9f, 5f, 350, "images/towers/mammoth/mammothlvl2"));
+        frozenB.put(3, new UpgradeStats(0, 3.0f, 0.8f, 6f, 400, "images/towers/mammoth/mammothlvl2"));
+        frozenB.put(4, new UpgradeStats(0, 3.0f, 0.7f, 7f, 525, "images/towers/mammoth/mammothlvl3"));
+        frozenB.put(5, new UpgradeStats(0, 3.0f, 0.6f, 8f, 600, "images/towers/mammoth/mammothlvl4"));
         pathB.put("frozenmamoothskull", frozenB);
 
         Map<Integer, UpgradeStats> boulderB = new HashMap<>();
@@ -220,12 +223,13 @@ public class TowerUpgradeData {
         shamanB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/shaman/charmanlvl4"));
         pathB.put("villageshaman", shamanB);
 
-        // Bank tower
+        // Bank tower — Path B: Unlock currencies, max level 3
         Map<Integer, UpgradeStats> bankB = new HashMap<>();
-        bankB.put(2, new UpgradeStats(0, 0, 0, 0, 500, "images/towers/bank/banklvl2"));
-        bankB.put(3, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl3"));
-        bankB.put(4, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
-        bankB.put(5, new UpgradeStats(0, 0, 0, 0, 1000, "images/towers/bank/banklvl4"));
+        // Level 2 (from base level 1): Unlock Titanium Core
+        bankB.put(2, new UpgradeStats(0, 0f, 0f, 0f, 500, "images/towers/bank/banklvl2"));
+        // Level 3: Unlock Neuro Core (Neurochip)
+        bankB.put(3, new UpgradeStats(0, 0f, 0f, 0f, 1000, "images/towers/bank/banklvl3"));
+        // No levels 4/5 to enforce max = 3
         pathB.put("bank", bankB);
 
         return pathB;

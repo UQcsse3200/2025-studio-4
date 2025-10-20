@@ -56,7 +56,7 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "2222222222222222", 
+                "Hello", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/man.mp3",
                 "right",

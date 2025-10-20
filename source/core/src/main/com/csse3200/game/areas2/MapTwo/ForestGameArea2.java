@@ -747,6 +747,10 @@ public class ForestGameArea2 extends GameArea2 {
         // Initialize MapEditor2 as IMapEditor
         mapEditor = new MapEditor2(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
+        
+        // Set path layer opacity to 0.6 (60% opacity) for map2
+        // 调整map2路径砖块的透明度为60%
+        mapEditor.setPathLayerOpacity(0.5f);
 
         return newPlayer;
     }

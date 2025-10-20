@@ -187,7 +187,7 @@ public class IntroDialogueComponent extends UIComponent {
     float skipButtonHeight = screenHeight * 0.15f;
 
     // 对话框固定在底部中央（保持原始位置）
-    overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.037f);
+    overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.08f);
     
     // 创建独立的按钮容器，直接放在屏幕底部
     Table buttonContainer = new Table();
@@ -349,7 +349,7 @@ public class IntroDialogueComponent extends UIComponent {
     
     // 计算对话框的位置（屏幕底部中央）
     float dialogueX = (screenWidth - screenWidth * 0.5f) / 2; // 对话框X位置（居中）
-    float dialogueY = screenHeight * 0.037f; // 对话框Y位置（距底部）
+    float dialogueY = screenHeight * 0.08f; // 对话框Y位置（距底部）
     
     float portraitWidth = screenWidth * 0.15f;
     float portraitHeight = screenHeight * 0.3f;
@@ -437,9 +437,23 @@ public class IntroDialogueComponent extends UIComponent {
    */
   private void createDialogueFont() {
     try {
-      // 选择字体风格 - 您可以修改这里来改变字体
-      dialogueFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/pixel_32.fnt"));
-      dialogueFont.getData().setScale(0.8f); // 调整字体大小
+      float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+      float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+      
+      // 根据屏幕分辨率选择不同大小的字体文件
+      String fontPath;
+      if (screenWidth >= 2560 || screenHeight >= 1440) {
+        // 高分辨率屏幕 (2K/4K) - 使用更大的字体
+        fontPath = "flat-earth/skin/fonts/pixel_32.fnt";
+      } else if (screenWidth >= 1920 || screenHeight >= 1080) {
+        // 标准分辨率屏幕 (1080p) - 使用中等字体
+        fontPath = "flat-earth/skin/fonts/pixel_32.fnt";
+      } else {
+        // 低分辨率屏幕 (720p及以下) - 使用较小字体
+        fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
+      }
+      
+      dialogueFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal(fontPath));
       dialogueFont.setColor(Color.WHITE);
     } catch (Exception e) {
       logger.warn("Failed to load custom font, using default font", e);

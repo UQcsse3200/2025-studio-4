@@ -73,7 +73,8 @@ public class UIStyleHelper {
         style.down = new NinePatchDrawable(pressed);
         style.over = new NinePatchDrawable(hover);
 
-        style.font = skin.getFont("segoe_ui");
+        // 根据屏幕尺寸选择不同大小的字体
+        style.font = getFontForScreenSize();
 
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
@@ -108,12 +109,47 @@ public class UIStyleHelper {
         style.down = new NinePatchDrawable(pressed);
         style.over = new NinePatchDrawable(hover);
 
-        style.font = skin.getFont("segoe_ui");
+        // 根据屏幕尺寸选择不同大小的字体
+        style.font = getFontForScreenSize();
 
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
 
         return style;
+    }
+
+    /**
+     * 根据屏幕尺寸选择合适大小的字体文件
+     * @return 适合当前屏幕尺寸的字体
+     */
+    private static com.badlogic.gdx.graphics.g2d.BitmapFont getFontForScreenSize() {
+        try {
+            float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+            float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+            
+            // 根据屏幕分辨率选择字体大小
+            String fontPath;
+            if (screenWidth >= 2560 || screenHeight >= 1440) {
+                // 高分辨率屏幕 (2K/4K)
+                fontPath = "flat-earth/skin/fonts/arial_black_32.fnt";
+            } else if (screenWidth >= 1920 || screenHeight >= 1080) {
+                // 标准分辨率屏幕 (1080p)
+                fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
+            } else {
+                // 低分辨率屏幕 (720p及以下)
+                fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
+            }
+            
+            com.badlogic.gdx.graphics.g2d.BitmapFont font = new com.badlogic.gdx.graphics.g2d.BitmapFont(
+                com.badlogic.gdx.Gdx.files.internal(fontPath)
+            );
+            font.setColor(com.badlogic.gdx.graphics.Color.WHITE);
+            
+            return font;
+        } catch (Exception e) {
+            // 如果加载失败，使用默认字体
+            return skin.getFont("segoe_ui");
+        }
     }
 }

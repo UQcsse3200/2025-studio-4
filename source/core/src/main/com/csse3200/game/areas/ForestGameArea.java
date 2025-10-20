@@ -734,6 +734,11 @@ public class ForestGameArea extends GameArea {
         // mapEditor = new com.csse3200.game.areas2.MapTwo.MapEditor2((TerrainComponent2)terrain, newPlayer);
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
+        
+        // Set path layer opacity to 0.7 (70% opacity) for map1
+        // 调整map1路径砖块的透明度为70%
+        mapEditor.setPathLayerOpacity(0.7f);
+        
         // Uncomment if crystal spawning is needed:
         // mapEditor.spawnCrystal(); // Generate crystal
 

@@ -32,7 +32,7 @@ public class CurrencyFactory {
      * @param value currency value
      * @param x     world x
      * @param y     world y
-     * @param ttlSeconds time to live in seconds; <= 0 means no auto-despawn
+     * @param ttlSeconds time to live in seconds; &lt;= 0 means no auto-despawn
      */
     public static Entity createCurrency(CurrencyType type, int value, float x, float y, float ttlSeconds) {
         Entity currency = new Entity()

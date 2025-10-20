@@ -32,7 +32,7 @@ public class CollectibleComponent extends Component {
 
     /**
      * Creates a collectible component with a finite lifetime.
-     * @param lifetimeSeconds time to live; <= 0 means infinite
+     * @param lifetimeSeconds time to live; &lt;= 0 means infinite
      */
     public CollectibleComponent(float lifetimeSeconds) {
         this();

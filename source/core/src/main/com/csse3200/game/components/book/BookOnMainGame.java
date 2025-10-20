@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -34,6 +35,9 @@ public class BookOnMainGame extends Window {
             "images/book/heroes_book.png"
     };
 
+    String mainBackgroundPathName = "images/book/encyclopedia_theme.png";
+    String bookBackgroundPathName = "images/book/open_book_theme.png";
+
     /**
      * @param skin UI skin
      */
@@ -46,13 +50,14 @@ public class BookOnMainGame extends Window {
         setFillParent(true);
         pad(0);
 
-        this.renderBackGround();
-        this.renderContentList();
+        this.renderBackGround(this.mainBackgroundPathName);
+        this.setPage(buildHomePage());
         this.renderExitButton();
     }
 
-    private void renderBackGround() {
-        String backgroundPath = "images/book/encyclopedia_theme.png";
+    private void renderBackGround(String pathName) {
+        String backgroundPath = pathName;
+        // String backgroundPath = "images/book/encyclopedia_theme.png";
 
         // Background image
         try {
@@ -88,8 +93,15 @@ public class BookOnMainGame extends Window {
         addActor(exitTable);
     }
 
+    private void setPage(Actor page) {
+        Actor old = findActor("pageRoot");
+        if (old != null) old.remove();
+        page.setName("pageRoot");
+        addActor(page);
+    }
+
     /** Renders the navigation buttons for enemies, currencies, and towers. */
-    private void renderContentList() {
+    private Table buildHomePage() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
 
@@ -100,49 +112,20 @@ public class BookOnMainGame extends Window {
         Table table = new Table();
         table.setFillParent(true);
 
-        TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
+        TextButton.TextButtonStyle enemyButtonStyle    = createCustomButtonStyle(buttonBackGround[0]);
         TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
-        TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
-        TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
+        TextButton.TextButtonStyle towerButtonStyle    = createCustomButtonStyle(buttonBackGround[2]);
+        TextButton.TextButtonStyle heroButtonStyle     = createCustomButtonStyle(buttonBackGround[4]);
 
-        TextButton enemyButton = new TextButton("", enemyButtonStyle);
-        enemyButton.getLabel().setColor(Color.WHITE);
-        enemyButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-//                logger.debug("Go to enemy clicked");
-//                entity.getEvents().trigger("goToEnemy");
-            }
-        });
-
+        TextButton enemyButton    = new TextButton("", enemyButtonStyle);
         TextButton currencyButton = new TextButton("", currencyButtonStyle);
-        currencyButton.getLabel().setColor(Color.WHITE);
-        currencyButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-//                logger.debug("Go to currency clicked");
-//                entity.getEvents().trigger("goToCurrency");
-            }
-        });
+        TextButton towerButton    = new TextButton("", towerButtonStyle);
+        TextButton heroButton     = new TextButton("", heroButtonStyle);
 
-        TextButton towerButton = new TextButton("", towerButtonStyle);
-        towerButton.getLabel().setColor(Color.WHITE);
-        towerButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-//                logger.debug("Go to tower clicked");
-//                entity.getEvents().trigger("goToTower");
-            }
-        });
-
-        TextButton heroButton = new TextButton("", heroButtonStyle);
-        heroButton.getLabel().setColor(Color.WHITE);
-        heroButton.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-//                logger.debug("Go to hero clicked");
-//                entity.getEvents().trigger("goToHero");
-            }
-        });
+        enemyButton.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ setPage(buildEnemyPage());    }});
+        currencyButton.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ setPage(buildCurrencyPage()); }});
+        towerButton.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ setPage(buildTowerPage());    }});
+        heroButton.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ setPage(buildHeroPage());     }});
 
         table.row().padTop(stageHeight * 0.02f); // First row of books
         table.add(enemyButton).size(buttonWidth, buttonHeight);
@@ -150,10 +133,59 @@ public class BookOnMainGame extends Window {
         table.add(towerButton).size(buttonWidth, buttonHeight);
         table.row().padTop(stageHeight * 0.02f); // Second row of books
         table.add(heroButton).size(buttonWidth, buttonHeight);
-
         table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 
-        addActor(table);
+        return table;
+    }
+
+    private Table buildEnemyPage()    { return buildSectionPage("Enemies",    new Label("enemy details here", skin)); }
+    private Table buildCurrencyPage() { return buildSectionPage("Currencies", new Label("currency details here", skin)); }
+    private Table buildTowerPage()    { return buildSectionPage("Towers",     new Label("tower details here", skin)); }
+    private Table buildHeroPage()     { return buildSectionPage("Heroes",     new Label("hero details here", skin)); }
+
+    // Helper: build a drawable from your ResourceService-managed textures
+    private Drawable makeBg(String path) {
+        Texture tex = ServiceLocator.getResourceService().getAsset(path, Texture.class);
+        if (tex != null) return new TextureRegionDrawable(new TextureRegion(tex));
+        // fallback: plain color panel if not loaded
+        return skin.newDrawable("white", new Color(0f,0f,0f,0.4f));
+    }
+
+    private TextButton renderBackButton() {
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/bookmark.png");
+        TextButton back = new TextButton("", exitButtonStyle);
+        back.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent event, Actor actor) {
+                setPage(buildHomePage());
+            }
+        });
+        return back;
+    }
+
+    private Table buildSectionPage(String title, Actor body) {
+        Table page = new Table();
+        page.setFillParent(true);
+        page.setName("pageRoot");
+
+        float stageWidth = stage.getViewport().getWorldWidth();
+        float stageHeight = stage.getViewport().getWorldHeight();
+        float buttonWidth = stageWidth * 0.15f;
+        float buttonHeight = stageHeight * 0.24f;
+
+        page.setBackground(this.makeBg(this.bookBackgroundPathName));
+        TextButton back = renderBackButton();
+
+        Table pin = new Table();
+        pin.setFillParent(true);   // covers the whole page
+        pin.top().right();         // anchor
+        pin.add(back)
+                .size(buttonWidth, buttonHeight)
+                .padTop(stageHeight * 0.02f)
+                .padRight(stageWidth * 0.125f);
+
+        page.addActor(pin);
+
+        return page;
     }
 
     public void showOn(Stage stage) {

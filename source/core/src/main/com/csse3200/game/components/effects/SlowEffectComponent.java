@@ -178,7 +178,10 @@ public class SlowEffectComponent extends Component {
     }
 
     if (waypointComponent != null) {
-      waypointComponent.setSpeed(originalSpeed);
+      try {
+        waypointComponent.setSpeed(originalSpeed);
+      } catch (Exception ignored) {
+      }
     }
 
     if (physicsMovement != null) {

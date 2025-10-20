@@ -78,7 +78,7 @@ public class TankEnemyFactory {
     public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
         int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
         Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints, 
-        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
+        "images/TANK_NEW_ATLAS.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -150,8 +150,10 @@ public class TankEnemyFactory {
             }
         });
 
-        var sz = tank.getScale(); 
-        tank.setScale(sz.x * 1.3f, sz.y * 1.3f);
+        // Scale up by 4x to compensate for smaller sprite frames (256px vs 1024px)
+        // Then apply the original 1.3x scaling
+        var sz = tank.getScale();
+        tank.setScale(sz.x * 4.0f * 1.3f, sz.y * 4.0f * 1.3f);
 
         return tank;
     }
@@ -329,4 +331,3 @@ public class TankEnemyFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 }
-

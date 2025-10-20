@@ -11,6 +11,7 @@ import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
+import com.badlogic.gdx.math.MathUtils;
 
 /**
  * Periodically searches for the nearest active tower projectile within range and fires
@@ -44,6 +45,9 @@ AntiProjectileShooterComponent extends Component {
         this.speed = speed;
         this.lifetime = lifetime;
         this.spritePath = spritePath;
+
+        // Add random offset up to 0.5 seconds to prevent all tanks firing simultaneously
+        this.timer = -MathUtils.random(0f, 0.5f);
     }
 
     /**
@@ -73,6 +77,7 @@ AntiProjectileShooterComponent extends Component {
 
     /**
      * Scan registered entities for the closest valid tower projectile in range.
+     * Only targets projectiles to the right of the tank (x >= tank.x) since turret faces right.
      * Interceptor-tagged entities and inactive projectiles are ignored.
      * @return nearest target or null if none found within range
      */
@@ -88,7 +93,12 @@ AntiProjectileShooterComponent extends Component {
             ProjectileComponent pc = e.getComponent(ProjectileComponent.class);
             if (pc == null || pc.isInactive()) continue; // only live projectiles
             if (e.getComponent(InterceptorTagComponent.class) != null) continue; // skip own interceptors
-            float d2 = e.getPosition().dst2(myPos);
+
+            // Only target projectiles to the right of the tank (turret faces right)
+            Vector2 targetPos = e.getPosition();
+            if (targetPos.x < myPos.x) continue; // skip projectiles to the left
+
+            float d2 = targetPos.dst2(myPos);
             if (d2 <= bestD2) { bestD2 = d2; best = e; }
         }
         return best;

@@ -1,5 +1,3 @@
-package com.csse3200.game.ui.leaderboard;
-
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -91,9 +89,7 @@ public class BookOnMainGame extends Window {
         Table exitTable = new Table();
         exitTable.setFillParent(true);
         exitTable.top().right();
-        exitTable.add(exitButton)
-                .size(buttonWidth, buttonHeight)
-                .pad(screenW * 0.01f);
+        exitTable.add(exitButton).size(buttonWidth, buttonHeight).pad(stageWidth * 0.01f); // padding scaled too
 
         addActor(exitTable);
     }

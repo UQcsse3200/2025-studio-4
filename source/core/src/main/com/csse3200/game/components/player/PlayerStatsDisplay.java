@@ -63,7 +63,7 @@ public class PlayerStatsDisplay extends UIComponent {
 
     Label.LabelStyle labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
     labelStyle.fontColor = Color.WHITE;
-
+    labelStyle.font = skin.getFont("segoe_ui");
     // Score text
     int score = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
     CharSequence scoreText = String.format("Score: %d", score);

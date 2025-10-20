@@ -73,11 +73,12 @@ public class BookOnMainGame extends Window {
     }
 
     private void renderExitButton() {
-        float screenW = 300;
-        float screenH = 300;
+        float stageWidth = stage.getViewport().getWorldWidth();
+        float stageHeight = stage.getViewport().getWorldHeight();
 
-        float buttonWidth = screenW;
-        float buttonHeight = screenH;
+        // Scale button size relative to stage size
+        float buttonWidth = stageWidth * 0.15f;   // 5% of stage width
+        float buttonHeight = stageHeight * 0.24f; // 8% of stage height
 
         TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
         TextButton exitButton = new TextButton("", exitButtonStyle);

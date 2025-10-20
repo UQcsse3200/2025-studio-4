@@ -44,7 +44,7 @@ public class MainGameExitDisplay extends UIComponent {
     table.setFillParent(true);
 
     // Create custom button style
-    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
+    TextButtonStyle customButtonStyle = UIStyleHelper.mainGameMenuButtonStyle();
     TextButton saveBtn = new TextButton("Save", customButtonStyle);
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
@@ -52,7 +52,7 @@ public class MainGameExitDisplay extends UIComponent {
     TextButton startWaveButton = new TextButton("Start Wave", customButtonStyle);
 
     // Set button size
-    float buttonWidth = 120f;
+    float buttonWidth = 140f;
     float buttonHeight = 40f;
     
     saveBtn.getLabel().setColor(Color.CYAN);

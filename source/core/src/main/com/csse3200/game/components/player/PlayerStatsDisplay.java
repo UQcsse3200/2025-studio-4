@@ -165,17 +165,6 @@ public class PlayerStatsDisplay extends UIComponent {
     scoreLabel.setText(text);
   }
 
-  // Utility: build a 1x1 solid texture with the given color
-  private static Texture buildSolidTexture(Color color) {
-    Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-    pm.setColor(color);
-    pm.fill();
-    Texture tex = new Texture(pm);
-    pm.dispose();
-    return tex;
-  }
-
-
   @Override
   public void dispose() {
     super.dispose();

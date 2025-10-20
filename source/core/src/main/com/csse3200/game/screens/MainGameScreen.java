@@ -223,6 +223,9 @@ public class MainGameScreen extends ScreenAdapter {
   public void dispose() {
     logger.debug("Disposing main game screen");
 
+    ForestGameArea.cleanupAllWaves();
+    ForestGameArea2.cleanupAllWaves();
+
     renderer.dispose();
     unloadAssets();
 

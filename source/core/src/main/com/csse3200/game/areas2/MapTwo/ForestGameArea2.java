@@ -386,6 +386,7 @@ public class ForestGameArea2 extends GameArea2 {
      */
     @Override
     public void create() {
+        resetEnemyCounters();
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
         registerForCleanup();
@@ -781,11 +782,18 @@ public class ForestGameArea2 extends GameArea2 {
         resourceService.unloadAssets(forestMusic);
     }
 
+    public static void resetEnemyCounters() {
+        NUM_ENEMIES_TOTAL = 0;
+        NUM_ENEMIES_DEFEATED = 0;
+        logger.info("Enemy counters reset to 0");
+    }
+
     public static void cleanupAllWaves() {
         if (currentGameArea != null) {
             currentGameArea.forceStopWave();
             currentGameArea = null;
         }
+        resetEnemyCounters();
         logger.info("Wave cleanup completed");
     }
 
@@ -806,6 +814,7 @@ public class ForestGameArea2 extends GameArea2 {
                 enemySpawnQueue.clear();
                 enemySpawnQueue = null;
             }
+            resetEnemyCounters();
             logger.info("Wave spawning force stopped");
         } catch (Exception e) {
             logger.error("Error during force stop: {}", e.getMessage());
@@ -890,5 +899,7 @@ public class ForestGameArea2 extends GameArea2 {
             //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
+
+        resetEnemyCounters();
     }
 }

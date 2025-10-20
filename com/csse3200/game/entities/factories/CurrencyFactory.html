@@ -129,6 +129,15 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Creates a new currency entity with the given parameters.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float,float)" class="member-name-link">createCurrency</a><wbr>(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
+ int&nbsp;value,
+ float&nbsp;x,
+ float&nbsp;y,
+ float&nbsp;ttlSeconds)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Overload that allows specifying a TTL (seconds) after which the currency despawns automatically.</div>
+</div>
 </div>
 </div>
 </div>
@@ -176,6 +185,25 @@ loadScripts(document, 'script');</script>
 <dd><code>y</code> - the y-coordinate position of the entity</dd>
 <dt>Returns:</dt>
 <dd>a fully initialized currency entity</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float,float)">
+<h3>createCurrency</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createCurrency</span><wbr><span class="parameters">(<a href="../../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;type,
+ int&nbsp;value,
+ float&nbsp;x,
+ float&nbsp;y,
+ float&nbsp;ttlSeconds)</span></div>
+<div class="block">Overload that allows specifying a TTL (seconds) after which the currency despawns automatically.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - currency type</dd>
+<dd><code>value</code> - currency value</dd>
+<dd><code>x</code> - world x</dd>
+<dd><code>y</code> - world y</dd>
+<dd><code>ttlSeconds</code> - time to live in seconds; &lt;= 0 means no auto-despawn</dd>
 </dl>
 </section>
 </li>

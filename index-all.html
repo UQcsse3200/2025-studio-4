@@ -613,6 +613,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new collectible component, initially not collected.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/currencysystem/CollectibleComponent.html#%3Cinit%3E(float)" class="member-name-link">CollectibleComponent(float)</a> - Constructor for class com.csse3200.game.components.currencysystem.<a href="com/csse3200/game/components/currencysystem/CollectibleComponent.html" title="class in com.csse3200.game.components.currencysystem">CollectibleComponent</a></dt>
+<dd>
+<div class="block">Creates a collectible component with a finite lifetime.</div>
+</dd>
 <dt><a href="com/csse3200/game/physics/components/ColliderComponent.html" class="type-name-link" title="class in com.csse3200.game.physics.components">ColliderComponent</a> - Class in <a href="com/csse3200/game/physics/components/package-summary.html">com.csse3200.game.physics.components</a></dt>
 <dd>
 <div class="block">Attaches a physics collider to an entity.</div>
@@ -1045,6 +1049,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new currency entity with the given parameters.</div>
 </dd>
+<dt><a href="com/csse3200/game/entities/factories/CurrencyFactory.html#createCurrency(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float,float,float)" class="member-name-link">createCurrency(CurrencyComponent.CurrencyType, int, float, float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/CurrencyFactory.html" title="class in com.csse3200.game.entities.factories">CurrencyFactory</a></dt>
+<dd>
+<div class="block">Overload that allows specifying a TTL (seconds) after which the currency despawns automatically.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/SummonFactory.html#createCurrencyBot(java.lang.String,float,com.csse3200.game.entities.Entity,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">createCurrencyBot(String, float, Entity, CurrencyComponent.CurrencyType, int, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SummonFactory.html" title="class in com.csse3200.game.entities.factories">SummonFactory</a></dt>
 <dd>
 <div class="block">Creates a currency-generating robot that periodically produces in-game currency
@@ -1296,9 +1304,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Component that generates currency for the player at regular intervals.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html#%3Cinit%3E(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">CurrencyGeneratorComponent(CurrencyComponent.CurrencyType, int, float)</a> - Constructor for class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.towers">CurrencyGeneratorComponent</a></dt>
-<dd>
-<div class="block">Constructs a CurrencyGeneratorComponent with the specified currency type, amount, and interval.</div>
-</dd>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html#%3Cinit%3E(com.csse3200.game.entities.Entity,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">CurrencyGeneratorComponent(Entity, CurrencyComponent.CurrencyType, int, float)</a> - Constructor for class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.hero.engineer">CurrencyGeneratorComponent</a></dt>
 <dd>
 <div class="block">Constructs a currency generator.</div>
@@ -1518,6 +1524,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">TowerHotbarDisplay</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/TowerUpgradeMenu.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerUpgradeMenu.html" title="class in com.csse3200.game.components.maingame">TowerUpgradeMenu</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MainMenuDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MainMenuDisplay.html" title="class in com.csse3200.game.components.mainmenu">MainMenuDisplay</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/mainmenu/MapSelectionDisplay.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/MapSelectionDisplay.html" title="class in com.csse3200.game.components.mainmenu">MapSelectionDisplay</a></dt>
@@ -1540,6 +1548,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Disposes of resources used by the chain lightning component.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html" title="class in com.csse3200.game.components.towers">EnemyFreezeComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/towers/StatsBoostComponent.html#dispose()" class="member-name-link">dispose()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/StatsBoostComponent.html" title="class in com.csse3200.game.components.towers">StatsBoostComponent</a></dt>
 <dd>
 <div class="block">Disposes of the component and reverts any applied boosts.</div>
@@ -1834,6 +1844,12 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Factory for creating enemy entities.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.towers">EnemyFreezeComponent</a> - Class in <a href="com/csse3200/game/components/towers/package-summary.html">com.csse3200.game.components.towers</a></dt>
+<dd>
+<div class="block">Component for frozen mammoth skull tower that freezes enemies inside range for 2 seconds.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html#%3Cinit%3E()" class="member-name-link">EnemyFreezeComponent()</a> - Constructor for class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html" title="class in com.csse3200.game.components.towers">EnemyFreezeComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/entities/configs/EnemyConfig.EnemyStats.html#%3Cinit%3E()" class="member-name-link">EnemyStats()</a> - Constructor for class com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/EnemyConfig.EnemyStats.html" title="class in com.csse3200.game.entities.configs">EnemyConfig.EnemyStats</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/enemy/EnemyTypeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.enemy">EnemyTypeComponent</a> - Class in <a href="com/csse3200/game/components/enemy/package-summary.html">com.csse3200.game.components.enemy</a></dt>
@@ -2614,6 +2630,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/components/towers/OrbitComponent.html#getRadius()" class="member-name-link">getRadius()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/OrbitComponent.html" title="class in com.csse3200.game.components.towers">OrbitComponent</a></dt>
 <dd>
 <div class="block">Returns the current orbit radius.</div>
+</dd>
+<dt><a href="com/csse3200/game/components/towers/BeamAttackComponent.html#getRange()" class="member-name-link">getRange()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/BeamAttackComponent.html" title="class in com.csse3200.game.components.towers">BeamAttackComponent</a></dt>
+<dd>
+<div class="block">Current effective range used for targeting and visuals.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/towers/TowerStatsComponent.html#getRange()" class="member-name-link">getRange()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/TowerStatsComponent.html" title="class in com.csse3200.game.components.towers">TowerStatsComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -3950,6 +3970,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Called when a summon is created successfully.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/towers/StatsBoostComponent.html#onTargetStatsChanged(com.csse3200.game.entities.Entity)" class="member-name-link">onTargetStatsChanged(Entity)</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/StatsBoostComponent.html" title="class in com.csse3200.game.components.towers">StatsBoostComponent</a></dt>
+<dd>
+<div class="block">Notify this booster that a target tower's base stats changed externally (e.g., via upgrade).</div>
+</dd>
 <dt><a href="com/csse3200/game/areas/ForestGameArea.html#onWaveDefeated()" class="member-name-link">onWaveDefeated()</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/ForestGameArea.html" title="class in com.csse3200.game.areas">ForestGameArea</a></dt>
 <dd>
 <div class="block">Called when all enemies in the current wave have been defeated.</div>
@@ -5127,6 +5151,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Updates the orbit radius at runtime.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/towers/BeamAttackComponent.html#setRange(float)" class="member-name-link">setRange(float)</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/BeamAttackComponent.html" title="class in com.csse3200.game.components.towers">BeamAttackComponent</a></dt>
+<dd>
+<div class="block">Update the beam's effective range (e.g., after upgrades).</div>
+</dd>
 <dt><a href="com/csse3200/game/components/towers/TowerStatsComponent.html#setRange(float)" class="member-name-link">setRange(float)</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/TowerStatsComponent.html" title="class in com.csse3200.game.components.towers">TowerStatsComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/PlayerRankingComponent.html#setRemainingHealth(int)" class="member-name-link">setRemainingHealth(int)</a> - Method in class com.csse3200.game.components.<a href="com/csse3200/game/components/PlayerRankingComponent.html" title="class in com.csse3200.game.components">PlayerRankingComponent</a></dt>
@@ -6256,6 +6284,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/components/maingame/SummonPlacementController.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SummonPlacementController.html" title="class in com.csse3200.game.components.maingame">SummonPlacementController</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/TowerHotbarDisplay.html" title="class in com.csse3200.game.components.maingame">TowerHotbarDisplay</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/movement/AccelerateOverTimeComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.movement.<a href="com/csse3200/game/components/movement/AccelerateOverTimeComponent.html" title="class in com.csse3200.game.components.movement">AccelerateOverTimeComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/movement/AdjustSpeedByHealthComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.movement.<a href="com/csse3200/game/components/movement/AdjustSpeedByHealthComponent.html" title="class in com.csse3200.game.components.movement">AdjustSpeedByHealthComponent</a></dt>
@@ -6294,9 +6324,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Updates the chain lightning logic, finds targets, applies damage, and handles rendering.</div>
 </dd>
 <dt><a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/CurrencyGeneratorComponent.html" title="class in com.csse3200.game.components.towers">CurrencyGeneratorComponent</a></dt>
-<dd>
-<div class="block">Updates the generator timer and generates currency when the interval is reached.</div>
-</dd>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html" title="class in com.csse3200.game.components.towers">EnemyFreezeComponent</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/towers/OrbitComponent.html#update()" class="member-name-link">update()</a> - Method in class com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/OrbitComponent.html" title="class in com.csse3200.game.components.towers">OrbitComponent</a></dt>
 <dd>
 <div class="block">Updates the orbit position of the entity each frame.</div>
@@ -6345,6 +6375,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/services/AudioService.html#updateSettings()" class="member-name-link">updateSettings()</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/AudioService.html" title="class in com.csse3200.game.services">AudioService</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/entities/factories/DroneEnemyFactory.html#updateSpeed(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">updateSpeed(Entity, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/DroneEnemyFactory.html" title="class in com.csse3200.game.entities.factories">DroneEnemyFactory</a></dt>
+<dd>
+<div class="block">Updates the speed of a specific drone.</div>
+</dd>
 <dt><a href="com/csse3200/game/entities/factories/GruntEnemyFactory.html#updateSpeed(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">updateSpeed(Entity, Vector2)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/GruntEnemyFactory.html" title="class in com.csse3200.game.entities.factories">GruntEnemyFactory</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/services/GameStateService.html#updateStars(int)" class="member-name-link">updateStars(int)</a> - Method in class com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.html" title="class in com.csse3200.game.services">GameStateService</a></dt>

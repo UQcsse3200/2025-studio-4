@@ -95,7 +95,8 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">A component that marks an entity as collectible by the player.
 
- Entities with this component can be picked up or collected during gameplay.</div>
+ Entities with this component can be picked up by hovering the cursor nearby,
+ or by clicking within a smaller click radius. An optional lifetime can auto-despawn.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -119,6 +120,10 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">CollectibleComponent</a>()</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates a new collectible component, initially not collected.</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(float)" class="member-name-link">CollectibleComponent</a><wbr>(float&nbsp;lifetimeSeconds)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a collectible component with a finite lifetime.</div>
 </div>
 </div>
 </section>
@@ -169,6 +174,17 @@ loadScripts(document, 'script');</script>
 <h3>CollectibleComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CollectibleComponent</span>()</div>
 <div class="block">Creates a new collectible component, initially not collected.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(float)">
+<h3>CollectibleComponent</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CollectibleComponent</span><wbr><span class="parameters">(float&nbsp;lifetimeSeconds)</span></div>
+<div class="block">Creates a collectible component with a finite lifetime.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>lifetimeSeconds</code> - time to live; &lt;= 0 means infinite</dd>
+</dl>
 </section>
 </li>
 </ul>

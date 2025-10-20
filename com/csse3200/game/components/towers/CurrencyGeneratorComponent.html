@@ -94,7 +94,15 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">CurrencyGeneratorComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Component that generates currency for the player at regular intervals.
- Used by the Bank Tower to provide passive income.</div>
+ Used by the Bank Tower to provide passive income by spawning collectible currency entities.
+
+ Path A (level_A) controls the spawn interval:
+  - 1 -&gt; 5.0s, 2 -&gt; 4.75s, 3 -&gt; 4.5s, 4 -&gt; 4.25s, 5 -&gt; 4.0s
+
+ Path B (level_B) controls what currencies are spawned:
+  - 1 -&gt; METAL_SCRAP only
+  - 2 -&gt; METAL_SCRAP + TITANIUM_CORE
+  - 3+ -&gt; METAL_SCRAP + TITANIUM_CORE + NEUROCHIP</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -118,9 +126,7 @@ loadScripts(document, 'script');</script>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int,float)" class="member-name-link">CurrencyGeneratorComponent</a><wbr>(<a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType,
  int&nbsp;currencyAmount,
  float&nbsp;generationInterval)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Constructs a CurrencyGeneratorComponent with the specified currency type, amount, and interval.</div>
-</div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -168,7 +174,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates the generator timer and generates currency when the interval is reached.</div>
+<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
 </div>
@@ -196,13 +202,6 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CurrencyGeneratorComponent</span><wbr><span class="parameters">(<a href="../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType,
  int&nbsp;currencyAmount,
  float&nbsp;generationInterval)</span></div>
-<div class="block">Constructs a CurrencyGeneratorComponent with the specified currency type, amount, and interval.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>currencyType</code> - The type of currency to generate</dd>
-<dd><code>currencyAmount</code> - The amount of currency to generate per interval</dd>
-<dd><code>generationInterval</code> - The time between currency generation (in seconds)</dd>
-</dl>
 </section>
 </li>
 </ul>
@@ -217,7 +216,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Updates the generator timer and generates currency when the interval is reached.</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
+<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
+ component is disabled.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>

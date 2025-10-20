@@ -22,6 +22,7 @@ import com.csse3200.game.utils.Difficulty;
 import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 
 public class DividerEnemyFactory {
@@ -81,7 +82,8 @@ public class DividerEnemyFactory {
         divider
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-                .addComponent(new clickable(clickRadius));
+                .addComponent(new clickable(clickRadius))
+                .addComponent(new SlowEffectComponent()); // 添加减速特效组件
                 CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
                 if (combatStats != null) combatStats.setIsEnemy(true);
 

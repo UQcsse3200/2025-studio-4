@@ -166,7 +166,7 @@ public class MapSelectionDisplay extends UIComponent {
 
         // Bottom menu bar with Back / Unlocks / Play (orange)
         TextButton backBtn = new TextButton("Back", orange);
-        TextButton unlocksBtn = new TextButton("Unlocks", orange);
+        TextButton unlocksBtn = new TextButton("Select hero", orange);
         TextButton playBtn = new TextButton("Play", orange);
 
         backBtn.addListener(new ChangeListener() {

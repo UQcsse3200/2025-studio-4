@@ -1,4 +1,4 @@
-package com.csse3200.game.ui;
+package com.csse3200.game.ui.Hero;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Vector2;
@@ -16,6 +16,7 @@ import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.Gdx;
+import com.csse3200.game.ui.SimpleUI;
 
 /**
  * 一次性提示窗口：只显示武器切换提示与关闭按钮。

@@ -47,7 +47,7 @@ public class BookOnMainGame extends Window {
         pad(0);
 
         this.renderBackGround();
-        // this.renderContentList();
+        this.renderContentList();
         this.renderExitButton();
     }
 
@@ -86,6 +86,74 @@ public class BookOnMainGame extends Window {
                 .pad(screenW * 0.01f);
 
         addActor(exitTable);
+    }
+
+    /** Renders the navigation buttons for enemies, currencies, and towers. */
+    private void renderContentList() {
+        float stageWidth = stage.getViewport().getWorldWidth();
+        float stageHeight = stage.getViewport().getWorldHeight();
+
+        // Scale buttons relative to stage size
+        float buttonWidth = stageWidth * 0.2f;   // 8% of stage width
+        float buttonHeight = stageHeight * 0.26f; // 12% of stage height
+
+        Table table = new Table();
+        table.setFillParent(true);
+
+        TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
+        TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
+        TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
+        TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
+
+        TextButton enemyButton = new TextButton("", enemyButtonStyle);
+        enemyButton.getLabel().setColor(Color.WHITE);
+        enemyButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+//                logger.debug("Go to enemy clicked");
+//                entity.getEvents().trigger("goToEnemy");
+            }
+        });
+
+        TextButton currencyButton = new TextButton("", currencyButtonStyle);
+        currencyButton.getLabel().setColor(Color.WHITE);
+        currencyButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+//                logger.debug("Go to currency clicked");
+//                entity.getEvents().trigger("goToCurrency");
+            }
+        });
+
+        TextButton towerButton = new TextButton("", towerButtonStyle);
+        towerButton.getLabel().setColor(Color.WHITE);
+        towerButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, Actor actor) {
+//                logger.debug("Go to tower clicked");
+//                entity.getEvents().trigger("goToTower");
+            }
+        });
+
+        TextButton heroButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+//                logger.debug("Go to hero clicked");
+//                entity.getEvents().trigger("goToHero");
+            }
+        });
+
+        table.row().padTop(stageHeight * 0.02f); // First row of books
+        table.add(enemyButton).size(buttonWidth, buttonHeight);
+        table.add(currencyButton).size(buttonWidth, buttonHeight);
+        table.add(towerButton).size(buttonWidth, buttonHeight);
+        table.row().padTop(stageHeight * 0.02f); // Second row of books
+        table.add(heroButton).size(buttonWidth, buttonHeight);
+
+        table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
+
+        addActor(table);
     }
 
     public void showOn(Stage stage) {

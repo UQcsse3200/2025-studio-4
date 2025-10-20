@@ -20,6 +20,7 @@ public class TouchAttackComponent extends Component {
   private CombatStatsComponent combatStats;
   private HitboxComponent hitboxComponent;
   private boolean hasAttacked = false;
+  private boolean attackedPlayerBase = false; // Track if we attacked the player base
 
   /**
    * Create a component which attacks entities on collision, without knockback.
@@ -54,6 +55,7 @@ public class TouchAttackComponent extends Component {
     // Reset per-shot state when a pooled projectile is reactivated
     entity.getEvents().addListener("projectile.activated", () -> {
       hasAttacked = false;
+      attackedPlayerBase = false;
     });
   }
 
@@ -86,6 +88,7 @@ public class TouchAttackComponent extends Component {
       target.getEvents().trigger("showDamage", combatStats.getBaseAttack(), target.getCenterPosition().cpy());
       entity.getEvents().trigger("attackStart");
       hasAttacked = true;
+      attackedPlayerBase = false; // This was NOT a base attack
       Gdx.app.log("ATTACK", "attackStart fired by " + entity.getId() + " on enemy");
     } else {
       Entity target2 = ((BodyUserData) other.getBody().getUserData()).entity;
@@ -93,7 +96,8 @@ public class TouchAttackComponent extends Component {
       if (playerStats != null) {
         playerStats.hit(combatStats);
         hasAttacked = true;
-        
+        attackedPlayerBase = true; // This WAS a base attack
+
         //Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
 
         entity.getEvents().trigger("attackStart");
@@ -112,10 +116,15 @@ public class TouchAttackComponent extends Component {
   }
   
   /**
-   * Called when the attack animation finishes to trigger the entity's death event.
+   * Called when the attack animation finishes. Only triggers entity death if the
+   * attack was against the player base (suicide attack), not when attacking projectiles.
    */
   private void onAttackComplete() {
-    Gdx.app.log("ATTACK", "Attack animation complete for " + entity.getId() + " - triggering entityDeath");
-    entity.getEvents().trigger("entityDeath");
+    if (attackedPlayerBase) {
+      Gdx.app.log("ATTACK", "Attack animation complete for " + entity.getId() + " after base attack - triggering entityDeath");
+      entity.getEvents().trigger("entityDeath");
+    } else {
+      Gdx.app.log("ATTACK", "Attack animation complete for " + entity.getId() + " but was not base attack - NOT triggering death");
+    }
   }
 }

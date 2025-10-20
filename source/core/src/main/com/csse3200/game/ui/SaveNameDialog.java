@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.csse3200.game.services.ServiceLocator;
 
@@ -42,7 +43,7 @@ public class SaveNameDialog extends Dialog {
         TextButton confirmButton = new TextButton("Confirm", buttonStyle);
         TextButton cancelButton = new TextButton("Cancel", buttonStyle);
 
-        Label.LabelStyle errorStyle = new Label.LabelStyle(SimpleUI.font(), new Color(1f, 0.3f, 0.3f, 1f));
+        Label.LabelStyle errorStyle = new Label.LabelStyle(SimpleUI.font(), Color.RED);
         errorLabel = new Label("", errorStyle);
         errorLabel.setVisible(false);
 
@@ -60,30 +61,34 @@ public class SaveNameDialog extends Dialog {
             }
         });
 
-        // Wooden brown background with border effect
+        // Background panel: use wooden brown background with border
         getContentTable().setBackground(createWoodenBackground());
 
         Table content = getContentTable();
-        content.pad(30);
+        content.pad(40);
         
-        // Title with orange/golden color matching the wooden theme
-        Label.LabelStyle titleStyle = new Label.LabelStyle(SimpleUI.font(), new Color(0.95f, 0.7f, 0.3f, 1f));
-        Label title = new Label("Enter Save Name", titleStyle);
-        title.setFontScale(1.5f);
+        // Title with enhanced golden color
+        Label.LabelStyle titleStyle = new Label.LabelStyle(SimpleUI.font(), new Color(1f, 0.85f, 0.4f, 1f));
+        Label title = new Label("Save Game", titleStyle);
+        title.setFontScale(1.8f);
         
-        content.add(title).colspan(2).padBottom(25); 
+        content.add(title).colspan(2).padBottom(30); 
         content.row();
+        
+        // Input field with light background
         content.add(nameField).width(400).height(50).colspan(2).padBottom(15); 
         content.row();
-        content.add(errorLabel).colspan(2).padBottom(15); 
+        
+        content.add(errorLabel).colspan(2).padBottom(20); 
         content.row();
         
+        // Buttons
         Table buttons = new Table();
-        buttons.add(cancelButton).width(180).height(60).padRight(30);
+        buttons.add(cancelButton).width(180).height(60).padRight(20);
         buttons.add(confirmButton).width(180).height(60);
         content.add(buttons).colspan(2);
 
-        setSize(550, 300);
+        setSize(550, 350);
         centerWindow();
     }
 
@@ -91,11 +96,11 @@ public class SaveNameDialog extends Dialog {
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
         style.font = SimpleUI.font();
         style.fontColor = new Color(0.2f, 0.15f, 0.1f, 1f); // Dark brown text
-        // Light brown/tan background for input field
-        style.background = SimpleUI.solid(new Color(0.75f, 0.58f, 0.42f, 1f));
-        style.focusedBackground = SimpleUI.solid(new Color(0.7f, 0.53f, 0.37f, 1f));
+        // Light tan/beige background for input
+        style.background = SimpleUI.solid(new Color(0.9f, 0.8f, 0.65f, 1f));
+        style.focusedBackground = SimpleUI.solid(new Color(0.95f, 0.85f, 0.7f, 1f));
         style.cursor = SimpleUI.solid(new Color(0.2f, 0.15f, 0.1f, 1f));
-        style.selection = SimpleUI.solid(new Color(0.9f, 0.7f, 0.4f, 0.5f));
+        style.selection = SimpleUI.solid(new Color(0.95f, 0.7f, 0.3f, 0.6f));
         return style;
     }
 
@@ -131,6 +136,23 @@ public class SaveNameDialog extends Dialog {
     }
 
     /**
+     * Creates a wooden brown background with border effect
+     */
+    private Drawable createWoodenBackground() {
+        // Create a solid wooden brown background
+        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        // Rich brown color for wooden theme
+        pixmap.setColor(new Color(0.45f, 0.28f, 0.18f, 0.95f));
+        pixmap.fill();
+        Texture texture = new Texture(pixmap);
+        pixmap.dispose();
+        
+        TextureRegion region = new TextureRegion(texture);
+        NinePatch patch = new NinePatch(region, 3, 3, 3, 3);
+        return new NinePatchDrawable(patch);
+    }
+
+    /**
      * Create a button style matching the main menu wooden buttons used across the UI.
      */
     private TextButton.TextButtonStyle createMainButtonStyle() {
@@ -153,24 +175,6 @@ public class SaveNameDialog extends Dialog {
         style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
         return style;
-    }
-    
-    /**
-     * Creates a wooden brown background with a darker border effect
-     */
-    private Drawable createWoodenBackground() {
-        // Create a pixmap for the wooden background
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        // Dark brown color matching wooden theme
-        pixmap.setColor(new Color(0.4f, 0.25f, 0.15f, 1f));
-        pixmap.fill();
-        Texture texture = new Texture(pixmap);
-        pixmap.dispose();
-        
-        // Create a NinePatch with border for a nice wooden frame effect
-        TextureRegion region = new TextureRegion(texture);
-        NinePatch patch = new NinePatch(region, 2, 2, 2, 2);
-        return new NinePatchDrawable(patch);
     }
 }
 

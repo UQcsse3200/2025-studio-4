@@ -156,6 +156,15 @@ public class UIStyleHelper {
         }
     }
 
+    /**
+     * Creates a button style for the main game menu.
+     *
+     * The button uses smooth rounded corners and slightly different colors
+     * for normal, hover, and pressed states. This keeps a consistent dark theme
+     * without needing image assets.
+     *
+     * @return a custom {@link TextButton.TextButtonStyle} with rounded backgrounds
+     */
     public static TextButton.TextButtonStyle mainGameMenuButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
 
@@ -191,7 +200,17 @@ public class UIStyleHelper {
         return style;
     }
 
-
+    /**
+     * Builds a simple rounded rectangle texture with the given color.
+     *
+     * This is used to draw button backgrounds directly with code instead of images.
+     * You can control how round the corners are with the {@code radius} value.
+     *
+     * @param color  color to fill the texture with
+     * @param radius how round the corners should be
+     * @param size   width and height of the square texture (in pixels)
+     * @return a new {@link Texture} with the rounded shape
+     */
     private static Texture buildRoundedTexture(Color color, int radius, int size) {
         Pixmap pm = new Pixmap(size, size, Pixmap.Format.RGBA8888);
         pm.setBlending(Pixmap.Blending.None);

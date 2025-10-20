@@ -195,6 +195,9 @@ public class MainGameActions extends Component {
   private void onPerformSave() {
     logger.info("Performing save operation with naming dialog");
     try {
+      // Hide the save menu to prevent it from blocking the dialog
+      entity.getEvents().trigger("hideSaveMenuOnly");
+      
       Stage stage = ServiceLocator.getRenderService().getStage();
       com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
           "Save Game", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
@@ -203,29 +206,36 @@ public class MainGameActions extends Component {
                 var entityService = ServiceLocator.getEntityService();
                 if (entityService == null) {
                   entity.getEvents().trigger("showSaveError");
+                  entity.getEvents().trigger("showPauseUI");
                   return;
                 }
                 var saveService = new com.csse3200.game.services.SimpleSaveService(entityService);
                 boolean success = saveService.saveAs(name);
                 if (success) {
                   logger.info("Saved as '{}' successfully", name);
-                  entity.getEvents().trigger("showSaveSuccess");
-                  entity.getEvents().trigger("hideSaveUI");
+                  // Return to pause menu after successful save
+                  entity.getEvents().trigger("showPauseUI");
                 } else {
                   entity.getEvents().trigger("showSaveError");
+                  entity.getEvents().trigger("showPauseUI");
                 }
               } catch (Exception ex) {
                 logger.error("Error during named save", ex);
                 entity.getEvents().trigger("showSaveError");
+                entity.getEvents().trigger("showPauseUI");
               }
             }
-            @Override public void onCancelled() { /* no-op */ }
+            @Override public void onCancelled() { 
+              // Return to pause menu if user cancels
+              entity.getEvents().trigger("showPauseUI");
+            }
           }
       );
       dialog.show(stage);
     } catch (Exception e) {
       logger.error("Error opening SaveNameDialog", e);
       entity.getEvents().trigger("showSaveError");
+      entity.getEvents().trigger("showPauseUI");
     }
   }
 
@@ -243,3 +253,4 @@ public class MainGameActions extends Component {
     logger.info("Awarded {} star. Total = {}", amount, ServiceLocator.getGameStateService().getStars());
   }
 }
+

@@ -93,6 +93,7 @@ public class PauseMenuDisplay extends UIComponent {
         saveBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
                 logger.debug("Save button clicked from pause menu");
+                entity.getEvents().trigger("hidePauseUI");
                 entity.getEvents().trigger("save");
             }
         });

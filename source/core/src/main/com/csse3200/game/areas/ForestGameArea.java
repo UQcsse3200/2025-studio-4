@@ -221,6 +221,12 @@ public class ForestGameArea extends GameArea {
     public void onWaveDefeated() {
         logger.info("Wave {} defeated!", currentWaveIndex + 1);
 
+        // Safety check: if waves not initialized (e.g., loaded from save), don't process wave progression
+        if (waves == null) {
+            logger.warn("Waves not initialized - skipping wave progression");
+            return;
+        }
+
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory!

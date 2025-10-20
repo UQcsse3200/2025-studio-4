@@ -222,6 +222,7 @@ public class SimpleSaveService {
     // restore towers
     for (SaveData.Tower t : data.towers) {
       var type = t.type == null ? "bone" : t.type;
+      logger.info("Restoring tower: type={}, pos={}", type, t.pos);
       Entity tower = null;
       var defaultCurrency = com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
         switch (type) {
@@ -234,7 +235,33 @@ public class SimpleSaveService {
             case "cavemen":
                 tower = com.csse3200.game.entities.factories.TowerFactory.createCavemenTower();
                 break;
+            case "pterodactyl":
+                logger.info("Creating pterodactyl tower at {}", t.pos);
+                tower = com.csse3200.game.entities.factories.TowerFactory.createPterodactylTower();
+                break;
+            case "supercavemen":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createSuperCavemenTower();
+                break;
+            case "totem":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createTotemTower();
+                break;
+            case "bank":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createBankTower();
+                break;
+            case "raft":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createRaftTower();
+                break;
+            case "frozenmamoothskull":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createFrozenmamoothskullTower();
+                break;
+            case "bouldercatapult":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createBouldercatapultTower();
+                break;
+            case "villageshaman":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createVillageshamanTower();
+                break;
             default:
+                logger.warn("Unknown tower type '{}' - using bone tower as fallback", type);
                 tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
         }
 
@@ -245,7 +272,23 @@ public class SimpleSaveService {
           ts.setHealth(t.hp);
           ts.setAttackCooldown(t.cd);
         }
+        
+        // Register the tower base
         entityService.register(tower);
+        
+        // IMPORTANT: Register the tower's head entity if it has one
+        var towerComp = tower.getComponent(TowerComponent.class);
+        if (towerComp != null && towerComp.hasHead()) {
+          Entity headEntity = towerComp.getHeadEntity();
+          if (headEntity != null) {
+            entityService.register(headEntity);
+            logger.info("Registered head entity for {} tower", type);
+          }
+        }
+        
+        logger.info("Successfully restored and registered {} tower at {}", type, t.pos);
+      } else {
+        logger.error("Failed to create tower of type: {}", type);
       }
     }
 

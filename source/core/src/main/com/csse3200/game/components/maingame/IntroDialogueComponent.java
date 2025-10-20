@@ -571,8 +571,8 @@ public class IntroDialogueComponent extends UIComponent {
     }
 
     if (preserveAspect && backgroundTexture != null) {
-      float maxWidth = screenWidth * 0.55f;
-      float maxHeight = screenHeight * 0.35f;
+      float maxWidth = screenWidth * 0.715f;
+      float maxHeight = screenHeight * 0.455f;
       float textureWidth = backgroundTexture.getWidth();
       float textureHeight = backgroundTexture.getHeight();
       if (textureWidth <= 0f || textureHeight <= 0f) {

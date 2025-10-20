@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.csse3200.game.GdxGame;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;

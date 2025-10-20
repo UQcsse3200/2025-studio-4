@@ -11,6 +11,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
+import com.csse3200.game.components.book.MainBookDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;

@@ -50,6 +50,7 @@ public class MainGameExitDisplay extends UIComponent {
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     speedButton = new TextButton("Speed: 1x", customButtonStyle);
     TextButton startWaveButton = new TextButton("Start Wave", customButtonStyle);
+    TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
     // Set button size
     float buttonWidth = 120f;
@@ -60,7 +61,8 @@ public class MainGameExitDisplay extends UIComponent {
     rankingBtn.getLabel().setColor(Color.CYAN);
     speedButton.getLabel().setColor(Color.CYAN);
     startWaveButton.getLabel().setColor(Color.CYAN);
-    
+    bookBtn.getLabel().setColor(Color.CYAN);
+
     saveBtn.addListener(
       new ChangeListener() {
         @Override
@@ -115,11 +117,21 @@ public class MainGameExitDisplay extends UIComponent {
         }
     });
 
+    bookBtn.addListener( new ChangeListener() {
+        @Override
+        public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Book button clicked");
+            entity.getEvents().trigger("showBook");
+        }
+    });
+
     table.add(saveBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
     table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.row();
+    table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
     table.row();
     table.add(speedButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
     table.row();

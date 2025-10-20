@@ -17,11 +17,20 @@ import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.math.GridPoint2;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2.TerrainType;
+import com.csse3200.game.components.Component;
+import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.effects.PlasmaImpactComponent;
+import com.csse3200.game.components.effects.PlasmaStrikeComponent;
+import com.csse3200.game.components.effects.PlasmaWarningComponent;
+import com.csse3200.game.components.effects.PlasmaWeatherController;
+import com.csse3200.game.components.enemy.EnemyTypeComponent;
+import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.gamearea.GameAreaDisplay;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.factories.*;
@@ -31,6 +40,7 @@ import com.csse3200.game.wavesystem.Wave;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
+import com.csse3200.game.components.maingame.WeatherStatusDisplay;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
@@ -45,6 +55,7 @@ import java.util.List;
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.maingame.SimplePlacementController;
+import com.csse3200.game.components.towers.TowerComponent;
 import com.csse3200.game.components.CameraZoomDragComponent;
 import com.csse3200.game.areas.IMapEditor;
 
@@ -79,6 +90,7 @@ public class ForestGameArea2 extends GameArea2 {
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea2 currentGameArea;
+    private PlasmaWeatherController plasmaWeather;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(5, 34);
     private static final float WALL_WIDTH = 0.1f;
@@ -399,6 +411,12 @@ public class ForestGameArea2 extends GameArea2 {
      */
     @Override
     public void create() {
+        // 停止主菜单音乐
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().stopMusic();
+            logger.info("主菜单音乐已停止");
+        }
+        
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
         registerForCleanup();
@@ -407,7 +425,14 @@ public class ForestGameArea2 extends GameArea2 {
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
         ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
-        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
+        
+        // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
+        com.csse3200.game.components.maingame.TowerHotbarDisplay towerHotbar = new com.csse3200.game.components.maingame.TowerHotbarDisplay();
+        if (!hasExistingPlayer) {
+            towerHotbar.setVisible(false); // 新游戏时隐藏，对话结束后显示
+        }
+        ui.addComponent(towerHotbar);
+        
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
 
         SimplePlacementController placementController = new SimplePlacementController();
@@ -464,6 +489,20 @@ public class ForestGameArea2 extends GameArea2 {
         registerBarrierAndSpawn(BARRIER_COORDS);
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
+        spawnSlowZoneEffects();
+        plasmaWeather = new PlasmaWeatherController(this::customSpawnEntityAt, mapEditor, terrain, this::handlePlasmaImpact);
+        if (plasmaWeather != null) {
+            Entity weatherEntity = new Entity();
+            weatherEntity.addComponent(new Component() {
+                @Override
+                public void update() {
+                    plasmaWeather.update(ServiceLocator.getTimeSource().getDeltaTime());
+                }
+            });
+            spawnEntity(weatherEntity);
+            Entity weatherDisplay = new Entity().addComponent(new WeatherStatusDisplay(plasmaWeather));
+            spawnEntity(weatherDisplay);
+        }
 
         // Register pause/resume listeners for wave system
         Entity pauseListener = new Entity();
@@ -501,6 +540,13 @@ public class ForestGameArea2 extends GameArea2 {
 
         //Link the upgrade menu to the map highlighter
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
+
+        if (!hasExistingPlayer) {
+            spawnIntroDialogue();
+        } else {
+            // 如果已有玩家（从存档加载），直接播放音乐
+            playMusic();
+        }
 
         // Add hero placement system
         // Note: HeroPlacementComponent expects TerrainComponent and MapEditor, but we have TerrainComponent2 and MapEditor2
@@ -606,6 +652,103 @@ public class ForestGameArea2 extends GameArea2 {
         }
     }
 
+    private void spawnSlowZoneEffects() {
+        if (mapEditor == null || terrain == null) {
+            return;
+        }
+        float tileSize = terrain.getTileSize();
+        java.util.Set<String> spawned = new java.util.HashSet<>();
+        for (GridPoint2 tile : mapEditor.getSlowZoneTiles()) {
+            Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
+            spawnEntityAt(effect, tile, false, false);
+            spawned.add(tile.x + "," + tile.y);
+        }
+        java.util.List<GridPoint2> manualTiles = java.util.Arrays.asList(
+                new GridPoint2(12, 12),
+                new GridPoint2(5, 6)
+        );
+        for (GridPoint2 tile : manualTiles) {
+            String key = tile.x + "," + tile.y;
+            if (spawned.contains(key)) {
+                continue;
+            }
+            Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
+            spawnEntityAt(effect, tile, false, false);
+        }
+    }
+
+    private void handlePlasmaImpact(Vector2 position) {
+        float radiusSquared = 0.75f * 0.75f;
+        Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
+        Array<Entity> towerTargets = new Array<>();
+        Array<Entity> enemyTargets = new Array<>();
+        for (int i = 0; i < entities.size; i++) {
+            Entity entity = entities.get(i);
+            if (entity == null || !entity.isActive()) {
+                continue;
+            }
+            if (entity.getComponent(PlasmaStrikeComponent.class) != null
+                    || entity.getComponent(PlasmaWarningComponent.class) != null
+                    || entity.getComponent(PlasmaImpactComponent.class) != null) {
+                continue;
+            }
+            Vector2 entityPosition = entity.getPosition();
+            if (entityPosition == null || entityPosition.dst2(position) > radiusSquared) {
+                continue;
+            }
+            if (entity.getComponent(TowerComponent.class) != null
+                    || entity.getComponent(EnemyTypeComponent.class) != null) {
+                if (entity.getComponent(TowerComponent.class) != null) {
+                    towerTargets.add(entity);
+                } else {
+                    enemyTargets.add(entity);
+                }
+            }
+        }
+        if (towerTargets.size > 0 || enemyTargets.size > 0) {
+            Gdx.app.postRunnable(() -> {
+                for (int i = 0; i < towerTargets.size; i++) {
+                    Entity target = towerTargets.get(i);
+                    if (target != null && target.isActive()) {
+                        dismantleTower(target);
+                    }
+                }
+                for (int i = 0; i < enemyTargets.size; i++) {
+                    Entity target = enemyTargets.get(i);
+                    if (target != null && target.isActive()) {
+                        eliminateEnemy(target);
+                    }
+                }
+            });
+        }
+    }
+
+    private void dismantleTower(Entity tower) {
+        TowerComponent towerComponent = tower.getComponent(TowerComponent.class);
+        if (towerComponent == null) {
+            tower.dispose();
+            return;
+        }
+        if (towerComponent.hasHead()) {
+            Entity head = towerComponent.getHeadEntity();
+            if (head != null && head.isActive()) {
+                head.dispose();
+                ServiceLocator.getEntityService().unregister(head);
+            }
+        }
+        tower.dispose();
+        ServiceLocator.getEntityService().unregister(tower);
+    }
+
+    private void eliminateEnemy(Entity enemy) {
+        CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            stats.setHealth(0);
+            return;
+        }
+        enemy.dispose();
+    }
+
     private Entity spawnPlayer() {
         // Map2 使用更大的homebase缩放 (3f) 和更大的血条
         HealthBarComponent healthBar = new HealthBarComponent(2.5f, 0.25f, 1.3f);
@@ -620,6 +763,10 @@ public class ForestGameArea2 extends GameArea2 {
         // Initialize MapEditor2 as IMapEditor
         mapEditor = new MapEditor2(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
+        
+        // Set path layer opacity to 0.6 (60% opacity) for map2
+        // 调整map2路径砖块的透明度为60%
+        mapEditor.setPathLayerOpacity(0.5f);
 
         return newPlayer;
     }
@@ -886,6 +1033,44 @@ public class ForestGameArea2 extends GameArea2 {
             var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
+        }
+    }
+
+    private void spawnIntroDialogue() {
+        // 使用 DialogueConfig 获取地图2的对话脚本
+        java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
+                com.csse3200.game.components.maingame.DialogueConfig.getMap2Dialogue();
+
+        Entity dialogueEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.IntroDialogueComponent(
+                        script,
+                        () -> {
+                            // 对话结束后显示防御塔列表和播放背景音乐
+                            showTowerUI();
+                            playMusic();
+                            
+                            if (MainGameScreen.ui != null) {
+                                MainGameScreen.ui.getEvents().trigger("startWave");
+                            } else {
+                                startWaves();
+                            }
+                        })
+        );
+        spawnEntity(dialogueEntity);
+    }
+
+    /**
+     * 显示防御塔UI（在对话结束后调用）
+     */
+    private void showTowerUI() {
+        // 找到主UI实体并显示防御塔列表组件
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.maingame.TowerHotbarDisplay towerUI = entity.getComponent(com.csse3200.game.components.maingame.TowerHotbarDisplay.class);
+            if (towerUI != null) {
+                towerUI.setVisible(true);
+                logger.info("防御塔列表已显示");
+                break;
+            }
         }
     }
 

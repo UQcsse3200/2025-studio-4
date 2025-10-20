@@ -35,6 +35,7 @@ public class TowerHotbarDisplay extends UIComponent {
     private Table rootTable;
     private SimplePlacementController placementController;
     private Skin hotbarSkin;
+    private boolean isVisible = true; // 默认可见
     private Texture bgTexture;
     private Texture transparentBtnTexture;
 
@@ -200,6 +201,9 @@ public class TowerHotbarDisplay extends UIComponent {
         Gdx.input.setInputProcessor(multiplexer);
 
         applyUiScale();
+        
+        // 应用初始可见性状态
+        rootTable.setVisible(isVisible);
 
         // Initial button state update
         updateButtonAffordability();
@@ -322,6 +326,17 @@ public class TowerHotbarDisplay extends UIComponent {
             rootTable.validate();
             rootTable.setOrigin(0f, 0f);
             rootTable.setScale(settings.uiScale);
+        }
+    }
+
+    /**
+     * 设置防御塔UI的可见性
+     * @param visible true显示，false隐藏
+     */
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+        if (rootTable != null) {
+            rootTable.setVisible(visible);
         }
     }
 

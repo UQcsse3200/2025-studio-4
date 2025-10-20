@@ -46,6 +46,15 @@ import java.util.List;
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.CameraZoomDragComponent;
+import com.csse3200.game.components.Component;
+import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.effects.PlasmaImpactComponent;
+import com.csse3200.game.components.effects.PlasmaStrikeComponent;
+import com.csse3200.game.components.effects.PlasmaWarningComponent;
+import com.csse3200.game.components.effects.PlasmaWeatherController;
+import com.csse3200.game.components.enemy.EnemyTypeComponent;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.towers.TowerComponent;
 
 /**
  * Forest area for the demo game with trees, a player, and enemies.
@@ -74,6 +83,7 @@ public class ForestGameArea extends GameArea {
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea currentGameArea;
+    private PlasmaWeatherController plasmaWeather;
 
     private static final GridPoint2 PLAYER_SPAWN = new GridPoint2(30, 6);
     private static final float WALL_WIDTH = 0.1f;
@@ -414,13 +424,25 @@ public class ForestGameArea extends GameArea {
      */
     @Override
     public void create() {
+        // 停止主菜单音乐
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().stopMusic();
+            logger.info("主菜单音乐已停止");
+        }
+
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
         registerForCleanup();
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
-        ui.addComponent(new com.csse3200.game.components.maingame.TowerHotbarDisplay()); // UI for selecting towers
+
+        // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
+        TowerHotbarDisplay towerHotbar = new TowerHotbarDisplay();
+        if (!hasExistingPlayer) {
+            towerHotbar.setVisible(false); // 新游戏时隐藏，对话结束后显示
+        }
+        ui.addComponent(towerHotbar);
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
@@ -482,6 +504,20 @@ public class ForestGameArea extends GameArea {
         registerBarrierAndSpawn(BARRIER_COORDS);
         registerSnowTreeAndSpawn(SNOWTREE_COORDS);
         placementController.refreshInvalidTiles();
+        spawnSlowZoneEffects();
+        plasmaWeather = new PlasmaWeatherController(this::customSpawnEntityAt, mapEditor, terrain, this::handlePlasmaImpact);
+        if (plasmaWeather != null) {
+            Entity weatherEntity = new Entity();
+            weatherEntity.addComponent(new Component() {
+                @Override
+                public void update() {
+                    plasmaWeather.update(ServiceLocator.getTimeSource().getDeltaTime());
+                }
+            });
+            spawnEntity(weatherEntity);
+            Entity weatherDisplay = new Entity().addComponent(new WeatherStatusDisplay(plasmaWeather));
+            spawnEntity(weatherDisplay);
+        }
 
         // Register pause/resume listeners for wave system
         Entity pauseListener = new Entity();
@@ -509,6 +545,10 @@ public class ForestGameArea extends GameArea {
         //Link the upgrade menu to the map highlighter
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
+        if (!hasExistingPlayer) {
+            spawnIntroDialogue();
+        }
+
         // Add hero placement system
         var gameState = ServiceLocator.getGameStateService();
         if (gameState == null) {
@@ -532,8 +572,11 @@ public class ForestGameArea extends GameArea {
         ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
 
-        playMusic();
-
+        // 背景音乐将在对话结束后播放
+        if (hasExistingPlayer) {
+            // 如果已有玩家（从存档加载），直接播放音乐
+            playMusic();
+        }
 
     }
 
@@ -593,6 +636,102 @@ public class ForestGameArea extends GameArea {
         }
     }
 
+    private void spawnSlowZoneEffects() {
+        if (mapEditor == null || terrain == null) {
+            return;
+        }
+        float tileSize = terrain.getTileSize();
+        java.util.Set<String> spawned = new java.util.HashSet<>();
+        for (GridPoint2 tile : mapEditor.getSlowZoneTiles()) {
+            Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
+            spawnEntityAt(effect, tile, false, false);
+            spawned.add(tile.x + "," + tile.y);
+        }
+        java.util.List<GridPoint2> manualTiles = java.util.Arrays.asList(
+                new GridPoint2(12, 12),
+                new GridPoint2(5, 6)
+        );
+        for (GridPoint2 tile : manualTiles) {
+            String key = tile.x + "," + tile.y;
+            if (spawned.contains(key)) {
+                continue;
+            }
+            Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
+            spawnEntityAt(effect, tile, false, false);
+        }
+    }
+
+    private void handlePlasmaImpact(Vector2 position) {
+        float radiusSquared = 0.75f * 0.75f;
+        Array<Entity> entities = ServiceLocator.getEntityService().getEntitiesCopy();
+        Array<Entity> towerTargets = new Array<>();
+        Array<Entity> enemyTargets = new Array<>();
+        for (int i = 0; i < entities.size; i++) {
+            Entity entity = entities.get(i);
+            if (entity == null || !entity.isActive()) {
+                continue;
+            }
+            if (entity.getComponent(PlasmaStrikeComponent.class) != null
+                    || entity.getComponent(PlasmaWarningComponent.class) != null
+                    || entity.getComponent(PlasmaImpactComponent.class) != null) {
+                continue;
+            }
+            Vector2 entityPosition = entity.getPosition();
+            if (entityPosition == null || entityPosition.dst2(position) > radiusSquared) {
+                continue;
+            }
+            if (entity.getComponent(TowerComponent.class) != null) {
+                towerTargets.add(entity);
+                continue;
+            }
+            if (entity.getComponent(EnemyTypeComponent.class) != null) {
+                enemyTargets.add(entity);
+            }
+        }
+        if (towerTargets.size > 0 || enemyTargets.size > 0) {
+            Gdx.app.postRunnable(() -> {
+                for (int i = 0; i < towerTargets.size; i++) {
+                    Entity target = towerTargets.get(i);
+                    if (target != null && target.isActive()) {
+                        dismantleTower(target);
+                    }
+                }
+                for (int i = 0; i < enemyTargets.size; i++) {
+                    Entity target = enemyTargets.get(i);
+                    if (target != null && target.isActive()) {
+                        eliminateEnemy(target);
+                    }
+                }
+            });
+        }
+    }
+
+    private void dismantleTower(Entity tower) {
+        TowerComponent towerComponent = tower.getComponent(TowerComponent.class);
+        if (towerComponent == null) {
+            tower.dispose();
+            return;
+        }
+        if (towerComponent.hasHead()) {
+            Entity head = towerComponent.getHeadEntity();
+            if (head != null && head.isActive()) {
+                head.dispose();
+                ServiceLocator.getEntityService().unregister(head);
+            }
+        }
+        tower.dispose();
+        ServiceLocator.getEntityService().unregister(tower);
+    }
+
+    private void eliminateEnemy(Entity enemy) {
+        CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
+        if (stats != null) {
+            stats.setHealth(0);
+            return;
+        }
+        enemy.dispose();
+    }
+
     private Entity spawnPlayer() {
         // Map1 使用标准homebase缩放 (1.88f) 和较小的血条
         HealthBarComponent healthBar = new HealthBarComponent(1.4f, 0.15f, 0.8f);
@@ -611,6 +750,11 @@ public class ForestGameArea extends GameArea {
         // mapEditor = new com.csse3200.game.areas2.MapTwo.MapEditor2((TerrainComponent2)terrain, newPlayer);
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
+
+        // Set path layer opacity to 0.7 (70% opacity) for map1
+        // 调整map1路径砖块的透明度为70%
+        mapEditor.setPathLayerOpacity(0.7f);
+
         // Uncomment if crystal spawning is needed:
         // mapEditor.spawnCrystal(); // Generate crystal
 
@@ -945,6 +1089,44 @@ public class ForestGameArea extends GameArea {
             var stage = ServiceLocator.getRenderService().getStage();
             new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
+        }
+    }
+
+    private void spawnIntroDialogue() {
+        // 使用 DialogueConfig 获取地图1的对话脚本
+        java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
+                com.csse3200.game.components.maingame.DialogueConfig.getMap1Dialogue();
+
+        Entity dialogueEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.IntroDialogueComponent(
+                        script,
+                        () -> {
+                            // 对话结束后显示防御塔列表和播放背景音乐
+                            showTowerUI();
+                            playMusic();
+
+                            if (MainGameScreen.ui != null) {
+                                MainGameScreen.ui.getEvents().trigger("startWave");
+                            } else {
+                                startWaves();
+                            }
+                        })
+        );
+        spawnEntity(dialogueEntity);
+    }
+
+    /**
+     * 显示防御塔UI（在对话结束后调用）
+     */
+    private void showTowerUI() {
+        // 找到主UI实体并显示防御塔列表组件
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            TowerHotbarDisplay towerUI = entity.getComponent(TowerHotbarDisplay.class);
+            if (towerUI != null) {
+                towerUI.setVisible(true);
+                logger.info("防御塔列表已显示");
+                break;
+            }
         }
     }
 

@@ -55,12 +55,6 @@ public class MainGameExitDisplay extends UIComponent {
     float buttonWidth = 140f;
     float buttonHeight = 40f;
     
-    saveBtn.getLabel().setColor(Color.CYAN);
-    mainMenuBtn.getLabel().setColor(Color.CYAN);
-    rankingBtn.getLabel().setColor(Color.CYAN);
-    speedButton.getLabel().setColor(Color.CYAN);
-    startWaveButton.getLabel().setColor(Color.CYAN);
-    
     saveBtn.addListener(
       new ChangeListener() {
         @Override
@@ -117,13 +111,13 @@ public class MainGameExitDisplay extends UIComponent {
 
     table.add(saveBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(speedButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(speedButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(startWaveButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(startWaveButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
 
     stage.addActor(table);
     applyUiScale();

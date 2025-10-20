@@ -68,6 +68,7 @@ loadScripts(document, 'script');</script>
 <li><a href="com/csse3200/game/components/hero/package-tree.html">com.csse3200.game.components.hero</a>, </li>
 <li><a href="com/csse3200/game/components/hero/engineer/package-tree.html">com.csse3200.game.components.hero.engineer</a>, </li>
 <li><a href="com/csse3200/game/components/hero/samurai/package-tree.html">com.csse3200.game.components.hero.samurai</a>, </li>
+<li><a href="com/csse3200/game/components/hero/samurai/attacks/package-tree.html">com.csse3200.game.components.hero.samurai.attacks</a>, </li>
 <li><a href="com/csse3200/game/components/maingame/package-tree.html">com.csse3200.game.components.maingame</a>, </li>
 <li><a href="com/csse3200/game/components/mainmenu/package-tree.html">com.csse3200.game.components.mainmenu</a>, </li>
 <li><a href="com/csse3200/game/components/movement/package-tree.html">com.csse3200.game.components.movement</a>, </li>
@@ -94,6 +95,7 @@ loadScripts(document, 'script');</script>
 <li><a href="com/csse3200/game/services/package-tree.html">com.csse3200.game.services</a>, </li>
 <li><a href="com/csse3200/game/services/leaderboard/package-tree.html">com.csse3200.game.services.leaderboard</a>, </li>
 <li><a href="com/csse3200/game/ui/package-tree.html">com.csse3200.game.ui</a>, </li>
+<li><a href="com/csse3200/game/ui/Hero/package-tree.html">com.csse3200.game.ui.Hero</a>, </li>
 <li><a href="com/csse3200/game/ui/leaderboard/package-tree.html">com.csse3200.game.ui.leaderboard</a>, </li>
 <li><a href="com/csse3200/game/ui/terminal/package-tree.html">com.csse3200.game.ui.terminal</a>, </li>
 <li><a href="com/csse3200/game/ui/terminal/commands/package-tree.html">com.csse3200.game.ui.terminal.commands</a>, </li>
@@ -125,8 +127,8 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/SaveNameDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">SaveNameDialog</a></li>
 </ul>
 </li>
-<li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroHintDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">HeroHintDialog</a></li>
-<li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatsDialog.html" class="type-name-link" title="class in com.csse3200.game.ui">HeroStatsDialog</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/HeroHintDialog.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">HeroHintDialog</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/HeroStatsDialog.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">HeroStatsDialog</a></li>
 <li class="circle">com.csse3200.game.ui.leaderboard.<a href="com/csse3200/game/ui/leaderboard/LeaderboardPopup.html" class="type-name-link" title="class in com.csse3200.game.ui.leaderboard">LeaderboardPopup</a></li>
 </ul>
 </li>
@@ -166,13 +168,27 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/BossEnemyFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">BossEnemyFactory</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/Component.html" class="type-name-link" title="class in com.csse3200.game.components">Component</a>
 <ul>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/AbstractSwordAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a> (implements com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/ISamuraiAttack.html" title="interface in com.csse3200.game.components.hero.samurai.attacks">ISamuraiAttack</a>)
+<ul>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/JabAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai.attacks">JabAttackComponent</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/SpinAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/SweepAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai.attacks">SweepAttackComponent</a></li>
+</ul>
+</li>
 <li class="circle">com.csse3200.game.components.movement.<a href="com/csse3200/game/components/movement/AccelerateOverTimeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.movement">AccelerateOverTimeComponent</a></li>
 <li class="circle">com.csse3200.game.components.movement.<a href="com/csse3200/game/components/movement/AdjustSpeedByHealthComponent.html" class="type-name-link" title="class in com.csse3200.game.components.movement">AdjustSpeedByHealthComponent</a></li>
 <li class="circle">com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/AITaskComponent.html" class="type-name-link" title="class in com.csse3200.game.ai.tasks">AITaskComponent</a> (implements com.csse3200.game.ai.tasks.<a href="com/csse3200/game/ai/tasks/TaskRunner.html" title="interface in com.csse3200.game.ai.tasks">TaskRunner</a>)</li>
 <li class="circle">com.csse3200.game.components.projectile.<a href="com/csse3200/game/components/projectile/AntiProjectileShooterComponent.html" class="type-name-link" title="class in com.csse3200.game.components.projectile">AntiProjectileShooterComponent</a></li>
-<li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/AttackOnContactIfAttacking.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/AttackLockComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai.attacks">AttackLockComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/AutoDespawnOnDeathComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">AutoDespawnOnDeathComponent</a></li>
 <li class="circle">com.csse3200.game.components.audio.<a href="com/csse3200/game/components/audio/BackgroundMusicComponent.html" class="type-name-link" title="class in com.csse3200.game.components.audio">BackgroundMusicComponent</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/BaseHeroStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a>
+<ul>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/DefaultHeroStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">DefaultHeroStatusPanelComponent</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/EngineerStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">EngineerStatusPanelComponent</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/SamuraiStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">SamuraiStatusPanelComponent</a></li>
+</ul>
+</li>
 <li class="circle">com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/BeamAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.towers">BeamAttackComponent</a></li>
 <li class="circle">com.csse3200.game.components.book.<a href="com/csse3200/game/components/book/BookDisplayActions.html" class="type-name-link" title="class in com.csse3200.game.components.book">BookDisplayActions</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/CameraComponent.html" class="type-name-link" title="class in com.csse3200.game.components">CameraComponent</a></li>
@@ -205,16 +221,19 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/EnemyFreezeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.towers">EnemyFreezeComponent</a></li>
 <li class="circle">com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/EnemyTypeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.enemy">EnemyTypeComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerSummonComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">EngineerSummonComponent</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/EngineerSummonToolbarComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">EngineerSummonToolbarComponent</a></li>
+<li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/EngineerUpgradeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">EngineerUpgradeComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/FourWayCycleComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a></li>
 <li class="circle">com.csse3200.game.components.npc.<a href="com/csse3200/game/components/npc/GhostAnimationController.html" class="type-name-link" title="class in com.csse3200.game.components.npc">GhostAnimationController</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroAppearanceComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroAppearanceComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroClickableComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroClickableComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroCustomizationComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroCustomizationComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroSelectionComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroSelectionComponent</a></li>
-<li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/HeroStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui">HeroStatusPanelComponent</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/HeroStatusPanelComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">HeroStatusPanelComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroTurretAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroUltimateComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroUltimateComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroUpgradeComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroUpgradeComponent</a></li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/HeroWeaponSwitcherToolbarComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">HeroWeaponSwitcherToolbarComponent</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/HomebaseDamageEffectComponent.html" class="type-name-link" title="class in com.csse3200.game.components">HomebaseDamageEffectComponent</a></li>
 <li class="circle">com.csse3200.game.input.<a href="com/csse3200/game/input/InputComponent.html" class="type-name-link" title="class in com.csse3200.game.input">InputComponent</a> (implements com.badlogic.gdx.input.GestureDetector.GestureListener, com.badlogic.gdx.InputProcessor)
 <ul>
@@ -253,6 +272,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/ChainLightningComponent.ChainLightningRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.components.towers">ChainLightningComponent.ChainLightningRenderComponent</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/HealthBarComponent.html" class="type-name-link" title="class in com.csse3200.game.components">HealthBarComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RotatingAnimationRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">RotatingAnimationRenderComponent</a></li>
+<li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RotatingSheetAnimationRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">RotatingSheetAnimationRenderComponent</a> (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>)</li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/RotatingTextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">RotatingTextureRenderComponent</a></li>
 <li class="circle">com.csse3200.game.rendering.<a href="com/csse3200/game/rendering/SwitchableTextureRenderComponent.html" class="type-name-link" title="class in com.csse3200.game.rendering">SwitchableTextureRenderComponent</a></li>
 <li class="circle">com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainComponent.html" class="type-name-link" title="class in com.csse3200.game.areas.terrain">TerrainComponent</a> (implements com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a>)</li>
@@ -265,6 +285,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/DifficultyDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">DifficultyDisplay</a></li>
 <li class="circle">com.csse3200.game.components.gamearea.<a href="com/csse3200/game/components/gamearea/GameAreaDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.gamearea">GameAreaDisplay</a></li>
 <li class="circle">com.csse3200.game.screens.<a href="com/csse3200/game/screens/GameOverScreen.html" class="type-name-link" title="class in com.csse3200.game.screens">GameOverScreen</a></li>
+<li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroHotbarDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroHotbarDisplay</a></li>
 <li class="circle">com.csse3200.game.components.book.<a href="com/csse3200/game/components/book/MainBookDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.book">MainBookDisplay</a></li>
 <li class="circle">com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/MainGameExitDisplay.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">MainGameExitDisplay</a></li>
 <li class="circle">com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/MainGameWin.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">MainGameWin</a></li>
@@ -289,16 +310,19 @@ loadScripts(document, 'script');</script>
 </li>
 </ul>
 </li>
+<li class="circle">com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/SamuraiAttackToolbarComponent.html" class="type-name-link" title="class in com.csse3200.game.ui.Hero">SamuraiAttackToolbarComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/SamuraiSwordController.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai.attacks">SamuraiSwordController</a></li>
 <li class="circle">com.csse3200.game.components.mainmenu.<a href="com/csse3200/game/components/mainmenu/SaveSelectionActions.html" class="type-name-link" title="class in com.csse3200.game.components.mainmenu">SaveSelectionActions</a></li>
+<li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SfxOnDeathComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">SfxOnDeathComponent</a></li>
 <li class="circle">com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SkillCooldowns.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns</a></li>
 <li class="circle">com.csse3200.game.components.audio.<a href="com/csse3200/game/components/audio/SoundEffectComponent.html" class="type-name-link" title="class in com.csse3200.game.components.audio">SoundEffectComponent</a></li>
 <li class="circle">com.csse3200.game.components.enemy.<a href="com/csse3200/game/components/enemy/SpeedWaypointComponent.html" class="type-name-link" title="class in com.csse3200.game.components.enemy">SpeedWaypointComponent</a></li>
 <li class="circle">com.csse3200.game.components.towers.<a href="com/csse3200/game/components/towers/StatsBoostComponent.html" class="type-name-link" title="class in com.csse3200.game.components.towers">StatsBoostComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonOwnerComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">SummonOwnerComponent</a></li>
-<li class="circle">com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SummonPlacementController.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SummonPlacementController</a></li>
+<li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonPlacementComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">SummonPlacementComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordAppearanceComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a></li>
-<li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordJabPhysicsComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></li>
 <li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordLevelSyncComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordLevelSyncComponent</a></li>
 <li class="circle">com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" class="type-name-link" title="class in com.csse3200.game.ui.terminal">Terminal</a></li>
 <li class="circle">com.csse3200.game.components.<a href="com/csse3200/game/components/TouchAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components">TouchAttackComponent</a></li>
@@ -360,6 +384,8 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/GruntEnemyFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">GruntEnemyFactory</a></li>
 <li class="circle">com.csse3200.game.components.movement.<a href="com/csse3200/game/components/movement/HealthSpeedValues.html" class="type-name-link" title="class in com.csse3200.game.components.movement">HealthSpeedValues</a></li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/HeroFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">HeroFactory</a></li>
+<li class="circle">com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroGhostPreview.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroGhostPreview</a></li>
+<li class="circle">com.csse3200.game.entities.configs.<a href="com/csse3200/game/entities/configs/HeroSkinAtlas.html" class="type-name-link" title="class in com.csse3200.game.entities.configs">HeroSkinAtlas</a></li>
 <li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/HintToast.html" class="type-name-link" title="class in com.csse3200.game.ui">HintToast</a></li>
 <li class="circle">com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/InMemoryLeaderboardService.html" class="type-name-link" title="class in com.csse3200.game.services.leaderboard">InMemoryLeaderboardService</a> (implements com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a>)</li>
 <li class="circle">com.badlogic.gdx.InputAdapter (implements com.badlogic.gdx.InputProcessor)
@@ -419,7 +445,6 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/ServiceLocator.html" class="type-name-link" title="class in com.csse3200.game.services">ServiceLocator</a></li>
 <li class="circle">com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.html" class="type-name-link" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService</a> (implements com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a>)</li>
 <li class="circle">com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/SessionLeaderboardService.SessionData.html" class="type-name-link" title="class in com.csse3200.game.services.leaderboard">SessionLeaderboardService.SessionData</a></li>
-<li class="circle">com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.SummonSpec.html" class="type-name-link" title="class in com.csse3200.game.components.maingame">SimplePlacementController.SummonSpec</a></li>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService</a></li>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData</a></li>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Enemy.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Enemy</a></li>
@@ -427,11 +452,15 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/SimpleSaveService.SaveData.Tower.html" class="type-name-link" title="class in com.csse3200.game.services">SimpleSaveService.SaveData.Tower</a></li>
 <li class="circle">com.csse3200.game.ui.<a href="com/csse3200/game/ui/SimpleUI.html" class="type-name-link" title="class in com.csse3200.game.ui">SimpleUI</a></li>
 <li class="circle">com.csse3200.game.physics.raycast.<a href="com/csse3200/game/physics/raycast/SingleHitCallback.html" class="type-name-link" title="class in com.csse3200.game.physics.raycast">SingleHitCallback</a> (implements com.badlogic.gdx.physics.box2d.RayCastCallback)</li>
+<li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SkillCooldowns.SkillCooldownInfo.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns.SkillCooldownInfo</a></li>
 <li class="circle">com.csse3200.game.utils.<a href="com/csse3200/game/utils/SortedIntMap.html" class="type-name-link" title="class in com.csse3200.game.utils">SortedIntMap</a>&lt;V&gt; (implements java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;T&gt;)</li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SpeederEnemyFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">SpeederEnemyFactory</a></li>
 <li class="circle">com.csse3200.game.utils.<a href="com/csse3200/game/utils/StringDecorator.html" class="type-name-link" title="class in com.csse3200.game.utils">StringDecorator</a>&lt;T&gt;</li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SummonFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">SummonFactory</a></li>
+<li class="circle">com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonPlacementComponent.SummonSpec.html" class="type-name-link" title="class in com.csse3200.game.components.hero.engineer">SummonPlacementComponent.SummonSpec</a></li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">SwordFactory</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SwordQiAnimatorPng.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SwordQiAnimatorPng</a></li>
+<li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordQiFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">SwordQiFactory</a></li>
 <li class="circle">com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/TankEnemyFactory.html" class="type-name-link" title="class in com.csse3200.game.entities.factories">TankEnemyFactory</a></li>
 <li class="circle">com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/TerrainFactory.html" class="type-name-link" title="class in com.csse3200.game.areas.terrain">TerrainFactory</a></li>
 <li class="circle">com.csse3200.game.areas2.terrainTwo.<a href="com/csse3200/game/areas2/terrainTwo/TerrainFactory2.html" class="type-name-link" title="class in com.csse3200.game.areas2.terrainTwo">TerrainFactory2</a></li>
@@ -476,6 +505,7 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">com.csse3200.game.areas.<a href="com/csse3200/game/areas/IMapEditor.html" class="type-name-link" title="interface in com.csse3200.game.areas">IMapEditor</a></li>
+<li class="circle">com.csse3200.game.components.hero.samurai.attacks.<a href="com/csse3200/game/components/hero/samurai/attacks/ISamuraiAttack.html" class="type-name-link" title="interface in com.csse3200.game.components.hero.samurai.attacks">ISamuraiAttack</a></li>
 <li class="circle">com.csse3200.game.areas.terrain.<a href="com/csse3200/game/areas/terrain/ITerrainComponent.html" class="type-name-link" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a></li>
 <li class="circle">com.csse3200.game.services.leaderboard.<a href="com/csse3200/game/services/leaderboard/LeaderboardService.html" class="type-name-link" title="interface in com.csse3200.game.services.leaderboard">LeaderboardService</a></li>
 <li class="circle">com.csse3200.game.ai.movement.<a href="com/csse3200/game/ai/movement/MovementController.html" class="type-name-link" title="interface in com.csse3200.game.ai.movement">MovementController</a></li>
@@ -506,6 +536,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">com.csse3200.game.utils.<a href="com/csse3200/game/utils/Difficulty.html" class="type-name-link" title="enum class in com.csse3200.game.utils">Difficulty</a></li>
 <li class="circle">com.csse3200.game.files.<a href="com/csse3200/game/files/FileLoader.Location.html" class="type-name-link" title="enum class in com.csse3200.game.files">FileLoader.Location</a></li>
 <li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.HeroType.html" class="type-name-link" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a></li>
+<li class="circle">com.csse3200.game.services.<a href="com/csse3200/game/services/GameStateService.SkinSlot.html" class="type-name-link" title="enum class in com.csse3200.game.services">GameStateService.SkinSlot</a></li>
 <li class="circle">com.csse3200.game.<a href="com/csse3200/game/GdxGame.ScreenType.html" class="type-name-link" title="enum class in com.csse3200.game">GdxGame.ScreenType</a></li>
 <li class="circle">com.csse3200.game.input.<a href="com/csse3200/game/input/InputFactory.InputType.html" class="type-name-link" title="enum class in com.csse3200.game.input">InputFactory.InputType</a></li>
 <li class="circle">com.csse3200.game.physics.components.<a href="com/csse3200/game/physics/components/PhysicsComponent.AlignX.html" class="type-name-link" title="enum class in com.csse3200.game.physics.components">PhysicsComponent.AlignX</a></li>

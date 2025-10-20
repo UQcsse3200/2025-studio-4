@@ -93,9 +93,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">HeroTurretAttackComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Turret-style attack component for the hero:
- fires bullets toward the mouse cursor on cooldown, rotates to face aim direction,
- and computes damage from CombatStatsComponent at fire time.</div>
+<div class="block">Hero turret-style attack component:
+ - Fires bullets toward the mouse cursor on cooldown.
+ - Rotates the hero sprite to face aim direction.
+ - Damage is computed from CombatStatsComponent (baseAttack) * attackScale + flatBonusDamage.
+ - Respects GameTime time scale (paused =&gt; no fire).
+ - Supports shoot SFX with override and rate limiting.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -139,12 +142,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Subscribe to attack multiplier events used by ultimates/buffs.</div>
+<div class="block">Subscribe to multipliers and SFX override events.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAttackScale(float)" class="member-name-link">setAttackScale</a><wbr>(float&nbsp;attackScale)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Apply a multiplicative damage scale to base attack.</div>
+<div class="block">Set multiplicative damage scale (×Y).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBulletParams(float,float)" class="member-name-link">setBulletParams</a><wbr>(float&nbsp;speed,
@@ -160,12 +163,22 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCooldown(float)" class="member-name-link">setCooldown</a><wbr>(float&nbsp;s)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Set the firing cooldown.</div>
+<div class="block">Set the firing cooldown (seconds).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setFlatBonusDamage(int)" class="member-name-link">setFlatBonusDamage</a><wbr>(int&nbsp;flatBonusDamage)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Add flat bonus damage to each shot.</div>
+<div class="block">Set flat bonus damage (+X).</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setShootSfxKey(java.lang.String)" class="member-name-link">setShootSfxKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;key)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">(Optional) set default shoot SFX key.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setShootSfxVolume(float)" class="member-name-link">setShootSfxVolume</a><wbr>(float&nbsp;volume)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">(Optional) set default SFX volume [0,1].</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
@@ -223,23 +236,13 @@ loadScripts(document, 'script');</script>
 <h3>setBulletTexture</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBulletTexture</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;bulletTexture)</span></div>
 <div class="block">Change the bullet texture at runtime.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>bulletTexture</code> - new sprite path for bullets</dd>
-</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="setCooldown(float)">
 <h3>setCooldown</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setCooldown</span><wbr><span class="parameters">(float&nbsp;s)</span></div>
-<div class="block">Set the firing cooldown.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>s</code> - seconds between shots</dd>
-<dt>Returns:</dt>
-<dd>this for chaining</dd>
-</dl>
+<div class="block">Set the firing cooldown (seconds).</div>
 </section>
 </li>
 <li>
@@ -248,20 +251,41 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setBulletParams</span><wbr><span class="parameters">(float&nbsp;speed,
  float&nbsp;life)</span></div>
 <div class="block">Set bullet speed and lifetime.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>speed</code> - speed in world units per second</dd>
-<dd><code>life</code> - lifetime in seconds</dd>
-<dt>Returns:</dt>
-<dd>this for chaining</dd>
-</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setShootSfxKey(java.lang.String)">
+<h3>setShootSfxKey</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setShootSfxKey</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;key)</span></div>
+<div class="block">(Optional) set default shoot SFX key.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setShootSfxVolume(float)">
+<h3>setShootSfxVolume</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setShootSfxVolume</span><wbr><span class="parameters">(float&nbsp;volume)</span></div>
+<div class="block">(Optional) set default SFX volume [0,1].</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setFlatBonusDamage(int)">
+<h3>setFlatBonusDamage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setFlatBonusDamage</span><wbr><span class="parameters">(int&nbsp;flatBonusDamage)</span></div>
+<div class="block">Set flat bonus damage (+X).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setAttackScale(float)">
+<h3>setAttackScale</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setAttackScale</span><wbr><span class="parameters">(float&nbsp;attackScale)</span></div>
+<div class="block">Set multiplicative damage scale (×Y).</div>
 </section>
 </li>
 <li>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block">Subscribe to attack multiplier events used by ultimates/buffs.</div>
+<div class="block">Subscribe to multipliers and SFX override events.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -273,36 +297,10 @@ loadScripts(document, 'script');</script>
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
 <div class="block">Rotate to face the mouse, and when off cooldown spawn a bullet with computed damage.
- No-ops while paused (time scale == 0).</div>
+ Respects GameTime time scale (no shooting when paused).</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setFlatBonusDamage(int)">
-<h3>setFlatBonusDamage</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setFlatBonusDamage</span><wbr><span class="parameters">(int&nbsp;flatBonusDamage)</span></div>
-<div class="block">Add flat bonus damage to each shot.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>flatBonusDamage</code> - additive damage</dd>
-<dt>Returns:</dt>
-<dd>this for chaining</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="setAttackScale(float)">
-<h3>setAttackScale</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></span>&nbsp;<span class="element-name">setAttackScale</span><wbr><span class="parameters">(float&nbsp;attackScale)</span></div>
-<div class="block">Apply a multiplicative damage scale to base attack.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>attackScale</code> - multiplier</dd>
-<dt>Returns:</dt>
-<dd>this for chaining</dd>
 </dl>
 </section>
 </li>

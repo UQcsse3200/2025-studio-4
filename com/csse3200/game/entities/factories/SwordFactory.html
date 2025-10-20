@@ -92,12 +92,9 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">SwordFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Factory class for creating the Samurai's sword entity.
- <p>
- The sword is treated as a separate orbiting entity attached to the Samurai.
- It handles its own visual rendering, rotation physics, and collision-based
- attack logic. The sword can jab (thrust forward) and deal periodic damage
- to enemies within range.
- </p></div>
+
+ ❗ 本工厂只创建“可视 + 物理”的剑；不再附加近战命中/老的 SwordJabPhysicsComponent。
+ 三种攻击组件（Jab/Sweep/Spin）、互斥锁、控制器由上层（如 SamuraiSpinAttackComponent）负责挂载。</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -119,20 +116,17 @@ loadScripts(document, 'script');</script>
  float&nbsp;radius,
  float&nbsp;angularSpeedDeg)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Overloaded helper method that creates a sword with common default parameters.</div>
+<div class="block">创建“纯可视 + 物理”的剑实体，并配置冷却与等级同步。</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSword(com.csse3200.game.entities.Entity,java.lang.String,float,com.csse3200.game.entities.configs.SamuraiConfig,float,float,float,int,float)" class="member-name-link">createSword</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createSword(com.csse3200.game.entities.Entity,java.lang.String,float,com.csse3200.game.entities.configs.SamuraiConfig,float)" class="member-name-link">createSword</a><wbr>(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;swordTexture,
  float&nbsp;radius,
  <a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg,
- float&nbsp;angularSpeedDeg,
- float&nbsp;spriteForwardOffsetDeg,
- float&nbsp;centerToHandle,
- int&nbsp;damage,
- float&nbsp;hitCooldown)</code></div>
+ float&nbsp;angularSpeedDeg)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a sword entity that orbits around its owner like a rotating blade.</div>
+<div class="block">旧签名：保留一个重载以兼容你现有调用处。
+ （参数顺序与你当前使用一致：owner, cfg, swordTexture, radius, angularSpeedDeg）</div>
 </div>
 </div>
 </div>
@@ -152,39 +146,6 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="createSword(com.csse3200.game.entities.Entity,java.lang.String,float,com.csse3200.game.entities.configs.SamuraiConfig,float,float,float,int,float)">
-<h3>createSword</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSword</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;swordTexture,
- float&nbsp;radius,
- <a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg,
- float&nbsp;angularSpeedDeg,
- float&nbsp;spriteForwardOffsetDeg,
- float&nbsp;centerToHandle,
- int&nbsp;damage,
- float&nbsp;hitCooldown)</span></div>
-<div class="block">Creates a sword entity that orbits around its owner like a rotating blade.
- This version allows detailed configuration of sword behavior, including
- angular speed, sprite alignment, jab timing, and hit cooldown.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>owner</code> - The Samurai entity that owns the sword.</dd>
-<dd><code>swordTexture</code> - Path to the sword’s texture.</dd>
-<dd><code>radius</code> - Orbit radius where the sword handle sits (in world units).</dd>
-<dd><code>cfg</code> - The <a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs"><code>SamuraiConfig</code></a> containing hero stats and settings.</dd>
-<dd><code>angularSpeedDeg</code> - Angular speed in degrees per second (counterclockwise positive).</dd>
-<dd><code>spriteForwardOffsetDeg</code> - Default facing direction for the sword sprite:
-                               → = 0°, ↑ = 90°, ← = 180°, ↓ = 270°.</dd>
-<dd><code>centerToHandle</code> - Distance from the sprite’s center to its handle
-                               along the forward direction (usually negative).</dd>
-<dd><code>damage</code> - Base damage dealt by the sword.</dd>
-<dd><code>hitCooldown</code> - Cooldown between hitting the same target (in seconds).</dd>
-<dt>Returns:</dt>
-<dd>A configured sword entity orbiting the Samurai.</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="createSword(com.csse3200.game.entities.Entity,com.csse3200.game.entities.configs.SamuraiConfig,java.lang.String,float,float)">
 <h3>createSword</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSword</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
@@ -192,17 +153,29 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;swordTexture,
  float&nbsp;radius,
  float&nbsp;angularSpeedDeg)</span></div>
-<div class="block">Overloaded helper method that creates a sword with common default parameters.</div>
+<div class="block">创建“纯可视 + 物理”的剑实体，并配置冷却与等级同步。</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>owner</code> - The Samurai entity that owns the sword.</dd>
-<dd><code>cfg</code> - The <a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs"><code>SamuraiConfig</code></a> with stats and texture paths.</dd>
-<dd><code>swordTexture</code> - Path to the sword’s texture.</dd>
-<dd><code>radius</code> - Orbit radius around the Samurai.</dd>
-<dd><code>angularSpeedDeg</code> - Angular speed in degrees per second.</dd>
+<dd><code>owner</code> - 武士实体（用于外观/事件转发/等级同步）</dd>
+<dd><code>cfg</code> - Samurai 配置</dd>
+<dd><code>swordTexture</code> - 剑贴图路径</dd>
+<dd><code>radius</code> - 视觉上剑柄绕 owner 的半径（供外观组件/攻击组件计算用）</dd>
+<dd><code>angularSpeedDeg</code> - （可选）保留签名；当前不在工厂内使用，由上层控制</dd>
 <dt>Returns:</dt>
-<dd>A sword entity configured with default combat and animation values.</dd>
+<dd>已配置好的“剑”实体（未注册；由调用者自行注册）</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="createSword(com.csse3200.game.entities.Entity,java.lang.String,float,com.csse3200.game.entities.configs.SamuraiConfig,float)">
+<h3>createSword</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createSword</span><wbr><span class="parameters">(<a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;owner,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;swordTexture,
+ float&nbsp;radius,
+ <a href="../configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg,
+ float&nbsp;angularSpeedDeg)</span></div>
+<div class="block">旧签名：保留一个重载以兼容你现有调用处。
+ （参数顺序与你当前使用一致：owner, cfg, swordTexture, radius, angularSpeedDeg）</div>
 </section>
 </li>
 </ul>

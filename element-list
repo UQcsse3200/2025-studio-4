@@ -15,6 +15,7 @@ com.csse3200.game.components.gamearea
 com.csse3200.game.components.hero
 com.csse3200.game.components.hero.engineer
 com.csse3200.game.components.hero.samurai
+com.csse3200.game.components.hero.samurai.attacks
 com.csse3200.game.components.maingame
 com.csse3200.game.components.mainmenu
 com.csse3200.game.components.movement
@@ -41,6 +42,7 @@ com.csse3200.game.screens
 com.csse3200.game.services
 com.csse3200.game.services.leaderboard
 com.csse3200.game.ui
+com.csse3200.game.ui.Hero
 com.csse3200.game.ui.leaderboard
 com.csse3200.game.ui.terminal
 com.csse3200.game.ui.terminal.commands

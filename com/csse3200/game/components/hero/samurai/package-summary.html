@@ -78,8 +78,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="../package-summary.html">com.csse3200.game.components.hero</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="../engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></div>
+<div class="col-first odd-row-color"><a href="attacks/package-summary.html">com.csse3200.game.components.hero.samurai.attacks</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="../engineer/package-summary.html">com.csse3200.game.components.hero.engineer</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </div>
 </li>
@@ -89,29 +91,36 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="AttackOnContactIfAttacking.html" title="class in com.csse3200.game.components.hero.samurai">AttackOnContactIfAttacking</a></div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">只有在 SwordJabPhysicsComponent.isAttacking()==true 时结算伤害。
- 支持两种 CombatStats API：
-  1) targetStats.hit(attackerStats)  // 常见于你们项目
-  2) targetStats.hit(int damage)     // 若也存在此重载则可用</div>
+<div class="block">负责：生成“剑”实体 + 安装三种攻击组件 + 处理输入并转发给控制器。
+ 注意：SwordFactory.createSword(...) 需要只创建“视觉+物理”的剑，
+ 不要再往里挂旧的 SwordJabPhysicsComponent。</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SwordAppearanceComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SwordJabPhysicsComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordJabPhysicsComponent</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SkillCooldowns.html" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">Sword Jab + Sweep + Spin physics:
- - Idle: 剑柄停在 owner 前方 restRadius 处，维持 facingDeg。
- - Jab:  朝目标方向“出-回”半径动画（抛物线 bump）。
- - Sweep: 以鼠标方向为中心，做对称半圆（[aim-arc, aim+arc] 线性）。
- - Spin:  固定半径整圈旋转（默认逆时针 360°）。
+<div class="block">多技能独立冷却组件：
+ - setTotal(skill, total) 配置每个技能的总CD
+ - trigger(skill)         让该技能进入冷却（立即广播一次）
+ - isReady(skill)         是否就绪
+ - update()               每帧递减并按步长节流广播
 
- 只负责位姿；伤害由其他组件判定（可用 isAttacking() 做攻击窗口）。</div>
+ 事件（由本组件触发）：
+  - "skill:cooldown"  (SkillCooldownInfo payload)
+  - "skill:ready"     (String skill)</div>
 </div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SkillCooldowns.SkillCooldownInfo.html" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns.SkillCooldownInfo</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">事件负载：单参数传递，避免多参数 trigger 重载不匹配</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SwordAppearanceComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="SwordLevelSyncComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordLevelSyncComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SwordQiAnimatorPng.html" title="class in com.csse3200.game.components.hero.samurai">SwordQiAnimatorPng</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">使用 PNG sprite sheet 的“赛博武士剑气”动画封装。</div>
+</div>
 </div>
 </div>
 </li>

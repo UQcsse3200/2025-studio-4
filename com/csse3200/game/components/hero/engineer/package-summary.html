@@ -101,18 +101,36 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">EngineerSummonComponent (Plan A: Event Interception)</div>
 </div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="FourWayCycleComponent.html" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="EngineerUpgradeComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerUpgradeComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">专属工程师的升级组件：
+ - 支持独立价格曲线、货币类型、等级上限（默认更贵）
+ - 触发：Enter/小键盘Enter 或 外部事件("requestUpgrade", playerEntity)
+ - 成功会广播("upgraded", level, currencyType, cost) 和 UI 刷新事件</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="FourWayCycleComponent.html" title="class in com.csse3200.game.components.hero.engineer">FourWayCycleComponent</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
 <div class="block">A component that cycles the firing direction of an attached <a href="TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer"><code>TurretAttackComponent</code></a>
  in the fixed order: Up → Right → Down → Left.</div>
 </div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="OwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">OwnerComponent</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="OwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">OwnerComponent</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">A simple component that stores a reference to the entity's owner (e.g., the player).</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SfxOnDeathComponent.html" title="class in com.csse3200.game.components.hero.engineer">SfxOnDeathComponent</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">在实体销毁（dispose）前播放一次音效。
+ 用于召唤物死亡/回收的爆炸音效等。</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SummonOwnerComponent.html" title="class in com.csse3200.game.components.hero.engineer">SummonOwnerComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
 <div class="block">Component attached to each summon entity.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SummonPlacementComponent.html" title="class in com.csse3200.game.components.hero.engineer">SummonPlacementComponent</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SummonPlacementComponent.SummonSpec.html" title="class in com.csse3200.game.components.hero.engineer">SummonPlacementComponent.SummonSpec</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">召唤规格（纹理 + 类型）</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="TurretAttackComponent.html" title="class in com.csse3200.game.components.hero.engineer">TurretAttackComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">

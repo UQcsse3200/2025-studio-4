@@ -101,11 +101,20 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroCustomizationComponent.html" title="class in com.csse3200.game.components.hero">HeroCustomizationComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroGhostPreview.html" title="class in com.csse3200.game.components.hero">HeroGhostPreview</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">Hero form switcher:
- - Boot to form-1 immediately (texture + bullet + params) once hero is available.</div>
+<div class="block">HeroGhostPreview:
+ Handles the temporary "ghost" entity used to preview hero placement on the map.</div>
 </div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroHotbarDisplay.html" title="class in com.csse3200.game.components.hero">HeroHotbarDisplay</a></div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">右侧中部的英雄热键栏（百分比布局版）。
+ - 宽/高/边距使用 Value.percentWidth/percentHeight
+ - 始终位于右侧，垂直居中
+ - 仅显示当前已选英雄的图标按钮，点击可调用 HeroPlacementComponent 进行放置/取消</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroSelectionComponent.html" title="class in com.csse3200.game.components.hero">HeroSelectionComponent</a></div>
@@ -114,9 +123,8 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroTurretAttackComponent.html" title="class in com.csse3200.game.components.hero">HeroTurretAttackComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">Turret-style attack component for the hero:
- fires bullets toward the mouse cursor on cooldown, rotates to face aim direction,
- and computes damage from CombatStatsComponent at fire time.</div>
+<div class="block">Hero turret-style attack component:
+ - Fires bullets toward the mouse cursor on cooldown.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroUltimateComponent.html" title="class in com.csse3200.game.components.hero">HeroUltimateComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">

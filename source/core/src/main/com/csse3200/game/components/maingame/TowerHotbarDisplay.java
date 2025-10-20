@@ -20,13 +20,57 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.ui.UIComponent;
+import com.csse3200.game.entities.Entity;
+import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.EnumMap;
 
 public class TowerHotbarDisplay extends UIComponent {
     private Table rootTable;
     private SimplePlacementController placementController;
     private Skin hotbarSkin;
+    private Texture bgTexture;
+    private Texture transparentBtnTexture;
+
+    private static final Color GREYED_OUT_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f);
+    private static final float UPDATE_INTERVAL = 0.5f; // Update button states every 0.5 seconds
+    private float timeSinceLastUpdate = 0f;
+
+    // Map to store button references and their tower types
+    private Map<String, ImageButton> towerButtons = new HashMap<>();
+
+    // Tower costs from JSON - you may want to load this from a config file instead
+    private static final Map<String, Map<CurrencyType, Integer>> TOWER_COSTS = new HashMap<>();
+
+    static {
+        // Initialize tower costs based on your JSON
+        TOWER_COSTS.put("bone", createCostMap(500, 0, 0));
+        TOWER_COSTS.put("dino", createCostMap(750, 0, 0));
+        TOWER_COSTS.put("cavemen", createCostMap(750, 0, 0));
+        TOWER_COSTS.put("pterodactyl", createCostMap(0, 50, 0));
+        TOWER_COSTS.put("totem", createCostMap(0, 150, 0));
+        TOWER_COSTS.put("bank", createCostMap(0, 200, 0));
+        TOWER_COSTS.put("raft", createCostMap(0, 250, 0));
+        TOWER_COSTS.put("frozenmamoothskull", createCostMap(0, 300, 0));
+        TOWER_COSTS.put("bouldercatapult", createCostMap(0, 500, 0));
+        TOWER_COSTS.put("villageshaman", createCostMap(0, 0, 500));
+        TOWER_COSTS.put("supercavemen", createCostMap(0, 0, 1000));
+    }
+
+    private static Map<CurrencyType, Integer> createCostMap(int metalScrap, int titaniumCore, int neurochip) {
+        Map<CurrencyType, Integer> costMap = new EnumMap<>(CurrencyType.class);
+        if (metalScrap > 0) costMap.put(CurrencyType.METAL_SCRAP, metalScrap);
+        if (titaniumCore > 0) costMap.put(CurrencyType.TITANIUM_CORE, titaniumCore);
+        if (neurochip > 0) costMap.put(CurrencyType.NEUROCHIP, neurochip);
+        return costMap;
+    }
 
     @Override
     public void create() {
@@ -37,17 +81,11 @@ public class TowerHotbarDisplay extends UIComponent {
         float screenWidth = Gdx.graphics.getWidth();
         float screenHeight = Gdx.graphics.getHeight();
 
-        // 根容器：左下角
         rootTable = new Table();
         rootTable.setFillParent(true);
         rootTable.bottom().left();
 
-        // 背景
-        Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(new Color(0.6f, 0.3f, 0.0f, 1f));
-        pixmap.fill();
-        Texture bgTexture = new Texture(pixmap);
-        pixmap.dispose();
+        bgTexture = buildSolidTexture(new Color(0.15f, 0.15f, 0.18f, 0.6f));
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
         Container<Table> container = new Container<>();
@@ -56,13 +94,13 @@ public class TowerHotbarDisplay extends UIComponent {
 
         Label title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
+        title.getStyle().fontColor = Color.valueOf("#FFFFFF");
 
-        // 图标资源（如路径不同，请按资源实际位置调整）
+        // Tower icons
         TextureRegionDrawable boneImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bones/boneicon.png")));
         TextureRegionDrawable dinoImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/dino/dinoicon.png")));
         TextureRegionDrawable cavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/cavemen/cavemenicon.png")));
         TextureRegionDrawable superCavemenImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/super/supercavemenicon.png")));
-        TextureRegionDrawable placeholderImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/placeholder.png")));
         TextureRegionDrawable pteroImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/pteradactyl/pterodactylicon.png")));
         TextureRegionDrawable totemImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/totem/totemicon.png")));
         TextureRegionDrawable bankImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/bank/bankicon.png")));
@@ -71,7 +109,7 @@ public class TowerHotbarDisplay extends UIComponent {
         TextureRegionDrawable bouldercatapultImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/catapault/bouldercatapulticon.png")));
         TextureRegionDrawable villageshamanImage = new TextureRegionDrawable(new TextureRegion(new Texture("images/towers/shaman/villageshamanicon.png")));
 
-        // 按钮
+        // Create buttons
         ImageButton boneBtn = new ImageButton(boneImage);
         ImageButton dinoBtn = new ImageButton(dinoImage);
         ImageButton cavemenBtn = new ImageButton(cavemenImage);
@@ -83,14 +121,37 @@ public class TowerHotbarDisplay extends UIComponent {
         ImageButton bouldercatapultBtn = new ImageButton(bouldercatapultImage);
         ImageButton villageshamanBtn = new ImageButton(villageshamanImage);
         ImageButton superCavemenBtn = new ImageButton(superCavemenImage);
-        ImageButton placeholderBtn = new ImageButton(placeholderImage);
+
+        // Transparent placeholder button
+        transparentBtnTexture = buildSolidTexture(new Color(1f, 1f, 1f, 0f));
+        TextureRegionDrawable transparentDrawable = new TextureRegionDrawable(new TextureRegion(transparentBtnTexture));
+        ImageButton.ImageButtonStyle transparentStyle = new ImageButton.ImageButtonStyle();
+        transparentStyle.up = transparentDrawable;
+        transparentStyle.down = transparentDrawable;
+        transparentStyle.over = transparentDrawable;
+        transparentStyle.checked = transparentDrawable;
+        ImageButton placeholderBtn = new ImageButton(transparentStyle);
 
         ImageButton[] allButtons = {
-            boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
-            raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
-            superCavemenBtn, placeholderBtn
+                boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
+                raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
+                superCavemenBtn, placeholderBtn
         };
 
+        // Store button references
+        towerButtons.put("bone", boneBtn);
+        towerButtons.put("dino", dinoBtn);
+        towerButtons.put("cavemen", cavemenBtn);
+        towerButtons.put("pterodactyl", pteroBtn);
+        towerButtons.put("totem", totemBtn);
+        towerButtons.put("bank", bankBtn);
+        towerButtons.put("raft", raftBtn);
+        towerButtons.put("frozenmamoothskull", frozenmamoothskullBtn);
+        towerButtons.put("bouldercatapult", bouldercatapultBtn);
+        towerButtons.put("villageshaman", villageshamanBtn);
+        towerButtons.put("supercavemen", superCavemenBtn);
+
+        // Add listeners
         addPlacementListener(boneBtn, "bone");
         addPlacementListener(dinoBtn, "dino");
         addPlacementListener(cavemenBtn, "cavemen");
@@ -103,7 +164,7 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(villageshamanBtn, "villageshaman");
         addPlacementListener(superCavemenBtn, "supercavemen");
 
-        // 按钮网格
+        // Button grid
         Table buttonTable = new Table();
         float BUTTON_W = screenWidth * 0.072f;
         float BUTTON_H = screenHeight * 0.112f;
@@ -115,7 +176,6 @@ public class TowerHotbarDisplay extends UIComponent {
             if ((i + 1) % 3 == 0) buttonTable.row();
         }
 
-        // 标题 + 滚动容器
         Table content = new Table();
         content.add(title).colspan(3).center().padBottom(screenHeight * 0.006f).row();
 
@@ -126,13 +186,11 @@ public class TowerHotbarDisplay extends UIComponent {
 
         container.setActor(content);
 
-        // 放入根容器
         rootTable.add(container)
-            .width(screenWidth * 0.232f)
-            .height(screenHeight * 0.55f);
+                .width(screenWidth * 0.232f)
+                .height(screenHeight * 0.55f);
         stage.addActor(rootTable);
 
-        // 输入多路复用
         InputMultiplexer multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
         if (Gdx.input.getInputProcessor() != null) {
@@ -141,14 +199,105 @@ public class TowerHotbarDisplay extends UIComponent {
         multiplexer.addProcessor(new InputAdapter() {});
         Gdx.input.setInputProcessor(multiplexer);
 
-        // 应用 UI 缩放（来源于用户设置）
         applyUiScale();
+
+        // Initial button state update
+        updateButtonAffordability();
+    }
+
+    /**
+     * Update button states based on player's current currency
+     */
+    private void updateButtonAffordability() {
+        Entity player = findPlayerEntity();
+        if (player == null) return;
+
+        CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+        if (currencyManager == null) return;
+
+        for (Map.Entry<String, ImageButton> entry : towerButtons.entrySet()) {
+            String towerType = entry.getKey();
+            ImageButton button = entry.getValue();
+
+            Map<CurrencyType, Integer> costs = TOWER_COSTS.get(towerType);
+            if (costs == null || costs.isEmpty()) {
+                // No cost data, assume affordable
+                button.setColor(NORMAL_COLOR);
+                continue;
+            }
+
+            boolean canAfford = true;
+            for (Map.Entry<CurrencyType, Integer> cost : costs.entrySet()) {
+                if (currencyManager.getCurrencyAmount(cost.getKey()) < cost.getValue()) {
+                    canAfford = false;
+                    break;
+                }
+            }
+
+            if (canAfford) {
+                button.setColor(NORMAL_COLOR);
+            } else {
+                button.setColor(GREYED_OUT_COLOR);
+            }
+        }
+    }
+
+    /**
+     * Check if player can afford to build a specific tower
+     */
+    private boolean canAffordTower(String towerType) {
+        Entity player = findPlayerEntity();
+        if (player == null) return false;
+
+        CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+        if (currencyManager == null) return false;
+
+        Map<CurrencyType, Integer> costs = TOWER_COSTS.get(towerType);
+        if (costs == null || costs.isEmpty()) return true;
+
+        for (Map.Entry<CurrencyType, Integer> cost : costs.entrySet()) {
+            if (currencyManager.getCurrencyAmount(cost.getKey()) < cost.getValue()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Find the player entity with CurrencyManagerComponent
+     */
+    private Entity findPlayerEntity() {
+        Array<Entity> entities = safeEntities();
+        if (entities == null) return null;
+        for (Entity e : entities) {
+            if (e != null && e.getComponent(CurrencyManagerComponent.class) != null) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Safely get entities from the entity service
+     */
+    private Array<Entity> safeEntities() {
+        try {
+            return com.csse3200.game.services.ServiceLocator.getEntityService().getEntitiesCopy();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     private void addPlacementListener(ImageButton button, String towerType) {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                // Check affordability before allowing placement
+                if (!canAffordTower(towerType)) {
+                    System.out.println("Cannot afford " + towerType + " tower!");
+                    return;
+                }
+
                 if (placementController != null) {
                     if (placementController.isPlacementActive()) {
                         if (towerType.equalsIgnoreCase(placementController.getPendingType())) {
@@ -193,10 +342,40 @@ public class TowerHotbarDisplay extends UIComponent {
     public void draw(SpriteBatch batch) {}
 
     @Override
+    public void update() {
+        super.update();
+
+        // Periodically update button affordability states
+        timeSinceLastUpdate += Gdx.graphics.getDeltaTime();
+        if (timeSinceLastUpdate >= UPDATE_INTERVAL) {
+            updateButtonAffordability();
+            timeSinceLastUpdate = 0f;
+        }
+    }
+
+    @Override
     public void dispose() {
         if (rootTable != null) {
             rootTable.clear();
         }
+        if (bgTexture != null) {
+            bgTexture.dispose();
+            bgTexture = null;
+        }
+        if (transparentBtnTexture != null) {
+            transparentBtnTexture.dispose();
+            transparentBtnTexture = null;
+        }
+        towerButtons.clear();
         super.dispose();
+    }
+
+    private static Texture buildSolidTexture(Color color) {
+        Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pm.setColor(color);
+        pm.fill();
+        Texture tex = new Texture(pm);
+        pm.dispose();
+        return tex;
     }
 }

@@ -333,7 +333,7 @@ public class TowerComponent extends Component {
                 );
             }
         }
-        // 🔄 Auto-revert fire -> idle when a non-looping fire clip finishes
+        // Auto-revert fire -> idle when a non-looping fire clip finishes
         if (headRenderer != null) {
             String curr = headRenderer.getCurrentAnimation();
             if (curr != null && curr.startsWith("fire") && headRenderer.isFinished()) {
@@ -343,7 +343,7 @@ public class TowerComponent extends Component {
         }
 
         // Disable update logic for totem towers
-        if ("totem".equalsIgnoreCase(type)) return;
+        if ("totem".equalsIgnoreCase(type) || "frozenmamoothskull".equalsIgnoreCase(type)) return;
 
         // SuperCavemen behaviour: assign nearest enemy to head's BeamAttackComponent and rotate head
         if ("supercavemen".equalsIgnoreCase(type)) {
@@ -368,6 +368,9 @@ public class TowerComponent extends Component {
             if (headEntity != null) {
                 var beam = headEntity.getComponent(BeamAttackComponent.class);
                 if (beam != null) {
+                    // keep beam range in sync with upgraded stats
+                    beam.setRange(stats.getRange());
+
                     if (nearest != null) {
                         beam.setTarget(nearest);
                         // rotate head to face target
@@ -416,7 +419,6 @@ public class TowerComponent extends Component {
             }
 
             if (target != null) {
-                // Unified single-shot behaviour for all towers
                 Vector2 dir = target.getCenterPosition().cpy().sub(spawnOrigin);
                 if (dir.len() <= 0.0001f) {
                     dir.set(1f, 0f); // fallback direction to avoid NaN
@@ -433,7 +435,42 @@ public class TowerComponent extends Component {
                 final String poolKey = "bullet:" + tex;
                 EntityService es = ServiceLocator.getEntityService();
 
-                if (es != null) {
+                if ("pterodactyl".equalsIgnoreCase(type) && es != null) {
+                    // Shoot two bullets with ±10 degree spread
+                    final Vector2 originFinal = spawnOrigin;
+                    final float baseAngle = dir.angleRad();
+                    final float spreadRad = (float)Math.toRadians(10);
+
+                    for (int i = 0; i < 2; i++) {
+                        float angle = baseAngle + (i == 0 ? -spreadRad : spreadRad);
+                        Vector2 shotDir = new Vector2((float)Math.cos(angle), (float)Math.sin(angle));
+                        float vxFinal = shotDir.x * speed;
+                        float vyFinal = shotDir.y * speed;
+
+                        Entity bullet = es.obtain(poolKey, () -> {
+                            Entity b = ProjectileFactory.createBullet(
+                                    tex, originFinal, vxFinal, vyFinal, life, damage
+                            );
+                            ProjectileComponent pc0 = b.getComponent(ProjectileComponent.class);
+                            if (pc0 != null) pc0.setPoolKey(poolKey);
+                            Gdx.app.postRunnable(() -> es.register(b));
+                            return b;
+                        });
+
+                        ProjectileComponent pc = bullet.getComponent(ProjectileComponent.class);
+                        if (pc != null && pc.isInactive()) {
+                            bullet.setPosition(originFinal);
+                            pc.setPoolKey(poolKey).activate(vxFinal, vyFinal, life);
+                            CombatStatsComponent bStats = bullet.getComponent(CombatStatsComponent.class);
+                            if (bStats != null) {
+                                try { bStats.setBaseAttack(damage); } catch (Throwable ignored) {}
+                            }
+                        }
+                    }
+                    if (headRenderer != null) {
+                        headRenderer.startAnimation("fire");
+                    }
+                } else if (es != null) {
                     // Make captured values final/effectively final for the lambda
                     final Vector2 originFinal = spawnOrigin;
                     final float vxFinal = dir.x * speed;
@@ -452,13 +489,10 @@ public class TowerComponent extends Component {
                         return b;
                     });
 
-                    // If coming from pool, reactivate/reset
                     ProjectileComponent pc = bullet.getComponent(ProjectileComponent.class);
                     if (pc != null && pc.isInactive()) {
-                        // IMPORTANT: set position BEFORE activate so body starts at the spawn point
                         bullet.setPosition(originFinal);
                         pc.setPoolKey(poolKey).activate(vxFinal, vyFinal, lifeFinal);
-                        // Optional: update damage if supported
                         CombatStatsComponent bStats = bullet.getComponent(CombatStatsComponent.class);
                         if (bStats != null) {
                             try { bStats.setBaseAttack(dmgFinal); } catch (Throwable ignored) {}

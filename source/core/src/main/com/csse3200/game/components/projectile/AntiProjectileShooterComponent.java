@@ -94,8 +94,7 @@ AntiProjectileShooterComponent extends Component {
     }
 
     /**
-     * Obtain or create an interceptor entity, position it at this shooter, and activate
-     * its ProjectileComponent toward the target. Preserves pool key and reuses entities.
+     * Fire interceptor toward target. Creates a fresh entity each time.
      * @param target projectile entity to intercept
      */
     private void fireInterceptorToward(Entity target) {
@@ -109,45 +108,27 @@ AntiProjectileShooterComponent extends Component {
         dir.nor();
 
         // Calculate turret offset (turret barrel is on the right and upper portion of the tank)
-        // The tank sprite is roughly 1024x1024, scaled down in game
-        // Turret barrel appears to be about 0.4 units to the right and 0.35 units up from center
         float turretOffsetX = 1f;
         float turretOffsetY = 0.7f;
 
         Vector2 turretOffset = new Vector2(turretOffsetX, turretOffsetY);
         Vector2 from = tankCenter.cpy().add(turretOffset);
 
-        final String poolKey = "interceptor:" + spritePath;
-        EntityService es = ServiceLocator.getEntityService();
-        if (es == null) return;
+        Entity interceptor = new Entity();
+        interceptor.addComponent(new TextureRenderComponent(spritePath));
+        interceptor.setScale(0.5f, 0.5f); // radius for collision overlap
 
-        // Obtain from pool or create/register a new one
-        Entity interceptor = es.obtain(poolKey, () -> {
-            Entity ent = new Entity();
-            ent.addComponent(new TextureRenderComponent(spritePath));
-            ent.setScale(0.5f, 0.5f);
+        PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);
+        interceptor.addComponent(physics);
 
-            PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);
-            ent.addComponent(physics);
-
-            ProjectileComponent proj = new ProjectileComponent(0f, 0f, lifetime).setPoolKey(poolKey);
-            ent.addComponent(proj);
-            ent.addComponent(new InterceptorTagComponent());
-            ent.addComponent(new InterceptOnHitComponent());
-            ent.setPosition(from);
-
-            // Register once on first creation
-            es.register(ent);
-            return ent;
-        });
-
-        // Reactivate/reset pooled interceptor
-        ProjectileComponent pc = interceptor.getComponent(ProjectileComponent.class);
-        if (pc != null) {
-            pc.setPoolKey(poolKey).activate(dir.x * speed, dir.y * speed, lifetime);
-        }
+        interceptor.addComponent(new ProjectileComponent(dir.x * speed, dir.y * speed, lifetime));
+        interceptor.addComponent(new InterceptorTagComponent());
+        interceptor.addComponent(new InterceptOnHitComponent());
         interceptor.setPosition(from);
-        // Ensure consistent size (in case deactivated changed scale elsewhere)
-        interceptor.setScale(0.5f, 0.5f);
+
+        EntityService es = ServiceLocator.getEntityService();
+        if (es != null) {
+            es.register(interceptor);
+        }
     }
 }

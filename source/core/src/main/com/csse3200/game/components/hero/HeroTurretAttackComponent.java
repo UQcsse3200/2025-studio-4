@@ -130,7 +130,7 @@ public class HeroTurretAttackComponent extends Component {
       int dmg = computeDamageFromStats();
 
       final Entity bullet = ProjectileFactory.createBullet(
-              bulletTexture, firePos, vx, vy, bulletLife, dmg
+              bulletTexture, firePos, vx, vy, bulletLife, dmg, true
       );
 
       var es = ServiceLocator.getEntityService();

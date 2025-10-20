@@ -449,7 +449,7 @@ public class TowerComponent extends Component {
 
                         Entity bullet = es.obtain(poolKey, () -> {
                             Entity b = ProjectileFactory.createBullet(
-                                    tex, originFinal, vxFinal, vyFinal, life, damage
+                                    tex, originFinal, vxFinal, vyFinal, life, damage, projectileShouldDestroyOnHit()
                             );
                             ProjectileComponent pc0 = b.getComponent(ProjectileComponent.class);
                             if (pc0 != null) pc0.setPoolKey(poolKey);
@@ -481,7 +481,7 @@ public class TowerComponent extends Component {
 
                     Entity bullet = es.obtain(poolKey, () -> {
                         Entity b = ProjectileFactory.createBullet(
-                                texFinal, originFinal, vxFinal, vyFinal, lifeFinal, dmgFinal
+                                texFinal, originFinal, vxFinal, vyFinal, lifeFinal, dmgFinal, projectileShouldDestroyOnHit()
                         );
                         ProjectileComponent pc0 = b.getComponent(ProjectileComponent.class);
                         if (pc0 != null) pc0.setPoolKey(poolKey);
@@ -504,7 +504,8 @@ public class TowerComponent extends Component {
                     }
                 } else {
                     // Fallback: original create/register path
-                    Entity bullet = ProjectileFactory.createBullet(tex, spawnOrigin, dir.x * speed, dir.y * speed, life, damage);
+                    Entity bullet = ProjectileFactory.createBullet(tex, spawnOrigin, dir.x * speed, dir.y * speed,
+                            life, damage, projectileShouldDestroyOnHit());
                     var svc = ServiceLocator.getEntityService();
                     if (svc != null) Gdx.app.postRunnable(() -> svc.register(bullet));
                     if (headRenderer != null) headRenderer.startAnimation("fire");
@@ -531,5 +532,20 @@ public class TowerComponent extends Component {
     // helper
     private static boolean isFinite(float v) {
         return !(Float.isNaN(v) || Float.isInfinite(v));
+    }
+    /**
+     * Determine if the projectile should be destroyed on hit based on its type.
+     * @return
+     */
+    private boolean projectileShouldDestroyOnHit() {
+        if (type == null) return true;
+        String lower = type.toLowerCase();
+        java.util.Set<String> piercing = java.util.Set.of("bouldercatapult");
+        for (String p : piercing) {
+            if (lower.contains(p)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -6,7 +6,7 @@ import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.ui.leaderboard.BookOnMainGame;
+import com.csse3200.game.components.book.BookOnMainGame;
 import com.csse3200.game.ui.leaderboard.LeaderboardController;
 import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
 import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;

@@ -1,4 +1,5 @@
-import com.badlogic.gdx.Input;
+package com.csse3200.game.components.book;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
@@ -12,10 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.csse3200.game.components.book.BookComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.services.ServiceLocator;
-import com.badlogic.gdx.Gdx;
 
 import java.util.Map;
 
@@ -57,6 +56,10 @@ public class BookOnMainGame extends Window {
         this.renderExitButton();
     }
 
+    /**
+     * Sets the overlay background using the texture at the given path
+     * @param pathName the texture path to load from the ResourceService
+     */
     private void renderBackGround(String pathName) {
         String backgroundPath = pathName;
         // String backgroundPath = "images/book/encyclopedia_theme.png";
@@ -70,6 +73,8 @@ public class BookOnMainGame extends Window {
         }
     }
 
+    /** Renders a responsive top-right exit button for the book overlay
+     * and back to main game when on click */
     private void renderExitButton() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
@@ -94,6 +99,10 @@ public class BookOnMainGame extends Window {
         addActor(exitTable);
     }
 
+    /**
+     * Replaces the current page content with the given actor.
+     * @param page the root actor to show as the new page (will be named "pageRoot")
+     */
     private void setPage(Actor page) {
         Actor old = findActor("pageRoot");
         if (old != null) old.remove();
@@ -139,11 +148,37 @@ public class BookOnMainGame extends Window {
         return table;
     }
 
-    private Table buildEnemyPage()    { return buildSectionPage("Enemies",    buildBookBody(new BookComponent.EnemyBookComponent())); }
-    private Table buildCurrencyPage() { return buildSectionPage("Currencies", buildBookBody(new BookComponent.CurrencyBookComponent())); }
-    private Table buildTowerPage()    { return buildSectionPage("Towers",     buildBookBody(new BookComponent.TowerBookComponent())); }
-    private Table buildHeroPage()     { return buildSectionPage("Heroes",     buildBookBody(new BookComponent.HeroBookComponent())); }
+    /**
+     * Builds the Enemies section page (grid + details) and wraps it with the section chrome.
+     * @return the fully constructed Enemies page table
+     */
+    private Table buildEnemyPage() {
+        return buildSectionPage("Enemies",    buildBookBody(new BookComponent.EnemyBookComponent()));
+    }
 
+    /**
+     * Builds the Currency section page (grid + details) and wraps it with the section chrome.
+     * @return the fully constructed Enemies page table
+     */
+    private Table buildCurrencyPage() {
+        return buildSectionPage("Currencies", buildBookBody(new BookComponent.CurrencyBookComponent()));
+    }
+
+    /**
+     * Builds the Tower section page (grid + details) and wraps it with the section chrome.
+     * @return the fully constructed Enemies page table
+     */
+    private Table buildTowerPage() {
+        return buildSectionPage("Towers",     buildBookBody(new BookComponent.TowerBookComponent()));
+    }
+
+    /**
+     * Builds the Heroes section page (grid + details) and wraps it with the section chrome.
+     * @return the fully constructed Enemies page table
+     */
+    private Table buildHeroPage() {
+        return buildSectionPage("Heroes",     buildBookBody(new BookComponent.HeroBookComponent()));
+    }
 
     /** Builds the left grid and right detail panel for a given book component. */
     private Actor buildBookBody(BookComponent book) {
@@ -352,6 +387,10 @@ public class BookOnMainGame extends Window {
         return skin.newDrawable("white", new Color(0f,0f,0f,0.4f));
     }
 
+    /**
+     * Creates the top-right bookmark-style back button that returns to the book main page.
+     * @return a configured TextButton wired to switch back to the book main page
+     */
     private TextButton renderBackButton() {
         TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle("images/book/bookmark.png");
         TextButton back = new TextButton("", exitButtonStyle);
@@ -363,6 +402,12 @@ public class BookOnMainGame extends Window {
         return back;
     }
 
+    /**
+     * Wraps a section body with the book section chrome and a pinned back button
+     * @param title section title to display
+     * @param body  content table for the section (grid + details)
+     * @return the fully constructed section table
+     */
     private Table buildSectionPage(String title, Actor body) {
         Table page = new Table();
         page.setFillParent(true);
@@ -391,6 +436,10 @@ public class BookOnMainGame extends Window {
         return page;
     }
 
+    /**
+     * Shows this overlay on the given stage, pauses the game, and centers the window.
+     * @param stage the Stage to attach this overlay to
+     */
     public void showOn(Stage stage) {
         // Find the entity with PauseInputComponent and trigger its pause
         triggerPauseSystem(true);
@@ -401,6 +450,9 @@ public class BookOnMainGame extends Window {
                 Math.round((stage.getHeight() - getHeight()) / 2f));
     }
 
+    /**
+     * Closes the overlay with a short fade/scale animation and resumes the game.
+     */
     public void dismiss() {
         triggerPauseSystem(false);
         addAction(Actions.sequence(

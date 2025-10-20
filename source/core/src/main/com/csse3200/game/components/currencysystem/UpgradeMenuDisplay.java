@@ -234,6 +234,17 @@ public class UpgradeMenuDisplay extends UIComponent {
         Table heroCol = new Table();
         heroCol.defaults().pad(6f).center();
 
+        // 创建背景框
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+        NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        NinePatchDrawable backgroundFrame = new NinePatchDrawable(patch);
+        backgroundFrame = backgroundFrame.tint(new Color(0.2f, 0.2f, 0.2f, 0.8f)); // 半透明深灰色背景
+        
+        // 设置背景
+        heroCol.setBackground(backgroundFrame);
+        heroCol.pad(12f); // 增加内边距
+
         // 头像 + 名称
         heroCol.add(heroImage).size(IMG_SIZE).padBottom(6f).row();
         heroCol.add(new Label(heroName, nameStyle)).padBottom(6f).row();

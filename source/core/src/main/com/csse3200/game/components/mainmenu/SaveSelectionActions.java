@@ -103,13 +103,14 @@ public class SaveSelectionActions extends Component {
           "  \"timestamp\":\"" + new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new java.util.Date()) + "\",\n" +
           "  \"mapId\":null,\n" +
           "  \"difficulty\":\"EASY\",\n" +
-          "  \"player\":{\"pos\":{\"x\":7.5,\"y\":7.5},\"hp\":100,\"gold\":0},\n" +
+          "  \"player\":{\"pos\":{\"x\":7.5,\"y\":7.5},\"hp\":100,\"gold\":100,\"metalScrap\":100,\"titaniumCore\":0,\"neurochip\":0},\n" +
           "  \"towers\":[],\n" +
           "  \"enemies\":[]\n" +
           "}";
       try (java.io.FileOutputStream out = new java.io.FileOutputStream(f)) {
         out.write(json.getBytes(java.nio.charset.StandardCharsets.UTF_8));
       }
+      logger.info("Created new save template: {}", safe);
     } catch (Exception e) {
       logger.error("Write initial save template failed", e);
     }

@@ -6,12 +6,11 @@ import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.physics.PhysicsService;
 import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.PhysicsLayer;
 import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Periodically searches for the nearest active tower projectile within range and fires
@@ -30,7 +29,6 @@ AntiProjectileShooterComponent extends Component {
     private final String spritePath;
 
     private float timer = 0f;
-    private static final Logger logger = LoggerFactory.getLogger(AntiProjectileShooterComponent.class);
 
     /**
      * Create a shooter that launches interceptors on a cooldown toward hostile projectiles.
@@ -63,10 +61,13 @@ AntiProjectileShooterComponent extends Component {
 
         timer += time.getDeltaTime();
         if (timer < cooldown) return;
-        timer = 0f;
 
+        // Only reset timer when we actually find a target and fire
         Entity target = findNearestTowerProjectile();
-        if (target == null) return;
+        if (target == null) return;  // Keep timer running if no target found
+
+        // Reset timer only when firing
+        timer = 0f;
         fireInterceptorToward(target);
     }
 
@@ -94,7 +95,8 @@ AntiProjectileShooterComponent extends Component {
     }
 
     /**
-     * Fire interceptor toward target. Creates a fresh entity each time.
+     * Fire interceptor toward target. Creates a properly configured interceptor with
+     * Box2D physics components and pooling support for memory safety.
      * @param target projectile entity to intercept
      */
     private void fireInterceptorToward(Entity target) {
@@ -114,16 +116,32 @@ AntiProjectileShooterComponent extends Component {
         Vector2 turretOffset = new Vector2(turretOffsetX, turretOffsetY);
         Vector2 from = tankCenter.cpy().add(turretOffset);
 
+        // Create interceptor with proper Box2D components for safe disposal
         Entity interceptor = new Entity();
         interceptor.addComponent(new TextureRenderComponent(spritePath));
         interceptor.setScale(0.5f, 0.5f); // radius for collision overlap
 
+        // Add physics component with proper body type
         PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);
         interceptor.addComponent(physics);
 
-        interceptor.addComponent(new ProjectileComponent(dir.x * speed, dir.y * speed, lifetime));
+        // Add hitbox component for proper collision detection
+        HitboxComponent hitbox = new HitboxComponent();
+        hitbox.setLayer(PhysicsLayer.PROJECTILE);
+        hitbox.setSensor(true);
+        interceptor.addComponent(hitbox);
+
+        // Add ProjectileComponent with pooling support
+        String poolKey = "interceptor:" + spritePath;
+        ProjectileComponent projectileComp = new ProjectileComponent(dir.x * speed, dir.y * speed, lifetime);
+        projectileComp.setPoolKey(poolKey);
+        interceptor.addComponent(projectileComp);
+
+        // Add interceptor-specific components
         interceptor.addComponent(new InterceptorTagComponent());
         interceptor.addComponent(new InterceptOnHitComponent());
+
+        // Set position and register
         interceptor.setPosition(from);
 
         EntityService es = ServiceLocator.getEntityService();

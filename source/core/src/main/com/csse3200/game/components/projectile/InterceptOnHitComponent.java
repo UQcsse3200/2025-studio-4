@@ -49,8 +49,37 @@ public class InterceptOnHitComponent extends Component {
     if (scheduledDispose) return;
     scheduledDispose = true;
     Gdx.app.postRunnable(() -> {
-      try { other.dispose(); } catch (Exception ignored) {}
-      try { entity.dispose(); } catch (Exception ignored) {}
+      // Properly dispose of the other projectile using ProjectileComponent pooling
+      try {
+        ProjectileComponent otherPC = other.getComponent(ProjectileComponent.class);
+        if (otherPC != null) {
+          otherPC.deactivate();
+          EntityService es = ServiceLocator.getEntityService();
+          if (es != null) {
+            es.despawnEntity(other);
+          } else {
+            other.dispose();
+          }
+        } else {
+          other.dispose();
+        }
+      } catch (Exception ignored) {}
+
+      // Properly dispose of this interceptor using ProjectileComponent pooling
+      try {
+        ProjectileComponent myPC = entity.getComponent(ProjectileComponent.class);
+        if (myPC != null) {
+          myPC.deactivate();
+          EntityService es = ServiceLocator.getEntityService();
+          if (es != null) {
+            es.despawnEntity(entity);
+          } else {
+            entity.dispose();
+          }
+        } else {
+          entity.dispose();
+        }
+      } catch (Exception ignored) {}
     });
   }
 }

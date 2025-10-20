@@ -1,4 +1,4 @@
-package com.csse3200.game.ui;
+package com.csse3200.game.ui.Hero;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -20,6 +20,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.Gdx;
+import com.csse3200.game.ui.SimpleUI;
+import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
  * 英雄数值窗口：显示等级、生命、攻击，并支持升级。

@@ -3,12 +3,19 @@ package com.csse3200.game.areas;
 import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
-import com.csse3200.game.ui.HeroStatusPanelComponent;
-
+import com.csse3200.game.components.hero.engineer.SummonPlacementComponent;
+import com.csse3200.game.components.maingame.TowerUpgradeMenu;
+import com.csse3200.game.entities.configs.*;
+import com.csse3200.game.services.SelectedHeroService;
+import com.csse3200.game.ui.Hero.DefaultHeroStatusPanelComponent;
+import com.csse3200.game.ui.Hero.EngineerStatusPanelComponent;
+import com.csse3200.game.ui.Hero.HeroStatusPanelComponent;
+import com.csse3200.game.components.hero.HeroTurretAttackComponent;
 
 import com.csse3200.game.components.maingame.*;
 
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.ui.Hero.SamuraiStatusPanelComponent;
 import com.csse3200.game.utils.Difficulty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,23 +33,10 @@ import com.csse3200.game.screens.MainGameScreen;
 import com.csse3200.game.utils.math.GridPoint2Utils;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.components.Component;
-import com.csse3200.game.entities.configs.HeroConfig;
-import com.csse3200.game.entities.configs.HeroConfig2;
-import com.csse3200.game.entities.configs.HeroConfig3;
-import com.csse3200.game.entities.configs.EngineerConfig;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
-import com.csse3200.game.entities.configs.SamuraiConfig;
-import com.badlogic.gdx.utils.Array;
-import com.csse3200.game.components.effects.PlasmaImpactComponent;
-import com.csse3200.game.components.effects.PlasmaStrikeComponent;
-import com.csse3200.game.components.effects.PlasmaWarningComponent;
-import com.csse3200.game.components.effects.PlasmaWeatherController;
-import com.csse3200.game.components.enemy.EnemyTypeComponent;
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.towers.TowerComponent;
+
 import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -52,6 +46,15 @@ import java.util.List;
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.CameraZoomDragComponent;
+import com.csse3200.game.components.Component;
+import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.effects.PlasmaImpactComponent;
+import com.csse3200.game.components.effects.PlasmaStrikeComponent;
+import com.csse3200.game.components.effects.PlasmaWarningComponent;
+import com.csse3200.game.components.effects.PlasmaWeatherController;
+import com.csse3200.game.components.enemy.EnemyTypeComponent;
+import com.csse3200.game.components.CombatStatsComponent;
+import com.csse3200.game.components.towers.TowerComponent;
 
 /**
  * Forest area for the demo game with trees, a player, and enemies.
@@ -96,6 +99,17 @@ public class ForestGameArea extends GameArea {
             CurrencyManagerComponent.SOUND_PATH,
             "sounds/book_opening.mp3",
             "sounds/book_closing.mp3",
+            "sounds/Explosion_sfx.ogg",
+            "sounds/hero_lv2_shot.ogg",
+            "sounds/ult_shot.ogg",
+            "sounds/katana_stab_2s.ogg",
+            "sounds/katana_slash_2s.ogg",
+            "sounds/katana_spin_2s.ogg",
+            "sounds/turret_shoot.ogg",
+            "sounds/explosion_2s.ogg",
+            "sounds/place_soft_click.ogg",
+            "sounds/place_metal_clunk.ogg",
+            "sounds/place_energy_drop.ogg"
     };
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
@@ -117,12 +131,12 @@ public class ForestGameArea extends GameArea {
             {5, 24}, {8, 20},
             // 在x<31且y>13且x<13范围内随机添加的坐标点
             {8, 15}, {5, 17}, {11, 14}, {3, 18},
-            {7, 25}, {2, 15},  {6, 29},
+            {7, 25}, {2, 15}, {6, 29},
     };
 
     // create snowtree areas - 避开路径坐标
     private static final int[][] SNOWTREE_COORDS = new int[][]{
-        {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
+            {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
     };
 
     /**
@@ -153,12 +167,12 @@ public class ForestGameArea extends GameArea {
     private void initializeWaves() {
         // Initialize waypoint lists first
         initializeWaypointLists();
-        
+
         // Initialize spawn callbacks
         initializeSpawnCallbacks();
-        
+
         waves = new ArrayList<>();
-        
+
         // Wave 1: Basic enemies
         waves.add(new Wave(1, 5, 1, 0, 0, 0, 0, 3.0f, waypointLists));
 
@@ -173,16 +187,16 @@ public class ForestGameArea extends GameArea {
 
         // Wave 5: Final wave with boss
         waves.add(new Wave(5, 10, 8, 4, 1, 1, 4, 1.2f, waypointLists));
-}
+    }
 
     private void initializeSpawnCallbacks() {
         spawnCallbacks = new Wave.WaveSpawnCallbacks(
-            this::spawnDrone,
-            this::spawnGrunt,
-            this::spawnTank,
-            this::spawnBoss,
-            this::spawnDivider,
-            this::spawnSpeeder
+                this::spawnDrone,
+                this::spawnGrunt,
+                this::spawnTank,
+                this::spawnBoss,
+                this::spawnDivider,
+                this::spawnSpeeder
         );
     }
 
@@ -191,7 +205,7 @@ public class ForestGameArea extends GameArea {
      */
     private void startEnemyWave() {
         if (waveInProgress) return;
-        
+
         waveInProgress = true;
         wavePaused = false;
         timeRemainingWhenPaused = 0f;
@@ -209,18 +223,18 @@ public class ForestGameArea extends GameArea {
         }
 
         Wave currentWave = waves.get(currentWaveIndex);
-        
+
         // Set counters before building queue or spawning anything
         NUM_ENEMIES_TOTAL = currentWave.getTotalEnemies();
         NUM_ENEMIES_DEFEATED = 0;
         spawnDelay = currentWave.getSpawnDelay();
-        
-        logger.info("Starting Wave {} with {} enemies (Total: {}, Defeated: {})", 
-                    currentWave.getWaveNumber(), 
-                    NUM_ENEMIES_TOTAL,
-                    NUM_ENEMIES_TOTAL,
-                    NUM_ENEMIES_DEFEATED);
-        
+
+        logger.info("Starting Wave {} with {} enemies (Total: {}, Defeated: {})",
+                currentWave.getWaveNumber(),
+                NUM_ENEMIES_TOTAL,
+                NUM_ENEMIES_TOTAL,
+                NUM_ENEMIES_DEFEATED);
+
         enemySpawnQueue = currentWave.buildSpawnQueue(spawnCallbacks);
     }
 
@@ -312,8 +326,8 @@ public class ForestGameArea extends GameArea {
         // Safety check: ensure services are still available
         try {
             if (ServiceLocator.getPhysicsService() == null ||
-                ServiceLocator.getEntityService() == null ||
-                ServiceLocator.getResourceService() == null) {
+                    ServiceLocator.getEntityService() == null ||
+                    ServiceLocator.getResourceService() == null) {
                 logger.warn("Services not available, stopping wave spawning");
                 forceStopWave();
                 return;
@@ -323,18 +337,19 @@ public class ForestGameArea extends GameArea {
             forceStopWave();
             return;
         }
-        
+
         if (enemySpawnQueue == null || enemySpawnQueue.isEmpty()) {
             // Spawning complete, but enemies still alive
             waveInProgress = false;
             logger.info("Wave {} spawning completed", currentWaveIndex + 1);
             return;
         }
-        
+
         // Cancel any existing spawn task
         if (waveSpawnTask != null) {
             waveSpawnTask.cancel();
         }
+
         
         // Get time scale and handle pause (time scale = 0)
         float timeScale = ServiceLocator.getTimeSource().getTimeScale();
@@ -362,6 +377,7 @@ public class ForestGameArea extends GameArea {
         adjustedSpawnDelay = delayToUse;
         spawnScheduledTime = TimeUtils.millis();
 
+
         // Schedule next spawn
         waveSpawnTask = Timer.schedule(new Timer.Task() {
             @Override
@@ -377,21 +393,21 @@ public class ForestGameArea extends GameArea {
                     logger.info("Game area changed during spawn, stopping");
                     return;
                 }
-                
+
                 // Double-check services are still available when task runs
                 try {
                     if (ServiceLocator.getPhysicsService() == null ||
-                        ServiceLocator.getEntityService() == null) {
+                            ServiceLocator.getEntityService() == null) {
                         logger.warn("Services disposed during spawn, stopping wave");
                         forceStopWave();
                         return;
                     }
-                    
+
                     if (enemySpawnQueue != null && !enemySpawnQueue.isEmpty()) {
                         // Spawn the next enemy
                         Runnable spawnAction = enemySpawnQueue.remove(0);
                         spawnAction.run();
-                        
+
                         // Schedule the next one
                         scheduleNextEnemySpawn();
                     }
@@ -514,10 +530,12 @@ public class ForestGameArea extends GameArea {
         // Generate biomes & placeable areas
         //mapEditor.generateBiomesAndRivers();
 
+
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
                 new MapHighlighter(terrain, placementController, new com.csse3200.game.entities.factories.TowerFactory());
         Entity highlighterEntity = new Entity().addComponent(mapHighlighter);
+        highlighterEntity.addComponent(new SummonPlacementComponent());
 
         spawnEntity(highlighterEntity);
 
@@ -552,8 +570,8 @@ public class ForestGameArea extends GameArea {
 
 
         Entity placementEntity = new Entity().addComponent(
-                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, (MapEditor)mapEditor, placeCb)
-        );
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
+        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
 
         // 背景音乐将在对话结束后播放
@@ -721,7 +739,7 @@ public class ForestGameArea extends GameArea {
         HealthBarComponent healthBar = new HealthBarComponent(1.4f, 0.15f, 0.8f);
         Entity newPlayer = PlayerFactory.createPlayer("images/homebase1.png", 1.88f, healthBar);
         // 确保新玩家有钱包组件
-       if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
+        if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
             newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
         }
 
@@ -836,22 +854,67 @@ public class ForestGameArea extends GameArea {
         }
     }
 
+    private void applySkinToHeroForms(String skinKey, HeroConfig c1, HeroConfig2 c2, HeroConfig3 c3) {
+        // 形态1
+        c1.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 1);
+        if (c1.levelTextures != null && c1.levelTextures.length > 0) c1.levelTextures[0] = c1.heroTexture;
+        else c1.levelTextures = new String[]{ c1.heroTexture };
+
+        // 形态2
+        c2.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 2);
+        if (c2.levelTextures != null && c2.levelTextures.length > 0) c2.levelTextures[0] = c2.heroTexture;
+        else c2.levelTextures = new String[]{ c2.heroTexture };
+
+        // 形态3
+        c3.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 3);
+        if (c3.levelTextures != null && c3.levelTextures.length > 0) c3.levelTextures[0] = c3.heroTexture;
+        else c3.levelTextures = new String[]{ c3.heroTexture };
+    }
+
+    private void applySkinToEngineer(String skinKey, EngineerConfig cfg) {
+        cfg.heroTexture   = HeroSkinAtlas.body(GameStateService.HeroType.ENGINEER, skinKey);
+        cfg.bulletTexture = HeroSkinAtlas.bullet(GameStateService.HeroType.ENGINEER, skinKey);
+        // ★ 关键：避免 HeroAppearanceComponent 把皮肤“打回默认”
+        if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
+            cfg.levelTextures[0] = cfg.heroTexture;
+        } else {
+            cfg.levelTextures = new String[]{ cfg.heroTexture };
+        }
+    }
+
+
     private void spawnHeroAt(GridPoint2 cell) {
         // 1️⃣ 加载配置（或直接手动创建，如你示例）
         HeroConfig heroCfg = new HeroConfig();
         heroCfg.heroTexture = "images/hero/Heroshoot.png";
         heroCfg.bulletTexture = "images/hero/Bullet.png";
-
+        heroCfg.shootSfx = "sounds/Explosion_sfx.ogg";
+        heroCfg.shootSfxVolume = 1.0f;
         HeroConfig2 heroCfg2 = new HeroConfig2();
         heroCfg2.heroTexture = "images/hero2/Heroshoot.png";
         heroCfg2.bulletTexture = "images/hero2/Bullet.png";
-
+        heroCfg2.shootSfx = "sounds/Explosion_sfx2.ogg";
+        heroCfg2.shootSfxVolume = 1.0f;
         HeroConfig3 heroCfg3 = new HeroConfig3();
         heroCfg3.heroTexture = "images/hero3/Heroshoot.png";
         heroCfg3.bulletTexture = "images/hero3/Bullet.png";
-
+        heroCfg3.shootSfx = "sounds/Explosion_sfx3.ogg";
+        heroCfg3.shootSfxVolume = 1.0f;
         // 2️⃣ 加载贴图资源（不放 create() 全局加载）
         ResourceService rs = ServiceLocator.getResourceService();
+        java.util.ArrayList<String> sfx = new java.util.ArrayList<>();
+        if (heroCfg.shootSfx  != null && !heroCfg.shootSfx.isBlank())  sfx.add(heroCfg.shootSfx);
+        if (heroCfg2.shootSfx != null && !heroCfg2.shootSfx.isBlank()) sfx.add(heroCfg2.shootSfx);
+        if (heroCfg3.shootSfx != null && !heroCfg3.shootSfx.isBlank()) sfx.add(heroCfg3.shootSfx);
+        if (!sfx.isEmpty()) {
+            rs.loadSounds(sfx.toArray(new String[0]));
+            while (!rs.loadForMillis(10)) { /* wait */ }
+        }
+
+        String skinHero = ServiceLocator.getGameStateService()
+                .getSelectedSkin(GameStateService.HeroType.HERO);
+        applySkinToHeroForms(skinHero, heroCfg, heroCfg2, heroCfg3);
+
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading hero assets... {}%", rs.getProgress());
@@ -873,20 +936,32 @@ public class ForestGameArea extends GameArea {
         hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
         hero.addComponent(new com.csse3200.game.ui.UltimateButtonComponent());
 
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(hero, "Hero"));
+        Entity heroStatusUI = new Entity()
+                .addComponent(new DefaultHeroStatusPanelComponent(hero, "Hero"));
         spawnEntity(heroStatusUI);
+
+        Entity heroWeaponBar = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.HeroWeaponSwitcherToolbarComponent(
+                        hero,
+                        /* 建议使用独立图标（小尺寸方图） */
+                        "images/hero/gun1.png",
+                        "images/hero2/gun2.png",
+                        "images/hero3/gun3.png",
+                        // 也可以暂时用 heroCfg.heroTexture 等
+                        "images/hero/Final_gun.png"
+                ));
+        spawnEntity(heroWeaponBar);
 
         spawnEntityAt(hero, cell, true, true);
 
         // 6️⃣ 一次性提示窗口
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.HeroHintDialog(hero).showOnceOn(stage);
+            new com.csse3200.game.ui.Hero.HeroHintDialog(hero).showOnceOn(stage);
             heroHintShown = true;
         }
 
     }
-
 
 
     private void spawnEngineerAt(GridPoint2 cell) {
@@ -896,6 +971,11 @@ public class ForestGameArea extends GameArea {
             logger.warn("Failed to load configs/engineer.json, using default EngineerConfig.");
             engCfg = new EngineerConfig();
         }
+
+        // ★ 2) 取当前选中的工程师皮肤，并覆盖到 Config
+        String skin = ServiceLocator.getGameStateService()
+                .getSelectedSkin(GameStateService.HeroType.ENGINEER);
+        applySkinToEngineer(skin, engCfg);
 
         // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
         ResourceService rs = ServiceLocator.getResourceService();
@@ -915,9 +995,14 @@ public class ForestGameArea extends GameArea {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 创建状态栏UI
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(engineer, "Engineer"));
+        // 4) 工程师 UI：状态栏 + 工具条（点击图标放置三类召唤）
+        Entity heroStatusUI = new Entity()
+                .addComponent(new EngineerStatusPanelComponent(engineer, "Engineer"));
         spawnEntity(heroStatusUI);
+
+        Entity engineerToolbarUI = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.EngineerSummonToolbarComponent(engineer));
+        spawnEntity(engineerToolbarUI);
 
         // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
@@ -925,10 +1010,32 @@ public class ForestGameArea extends GameArea {
         // 6) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.HeroHintDialog(engineer).showOnceOn(stage);
+            new com.csse3200.game.ui.Hero.HeroHintDialog(engineer).showOnceOn(stage);
             heroHintShown = true;
         }
     }
+
+    private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
+        // 本体随 BODY 皮肤
+        cfg.heroTexture = HeroSkinAtlas.body(GameStateService.HeroType.SAMURAI, skinKey);
+
+        // 刀：独立读取 WEAPON 皮肤
+        String swordSkin = ServiceLocator.getGameStateService()
+                .getSelectedWeaponSkin(GameStateService.HeroType.SAMURAI);
+        String sword = HeroSkinAtlas.sword(GameStateService.HeroType.SAMURAI, swordSkin);
+        if (sword != null && !sword.isBlank()) {
+            cfg.swordTexture = sword;
+        }
+
+        // 防止外观被 levelTextures 还原
+        if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
+            cfg.levelTextures[0] = cfg.heroTexture;
+        } else {
+            cfg.levelTextures = new String[]{ cfg.heroTexture };
+        }
+    }
+
+
 
     private void spawnSamuraiAt(GridPoint2 cell) {
         // 1) 读 samurai 配置
@@ -938,9 +1045,16 @@ public class ForestGameArea extends GameArea {
             samCfg = new SamuraiConfig();
         }
 
+        String samSkin = ServiceLocator.getGameStateService()
+                .getSelectedSkin(GameStateService.HeroType.SAMURAI); // 自己已有的方法/字段
+        applySkinToSamurai(samSkin, samCfg);
+
         // 2) 预加载 samurai 资源（主体 + 刀）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, samCfg);
+        rs.loadTextures(new String[]{
+                "images/samurai/slash_sheet_6x1_64.png"
+        });
         while (!rs.loadForMillis(10)) {
             logger.info("Loading samurai assets... {}%", rs.getProgress());
         }
@@ -960,8 +1074,14 @@ public class ForestGameArea extends GameArea {
         samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
         // 5) 创建状态栏UI
-        Entity heroStatusUI = new Entity().addComponent(new HeroStatusPanelComponent(samurai, "Samurai"));
+        Entity heroStatusUI = new Entity()
+                .addComponent(new SamuraiStatusPanelComponent(samurai, "Samurai"));
         spawnEntity(heroStatusUI);
+
+        // 5.5) ★ 新增：创建“武士攻击工具条”UI（带 1/2/3 提示）
+        Entity samuraiAttackUI = new Entity()
+                .addComponent(new com.csse3200.game.ui.Hero.SamuraiAttackToolbarComponent(samurai));
+        spawnEntity(samuraiAttackUI);
 
         // 6) 放置
         spawnEntityAt(samurai, cell, true, true);
@@ -969,7 +1089,7 @@ public class ForestGameArea extends GameArea {
         // 7) 一次性提示
         if (!heroHintShown) {
             var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.HeroHintDialog(samurai).showOnceOn(stage);
+            new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
             heroHintShown = true;
         }
     }
@@ -1036,6 +1156,18 @@ public class ForestGameArea extends GameArea {
         while (!resourceService.loadForMillis(10)) {
             logger.info("Loading... {}%", resourceService.getProgress());
         }
+//        try {
+//            com.badlogic.gdx.audio.Sound s =
+//                    resourceService.getAsset("sounds/Explosion_sfx.ogg", com.badlogic.gdx.audio.Sound.class);
+//            if (s != null) {
+//                long id = s.play(1f);
+//                Gdx.app.log("SmokeTest", "Played Explosion_sfx.ogg right after load, id=" + id);
+//            } else {
+//                Gdx.app.error("SmokeTest", "ResourceService returned NULL for Explosion_sfx.ogg");
+//            }
+//        } catch (Throwable t) {
+//            Gdx.app.error("SmokeTest", "Exception while smoke testing Explosion_sfx.ogg", t);
+//        }
     }
 
     private void unloadAssets() {
@@ -1089,9 +1221,9 @@ public class ForestGameArea extends GameArea {
         if (mapEditor != null) {
             // Both MapEditor and MapEditor2 have cleanup()
             if (mapEditor instanceof MapEditor) {
-                ((MapEditor)mapEditor).cleanup();
+                ((MapEditor) mapEditor).cleanup();
             } else if (mapEditor instanceof com.csse3200.game.areas2.MapTwo.MapEditor2) {
-                ((com.csse3200.game.areas2.MapTwo.MapEditor2)mapEditor).cleanup();
+                ((com.csse3200.game.areas2.MapTwo.MapEditor2) mapEditor).cleanup();
             }
         }
         if (ServiceLocator.getAudioService() != null) {

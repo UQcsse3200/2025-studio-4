@@ -20,7 +20,6 @@ public class SwordAppearanceComponent extends Component {
     @Override
     public void create() {
         // 初始应用 1 级刀贴图
-        applySwordTextureForLevel(1);
 
         // 监听武士本体的升级事件
         if (owner != null) {

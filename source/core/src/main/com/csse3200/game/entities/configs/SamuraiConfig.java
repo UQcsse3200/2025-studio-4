@@ -10,6 +10,11 @@ public class SamuraiConfig extends HeroConfig {
 
     public int[] swordDamageByLevel = {10, 16, 24};
 
+    // ✨ 新增：各技能独立伤害表（按等级，level 从 1 开始）
+    public int[] jabDamageByLevel   = {20, 26, 28};
+    public int[] sweepDamageByLevel = {12, 18, 26};
+    public int[] spinDamageByLevel  = { 8, 14, 22};
+
     public String heroTexture = "images/samurai/Samurai.png";
     public String[] levelTextures = {
             "images/samurai/Sword.png",

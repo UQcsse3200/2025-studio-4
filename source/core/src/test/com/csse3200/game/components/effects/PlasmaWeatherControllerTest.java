@@ -230,6 +230,9 @@ class PlasmaWeatherControllerTest {
     public List<GridPoint2> getSlowZoneTiles() {
       return Collections.emptyList();
     }
+
+    @Override
+    public void setPathLayerOpacity(float opacity) {}
   }
 
   private static class StubTerrainComponent implements ITerrainComponent {
@@ -288,5 +291,8 @@ class PlasmaWeatherControllerTest {
     public List<GridPoint2> getSlowZoneTiles() {
       return Collections.emptyList();
     }
+
+    @Override
+    public void setPathLayerOpacity(float opacity) {}
   }
 }

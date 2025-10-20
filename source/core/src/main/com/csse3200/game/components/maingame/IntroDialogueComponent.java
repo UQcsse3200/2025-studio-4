@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -31,6 +32,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Locale;
 
 public class IntroDialogueComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(IntroDialogueComponent.class);
@@ -50,9 +52,15 @@ public class IntroDialogueComponent extends UIComponent {
   private TextButton skipButton;
   private int currentIndex = -1;
   private boolean finished = false;
+  private float screenWidth;
+  private float screenHeight;
+  private float dialogueWidth;
+  private float dialogueHeight;
+  private Cell<Table> dialogueCell;
   
   // 字体样式选择
   private BitmapFont dialogueFont;
+  private BitmapFont speakerNameFont;
 
   public IntroDialogueComponent(List<DialogueEntry> entries, Runnable onComplete) {
     this.entries = Objects.requireNonNull(entries, "entries");
@@ -107,8 +115,10 @@ public class IntroDialogueComponent extends UIComponent {
 
   private void buildOverlay() {
     // 获取屏幕尺寸
-    float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
-    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    this.screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+    this.screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    float screenWidth = this.screenWidth;
+    float screenHeight = this.screenHeight;
     
     overlayRoot = new Table();
     overlayRoot.setFillParent(true);
@@ -133,13 +143,14 @@ public class IntroDialogueComponent extends UIComponent {
 
     // 创建自定义字体样式
     createDialogueFont();
+    createSpeakerNameFont();
     
     dialogueLabel = new Label("", new Label.LabelStyle(dialogueFont, Color.WHITE));
     dialogueLabel.setWrap(true);
     dialogueLabel.setAlignment(Align.center, Align.center);
 
     // 创建对话者名字标签
-    speakerNameLabel = new Label("", new Label.LabelStyle(dialogueFont, Color.WHITE));
+    speakerNameLabel = new Label("", new Label.LabelStyle(speakerNameFont, Color.WHITE));
     speakerNameLabel.setAlignment(Align.center, Align.center);
     
     // 创建名字标签容器，添加黑色底纹背景
@@ -174,12 +185,10 @@ public class IntroDialogueComponent extends UIComponent {
 
     // 添加对话内容到对话框
     dialogueTable.add(dialogueContent)
-            .width(screenWidth * 0.45f)
-            .expand()
-            .fill()
+            .grow()
             .center()
-            .padTop(screenHeight * 0.05f)  // 添加顶部间距，让文字往下移动
-            .row();
+            .padTop(screenHeight * 0.05f);  // 添加顶部间距，让文字往下移动
+    dialogueTable.row();
 
     float continueButtonWidth = screenWidth * 0.18f;  // 从0.135f增加到0.18f
     float continueButtonHeight = screenHeight * 0.2f;  // 从0.065f增加到0.08f
@@ -187,7 +196,13 @@ public class IntroDialogueComponent extends UIComponent {
     float skipButtonHeight = screenHeight * 0.15f;
 
     // 对话框固定在底部中央（保持原始位置）
-    overlayRoot.add(dialogueTable).width(screenWidth * 0.5f).minHeight(screenHeight * 0.25f).bottom().padBottom(screenHeight * 0.08f);
+    dialogueWidth = screenWidth * 0.5f;
+    dialogueHeight = screenHeight * 0.25f;
+    dialogueCell = overlayRoot.add(dialogueTable)
+            .width(dialogueWidth)
+            .height(dialogueHeight)
+            .bottom()
+            .padBottom(screenHeight * 0.08f);
     
     // 创建独立的按钮容器，直接放在屏幕底部
     Table buttonContainer = new Table();
@@ -321,6 +336,7 @@ public class IntroDialogueComponent extends UIComponent {
         TextureRegion textureRegion = new TextureRegion(backgroundTexture);
         TextureRegionDrawable drawable = new TextureRegionDrawable(textureRegion);
         dialogueTable.setBackground(drawable);
+        updateDialogueSizing(backgroundTexture, isTalkerBackground(backgroundPath));
         return;
       } else {
         logger.warn("Failed to load dialogue background: {}", backgroundPath);
@@ -330,6 +346,7 @@ public class IntroDialogueComponent extends UIComponent {
     // 使用默认背景
     dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
             new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
+    updateDialogueSizing(null, false);
   }
 
   /**
@@ -346,9 +363,9 @@ public class IntroDialogueComponent extends UIComponent {
     
     float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
     float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
-    
+    float currentDialogueWidth = dialogueWidth > 0f ? dialogueWidth : screenWidth * 0.5f;
     // 计算对话框的位置（屏幕底部中央）
-    float dialogueX = (screenWidth - screenWidth * 0.5f) / 2; // 对话框X位置（居中）
+    float dialogueX = (screenWidth - currentDialogueWidth) / 2; // 对话框X位置（居中）
     float dialogueY = screenHeight * 0.08f; // 对话框Y位置（距底部）
     
     float portraitWidth = screenWidth * 0.15f;
@@ -356,7 +373,7 @@ public class IntroDialogueComponent extends UIComponent {
     
     if ("right".equalsIgnoreCase(portraitSide)) {
       // 头像在对话框右侧
-      float portraitX = dialogueX + screenWidth * 0.5f; // 头像直接贴着对话框
+      float portraitX = dialogueX + currentDialogueWidth; // 头像直接贴着对话框
       float portraitY = dialogueY + screenHeight * 0.1f; // 头像往上移一点
       portraitImage.setPosition(portraitX, portraitY);
       
@@ -463,6 +480,37 @@ public class IntroDialogueComponent extends UIComponent {
     }
   }
 
+  /**
+   * 创建对话者名字字体样式
+   */
+  private void createSpeakerNameFont() {
+    try {
+      float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+      float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+      
+      // 根据屏幕分辨率选择不同大小的字体文件
+      String fontPath;
+      if (screenWidth >= 2560 || screenHeight >= 1440) {
+        // 高分辨率屏幕 (2K/4K) - 使用更大的字体
+        fontPath = "flat-earth/skin/fonts/arial_black_32.fnt";
+      } else if (screenWidth >= 1920 || screenHeight >= 1080) {
+        // 标准分辨率屏幕 (1080p) - 使用中等字体
+        fontPath = "flat-earth/skin/fonts/arial_black_32.fnt";
+      } else {
+        // 低分辨率屏幕 (720p及以下) - 使用较小字体
+        fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
+      }
+      
+      speakerNameFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal(fontPath));
+      speakerNameFont.setColor(Color.WHITE);
+    } catch (Exception e) {
+      logger.warn("Failed to load speaker name font, using default font", e);
+      // 如果加载失败，使用默认字体
+      speakerNameFont = SimpleUI.font();
+      speakerNameFont.setColor(Color.WHITE);
+    }
+  }
+
   @Override
   public void dispose() {
     if (!finished) {
@@ -471,6 +519,9 @@ public class IntroDialogueComponent extends UIComponent {
     // 释放自定义字体资源
     if (dialogueFont != null && dialogueFont != SimpleUI.font()) {
       dialogueFont.dispose();
+    }
+    if (speakerNameFont != null && speakerNameFont != SimpleUI.font()) {
+      speakerNameFont.dispose();
     }
     super.dispose();
   }
@@ -512,5 +563,46 @@ public class IntroDialogueComponent extends UIComponent {
     public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath) {
       this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, null);
     }
+  }
+
+  private void updateDialogueSizing(Texture backgroundTexture, boolean preserveAspect) {
+    if (dialogueCell == null) {
+      return;
+    }
+
+    if (preserveAspect && backgroundTexture != null) {
+      float maxWidth = screenWidth * 0.55f;
+      float maxHeight = screenHeight * 0.35f;
+      float textureWidth = backgroundTexture.getWidth();
+      float textureHeight = backgroundTexture.getHeight();
+      if (textureWidth <= 0f || textureHeight <= 0f) {
+        preserveAspect = false;
+      } else {
+        float scale = Math.min(maxWidth / textureWidth, maxHeight / textureHeight);
+        if (scale <= 0f) {
+          scale = 1f;
+        }
+        dialogueWidth = textureWidth * scale;
+        dialogueHeight = textureHeight * scale;
+      }
+    }
+
+    if (!preserveAspect || backgroundTexture == null) {
+      dialogueWidth = screenWidth * 0.5f;
+      dialogueHeight = screenHeight * 0.25f;
+    }
+
+    dialogueCell.width(dialogueWidth);
+    dialogueCell.height(dialogueHeight);
+    dialogueTable.invalidateHierarchy();
+    overlayRoot.invalidateHierarchy();
+  }
+
+  private boolean isTalkerBackground(String path) {
+    if (path == null) {
+      return false;
+    }
+    String normalised = path.replace("\\", "/").toLowerCase(Locale.ROOT);
+    return normalised.endsWith("talker.png") || normalised.endsWith("talker2.png");
   }
 }

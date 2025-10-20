@@ -56,6 +56,14 @@ public class TowerStatsComponent extends Component {
         return level_B;
     }
 
+    public void setLevel_A(int level) {
+        this.level_A = Math.max(0, Math.min(5, level));
+    }
+
+    public void setLevel_B(int level) {
+        this.level_B = Math.max(0, Math.min(5, level));
+    }
+
     public int getHealth() {
         return health;
     }

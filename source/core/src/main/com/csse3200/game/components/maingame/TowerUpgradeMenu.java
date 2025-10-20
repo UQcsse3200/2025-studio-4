@@ -16,8 +16,10 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable; // <-- add
-import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;    // <-- add
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 import com.csse3200.game.entities.Entity;
 
@@ -30,7 +32,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.components.maingame.TowerUpgradeData.UpgradeStats;
 import com.csse3200.game.components.towers.BeamAttackComponent;
-import com.csse3200.game.components.towers.StatsBoostComponent; // NEW: notify totems
+import com.csse3200.game.components.towers.StatsBoostComponent;
 
 import java.util.Map;
 import java.util.EnumMap;
@@ -40,6 +42,8 @@ import java.util.EnumMap;
  * Shows separate upgrade paths for each tower type.
  */
 public class TowerUpgradeMenu extends UIComponent {
+    // Periodic refresh task so the menu updates affordability dynamically
+    private Task refreshTask;
 
     private Table rootTable;
     private Entity selectedTower = null;
@@ -100,15 +104,15 @@ public class TowerUpgradeMenu extends UIComponent {
         rootTable.setVisible(false);
 
         // Background (requested color, 90% opacity)
-        bgTexture = buildSolidTexture(new Color(0.15f, 0.15f, 0.18f, 0.9f));
+        bgTexture = buildSolidTexture(new Color(0.10f, 0.10f, 0.12f, 0.75f));
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
         Container<Table> container = new Container<>();
         container.setBackground(backgroundDrawable);
-        container.pad(15);
+        container.pad(10);
 
-        Label title = new Label("Tower Upgrades", skin, "title");
-        title.setColor(Color.WHITE);
+        /*Label title = new Label("Tower Upgrades", skin, "title");
+        title.setColor(Color.WHITE);*/
 
         // Path A
         Table pathATable = new Table(skin);
@@ -238,20 +242,39 @@ public class TowerUpgradeMenu extends UIComponent {
         content.add(sellTable).top();
 
         Table containerContent = new Table(skin);
-        containerContent.add(title).colspan(3).center().padBottom(15).row();
-        containerContent.add(content).center(); // no fillX
+        containerContent.add(content).center();
         container.setActor(containerContent);
 
-        // Constrain width so the menu isn't too long; center it at the bottom
         float screenW = Gdx.graphics.getWidth();
-        float desiredWidth = Math.max(600f, Math.min(screenW * 0.55f, 900f));
+        float screenH = Gdx.graphics.getHeight();
+
+        // Narrower and thinner
+        float desiredWidth = Math.max(480f, Math.min(screenW * 0.45f, 700f));
+        float desiredHeight = Math.min(screenH * 0.18f, 170f);
+
+        container.pad(8); // reduce internal padding
+        rootTable.clearChildren();
         rootTable.add(container)
-                .width(desiredWidth)   // bounded width
-                .bottom()
+                .width(desiredWidth)
+                .height(desiredHeight)
                 .center()
-                .padBottom(0);        // small bottom padding
+                .bottom()
+                .padBottom(12f);
+
 
         stage.addActor(rootTable);
+
+        // Start a small periodic refresh so the UI updates when player currency changes
+        // Only run updateLabels when the menu is visible to avoid unnecessary work.
+        refreshTask = Timer.schedule(new Task() {
+            @Override
+            public void run() {
+                if (rootTable != null && rootTable.isVisible()) {
+                    // Safe to call on render thread because Timer runs on libGDX main thread
+                    updateLabels();
+                }
+            }
+        }, 0.15f /* delay */, 0.25f /* interval */);
 
         // Button listeners
         pathAButton.addListener(new ClickListener() {
@@ -810,18 +833,23 @@ public class TowerUpgradeMenu extends UIComponent {
 
     @Override
     public void dispose() {
-        // Dispose the background texture if it was created
-        if (bgTexture != null) {
-            bgTexture.dispose();
-            bgTexture = null;
+        // Cancel the periodic refresh task to avoid leaks
+        if (refreshTask != null) {
+            refreshTask.cancel();
+            refreshTask = null;
         }
-        // Dispose cached currency icons
-        for (Texture tex : currencyIconCache.values()) {
-            if (tex != null) tex.dispose();
-        }
-        currencyIconCache.clear();
+         // Dispose the background texture if it was created
+         if (bgTexture != null) {
+             bgTexture.dispose();
+             bgTexture = null;
+         }
+         // Dispose cached currency icons
+         for (Texture tex : currencyIconCache.values()) {
+             if (tex != null) tex.dispose();
+         }
+         currencyIconCache.clear();
 
-        super.dispose();
+         super.dispose();
     }
 
     // Returns a drawable for the given currency, with simple caching

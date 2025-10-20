@@ -44,4 +44,10 @@ public interface IMapEditor {
      */
     List<GridPoint2> getSlowZoneTiles();
 
+    /**
+     * Set path layer opacity设置路径图层透明度
+     * @param opacity 透明度值，范围0.0-1.0，0.0为完全透明，1.0为完全不透明
+     */
+    void setPathLayerOpacity(float opacity);
+
 }

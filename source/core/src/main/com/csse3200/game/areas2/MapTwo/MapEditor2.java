@@ -55,7 +55,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     /** Initialize keypoint tiles初始化关键点瓦片 */
     private void initializeKeypointTile() {
         try {
-            Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
+            Texture keypointTexture = ServiceLocator.getResourceService().getAsset("images/path_keypoint.png", Texture.class);
             // Avoid blurring when zooming
             keypointTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
@@ -99,7 +99,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     /** Initialize path tiles初始化路径瓦片 */
     private void initializePathTile() {
         try {
-            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/snow.png", Texture.class);
+            Texture pathTexture = ServiceLocator.getResourceService().getAsset("images/path.png", Texture.class);
             // Avoid blurring when zooming避免放大时模糊
             pathTexture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
@@ -136,6 +136,16 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         return newLayer;
     }
 
+    /** Set path layer opacity设置路径图层透明度
+     * @param opacity 透明度值，范围0.0-1.0，0.0为完全透明，1.0为完全不透明
+     */
+    public void setPathLayerOpacity(float opacity) {
+        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
+        pathLayer.setOpacity(Math.max(0.0f, Math.min(1.0f, opacity)));
+        System.out.println("✅ Path layer opacity set to: " + opacity);
+    }
+
     /** Automatically generate enemy paths自动生成敌人路径 */
     public void generateEnemyPath() {
         if (terrain == null) return;
@@ -146,7 +156,6 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints2.clear();
         slowZoneTiles.clear();
 
-        // 只定义关键路径点，不生成path瓦片
         // Define key path points定义关键路径点
         keyWaypoints.add(new GridPoint2(5, 0));     // Start
         keyWaypoints.add(new GridPoint2(5, 2));
@@ -165,7 +174,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
 
         // 新增的5个关键点
         keyWaypoints2.add(new GridPoint2(28, 6));    // 新坐标5
-        keyWaypoints2.add(new GridPoint2(33, 12));   // 新坐标4
+        keyWaypoints2.add(new GridPoint2(33, 11));   // 新坐标4
         keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
@@ -188,9 +197,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         for (GridPoint2 wp : keyWaypoints) {
             String key = wp.x + "," + wp.y;
             Float modifier = speedModifiers.get(key);
-            if (modifier == null) {
-                markKeypoint(wp);
-            }
+            // 所有关键点都应该显示关键点纹理
+            markKeypoint(wp);
             Entity waypoint = new Entity();
             waypoint.setPosition(wp.x / 2f, wp.y / 2f);
             if (modifier != null) {
@@ -216,10 +224,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         
         // 重新标记关键点，确保它们不被路径瓦片覆盖
         for (GridPoint2 wp : keyWaypoints) {
-            String key = wp.x + "," + wp.y;
-            if (!speedModifiers.containsKey(key)) {
-                markKeypoint(wp);
-            }
+            markKeypoint(wp);
         }
         
         // 重新标记第二组关键点，确保它们不被路径瓦片覆盖
@@ -381,6 +386,15 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             if (wp.x == pos.x && wp.y == pos.y) {
                 isKeypoint = true;
                 break;
+            }
+        }
+        // 也检查第二组关键点
+        if (!isKeypoint) {
+            for (GridPoint2 wp : keyWaypoints2) {
+                if (wp.x == pos.x && wp.y == pos.y) {
+                    isKeypoint = true;
+                    break;
+                }
             }
         }
         

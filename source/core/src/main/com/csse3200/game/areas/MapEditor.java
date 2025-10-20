@@ -151,6 +151,16 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         return newLayer;
     }
 
+    /** Set path layer opacity设置路径图层透明度
+     * @param opacity 透明度值，范围0.0-1.0，0.0为完全透明，1.0为完全不透明
+     */
+    public void setPathLayerOpacity(float opacity) {
+        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
+        pathLayer.setOpacity(Math.max(0.0f, Math.min(1.0f, opacity)));
+        System.out.println("✅ Path layer opacity set to: " + opacity);
+    }
+
     /** Automatically generate enemy paths自动生成敌人路径 */
     public void generateEnemyPath() {
         if (terrain == null) return;

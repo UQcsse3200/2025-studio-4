@@ -106,6 +106,11 @@ public class CameraZoomDragComponent extends InputComponent {
     public boolean scrolled(float amountX, float amountY) {
         if (camera == null) return false;
         
+        // 检查是否在对话期间，如果是则禁用缩放
+        if (isDialogueActive()) {
+            return false; // 对话期间不处理缩放
+        }
+
         handleZoomInput(amountY);
         return true;
     }
@@ -203,6 +208,35 @@ public class CameraZoomDragComponent extends InputComponent {
             return true;
         }
         return false;
+    }
+    
+    /**
+     * 检查对话是否正在进行中
+     * @return true 如果对话正在进行，false 如果对话已结束或不存在
+     */
+    private boolean isDialogueActive() {
+        try {
+            // 通过ServiceLocator获取EntityService来查找对话实体
+            var entityService = com.csse3200.game.services.ServiceLocator.getEntityService();
+            if (entityService == null) {
+                return false;
+            }
+            
+            // 遍历所有实体，查找IntroDialogueComponent
+            for (var entity : entityService.getEntities()) {
+                if (entity != null && entity.isActive()) {
+                    var dialogueComponent = entity.getComponent(com.csse3200.game.components.maingame.IntroDialogueComponent.class);
+                    if (dialogueComponent != null) {
+                        // 如果找到对话组件，说明对话正在进行
+                        return true;
+                    }
+                }
+            }
+            return false;
+        } catch (Exception e) {
+            // 如果出现任何异常，默认允许缩放（安全起见）
+            return false;
+        }
     }
     
 }

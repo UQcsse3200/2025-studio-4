@@ -32,8 +32,13 @@ public class DamagePopupComponent extends Component {
             Renderer.getCurrentRenderer().getCamera().getCamera().project(screen);
         }
 
-        Label.LabelStyle style = new Label.LabelStyle(font, amount > 0 ? Color.RED : Color.GREEN);
-        Label label = new Label(String.valueOf(amount), style);
+        // 如果是伤害（正数）显示红色，如果是回复（负数）显示绿色并加上+号
+        boolean isDamage = amount > 0;
+        String displayText = isDamage ? String.valueOf(amount) : "+" + Math.abs(amount);
+        Color textColor = isDamage ? Color.RED : Color.GREEN;
+        
+        Label.LabelStyle style = new Label.LabelStyle(font, textColor);
+        Label label = new Label(displayText, style);
         label.setPosition(screen.x, screen.y);
         label.getColor().a = 1f;
 

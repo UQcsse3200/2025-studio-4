@@ -550,30 +550,10 @@ public class ForestGameArea extends GameArea {
         }
 
         // Add hero placement system
-        var gameState = ServiceLocator.getGameStateService();
-        if (gameState == null) {
-            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
-        }
-        GameStateService.HeroType chosen = gameState.getSelectedHero();
-        Gdx.app.log("ForestGameArea", "chosen=" + chosen);
-
-// 根据选择安装一个只放“指定英雄”的放置器
-
-        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
-        switch (chosen) {
-            case ENGINEER -> placeCb = this::spawnEngineerAt;
-            case SAMURAI -> placeCb = this::spawnSamuraiAt;   // ★ 新增武士
-            default -> placeCb = this::spawnHeroAt;
-        }
-
-
-        Entity placementEntity = new Entity().addComponent(
-                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
-        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
-        spawnEntity(placementEntity);
 
         // 背景音乐将在对话结束后播放
         if (hasExistingPlayer) {
+            createHeroPlacementUI();
             // 如果已有玩家（从存档加载），直接播放音乐
             playMusic();
         }
@@ -911,6 +891,7 @@ public class ForestGameArea extends GameArea {
 
         String skinHero = ServiceLocator.getGameStateService()
                 .getSelectedSkin(GameStateService.HeroType.HERO);
+        logger.info("Spawn hero with skin={}", skinHero);
         applySkinToHeroForms(skinHero, heroCfg, heroCfg2, heroCfg3);
 
         HeroFactory.loadAssets(rs, heroCfg, heroCfg2, heroCfg3);
@@ -1033,8 +1014,6 @@ public class ForestGameArea extends GameArea {
         }
     }
 
-
-
     private void spawnSamuraiAt(GridPoint2 cell) {
         // 1) 读 samurai 配置
         SamuraiConfig samCfg = FileLoader.readClass(SamuraiConfig.class, "configs/samurai.json");
@@ -1092,6 +1071,21 @@ public class ForestGameArea extends GameArea {
         }
     }
 
+    private void createHeroPlacementUI() {
+        var gs = ServiceLocator.getGameStateService();
+        GameStateService.HeroType chosen = gs.getSelectedHero();
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
+                switch (chosen) {
+                    case ENGINEER -> this::spawnEngineerAt;
+                    case SAMURAI  -> this::spawnSamuraiAt;
+                    default       -> this::spawnHeroAt;
+                };
+        Entity placementEntity = new Entity()
+                .addComponent(new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb))
+                .addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
+        spawnEntity(placementEntity);
+    }
+
     private void spawnIntroDialogue() {
         // 使用 DialogueConfig 获取地图1的对话脚本
         java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
@@ -1103,6 +1097,7 @@ public class ForestGameArea extends GameArea {
                         () -> {
                             // 对话结束后显示防御塔列表和播放背景音乐
                             showTowerUI();
+                            createHeroPlacementUI();
                             playMusic();
 
                             if (MainGameScreen.ui != null) {

@@ -106,29 +106,24 @@ public class SettingsMenuDisplay extends UIComponent {
         Table menuBtns = makeMenuBtns();
 
         // Panel background (fallbacks if skin has no dialog/window)
+        // Panel background - use settings_bg image
         Table panel = new Table(skin);
         panel.defaults().pad(12f);
-        if (skin.has("window", Drawable.class)) {
-            panel.setBackground(skin.getDrawable("window"));
-        } else if (skin.has("dialog", Drawable.class)) {
-            panel.setBackground(skin.getDrawable("dialog"));
-        } else {
-            Pixmap pm = new Pixmap(8, 8, Format.RGBA8888);
-            pm.setColor(new Color(0f, 0f, 0f, 0.35f));
-            pm.fill();
-            panelTexHandle = new Texture(pm);
-            pm.dispose();
-            panel.setBackground(new TextureRegionDrawable(new TextureRegion(panelTexHandle)));
-        }
+
+        Texture settingsBgTexture = ServiceLocator.getResourceService()
+                .getAsset("images/settings_bg.png", Texture.class);
+        NinePatch settingsBgPatch = new NinePatch(new TextureRegion(settingsBgTexture), 20, 20, 20, 20);
+        panel.setBackground(new NinePatchDrawable(settingsBgPatch));
+        panel.add(title).expandX().top().padTop(10f).padBottom(10f);  // Add title to panel
+        panel.row();
         panel.add(settingsTable).row();
         panel.add(menuBtns).fillX();
 
         rootTable = new Table();
         rootTable.setFillParent(true);
-        rootTable.add(title).expandX().top().padTop(20f);
-        rootTable.row().padTop(30f);
         rootTable.add(panel).center()
-                .width(Math.min(Gdx.graphics.getWidth() * 0.55f, 720f));
+                .size(Math.min(Gdx.graphics.getWidth() * 0.45f, 600f),
+                        Math.min(Gdx.graphics.getHeight() * 0.75f, 650f));
 
         if (overlayMode) {
             Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
@@ -503,20 +498,21 @@ public class SettingsMenuDisplay extends UIComponent {
         style.font = skin.getFont("segoe_ui");
 
         Texture buttonTexture = ServiceLocator.getResourceService()
-                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+                .getAsset("images/settings_bg_button.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-        NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        // Create drawables with tint colors
+        TextureRegionDrawable buttonDrawable = new TextureRegionDrawable(buttonRegion);
 
-        NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.9f, 0.7f, 0.5f, 1f)); // subtle darken
+        TextureRegionDrawable pressedDrawable = new TextureRegionDrawable(buttonRegion);
+        pressedDrawable.tint(new Color(0.8f, 0.8f, 0.8f, 1f));
 
-        NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.05f, 1.05f, 1.05f, 1f)); // subtle brighten
+        TextureRegionDrawable hoverDrawable = new TextureRegionDrawable(buttonRegion);
+        hoverDrawable.tint(new Color(1.1f, 1.1f, 1.1f, 1f));
 
-        style.up = new NinePatchDrawable(buttonPatch);
-        style.down = new NinePatchDrawable(pressedPatch);
-        style.over = new NinePatchDrawable(hoverPatch);
+        style.up = buttonDrawable;
+        style.down = pressedDrawable;
+        style.over = hoverDrawable;
 
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;

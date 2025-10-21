@@ -542,7 +542,7 @@ public class ForestGameArea2 extends GameArea2 {
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         if (!hasExistingPlayer) {
-            spawnIntroDialogue();
+            showChapterIntro();
         } else {
             // 如果已有玩家（从存档加载），直接播放音乐
             createHeroPlacementUI();
@@ -1105,6 +1105,27 @@ public class ForestGameArea2 extends GameArea2 {
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+    
+    /**
+     * 显示章节介绍
+     */
+    private void showChapterIntro() {
+        String[] storyTexts = {
+            "Chapter II : Ascent",
+            "Beyond the frozen frontier lies Ascent\nthe holy city of the AI, a fortress of steel and neon.\nHere, the mechanical heart beats like a false god,\nand rivers of data flow in cold blue light.",
+            "Amid the snowfall, human spell circles ignite.\nIncantations and lightning weave together above the skyline.\nMagic tears through the city's shields,\nand you the last Commander of mankind\nlead the resistance toward the neon summit.\n\n\"To climb is not to flee but to reclaim.\""
+        };
+        
+        Entity chapterEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.ChapterIntroComponent(
+                        storyTexts,
+                        () -> {
+                            // 章节介绍结束后开始对话
+                            spawnIntroDialogue();
+                        })
+        );
+        spawnEntity(chapterEntity);
     }
 
     /**

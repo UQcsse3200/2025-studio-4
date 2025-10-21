@@ -546,7 +546,7 @@ public class ForestGameArea extends GameArea {
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         if (!hasExistingPlayer) {
-            spawnIntroDialogue();
+            showChapterIntro();
         }
 
         // Add hero placement system
@@ -1148,6 +1148,27 @@ public class ForestGameArea extends GameArea {
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+    
+    /**
+     * 显示章节介绍
+     */
+    private void showChapterIntro() {
+        String[] storyTexts = {
+            "Chapter I : Icebox",
+            "This is Icebox, a former research outpost now buried beneath eternal night.\nThe AI legions have ravaged this land beyond recognition,\nbut now, it stands as the cradle of humanity's awakening.",
+            "The sorcerers gathered here forming circles of frost and flame\nunleashed the first wave of pure human magic, untouched by machines.\nGlaciers shattered. Circuits failed.\nAcross the frozen plains, the echoes of ancient power\nannounced the dawn of rebellion.\n\n\"On the coldest land, the oldest flame burns once more.\""
+        };
+        
+        Entity chapterEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.ChapterIntroComponent(
+                        storyTexts,
+                        () -> {
+                            // 章节介绍结束后开始对话
+                            spawnIntroDialogue();
+                        })
+        );
+        spawnEntity(chapterEntity);
     }
 
     /**

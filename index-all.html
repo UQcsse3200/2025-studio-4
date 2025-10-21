@@ -2877,6 +2877,14 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a mapping of tower types to their Path B upgrades.</div>
 </dd>
+<dt><a href="com/csse3200/game/areas/IMapEditor.html#getPathTiles()" class="member-name-link">getPathTiles()</a> - Method in interface com.csse3200.game.areas.<a href="com/csse3200/game/areas/IMapEditor.html" title="interface in com.csse3200.game.areas">IMapEditor</a></dt>
+<dd>
+<div class="block">✅ 新增：只返回由 createPathTile(...) 写入的“普通路径格”坐标</div>
+</dd>
+<dt><a href="com/csse3200/game/areas/MapEditor.html#getPathTiles()" class="member-name-link">getPathTiles()</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/MapEditor.html" title="class in com.csse3200.game.areas">MapEditor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/areas2/MapTwo/MapEditor2.html#getPathTiles()" class="member-name-link">getPathTiles()</a> - Method in class com.csse3200.game.areas2.MapTwo.<a href="com/csse3200/game/areas2/MapTwo/MapEditor2.html" title="class in com.csse3200.game.areas2.MapTwo">MapEditor2</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/SummonPlacementComponent.html#getPendingType()" class="member-name-link">getPendingType()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonPlacementComponent.html" title="class in com.csse3200.game.components.hero.engineer">SummonPlacementComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html#getPendingType()" class="member-name-link">getPendingType()</a> - Method in class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a></dt>
@@ -3540,7 +3548,13 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/ui/Hero/BaseHeroStatusPanelComponent.html#heroName" class="member-name-link">heroName</a> - Variable in class com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">默认 Hero 的一体化外观/形态/皮肤/升级控制中心：
+ - 三形态（1/2/3）切换（带冷却）
+ - 皮肤变更（热更新外观与子弹）
+ - 升级后：锁定武器栏 + 升级子弹贴图 + 按等级改“身体贴图”
+ - 负责预加载 heroTexture / bulletTexture / levelTextures[*]，避免升级瞬白</div>
+</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html#%3Cinit%3E(com.csse3200.game.entities.configs.HeroConfig,com.csse3200.game.entities.configs.HeroConfig2,com.csse3200.game.entities.configs.HeroConfig3)" class="member-name-link">HeroOneShotFormSwitchComponent(HeroConfig, HeroConfig2, HeroConfig3)</a> - Constructor for class com.csse3200.game.components.hero.<a href="com/csse3200/game/components/hero/HeroOneShotFormSwitchComponent.html" title="class in com.csse3200.game.components.hero">HeroOneShotFormSwitchComponent</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/HeroPlacementComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero">HeroPlacementComponent</a> - Class in <a href="com/csse3200/game/components/hero/package-summary.html">com.csse3200.game.components.hero</a></dt>
@@ -3879,6 +3893,16 @@ loadScripts(document, 'script');</script>
 <dt><a href="com/csse3200/game/areas2/terrainTwo/TerrainComponent2.TerrainOrientation.html#ISOMETRIC" class="member-name-link">ISOMETRIC</a> - Enum constant in enum class com.csse3200.game.areas2.terrainTwo.<a href="com/csse3200/game/areas2/terrainTwo/TerrainComponent2.TerrainOrientation.html" title="enum class in com.csse3200.game.areas2.terrainTwo">TerrainComponent2.TerrainOrientation</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/terminal/Terminal.html#isOpen()" class="member-name-link">isOpen()</a> - Method in class com.csse3200.game.ui.terminal.<a href="com/csse3200/game/ui/terminal/Terminal.html" title="class in com.csse3200.game.ui.terminal">Terminal</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/areas/IMapEditor.html#isPath(int,int)" class="member-name-link">isPath(int, int)</a> - Method in interface com.csse3200.game.areas.<a href="com/csse3200/game/areas/IMapEditor.html" title="interface in com.csse3200.game.areas">IMapEditor</a></dt>
+<dd>
+<div class="block">✅ 新增：判断某个格子是否为“普通路径格”</div>
+</dd>
+<dt><a href="com/csse3200/game/areas/MapEditor.html#isPath(int,int)" class="member-name-link">isPath(int, int)</a> - Method in class com.csse3200.game.areas.<a href="com/csse3200/game/areas/MapEditor.html" title="class in com.csse3200.game.areas">MapEditor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/areas2/MapTwo/MapEditor2.html#isPath(int,int)" class="member-name-link">isPath(int, int)</a> - Method in class com.csse3200.game.areas2.MapTwo.<a href="com/csse3200/game/areas2/MapTwo/MapEditor2.html" title="class in com.csse3200.game.areas2.MapTwo">MapEditor2</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#isPath(int,int)" class="member-name-link">isPath(int, int)</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/engineer/SummonPlacementComponent.html#isPlacementActive()" class="member-name-link">isPlacementActive()</a> - Method in class com.csse3200.game.components.hero.engineer.<a href="com/csse3200/game/components/hero/engineer/SummonPlacementComponent.html" title="class in com.csse3200.game.components.hero.engineer">SummonPlacementComponent</a></dt>
 <dd>&nbsp;</dd>
@@ -4983,6 +5007,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Refreshes the list of invalid tiles for tower placement from the MapEditor.</div>
 </dd>
+<dt><a href="com/csse3200/game/components/maingame/SimplePlacementController.html#refreshPathTiles()" class="member-name-link">refreshPathTiles()</a> - Method in class com.csse3200.game.components.maingame.<a href="com/csse3200/game/components/maingame/SimplePlacementController.html" title="class in com.csse3200.game.components.maingame">SimplePlacementController</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/files/UserSettings.DisplaySettings.html#refreshRate" class="member-name-link">refreshRate</a> - Variable in class com.csse3200.game.files.<a href="com/csse3200/game/files/UserSettings.DisplaySettings.html" title="class in com.csse3200.game.files">UserSettings.DisplaySettings</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/ui/Hero/BaseHeroStatusPanelComponent.html#refreshUpgradeInfo()" class="member-name-link">refreshUpgradeInfo()</a> - Method in class com.csse3200.game.ui.Hero.<a href="com/csse3200/game/ui/Hero/BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></dt>

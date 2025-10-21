@@ -40,6 +40,7 @@ public class ProjectileComponent extends Component {
     private float savedScaleX = 1f;
     private float savedScaleY = 1f;
 
+
     /**
      * @param vx   horizontal velocity (units/second)
      * @param vy   vertical velocity (units/second)

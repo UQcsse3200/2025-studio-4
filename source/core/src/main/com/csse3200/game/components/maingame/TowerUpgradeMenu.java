@@ -806,11 +806,14 @@ public class TowerUpgradeMenu extends UIComponent {
             if ("bank".equalsIgnoreCase(currentTowerType)) {
                 int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
                         ? upgradesB.get(nextLevelB).cost : 0;
-                CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
-                        : nextLevelB == 3 ? CurrencyType.NEUROCHIP
-                        : displayCurrency;
+                // We still set the title text to reflect what unlocks next, but the icon on the button
+                // must show the COST currency (Titanium Core), not the unlocked currency.
+                // CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
+                //         : nextLevelB == 3 ? CurrencyType.NEUROCHIP
+                //         : displayCurrency;
                 boolean canAffordB = canAffordCost(costB, displayCurrency);
-                setupButtonContentWithAffordability(pathBButton, costB, unlockCurrency, canAffordB);
+                // CHANGED: pass displayCurrency (cost currency) so the icon shows Titanium Core
+                setupButtonContentWithAffordability(pathBButton, costB, displayCurrency, canAffordB);
                 // Inline affordability state
                 pathBButton.setDisabled(!canAffordB);
                 pathBButton.setColor(canAffordB ? NORMAL_COLOR : GREYED_OUT_COLOR);

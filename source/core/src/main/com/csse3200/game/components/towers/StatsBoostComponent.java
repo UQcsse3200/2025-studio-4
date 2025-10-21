@@ -8,6 +8,10 @@ import com.csse3200.game.components.towers.TowerComponent;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Applies a multiplicative boost from a totem to towers in range.
@@ -24,16 +28,28 @@ import java.util.Map;
  *
  * The component keeps track of the multiplier it applied per target so it can
  * remove/adjust only its own contribution (safe for overlapping totems).
+ *
+ * Stacking rules:
+ *  - If allowStacking is true (default), multiple totems can boost the same tower.
+ *  - If false, only one totem can boost a tower (first-come wins). Claim is released if that
+ *    totem goes out of range or is disposed/sold, allowing another totem to apply next frame.
  */
 public class StatsBoostComponent extends Component {
     private final Map<Entity, Float> appliedMultiplier = new HashMap<>();
     private float lastComputedBooster = -1f;
-
-    // Nerfed booster tuning
-    private static final float BASE_BOOST = 1.05f;   // was 1.10f
-    private static final float BOOST_STEP = 0.05f;   // was 0.10f
-    private static final float MAX_BOOST  = 1.25f;   // hard cap to prevent OP stacking
+    private static final Map<Entity, Integer> GLOBAL_TOTEM_CLAIMS = new WeakHashMap<>();
+    private static final float BASE_BOOST = 1.05f;
+    private static final float BOOST_STEP = 0.05f;
+    private static final float MAX_BOOST  = 1.25f;
     private static final float MIN_COOLDOWN = 0.001f;
+
+    // TEST HOOK: Optional list of entities used in tests when the EntityService is unavailable.
+    private static List<Entity> TEST_ENTITIES = null;
+
+    // Allow tests to inject entities list without ServiceLocator.
+    static void setTestEntities(List<Entity> entities) {
+        TEST_ENTITIES = entities;
+    }
 
     /**
      * Initializes the component.
@@ -68,15 +84,9 @@ public class StatsBoostComponent extends Component {
             while (it.hasNext()) {
                 Map.Entry<Entity, Float> e = it.next();
                 Entity target = e.getKey();
-                if (target == null) {
-                    it.remove();
-                    continue;
-                }
+                if (target == null) { it.remove(); continue; }
                 TowerStatsComponent tStats = target.getComponent(TowerStatsComponent.class);
-                if (tStats == null) {
-                    it.remove();
-                    continue;
-                }
+                if (tStats == null) { it.remove(); continue; }
                 // Nerfed: only adjust damage and cooldown by ratio
                 tStats.setDamage(tStats.getDamage() * ratio);
                 tStats.setAttackCooldown(Math.max(MIN_COOLDOWN, tStats.getAttackCooldown() / ratio));
@@ -89,11 +99,22 @@ public class StatsBoostComponent extends Component {
         lastComputedBooster = booster;
 
         var es = ServiceLocator.getEntityService();
-        if (es == null) return;
+        // Use ServiceLocator when present; otherwise fall back to test hook if set.
+        Iterable<Entity> iterable = null;
+        if (es != null) {
+            try {
+                iterable = es.getEntitiesCopy();
+            } catch (Exception ignored) {
+            }
+        }
+        if (iterable == null) {
+            if (TEST_ENTITIES == null) return; // no source of entities; nothing to do
+            iterable = TEST_ENTITIES;
+        }
 
         Map<Entity, Boolean> found = new HashMap<>();
 
-        for (Entity other : es.getEntitiesCopy()) {
+        for (Entity other : iterable) {
             if (other == null || other == entity) continue;
             TowerComponent towerComp = other.getComponent(TowerComponent.class);
             TowerStatsComponent tStats = other.getComponent(TowerStatsComponent.class);
@@ -139,7 +160,15 @@ public class StatsBoostComponent extends Component {
      */
     public void onTargetStatsChanged(Entity target) {
         if (target == null) return;
-        appliedMultiplier.remove(target);
+        // Revert our current contribution (if any) so next update will reapply cleanly
+        Float applied = appliedMultiplier.remove(target);
+        if (applied != null) {
+            TowerStatsComponent tStats = target.getComponent(TowerStatsComponent.class);
+            if (tStats != null) {
+                tStats.setDamage(tStats.getDamage() / applied);
+                tStats.setAttackCooldown(Math.max(MIN_COOLDOWN, tStats.getAttackCooldown() * applied));
+            }
+        }
     }
 
     /**

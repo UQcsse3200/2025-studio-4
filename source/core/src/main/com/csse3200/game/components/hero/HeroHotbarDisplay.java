@@ -29,6 +29,7 @@ public class HeroHotbarDisplay extends UIComponent {
     private Table rootTable;
     private Skin uiSkin;
     private HeroPlacementComponent placement;
+    private boolean isVisible = true; // 默认可见
 
     // 背景纹理（手动创建，需要释放）
     private Texture bgTexture;
@@ -241,6 +242,16 @@ public class HeroHotbarDisplay extends UIComponent {
         chosenBtn = newBtn;
     }
 
+    /**
+     * 设置英雄UI的可见性
+     * @param visible true显示，false隐藏
+     */
+    public void setVisible(boolean visible) {
+        this.isVisible = visible;
+        if (rootTable != null) {
+            rootTable.setVisible(visible);
+        }
+    }
 
     @Override
     public void draw(SpriteBatch batch) {

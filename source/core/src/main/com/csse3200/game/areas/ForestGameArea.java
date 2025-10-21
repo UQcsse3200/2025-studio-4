@@ -1121,15 +1121,30 @@ public class ForestGameArea extends GameArea {
      * 显示防御塔UI（在对话结束后调用）
      */
     private void showTowerUI() {
-        // 找到主UI实体并显示防御塔列表组件
+        // 先隐藏塔防UI
         for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
             TowerHotbarDisplay towerUI = entity.getComponent(TowerHotbarDisplay.class);
             if (towerUI != null) {
-                towerUI.setVisible(true);
-                logger.info("防御塔列表已显示");
+                towerUI.setVisible(false);
+                logger.info("防御塔列表已隐藏");
                 break;
             }
         }
+        
+        // 3.3秒后显示塔防UI
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+                    TowerHotbarDisplay towerUI = entity.getComponent(TowerHotbarDisplay.class);
+                    if (towerUI != null) {
+                        towerUI.setVisible(true);
+                        logger.info("防御塔列表已显示");
+                        break;
+                    }
+                }
+            }
+        }, 3.3f);
     }
 
     private void playMusic() {

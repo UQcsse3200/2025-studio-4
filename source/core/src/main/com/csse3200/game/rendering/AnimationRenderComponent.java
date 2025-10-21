@@ -1,5 +1,6 @@
 package com.csse3200.game.rendering;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -41,6 +42,9 @@ public class AnimationRenderComponent extends RenderComponent {
   private Animation<TextureRegion> currentAnimation;
   private String currentAnimationName;
   private float animationPlayTime;
+  
+  // 颜色特效支持
+  private final Color tint = new Color(1f, 1f, 1f, 1f);
 
   /**
    * Create the component for a given texture atlas.
@@ -121,9 +125,9 @@ public class AnimationRenderComponent extends RenderComponent {
   public void startAnimation(String name) {
     Animation<TextureRegion> animation = animations.getOrDefault(name, null);
     if (animation == null) {
-      logger.error(
-          "Attempted to play unknown animation {}. Ensure animation is added before playback.",
-          name);
+      //logger.error(
+          //"Attempted to play unknown animation {}. Ensure animation is added before playback.",
+          //name);
       return;
     }
 
@@ -164,6 +168,24 @@ public class AnimationRenderComponent extends RenderComponent {
   public boolean isFinished() {
     return currentAnimation != null && currentAnimation.isAnimationFinished(animationPlayTime);
   }
+  
+  /**
+   * 设置动画的颜色（色调）
+   * @param color 要应用的颜色
+   */
+  public void setColor(Color color) {
+    if (color != null) {
+      this.tint.set(color);
+    }
+  }
+  
+  /**
+   * 获取当前的颜色（色调）
+   * @return 当前颜色
+   */
+  public Color getColor() {
+    return new Color(tint);
+  }
 
   @Override
   protected void draw(SpriteBatch batch) {
@@ -173,7 +195,16 @@ public class AnimationRenderComponent extends RenderComponent {
     TextureRegion region = currentAnimation.getKeyFrame(animationPlayTime);
     Vector2 pos = entity.getPosition();
     Vector2 scale = entity.getScale();
+    
+    // 应用颜色特效
+    Color oldColor = batch.getColor();
+    batch.setColor(tint);
+    
     batch.draw(region, pos.x, pos.y, scale.x, scale.y);
+    
+    // 恢复原始颜色
+    batch.setColor(oldColor);
+    
     float lastTime = animationPlayTime;  
     animationPlayTime += timeSource.getDeltaTime();
     if (currentAnimation.getPlayMode() == PlayMode.NORMAL &&

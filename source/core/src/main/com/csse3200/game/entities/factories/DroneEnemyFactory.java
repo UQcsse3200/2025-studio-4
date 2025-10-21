@@ -21,6 +21,7 @@ import com.csse3200.game.utils.Difficulty;
 import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 public class DroneEnemyFactory {
     // Default drone configuration
@@ -216,7 +217,19 @@ public class DroneEnemyFactory {
         SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
         Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
         if (speedMarker != null) {
-            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+            float multiplier = speedMarker.getSpeedMultiplier();
+            desiredSpeed.scl(multiplier);
+            
+            // 如果是减速区域（倍率小于1.0），触发蓝色减速特效
+            if (multiplier < 1.0f) {
+                drone.getEvents().trigger("applySlow");
+            } else {
+                // 如果是加速区域或正常区域，移除减速特效
+                drone.getEvents().trigger("removeSlow");
+            }
+        } else {
+            // 如果没有速度修改器，移除减速特效
+            drone.getEvents().trigger("removeSlow");
         }
 
         if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {
@@ -230,7 +243,7 @@ public class DroneEnemyFactory {
      * @param drone The drone entity to update
      * @param newSpeed The new speed vector
      */
-    private static void updateSpeed(Entity drone, Vector2 newSpeed) {
+    public static void updateSpeed(Entity drone, Vector2 newSpeed) {
         WaypointComponent dwc = drone.getComponent(WaypointComponent.class);
         if (dwc != null) {
             dwc.incrementPriorityTaskCount();

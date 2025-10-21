@@ -47,6 +47,7 @@ public class MainBookDisplayActions extends Component {
         entity.getEvents().addListener("goToCurrency", this::goToCurrency);
         entity.getEvents().addListener("goToEnemy", this::goToEnemy);
         entity.getEvents().addListener("goToTower", this::goToTower);
+        entity.getEvents().addListener("goToHero", this::goToHero);
     }
 
     /**
@@ -101,6 +102,16 @@ public class MainBookDisplayActions extends Component {
         } else {
             logger.info("Sound not found: " + soundPath);
         }
+    }
+
+    /**
+     * Event handler for navigating to the hero book page and
+     * playing the open book sound effect.
+     */
+    private void goToHero() {
+        logger.info("Go to hero page");
+        game.setScreen(GdxGame.ScreenType.HERO_BOOK);
+        playCurrencySound(openBookSoundPath);
     }
 
 }

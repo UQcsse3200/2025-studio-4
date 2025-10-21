@@ -89,7 +89,7 @@ public class TouchAttackComponent extends Component {
       entity.getEvents().trigger("attackStart");
       hasAttacked = true;
       attackedPlayerBase = false; // This was NOT a base attack
-      Gdx.app.log("ATTACK", "attackStart fired by " + entity.getId() + " on enemy");
+      //Gdx.app.log("ATTACK", "attackStart fired by " + entity.getId() + " on enemy");
     } else {
       Entity target2 = ((BodyUserData) other.getBody().getUserData()).entity;
       PlayerCombatStatsComponent playerStats = target2.getComponent(PlayerCombatStatsComponent.class);

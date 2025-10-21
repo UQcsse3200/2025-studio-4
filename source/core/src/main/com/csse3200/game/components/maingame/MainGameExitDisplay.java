@@ -52,32 +52,16 @@ public class MainGameExitDisplay extends UIComponent {
     table.setFillParent(true);
 
     // Create custom button style
-    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
-    TextButton saveBtn = new TextButton("Save", customButtonStyle);
+    TextButtonStyle customButtonStyle = UIStyleHelper.mainGameMenuButtonStyle();
+    // Note: Save button removed - now in pause menu
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     speedButton = new TextButton("Speed: 1x", customButtonStyle);
     startWaveButton = new TextButton("Start Wave", customButtonStyle);
 
     // Set button size
-    float buttonWidth = 120f;
+    float buttonWidth = 140f;
     float buttonHeight = 40f;
-    
-    saveBtn.getLabel().setColor(Color.CYAN);
-    mainMenuBtn.getLabel().setColor(Color.CYAN);
-    rankingBtn.getLabel().setColor(Color.CYAN);
-    speedButton.getLabel().setColor(Color.CYAN);
-    startWaveButton.getLabel().setColor(Color.CYAN);
-    
-    saveBtn.addListener(
-      new ChangeListener() {
-        @Override
-        public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Save button clicked");
-          entity.getEvents().trigger("save");
-        }
-      });
-
     
     mainMenuBtn.addListener(
       new ChangeListener() {
@@ -125,15 +109,14 @@ public class MainGameExitDisplay extends UIComponent {
         }
     });
 
-    table.add(saveBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
+    // Save button removed - now in pause menu
+    table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(speedButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(speedButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
-    table.row();
-    table.add(startWaveButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(startWaveButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
 
     stage.addActor(table);
     applyUiScale();
@@ -189,7 +172,7 @@ public class MainGameExitDisplay extends UIComponent {
    */
   private void enableButton() {
     startWaveButton.setDisabled(false);
-    startWaveButton.getLabel().setColor(Color.CYAN);
+    startWaveButton.getLabel().setColor(Color.WHITE);
     // Restore full color
     startWaveButton.setColor(Color.WHITE);
   }

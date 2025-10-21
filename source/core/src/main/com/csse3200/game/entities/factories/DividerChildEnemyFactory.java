@@ -20,6 +20,7 @@ import com.csse3200.game.utils.Difficulty;
 import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 public class DividerChildEnemyFactory {
     // Default divider child configuration

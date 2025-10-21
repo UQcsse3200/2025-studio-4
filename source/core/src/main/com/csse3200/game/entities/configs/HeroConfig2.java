@@ -15,25 +15,27 @@ public class HeroConfig2 extends HeroConfig {
   public float moveSpeed = 220f;
 
   /** Attack cooldown (seconds per shot) — lower values mean faster attack speed */
-  public float attackCooldown = 0.20f;
+  public float attackCooldown = 0.45f;
 
   /** Bullet lifetime (seconds) */
   public float bulletLife = 1.6f;
 
   /** Bullet speed (pixels per second) */
-  public float bulletSpeed = 2000f;
+  public float bulletSpeed = 400f;
 
   /** Path to hero sprite texture (relative to assets) */
   public String heroTexture = "images/hero2/Heroshoot.png";
 
   /** Path to bullet sprite texture (relative to assets) */
   public String bulletTexture = "images/hero2/Bullet.png";
+  public String bulletTextureLv2 = "images/hero/Super_Bullet.png";
 
   public String[] levelTextures = {
           "images/hero2/Heroshoot.png",
           "images/hero2/Hero_level2.png",
   };
-
+  public String shootSfx;
+  public Float shootSfxVolume;
 
   /**
    * Default constructor.

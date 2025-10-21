@@ -5,6 +5,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.areas.ForestGameArea;
+import com.csse3200.game.areas.GameArea;
 import com.csse3200.game.areas2.MapTwo.GameArea2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -239,7 +240,16 @@ public class DividerEnemyFactoryLevel2 {
         };
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        final int targetWaypointIndex = (wc != null) ? Math.max(0, wc.getCurrentWaypointIndex() - 1) : 0;
+        
+        // Clamp waypoint index to valid range
+        int targetWaypointIndex = 0;
+        if (wc != null && savedWaypoints != null && !savedWaypoints.isEmpty()) {
+            int currentIdx = wc.getCurrentWaypointIndex();
+            // Clamp to valid range: [0, savedWaypoints.size() - 1]
+            targetWaypointIndex = Math.max(0, Math.min(savedWaypoints.size() - 1, currentIdx - 1));
+        }
+        
+        final int finalTargetWaypointIndex = targetWaypointIndex;
 
         // Dispose and spawn children
         Gdx.app.postRunnable(() -> {
@@ -247,10 +257,10 @@ public class DividerEnemyFactoryLevel2 {
             entity.dispose();
 
             // Spawn child entities with waypoints
-            if (area != null && savedWaypoints != null) {
+            if (area != null && savedWaypoints != null && !savedWaypoints.isEmpty()) {
                 for (Vector2 offset : offsets) {
                     Entity child = DividerChildEnemyFactory.createDividerChildEnemy(
-                            target, savedWaypoints, targetWaypointIndex, difficulty
+                            target, savedWaypoints, finalTargetWaypointIndex, difficulty
                     );
                     if (child != null) {
                         area.customSpawnEntityAt(child, pos.cpy().add(offset));

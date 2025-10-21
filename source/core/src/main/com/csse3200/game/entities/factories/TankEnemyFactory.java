@@ -21,6 +21,7 @@ import com.csse3200.game.utils.Difficulty;
 import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 public class TankEnemyFactory {
     // Default tank configuration
@@ -207,7 +208,19 @@ public class TankEnemyFactory {
         SpeedWaypointComponent speedMarker = waypoint.getComponent(SpeedWaypointComponent.class);
         Vector2 desiredSpeed = waypointComponent.getBaseSpeed();
         if (speedMarker != null) {
-            desiredSpeed.scl(speedMarker.getSpeedMultiplier());
+            float multiplier = speedMarker.getSpeedMultiplier();
+            desiredSpeed.scl(multiplier);
+            
+            // 如果是减速区域（倍率小于1.0），触发蓝色减速特效
+            if (multiplier < 1.0f) {
+                tank.getEvents().trigger("applySlow");
+            } else {
+                // 如果是加速区域或正常区域，移除减速特效
+                tank.getEvents().trigger("removeSlow");
+            }
+        } else {
+            // 如果没有速度修改器，移除减速特效
+            tank.getEvents().trigger("removeSlow");
         }
 
         if (!waypointComponent.getSpeed().epsilonEquals(desiredSpeed, SPEED_EPSILON)) {

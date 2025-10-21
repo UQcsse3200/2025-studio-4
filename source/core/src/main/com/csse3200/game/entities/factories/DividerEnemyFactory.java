@@ -22,6 +22,7 @@ import com.csse3200.game.utils.Difficulty;
 import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 
 public class DividerEnemyFactory {
@@ -239,7 +240,16 @@ public class DividerEnemyFactory {
         };
 
         WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        final int targetWaypointIndex = (wc != null) ? Math.max(0, wc.getCurrentWaypointIndex() - 1) : 0;
+        
+        // Clamp waypoint index to valid range
+        int targetWaypointIndex = 0;
+        if (wc != null && savedWaypoints != null && !savedWaypoints.isEmpty()) {
+            int currentIdx = wc.getCurrentWaypointIndex();
+            // Clamp to valid range: [0, savedWaypoints.size() - 1]
+            targetWaypointIndex = Math.max(0, Math.min(savedWaypoints.size() - 1, currentIdx - 1));
+        }
+        
+        final int finalTargetWaypointIndex = targetWaypointIndex;
 
         // Dispose and spawn children
         Gdx.app.postRunnable(() -> {
@@ -247,10 +257,10 @@ public class DividerEnemyFactory {
             entity.dispose();
 
             // Spawn child entities with waypoints
-            if (area != null && savedWaypoints != null) {
+            if (area != null && savedWaypoints != null && !savedWaypoints.isEmpty()) {
                 for (Vector2 offset : offsets) {
                     Entity child = DividerChildEnemyFactory.createDividerChildEnemy(
-                            target, savedWaypoints, targetWaypointIndex, difficulty
+                            target, savedWaypoints, finalTargetWaypointIndex, difficulty
                     );
                     if (child != null) {
                         area.customSpawnEntityAt(child, pos.cpy().add(offset));

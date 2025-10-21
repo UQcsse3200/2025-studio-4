@@ -675,7 +675,7 @@ public class IntroDialogueComponent extends UIComponent {
             largeFont.dispose();
           }
         }
-      }, 1.0f); // 最后一个单词消失后等待1秒再清理
+      }, 0.1f); // 最后一个单词消失后立即清理
       return;
     }
     
@@ -686,13 +686,13 @@ public class IntroDialogueComponent extends UIComponent {
     currentLabel.setVisible(true);
     
     // 开始缩放动画：从3.0倍缩放到1.0倍
-    animateScale(currentLabel, 3.0f, 1.0f, 0.8f, () -> {
-      // 缩放完成后，等待0.3秒然后开始消失动画
+    animateScale(currentLabel, 3.0f, 1.0f, 0.4f, () -> {
+      // 缩放完成后，等待0.2秒然后开始消失动画
       com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
         @Override
         public void run() {
           // 开始消失动画：从1.0倍匀速缩小到0.1倍
-          animateScaleLinear(currentLabel, 1.0f, 0.1f, 0.3f, () -> {
+          animateScaleLinear(currentLabel, 1.0f, 0.1f, 0.2f, () -> {
             // 消失完成后隐藏单词
             currentLabel.setVisible(false);
             
@@ -700,7 +700,7 @@ public class IntroDialogueComponent extends UIComponent {
             animateSingleWord(wordLabels, nextWordIndex, largeFont);
           });
         }
-      }, 0.3f);
+      }, 0.2f);
     });
   }
   

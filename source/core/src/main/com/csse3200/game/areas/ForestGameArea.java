@@ -1144,7 +1144,7 @@ public class ForestGameArea extends GameArea {
                     }
                 }
             }
-        }, 3.3f);
+        }, 2.0f);
     }
 
     private void playMusic() {

@@ -407,6 +407,9 @@ public class IntroDialogueComponent extends UIComponent {
     // 停止当前播放的音频并清理资源
     audioManager.dispose();
 
+    // 显示"Ready for Fight!"提示
+    showReadyForFightMessage();
+
     if (overlayRoot != null) {
       overlayRoot.remove();
       overlayRoot = null;
@@ -604,5 +607,61 @@ public class IntroDialogueComponent extends UIComponent {
     }
     String normalised = path.replace("\\", "/").toLowerCase(Locale.ROOT);
     return normalised.endsWith("talker.png") || normalised.endsWith("talker2.png");
+  }
+
+  /**
+   * 显示"Ready for Fight!"提示消息
+   */
+  private void showReadyForFightMessage() {
+    // 创建更大更清晰的字体
+    BitmapFont largeFont = createLargeFont();
+    
+    // 创建消息标签，使用亮黄色
+    Label.LabelStyle labelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
+    Label readyLabel = new Label("Ready for Fight!", labelStyle);
+    readyLabel.setAlignment(Align.center);
+    
+    // 设置标签位置为屏幕中央
+    float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    readyLabel.setPosition(
+        (screenWidth - readyLabel.getPrefWidth()) / 2f,
+        (screenHeight - readyLabel.getPrefHeight()) / 2f
+    );
+    
+    // 添加到舞台
+    stage.addActor(readyLabel);
+    
+    // 2秒后自动移除消息
+    final BitmapFont finalFont = largeFont;
+    com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+      @Override
+      public void run() {
+        if (readyLabel != null) {
+          readyLabel.remove();
+        }
+        // 清理字体资源
+        if (finalFont != null && finalFont != SimpleUI.font()) {
+          finalFont.dispose();
+        }
+      }
+    }, 2.0f);
+  }
+  
+  /**
+   * 创建大字体
+   */
+  private BitmapFont createLargeFont() {
+    try {
+      // 尝试加载更大的字体
+      BitmapFont font = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
+      font.getData().setScale(2.0f); // 放大2倍
+      return font;
+    } catch (Exception e) {
+      // 如果加载失败，使用默认字体并放大
+      BitmapFont defaultFont = SimpleUI.font();
+      defaultFont.getData().setScale(3.0f); // 放大3倍
+      return defaultFont;
+    }
   }
 }

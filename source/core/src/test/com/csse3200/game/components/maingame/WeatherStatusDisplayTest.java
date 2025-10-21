@@ -109,6 +109,16 @@ class WeatherStatusDisplayTest {
 
     @Override
     public void setPathLayerOpacity(float opacity) {}
+    // ✅ 新增接口的桩实现
+    @Override
+    public java.util.List<GridPoint2> getPathTiles() {
+      return java.util.Collections.emptyList();
+    }
+
+    @Override
+    public boolean isPath(int x, int y) {
+      return false;
+    }
   }
 
   private static class TestTerrain implements ITerrainComponent {
@@ -135,6 +145,14 @@ class WeatherStatusDisplayTest {
     @Override
     public com.badlogic.gdx.maps.tiled.TiledMap getMap() {
       return null;
+    }
+    
+    public List<GridPoint2> getPathTiles() {
+      return java.util.Collections.emptyList();
+    }
+
+    public boolean isPath(int x, int y) {
+      return false;
     }
   }
 }

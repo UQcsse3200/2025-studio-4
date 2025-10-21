@@ -32,7 +32,7 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     private static final float POLL_INTERVAL_SEC = 0.25f;
     private static final long SWITCH_COOLDOWN_MS = 3000L; // 3s 冷却
 
-    private final HeroConfig  cfg1;   // 形态1
+    private final HeroConfig cfg1;   // 形态1
     private final HeroConfig2 cfg2;   // 形态2
     private final HeroConfig3 cfg3;   // 形态3
 
@@ -56,20 +56,21 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     public void create() {
         super.create();
 
-        // 预加载：三形态的 body / bullet / levelTextures[*]
+        // ✅ 直接绑定自身实体，别再全局扫描/轮询
+        this.hero = this.getEntity();
+
+        // 预加载三形态贴图（含 levelTextures[*]）
         preloadFormTextures(cfg1, cfg2, cfg3);
 
-        if (!tryFindHero()) {
-            armHeroPolling();
-        } else {
-            hookUpgradeLock();
-            bootToForm1();
-        }
+        // 先挂升级/锁定事件
+        hookUpgradeLock();
 
-        // 监听 UI 武器切换（1/2/3），内置 3s 冷却
+        // ✅ 放到下一帧再切到形态1，确保它是“最后写贴图的人”
+        Gdx.app.postRunnable(this::bootToForm1);
+
+        // 监听 UI 切换（保持不变，去掉 tryFindHero 校验）
         this.getEntity().getEvents().addListener("ui:weapon:switch", (Integer form) -> {
             if (locked) return;
-            if (hero == null && !tryFindHero()) return;
 
             long now = TimeUtils.millis();
             if (now < nextSwitchAtMs) {
@@ -82,29 +83,25 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             if (target < 1 || target > 3) return;
             if (target == currentForm) return;
 
-            boolean ok = applyForm(target, "ui-" + target);
-            if (ok) {
+            if (applyForm(target, "ui-" + target)) {
                 nextSwitchAtMs = now + SWITCH_COOLDOWN_MS;
                 hero.getEvents().trigger("ui:weapon:cooldown:start", SWITCH_COOLDOWN_MS);
                 Gdx.app.log("HeroSkinSwitch", "switched by UI to form " + target + " (cooldown 3s)");
             }
         });
 
-        // 皮肤变更（仅默认 Hero；工程师/武士在各自组件里监听）
+        // 皮肤变更（保留）
         var gs = ServiceLocator.getGameStateService();
         if (gs != null) {
             unsubSkinChanged = gs.onSkinChanged((who, newSkin) -> {
                 if (who != com.csse3200.game.services.GameStateService.HeroType.HERO) return;
 
-                // 改三形态皮肤映射（含 levelTextures[0] 覆盖）
                 applySkinToForm(cfg1, newSkin);
                 applySkinToForm(cfg2, newSkin);
                 applySkinToForm(cfg3, newSkin);
 
-                // 预加载新贴图，避免热切瞬白
                 preloadFormTextures(cfg1, cfg2, cfg3);
 
-                // 正在使用的形态立即热刷新
                 Object cur = switch (currentForm) {
                     case 1 -> cfg1;
                     case 2 -> cfg2;
@@ -112,22 +109,21 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                     default -> null;
                 };
                 if (cur != null) {
-                    String bodyTex = pickBodyTextureForLevel(cur, 1); // 当前等级未知就按Lv1兜底
-                    if (bodyTex != null && !bodyTex.isBlank()) {
-                        switchTexture(bodyTex, "skin-changed");
-                    }
+                    String bodyTex = pickBodyTextureForLevel(cur, 1);
+                    if (bodyTex != null && !bodyTex.isBlank()) switchTexture(bodyTex, "skin-changed");
                     String bullet = reflectGet(cur, "bulletTexture");
-                    if (bullet != null && !bullet.isBlank()) {
-                        updateBulletTexture(bullet);
-                    }
+                    if (bullet != null && !bullet.isBlank()) updateBulletTexture(bullet);
                 }
             });
         }
     }
 
+
     /* ========================== 皮肤/外观辅助 ========================== */
 
-    /** 反射取 String 字段，失败返回 null */
+    /**
+     * 反射取 String 字段，失败返回 null
+     */
     private static String reflectGet(Object bean, String field) {
         if (bean == null) return null;
         try {
@@ -138,7 +134,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         }
     }
 
-    /** 将皮肤 key 应用到单个形态配置（更新 heroTexture / bulletTexture / levelTextures[0]） */
+    /**
+     * 将皮肤 key 应用到单个形态配置（更新 heroTexture / bulletTexture / levelTextures[0]）
+     */
     private void applySkinToForm(Object formCfg, String skinKey) {
         if (formCfg == null || skinKey == null || skinKey.isBlank()) return;
         try {
@@ -154,7 +152,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 String bullet = com.csse3200.game.entities.configs.HeroSkinAtlas.bullet(
                         com.csse3200.game.services.GameStateService.HeroType.HERO, skinKey);
                 if (bullet != null && !bullet.isBlank()) bulletTexF.set(formCfg, bullet);
-            } catch (NoSuchFieldException ignore) {}
+            } catch (NoSuchFieldException ignore) {
+            }
 
             // 防止 levelTextures[0] 把外观打回默认
             try {
@@ -162,17 +161,20 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 Object arr = levelsF.get(formCfg);
                 if (arr instanceof String[] levels) {
                     if (levels.length > 0) levels[0] = body;
-                    else levelsF.set(formCfg, new String[]{ body });
+                    else levelsF.set(formCfg, new String[]{body});
                 } else {
-                    levelsF.set(formCfg, new String[]{ body });
+                    levelsF.set(formCfg, new String[]{body});
                 }
-            } catch (NoSuchFieldException ignore) {}
+            } catch (NoSuchFieldException ignore) {
+            }
         } catch (Exception e) {
             Gdx.app.error("HeroSkinSwitch", "applySkinToForm failed", e);
         }
     }
 
-    /** 预加载各形态：heroTexture / bulletTexture / levelTextures[*] */
+    /**
+     * 预加载各形态：heroTexture / bulletTexture / levelTextures[*]
+     */
     private void preloadFormTextures(Object... forms) {
         ResourceService rs = ServiceLocator.getResourceService();
         ArrayList<String> toLoad = new ArrayList<>();
@@ -190,7 +192,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 if (arr instanceof String[] levels) {
                     for (String s : levels) if (s != null && !s.isBlank()) toLoad.add(s);
                 }
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
         }
         if (!toLoad.isEmpty()) {
             rs.loadTextures(toLoad.toArray(new String[0]));
@@ -198,27 +201,34 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         }
     }
 
-    /** 收集子弹贴图（单值/数组/Lv2） */
+    /**
+     * 收集子弹贴图（单值/数组/Lv2）
+     */
     private static void addBulletTextures(ArrayList<String> textures, Object cfg) {
         if (cfg == null) return;
         try {
             var single = cfg.getClass().getField("bulletTexture");
             Object v = single.get(cfg);
             if (v instanceof String s && !s.isBlank()) textures.add(s);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         try {
             var arr = cfg.getClass().getField("bulletTextures");
             Object v = arr.get(cfg);
             if (v instanceof String[] a) for (String s : a) if (s != null && !s.isBlank()) textures.add(s);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         try {
             var lv2 = cfg.getClass().getField("bulletTextureLv2");
             Object v = lv2.get(cfg);
             if (v instanceof String s && !s.isBlank()) textures.add(s);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
-    /** 升级用：按等级挑选“身体贴图”（优先 levelTextures[level-1]，否则 heroTexture） */
+    /**
+     * 升级用：按等级挑选“身体贴图”（优先 levelTextures[level-1]，否则 heroTexture）
+     */
     private String pickBodyTextureForLevel(Object cfg, int level) {
         if (cfg == null) return null;
         // levelTextures
@@ -232,12 +242,15 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                     if (s != null && !s.isBlank()) return s;
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         // fallback: heroTexture
         return reflectGet(cfg, "heroTexture");
     }
 
-    /** 升级用：按形态与等级选择子弹贴图（Lv2 > 数组[1] > 原始） */
+    /**
+     * 升级用：按形态与等级选择子弹贴图（Lv2 > 数组[1] > 原始）
+     */
     private String pickUpgradedBulletTexture(int form, int level) {
         if (level <= 1) return null;
         Object cfg = switch (form) {
@@ -252,7 +265,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             var lv2 = cfg.getClass().getField("bulletTextureLv2");
             Object v = lv2.get(cfg);
             if (v instanceof String s && s != null && !s.isBlank()) return s;
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         try {
             var arrField = cfg.getClass().getField("bulletTextures");
@@ -260,7 +274,8 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
             if (v instanceof String[] arr && arr.length > 1 && arr[1] != null && !arr[1].isBlank()) {
                 return arr[1];
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         return reflectGet(cfg, "bulletTexture");
     }
@@ -270,10 +285,16 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     private void armHeroPolling() {
         if (pollTask != null) return;
         pollTask = Timer.schedule(new Timer.Task() {
-            @Override public void run() {
-                if (locked) { cancel(); pollTask = null; return; }
+            @Override
+            public void run() {
+                if (locked) {
+                    cancel();
+                    pollTask = null;
+                    return;
+                }
                 if (tryFindHero()) {
-                    cancel(); pollTask = null;
+                    cancel();
+                    pollTask = null;
                     hookUpgradeLock();
                     bootToForm1();
                 }
@@ -281,7 +302,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         }, 0f, POLL_INTERVAL_SEC);
     }
 
-    /** 通过是否含 HeroTurretAttackComponent 识别默认 Hero，本地化 hero 引用 */
+    /**
+     * 通过是否含 HeroTurretAttackComponent 识别默认 Hero，本地化 hero 引用
+     */
     private boolean tryFindHero() {
         var entityService = ServiceLocator.getEntityService();
         if (entityService == null) {
@@ -297,7 +320,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         return false;
     }
 
-    /** 升级监听：升级后锁定 + 子弹升级 + 身体贴图升级 */
+    /**
+     * 升级监听：升级后锁定 + 子弹升级 + 身体贴图升级
+     */
     private void hookUpgradeLock() {
         if (hero == null) return;
 
@@ -317,7 +342,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
                 });
     }
 
-    /** 升级处理的集中入口 */
+    /**
+     * 升级处理的集中入口
+     */
     private void onUpgraded(int newLevel, String tag) {
         // 1) 升级子弹贴图
         switchToUpgradedBulletIfAvailable(newLevel);
@@ -401,7 +428,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
 
     /* ========================== 形态参数同步 ========================== */
 
-    /** 形态1：同步攻击参数 + 音效键/音量 + 基础攻击 */
+    /**
+     * 形态1：同步攻击参数 + 音效键/音量 + 基础攻击
+     */
     private void applyConfigToHero(HeroConfig cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -416,7 +445,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
-    /** 形态2：同步 */
+    /**
+     * 形态2：同步
+     */
     private void applyConfigToHero2(HeroConfig2 cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -431,7 +462,9 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
         if (stats != null) stats.setBaseAttack(cfg.baseAttack);
     }
 
-    /** 形态3：同步 */
+    /**
+     * 形态3：同步
+     */
     private void applyConfigToHero3(HeroConfig3 cfg) {
         if (hero == null || cfg == null) return;
         HeroTurretAttackComponent atc = hero.getComponent(HeroTurretAttackComponent.class);
@@ -470,13 +503,19 @@ public class HeroOneShotFormSwitchComponent extends InputComponent {
     /* ========================== 生命周期 ========================== */
 
     private void cancelTimers() {
-        if (pollTask != null) { pollTask.cancel(); pollTask = null; }
+        if (pollTask != null) {
+            pollTask.cancel();
+            pollTask = null;
+        }
     }
 
     @Override
     public void dispose() {
         super.dispose();
         cancelTimers();
-        try { if (unsubSkinChanged != null) unsubSkinChanged.close(); } catch (Exception ignore) {}
+        try {
+            if (unsubSkinChanged != null) unsubSkinChanged.close();
+        } catch (Exception ignore) {
+        }
     }
 }

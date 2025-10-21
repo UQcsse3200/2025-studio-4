@@ -518,4 +518,14 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         return new java.util.ArrayList<>(slowZoneTiles);
     }
 
+    @Override
+    public java.util.List<GridPoint2> getPathTiles() {
+        // pathTiles 只记录通过 createPathTile(...) 放进去的普通路径格
+        return new java.util.ArrayList<>(pathTiles.values());
+    }
+
+    @Override
+    public boolean isPath(int x, int y) {
+        return pathTiles.containsKey(x + "," + y);
+    }
 }

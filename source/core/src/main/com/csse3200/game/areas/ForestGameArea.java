@@ -1014,8 +1014,6 @@ public class ForestGameArea extends GameArea {
         }
     }
 
-
-
     private void spawnSamuraiAt(GridPoint2 cell) {
         // 1) 读 samurai 配置
         SamuraiConfig samCfg = FileLoader.readClass(SamuraiConfig.class, "configs/samurai.json");

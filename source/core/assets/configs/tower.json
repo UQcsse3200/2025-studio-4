@@ -154,7 +154,7 @@
       "range": 1.5,
       "cooldown": 1.3,
       "metalScrapCost": 0,
-      "titaniumCoreCost": 300,
+      "titaniumCoreCost": 500,
       "neurochipCost": 0,
       "projectileSpeed": 6.0,
       "projectileLife": 1,

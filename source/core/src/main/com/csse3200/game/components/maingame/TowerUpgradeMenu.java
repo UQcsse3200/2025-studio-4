@@ -64,10 +64,12 @@ public class TowerUpgradeMenu extends UIComponent {
     private static final Color GREYED_OUT_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.6f);
     private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f);
     private static final Color INSUFFICIENT_FUNDS_COLOR = new Color(1f, 0.3f, 0.3f, 1f); // Red tint for cost label
+    // New: dark grey button background
+    private static final Color BUTTON_DARK_GREY = new Color(0.18f, 0.18f, 0.20f, 1f);
 
     private final Map<String, Map<Integer, UpgradeStats>> pathAUpgradesPerTower;
     private final Map<String, Map<Integer, UpgradeStats>> pathBUpgradesPerTower;
-    
+
     // 防重复升级标志
     private boolean upgradeInProgress = false;
 
@@ -79,6 +81,9 @@ public class TowerUpgradeMenu extends UIComponent {
     // private Texture pathAButtonBg; // removed: keep skin 9-patch shape
     // private Texture pathBButtonBg; // removed: keep skin 9-patch shape
 
+    // NEW: cached snapshot of last rendered UI state
+    private UiSnapshot lastUiSnapshot;
+
     /**
      * Creates the UI for the tower upgrade menu and sets up listeners.
      */
@@ -86,7 +91,7 @@ public class TowerUpgradeMenu extends UIComponent {
         // Initialize upgrade data
         this.pathAUpgradesPerTower = TowerUpgradeData.getPathAUpgrades();
         this.pathBUpgradesPerTower = TowerUpgradeData.getPathBUpgrades();
-        
+
         // Debug: Print loaded upgrade data
         System.out.println("DEBUG: Loaded upgrade data for towers: " + pathAUpgradesPerTower.keySet());
     }
@@ -100,11 +105,11 @@ public class TowerUpgradeMenu extends UIComponent {
 
         rootTable = new Table();
         rootTable.setFillParent(true);
-        rootTable.bottom().padBottom(0); // stick to bottom
+        rootTable.bottom().padBottom(0); // ensure 0 bottom padding
         rootTable.setVisible(false);
 
         // Background (requested color, 90% opacity)
-        bgTexture = buildSolidTexture(new Color(0.10f, 0.10f, 0.12f, 0.75f));
+        bgTexture = buildSolidTexture(new Color(0.10f, 0.10f, 0.12f, 0.95f));
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
         Container<Table> container = new Container<>();
@@ -117,46 +122,54 @@ public class TowerUpgradeMenu extends UIComponent {
         // Path A
         Table pathATable = new Table(skin);
         pathATable.defaults().pad(5);
-        pathATitleLabel = new Label("Damage & Range", skin); // was local 'pathALabel'
-        pathATitleLabel.setColor(Color.ORANGE);
+        pathATitleLabel = new Label("Damage & Range", skin);
+        pathATitleLabel.setColor(Color.WHITE); // was ORANGE
         pathALevelLabel = new Label("Level: 1", skin);
+        pathALevelLabel.getStyle().fontColor = Color.valueOf("#FFFFFF"); // ensure white level label
         pathAButton = new TextButton("", skin);
         pathATable.add(pathATitleLabel).row();
         pathATable.add(pathALevelLabel).row();
         pathATable.add(pathAButton).width(180).row();
 
-        // Make Path A button background match its label color, preserving shape
+        // Make Path A button background dark grey
         {
             TextButton.TextButtonStyle base = new TextButton.TextButtonStyle(pathAButton.getStyle());
-            TextButton.TextButtonStyle tinted = tintedStyle(base, new Color(pathATitleLabel.getColor()));
+            TextButton.TextButtonStyle tinted = tintedStyle(base, BUTTON_DARK_GREY);
             pathAButton.setStyle(tinted);
         }
 
         // Path B
         Table pathBTable = new Table(skin);
         pathBTable.defaults().pad(5);
-        pathBTitleLabel = new Label("Cooldown & Speed", skin); // was local 'pathBLabel'
-        pathBTitleLabel.setColor(Color.SKY);
+        pathBTitleLabel = new Label("Cooldown & Speed", skin);
+        pathBTitleLabel.setColor(Color.WHITE); // was SKY
         pathBLevelLabel = new Label("Level: 1", skin);
+        pathBLevelLabel.setColor(Color.WHITE); // ensure white level label
         pathBButton = new TextButton("", skin);
         pathBTable.add(pathBTitleLabel).row();
         pathBTable.add(pathBLevelLabel).row();
         pathBTable.add(pathBButton).width(180).row();
 
-        // Make Path B button background match its label color, preserving shape
+        // Make Path B button background dark grey
         {
             TextButton.TextButtonStyle base = new TextButton.TextButtonStyle(pathBButton.getStyle());
-            TextButton.TextButtonStyle tinted = tintedStyle(base, new Color(pathBTitleLabel.getColor()));
+            TextButton.TextButtonStyle tinted = tintedStyle(base, BUTTON_DARK_GREY);
             pathBButton.setStyle(tinted);
         }
 
         // --- Sell button (placed to the right of upgrades) ---
         TextButton sellButton = new TextButton("Sell", skin);
-        sellButton.setColor(Color.RED);
+        sellButton.getLabel().setColor(Color.WHITE); // button text white
+        // Tint sell button background dark grey
+        {
+            TextButton.TextButtonStyle base = new TextButton.TextButtonStyle(sellButton.getStyle());
+            TextButton.TextButtonStyle tinted = tintedStyle(base, BUTTON_DARK_GREY);
+            sellButton.setStyle(tinted);
+        }
         Table sellTable = new Table(skin);
         sellTable.defaults().pad(5);
         Label sellLabel = new Label("Sell Tower", skin);
-        sellLabel.setColor(Color.RED);
+        sellLabel.setColor(Color.WHITE); // was RED
         sellTable.add(sellLabel).row();
 
         // Refund row: icon + amount
@@ -169,6 +182,7 @@ public class TowerUpgradeMenu extends UIComponent {
         sellRefundRow.add(sellRefundLabel);
         sellTable.add(sellRefundRow).row();
 
+        // Add sell button
         sellTable.add(sellButton).width(160).row();
 
         // --- Sell button listener ---
@@ -199,18 +213,18 @@ public class TowerUpgradeMenu extends UIComponent {
                 Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(towerTypeKey);
                 int levelA = statsComp.getLevel_A();
                 for (int lvl = 2; lvl <= levelA; lvl++) {
-                  if (upgradesA != null && upgradesA.containsKey(lvl)) {
-                    totalSpent += upgradesA.get(lvl).cost;
-                  }
+                    if (upgradesA != null && upgradesA.containsKey(lvl)) {
+                        totalSpent += upgradesA.get(lvl).cost;
+                    }
                 }
 
                 // Path B upgrades up to current level
                 Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(towerTypeKey);
                 int levelB = statsComp.getLevel_B();
                 for (int lvl = 2; lvl <= levelB; lvl++) {
-                  if (upgradesB != null && upgradesB.containsKey(lvl)) {
-                    totalSpent += upgradesB.get(lvl).cost;
-                  }
+                    if (upgradesB != null && upgradesB.containsKey(lvl)) {
+                        totalSpent += upgradesB.get(lvl).cost;
+                    }
                 }
 
                 // Refund 75% in the appropriate currency
@@ -220,11 +234,11 @@ public class TowerUpgradeMenu extends UIComponent {
 
                 // Despawn head (if present), then the tower
                 if (towerComp.hasHead()) {
-                  Entity head = towerComp.getHeadEntity();
-                  if (head != null) {
-                    head.dispose();
-                    com.csse3200.game.services.ServiceLocator.getEntityService().unregister(head);
-                  }
+                    Entity head = towerComp.getHeadEntity();
+                    if (head != null) {
+                        head.dispose();
+                        com.csse3200.game.services.ServiceLocator.getEntityService().unregister(head);
+                    }
                 }
                 selectedTower.dispose();
                 com.csse3200.game.services.ServiceLocator.getEntityService().unregister(selectedTower);
@@ -252,15 +266,14 @@ public class TowerUpgradeMenu extends UIComponent {
         float desiredWidth = Math.max(480f, Math.min(screenW * 0.45f, 700f));
         float desiredHeight = Math.min(screenH * 0.18f, 170f);
 
-        container.pad(8); // reduce internal padding
+        container.pad(8);
         rootTable.clearChildren();
         rootTable.add(container)
                 .width(desiredWidth)
                 .height(desiredHeight)
                 .center()
                 .bottom()
-                .padBottom(12f);
-
+                .padBottom(0f); // was 12f, now 0
 
         stage.addActor(rootTable);
 
@@ -270,8 +283,8 @@ public class TowerUpgradeMenu extends UIComponent {
             @Override
             public void run() {
                 if (rootTable != null && rootTable.isVisible()) {
-                    // Safe to call on render thread because Timer runs on libGDX main thread
-                    updateLabels();
+                    // Gate UI updates so labels aren't rebuilt every 0.25s
+                    updateLabelsIfChanged();
                 }
             }
         }, 0.15f /* delay */, 0.25f /* interval */);
@@ -322,7 +335,8 @@ public class TowerUpgradeMenu extends UIComponent {
         }
         this.currentTowerType = canonicalTowerType(towerType);
         rootTable.setVisible(tower != null);
-        updateLabels();
+        // CHANGED: only update UI now (when opened/changed)
+        updateLabelsIfChanged();
     }
 
     /**
@@ -385,77 +399,50 @@ public class TowerUpgradeMenu extends UIComponent {
     }
 
     /**
-     * Sets up the content of an upgrade button with the cost and icon.
+     * Sets up the content of an upgrade button with the cost and icon (white text).
      *
      * @param button The button to set up.
      * @param cost   The cost to display.
      */
     private void setupButtonContent(TextButton button, int cost) {
         Table content = new Table(skin);
-        // Ensure button text cleared before replacing children
         button.setText("");
         Image scrapIcon = new Image(new TextureRegionDrawable(
                 new TextureRegion(new Texture(CurrencyType.METAL_SCRAP.getTexturePath()))));
         Label costLabel = new Label(String.valueOf(cost), skin);
+        costLabel.setColor(Color.WHITE); // force white
         content.add(scrapIcon).size(24, 24).padRight(5);
         content.add(costLabel);
         button.clearChildren();
         button.add(content).expand().fill();
     }
 
-    /**
-     * Overload: show currency icon based on currency type.
-     *
-     * @param button The button to set up.
-     * @param cost The cost to display.
-     * @param currency The currency type.
-     */
-    private void setupButtonContent(TextButton button, int cost, CurrencyType currency) {
-        Table content = new Table(skin);
-        // Ensure button text cleared before replacing children
-        button.setText("");
-        String texPath = currency != null ? currency.getTexturePath() : CurrencyType.METAL_SCRAP.getTexturePath();
-        Image scrapIcon = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(texPath))));
-        Label costLabel = new Label(String.valueOf(cost), skin);
-        content.add(scrapIcon).size(24, 24).padRight(5);
-        content.add(costLabel);
-        button.clearChildren();
-        button.add(content).expand().fill();
-    }
-
-    /**
-     * Setup button content with affordability indication
-     */
-    private void applyButtonAffordabilityState(TextButton button, boolean canAfford) {
-        if (canAfford) {
-            button.setColor(NORMAL_COLOR);
-            button.setDisabled(false);
-        } else {
-            button.setColor(GREYED_OUT_COLOR);
-            button.setDisabled(true);
-        }
-    }
-
-    /**
-     * Setup button content with affordability indication
-     */
+    // NOTE: remove any duplicate definition of this method elsewhere in the file.
     private void setupButtonContentWithAffordability(TextButton button, int cost, CurrencyType currency, boolean canAfford) {
         Table content = new Table(skin);
         button.setText("");
         String texPath = currency != null ? currency.getTexturePath() : CurrencyType.METAL_SCRAP.getTexturePath();
         Image icon = new Image(new TextureRegionDrawable(new TextureRegion(new Texture(texPath))));
         Label costLabel = new Label(String.valueOf(cost), skin);
-
-        // Tint the cost label red if player can't afford it
-        if (!canAfford) {
-            costLabel.setColor(INSUFFICIENT_FUNDS_COLOR);
-        } else {
-            costLabel.setColor(Color.WHITE);
-        }
+        // Use insufficient funds color when not affordable
+        costLabel.setColor(canAfford ? Color.WHITE : INSUFFICIENT_FUNDS_COLOR);
 
         content.add(icon).size(24, 24).padRight(5);
         content.add(costLabel);
         button.clearChildren();
+        button.add(content).expand().fill();
+    }
+
+    // NEW: helper to set centered button text with white label
+    private void setButtonCenteredText(TextButton button, String text) {
+        if (button == null) return;
+        button.setText("");
+        button.clearChildren();
+        Table content = new Table(skin);
+        Label label = new Label(text, skin);
+        label.setAlignment(Align.center);
+        label.setColor(Color.WHITE);
+        content.add(label).expand().fill().center();
         button.add(content).expand().fill();
     }
 
@@ -466,13 +453,13 @@ public class TowerUpgradeMenu extends UIComponent {
      */
     private void attemptUpgrade(boolean isLevelA) {
         if (selectedTower == null || currentTowerType == null) return;
-        
+
         // 防止重复升级
         if (upgradeInProgress) {
             System.out.println("Upgrade already in progress, ignoring duplicate request");
             return;
         }
-        
+
         upgradeInProgress = true;
 
         TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
@@ -599,9 +586,10 @@ public class TowerUpgradeMenu extends UIComponent {
         // NEW: notify all active totem boosters to reapply their boost to this upgraded tower
         notifyTotemBoostersOfUpgrade(selectedTower);
 
-        updateLabels();
+        // CHANGED: gate the label refresh
+        updateLabelsIfChanged();
         System.out.println("Upgrade successful!");
-        
+
         // 重置升级标志
         upgradeInProgress = false;
     }
@@ -651,6 +639,13 @@ public class TowerUpgradeMenu extends UIComponent {
      * Updates the labels and button states for the upgrade menu based on the selected tower's levels.
      */
     private void updateLabels() {
+        // Keep labels white
+        if (pathATitleLabel != null) pathATitleLabel.setColor(Color.WHITE);
+        if (pathBTitleLabel != null) pathBTitleLabel.setColor(Color.WHITE);
+        if (pathALevelLabel != null) pathALevelLabel.setColor(Color.WHITE);
+        if (pathBLevelLabel != null) pathBLevelLabel.setColor(Color.WHITE);
+        if (sellRefundLabel != null) sellRefundLabel.setColor(Color.WHITE);
+
         if (selectedTower == null || currentTowerType == null) {
             if (sellRefundLabel != null) sellRefundLabel.setText("");
             if (sellRefundIcon != null) sellRefundIcon.setDrawable(null);
@@ -763,10 +758,10 @@ public class TowerUpgradeMenu extends UIComponent {
 
         Map<Integer, UpgradeStats> upgradesA = pathAUpgradesPerTower.get(currentTowerType);
         Map<Integer, UpgradeStats> upgradesB = pathBUpgradesPerTower.get(currentTowerType);
-        
+
         System.out.println("DEBUG: upgradesA = " + (upgradesA != null ? "found" : "null"));
         System.out.println("DEBUG: upgradesB = " + (upgradesB != null ? "found" : "null"));
-        
+
         if (upgradesA != null) {
             System.out.println("DEBUG: upgradesA keys: " + upgradesA.keySet());
             System.out.println("DEBUG: upgradesA contains nextLevelA(" + nextLevelA + "): " + upgradesA.containsKey(nextLevelA));
@@ -774,7 +769,7 @@ public class TowerUpgradeMenu extends UIComponent {
                 System.out.println("DEBUG: upgradesA[" + nextLevelA + "].cost = " + upgradesA.get(nextLevelA).cost);
             }
         }
-        
+
         if (upgradesB != null) {
             System.out.println("DEBUG: upgradesB keys: " + upgradesB.keySet());
             System.out.println("DEBUG: upgradesB contains nextLevelB(" + nextLevelB + "): " + upgradesB.containsKey(nextLevelB));
@@ -786,9 +781,9 @@ public class TowerUpgradeMenu extends UIComponent {
         // determine currency for current tower type
         CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
 
+        // Path A
         pathAButton.clearChildren();
         if (levelA >= maxLevelA) {
-            // Center "MAX" content
             setButtonCenteredText(pathAButton, "MAX");
             pathAButton.setDisabled(true);
             pathAButton.setColor(NORMAL_COLOR);
@@ -796,10 +791,12 @@ public class TowerUpgradeMenu extends UIComponent {
             int costA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
             boolean canAffordA = canAffordCost(costA, displayCurrency);
             setupButtonContentWithAffordability(pathAButton, costA, displayCurrency, canAffordA);
-            applyButtonAffordabilityState(pathAButton, canAffordA);
+            // Inline affordability state
+            pathAButton.setDisabled(!canAffordA);
+            pathAButton.setColor(canAffordA ? NORMAL_COLOR : GREYED_OUT_COLOR);
         }
 
-        // Path B button
+        // Path B
         pathBButton.clearChildren();
         if (levelB >= maxLevelB) {
             setButtonCenteredText(pathBButton, "MAX");
@@ -807,23 +804,27 @@ public class TowerUpgradeMenu extends UIComponent {
             pathBButton.setColor(NORMAL_COLOR);
         } else {
             if ("bank".equalsIgnoreCase(currentTowerType)) {
-                // Use the already-declared upgradesB; don't redeclare it here
                 int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
                         ? upgradesB.get(nextLevelB).cost : 0;
-
-                CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
-                        : nextLevelB == 3 ? CurrencyType.NEUROCHIP
-                        : displayCurrency;
-
+                // We still set the title text to reflect what unlocks next, but the icon on the button
+                // must show the COST currency (Titanium Core), not the unlocked currency.
+                // CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
+                //         : nextLevelB == 3 ? CurrencyType.NEUROCHIP
+                //         : displayCurrency;
                 boolean canAffordB = canAffordCost(costB, displayCurrency);
-                setupButtonContentWithAffordability(pathBButton, costB, unlockCurrency, canAffordB);
-                applyButtonAffordabilityState(pathBButton, canAffordB);
+                // CHANGED: pass displayCurrency (cost currency) so the icon shows Titanium Core
+                setupButtonContentWithAffordability(pathBButton, costB, displayCurrency, canAffordB);
+                // Inline affordability state
+                pathBButton.setDisabled(!canAffordB);
+                pathBButton.setColor(canAffordB ? NORMAL_COLOR : GREYED_OUT_COLOR);
             } else {
                 int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
                         ? upgradesB.get(nextLevelB).cost : 0;
                 boolean canAffordB = canAffordCost(costB, displayCurrency);
                 setupButtonContentWithAffordability(pathBButton, costB, displayCurrency, canAffordB);
-                applyButtonAffordabilityState(pathBButton, canAffordB);
+                // Inline affordability state
+                pathBButton.setDisabled(!canAffordB);
+                pathBButton.setColor(canAffordB ? NORMAL_COLOR : GREYED_OUT_COLOR);
             }
         }
     }
@@ -838,18 +839,18 @@ public class TowerUpgradeMenu extends UIComponent {
             refreshTask.cancel();
             refreshTask = null;
         }
-         // Dispose the background texture if it was created
-         if (bgTexture != null) {
-             bgTexture.dispose();
-             bgTexture = null;
-         }
-         // Dispose cached currency icons
-         for (Texture tex : currencyIconCache.values()) {
-             if (tex != null) tex.dispose();
-         }
-         currencyIconCache.clear();
+        // Dispose the background texture if it was created
+        if (bgTexture != null) {
+            bgTexture.dispose();
+            bgTexture = null;
+        }
+        // Dispose cached currency icons
+        for (Texture tex : currencyIconCache.values()) {
+            if (tex != null) tex.dispose();
+        }
+        currencyIconCache.clear();
 
-         super.dispose();
+        super.dispose();
     }
 
     // Returns a drawable for the given currency, with simple caching
@@ -871,31 +872,6 @@ public class TowerUpgradeMenu extends UIComponent {
         Texture tex = new Texture(pm);
         pm.dispose();
         return tex;
-    }
-
-    // Helper: replace a button's content with centered text
-    private void setButtonCenteredText(TextButton button, String text) {
-        button.setText(""); // avoid using internal TextButton label
-        button.clearChildren();
-        Table content = new Table(skin);
-        Label label = new Label(text, skin);
-        label.setAlignment(Align.center);
-        content.add(label).expand().fill().center();
-        button.add(content).expand().fill();
-    }
-
-    // Helper: set content to "Unlock" + currency icon (centered)
-    private void setupButtonUnlockContent(TextButton button, CurrencyType currency) {
-        button.setText("");
-        Table content = new Table(skin);
-        if (currency != null) {
-            Image icon = new Image(getCurrencyDrawable(currency));
-            content.add(icon).size(24, 24).padRight(5);
-        }
-        Label label = new Label("Unlock", skin);
-        content.add(label);
-        button.clearChildren();
-        button.add(content).expand().fill().center();
     }
 
     // Helper: tint an existing drawable while preserving its 9-patch/sprite shape
@@ -983,4 +959,139 @@ public class TowerUpgradeMenu extends UIComponent {
         }
         return max;
     }
+
+    // NEW: lightweight value object for comparing UI state
+    private static final class UiSnapshot {
+        String towerType;
+        int levelA, levelB, maxA, maxB;
+        int nextCostA, nextCostB;
+        int refundAmount;
+        boolean canAffordA, canAffordB;
+        float freezeTime; // only used for frozen skull
+        boolean visible;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof UiSnapshot)) return false;
+            UiSnapshot s = (UiSnapshot) o;
+            return visible == s.visible
+                    && levelA == s.levelA
+                    && levelB == s.levelB
+                    && maxA == s.maxA
+                    && maxB == s.maxB
+                    && nextCostA == s.nextCostA
+                    && nextCostB == s.nextCostB
+                    && refundAmount == s.refundAmount
+                    && canAffordA == s.canAffordA
+                    && canAffordB == s.canAffordB
+                    && Float.compare(freezeTime, s.freezeTime) == 0
+                    && java.util.Objects.equals(towerType, s.towerType);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(
+                    towerType, levelA, levelB, maxA, maxB,
+                    nextCostA, nextCostB, refundAmount,
+                    canAffordA, canAffordB, freezeTime, visible
+            );
+        }
+    }
+
+    // NEW: build the current snapshot without touching UI widgets
+    private UiSnapshot buildUiSnapshot() {
+        UiSnapshot snap = new UiSnapshot();
+        snap.visible = rootTable != null && rootTable.isVisible();
+
+        if (!snap.visible || selectedTower == null || currentTowerType == null) {
+            snap.towerType = "";
+            return snap;
+        }
+
+        snap.towerType = currentTowerType;
+        TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
+
+        if (stats != null) {
+            snap.levelA = stats.getLevel_A();
+            snap.levelB = stats.getLevel_B();
+            snap.maxA = getMaxLevelForPath(currentTowerType, true);
+            snap.maxB = getMaxLevelForPath(currentTowerType, false);
+            if ("frozenmamoothskull".equalsIgnoreCase(currentTowerType)) {
+                float ft = stats.getProjectileLife() > 0f ? stats.getProjectileLife() : 1.0f;
+                snap.freezeTime = ft;
+            }
+        }
+
+        // Costs and affordability
+        int nextLevelA = snap.levelA + 1;
+        int nextLevelB = snap.levelB + 1;
+        var upgradesA = pathAUpgradesPerTower.get(currentTowerType);
+        var upgradesB = pathBUpgradesPerTower.get(currentTowerType);
+        snap.nextCostA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
+        snap.nextCostB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
+
+        CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
+        snap.canAffordA = canAffordCost(snap.nextCostA, displayCurrency);
+        snap.canAffordB = canAffordCost(snap.nextCostB, displayCurrency);
+
+        // Refund amount
+        TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
+        TowerCostComponent costComp = selectedTower.getComponent(TowerCostComponent.class);
+        if (towerComp != null && costComp != null) {
+            String towerKey = canonicalTowerType(towerComp.getType());
+            CurrencyType refundCur = currencyForTowerType(towerKey);
+            int total = costComp.getCostForCurrency(refundCur);
+
+            if (upgradesA != null) {
+                for (int lvl = 2; lvl <= snap.levelA; lvl++) {
+                    var u = upgradesA.get(lvl);
+                    if (u != null) total += u.cost;
+                }
+            }
+            if (upgradesB != null) {
+                for (int lvl = 2; lvl <= snap.levelB; lvl++) {
+                    var u = upgradesB.get(lvl);
+                    if (u != null) total += u.cost;
+                }
+            }
+            snap.refundAmount = Math.round(total * 0.75f);
+        }
+
+        return snap;
+    }
+
+    // NEW: only applies UI if something actually changed
+    private void updateLabelsIfChanged() {
+        // If the selected tower was despawned or is inactive, hide the menu and clear cache
+        if (selectedTower != null && (!isEntityRegistered(selectedTower) || !selectedTower.isActive())) {
+            selectedTower = null;
+            if (rootTable != null) {
+                rootTable.setVisible(false);
+            }
+            lastUiSnapshot = null; // clear cache so next open renders fresh
+            return;
+        }
+
+        UiSnapshot snap = buildUiSnapshot();
+        if (lastUiSnapshot != null && lastUiSnapshot.equals(snap)) {
+            return; // nothing changed, skip any UI work
+        }
+        lastUiSnapshot = snap;
+        updateLabels(); // reuse existing method to render the new state
+    }
+
+    // Helper: check if an entity is still registered with the entity service
+    private boolean isEntityRegistered(Entity target) {
+        if (target == null) return false;
+        Array<Entity> list = safeEntities();
+        if (list == null) return false;
+        for (Entity e : list) {
+            if (e == target) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
+

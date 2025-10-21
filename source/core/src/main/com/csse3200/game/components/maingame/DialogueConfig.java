@@ -48,7 +48,7 @@ public class DialogueConfig {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
                 "1111111111111111", 
-                "images/talker1.png", 
+                "images/map1talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
@@ -66,7 +66,7 @@ public class DialogueConfig {
             
             new IntroDialogueComponent.DialogueEntry(
                 "3333333333333333", 
-                "images/talker1.png", 
+                "images/map1talker.png", 
                 "sounds/map/say.mp3",
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
@@ -92,7 +92,7 @@ public class DialogueConfig {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
                 "1111111111111111", 
-                "images/talker1.png", 
+                "images/map2talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
@@ -110,7 +110,7 @@ public class DialogueConfig {
             
             new IntroDialogueComponent.DialogueEntry(
                 "3333333333333333", 
-                "images/talker1.png", 
+                "images/map2talker.png", 
                 "sounds/map/say.mp3",
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景

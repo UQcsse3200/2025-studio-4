@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
@@ -77,6 +79,7 @@ public class PauseMenuDisplay extends UIComponent {
         // Create custom button style
         var style = UiStyles.orangeButton(skin);
         TextButton resumeBtn   = new TextButton("Resume", style);
+        TextButton saveBtn     = new TextButton("Save", style);
         TextButton settingsBtn = new TextButton("Settings", style);
         TextButton rankingBtn  = new TextButton("Ranking", style);
         TextButton quitBtn     = new TextButton("Quit to Main Menu", style);
@@ -84,6 +87,14 @@ public class PauseMenuDisplay extends UIComponent {
         resumeBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent e, Actor a) {
                 entity.getEvents().trigger("resume");
+            }
+        });
+
+        saveBtn.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Save button clicked from pause menu");
+                entity.getEvents().trigger("hidePauseUI");
+                entity.getEvents().trigger("save");
             }
         });
 
@@ -110,6 +121,7 @@ public class PauseMenuDisplay extends UIComponent {
         window.add(title).row();
         window.add(playerInfoTable).padBottom(15f).row();
         window.add(resumeBtn).size(280f, 50f).row();
+        window.add(saveBtn).size(280f, 50f).row();
         window.add(settingsBtn).size(280f, 50f).row();
         window.add(rankingBtn).size(280f, 50f).row();
         window.add(quitBtn).size(280f, 50f).row();
@@ -128,8 +140,9 @@ public class PauseMenuDisplay extends UIComponent {
         stage.addActor(topRight);
 
         
-        pauseIcon.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
+        pauseIcon.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                logger.debug("Pause icon clicked");
                 entity.getEvents().trigger("togglePause");
             }
         });

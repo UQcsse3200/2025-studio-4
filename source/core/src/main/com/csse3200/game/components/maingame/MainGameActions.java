@@ -212,6 +212,9 @@ public class MainGameActions extends Component {
   private void onPerformSave() {
     logger.info("Performing save operation with naming dialog");
     try {
+      // Hide the save menu to prevent it from blocking the dialog
+      entity.getEvents().trigger("hideSaveMenuOnly");
+      
       Stage stage = ServiceLocator.getRenderService().getStage();
       com.csse3200.game.ui.SaveNameDialog dialog = new com.csse3200.game.ui.SaveNameDialog(
           "Save Game", com.csse3200.game.ui.SimpleUI.windowStyle(), new com.csse3200.game.ui.SaveNameDialog.Callback() {
@@ -227,7 +230,6 @@ public class MainGameActions extends Component {
                 if (success) {
                   logger.info("Saved as '{}' successfully", name);
                   entity.getEvents().trigger("showSaveSuccess");
-                  entity.getEvents().trigger("hideSaveUI");
                 } else {
                   entity.getEvents().trigger("showSaveError");
                 }
@@ -236,7 +238,9 @@ public class MainGameActions extends Component {
                 entity.getEvents().trigger("showSaveError");
               }
             }
-            @Override public void onCancelled() { /* no-op */ }
+            @Override public void onCancelled() { 
+              // Dialog cancelled, no action needed
+            }
           }
       );
       dialog.show(stage);
@@ -260,3 +264,4 @@ public class MainGameActions extends Component {
     logger.info("Awarded {} star. Total = {}", amount, ServiceLocator.getGameStateService().getStars());
   }
 }
+

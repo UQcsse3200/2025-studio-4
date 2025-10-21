@@ -234,12 +234,29 @@ public class UpgradeMenuDisplay extends UIComponent {
         Table heroCol = new Table();
         heroCol.defaults().pad(6f).center();
 
-        // 创建背景框
+        // 创建背景框 - 根据英雄类型使用不同颜色
         Texture buttonTexture = ServiceLocator.getResourceService()
                 .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        
+        // 根据英雄类型设置不同的背景颜色
+        Color backgroundColor;
+        switch (heroType) {
+            case HERO:
+                backgroundColor = new Color(0.15f, 0.2f, 1.0f, 0.7f); // 蓝色调
+                break;
+            case ENGINEER:
+                backgroundColor = new Color(0.5f, 0.3f, 0.2f, 0.85f); // 橙色调
+                break;
+            case SAMURAI:
+                backgroundColor = new Color(0.5f, 0.2f, 0.3f, 0.85f); // 红色调
+                break;
+            default:
+                backgroundColor = new Color(0.2f, 0.2f, 0.2f, 0.8f); // 默认灰色
+                break;
+        }
+        patch.setColor(backgroundColor);
         NinePatchDrawable backgroundFrame = new NinePatchDrawable(patch);
-        backgroundFrame = backgroundFrame.tint(new Color(0.2f, 0.2f, 0.2f, 0.8f)); // 半透明深灰色背景
         
         // 设置背景
         heroCol.setBackground(backgroundFrame);
@@ -300,6 +317,7 @@ public class UpgradeMenuDisplay extends UIComponent {
         if (heroType == GameStateService.HeroType.SAMURAI) {
             Label weaponLbl = new Label("Weapon:", nameStyle);
             SelectBox<String> weaponBox = new SelectBox<>(skin);
+            applyDarkSelectBoxStyle(weaponBox);
             weaponBox.setItems("Normal Sword", "Weapon 2", "Weapon 3");
             weaponBox.setMaxListCount(5);
 
@@ -338,6 +356,7 @@ public class UpgradeMenuDisplay extends UIComponent {
         // === Skin 下拉（所有英雄都有） ===
         Label skinLbl = new Label("Skin:", nameStyle);
         SelectBox<String> skinBox = new SelectBox<>(skin);
+        applyDarkSelectBoxStyle(skinBox);
 
         String[] skins = gameState.getAvailableSkins(heroType);
         skinBox.setItems(skins);
@@ -495,7 +514,7 @@ public class UpgradeMenuDisplay extends UIComponent {
     }
 
     /**
-     * +     * 生成“纯色按钮”样式：up/over/down 全部按指定颜色染色。
+     * +     * 生成"纯色按钮"样式：up/over/down 全部按指定颜色染色。
      * +     * 用于：绿色(解锁但未选择)、红色(已选择)。
      * +
      */
@@ -519,6 +538,61 @@ public class UpgradeMenuDisplay extends UIComponent {
         style.down = new NinePatchDrawable(down);
         style.fontColor = Color.WHITE;
         return style;
+    }
+
+    /**
+     * 应用黑色背景和白色文字样式到SelectBox
+     */
+    private void applyDarkSelectBoxStyle(SelectBox<?> selectBox) {
+        // 创建新的SelectBoxStyle，使用黑色背景
+        SelectBox.SelectBoxStyle newStyle = new SelectBox.SelectBoxStyle();
+        newStyle.font = skin.getFont("font");
+        newStyle.fontColor = Color.WHITE;
+        
+        // 获取按钮纹理用于背景
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+        
+        // 创建黑色背景
+        NinePatch backgroundPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        backgroundPatch.setColor(new Color(0.1f, 0.1f, 0.1f, 1f));
+        newStyle.background = new NinePatchDrawable(backgroundPatch);
+        
+        // 创建悬停时的背景（稍亮的灰色）
+        NinePatch overPatch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        overPatch.setColor(new Color(0.2f, 0.2f, 0.2f, 1f));
+        newStyle.backgroundOver = new NinePatchDrawable(overPatch);
+        
+        // 创建打开时的背景
+        NinePatch openPatch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        openPatch.setColor(new Color(0.15f, 0.15f, 0.15f, 1f));
+        newStyle.backgroundOpen = new NinePatchDrawable(openPatch);
+        
+        // 创建列表样式（下拉列表）
+        List.ListStyle listStyle = new List.ListStyle();
+        listStyle.font = skin.getFont("font");
+        listStyle.fontColorSelected = Color.WHITE;
+        listStyle.fontColorUnselected = Color.WHITE;
+        
+        // 列表背景（黑色）
+        NinePatch listBgPatch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        listBgPatch.setColor(new Color(0.1f, 0.1f, 0.1f, 1f));
+        listStyle.background = new NinePatchDrawable(listBgPatch);
+        
+        // 选中项背景（深灰色）
+        NinePatch selectionPatch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        selectionPatch.setColor(new Color(0.3f, 0.3f, 0.3f, 1f));
+        listStyle.selection = new NinePatchDrawable(selectionPatch);
+        
+        newStyle.listStyle = listStyle;
+        
+        // 创建滚动条样式
+        ScrollPane.ScrollPaneStyle scrollStyle = new ScrollPane.ScrollPaneStyle();
+        newStyle.scrollStyle = scrollStyle;
+        
+        // 应用新样式到SelectBox
+        selectBox.setStyle(newStyle);
     }
 
     @Override

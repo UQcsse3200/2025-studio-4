@@ -59,18 +59,26 @@ public class PlayerCombatStatsComponent extends Component {
     if (entity != null) {
       entity.getEvents().trigger("updateHealth", this.health);
       if (this.health == 0) {
-        // Lose Condition
+        // Lose Condition - Homebase destroyed
+        logger.info("Homebase health reached 0 - triggering game over");
+        
+        // Clean up waves in both maps
         if (ForestGameArea2.currentGameArea != null) {
-            ForestGameArea2.currentGameArea.cleanupAllWaves();
-          }
+          ForestGameArea2.currentGameArea.cleanupAllWaves();
+        }
         if (ForestGameArea.currentGameArea != null) {
-            ForestGameArea.currentGameArea.cleanupAllWaves();
+          ForestGameArea.currentGameArea.cleanupAllWaves();
         }
-        ServiceLocator.getEntityService().unregister(entity);
+        
+        // Don't unregister entity yet - let GameOverScreen handle cleanup
+        // This ensures score calculation can still access entity components
+        // ServiceLocator.getEntityService().unregister(entity);
+        
+        // Show game over screen
         MainGameScreen.ui.getComponent(GameOverScreen.class).addActors();
-        }
       }
     }
+  }
 
   /**
    * Adds to the player's health. The amount added can be negative.

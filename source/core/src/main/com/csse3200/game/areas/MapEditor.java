@@ -38,6 +38,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
     private java.util.List<GridPoint2> keyWaypoints = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> snowCoords = new java.util.ArrayList<>();
     private java.util.List<GridPoint2> waterTiles = new java.util.ArrayList<>();
+    private final java.util.List<GridPoint2> slowZoneTiles = new java.util.ArrayList<>();
 
     public static java.util.List<Entity> waypointList = new java.util.ArrayList<>();
 
@@ -150,6 +151,16 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         return newLayer;
     }
 
+    /** Set path layer opacity设置路径图层透明度
+     * @param opacity 透明度值，范围0.0-1.0，0.0为完全透明，1.0为完全不透明
+     */
+    public void setPathLayerOpacity(float opacity) {
+        TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
+        TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
+        pathLayer.setOpacity(Math.max(0.0f, Math.min(1.0f, opacity)));
+        System.out.println("✅ Path layer opacity set to: " + opacity);
+    }
+
     /** Automatically generate enemy paths自动生成敌人路径 */
     public void generateEnemyPath() {
         if (terrain == null) return;
@@ -157,6 +168,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         // Clear existing paths清空现有路径
         pathTiles.clear();
         keyWaypoints.clear();
+        slowZoneTiles.clear();
 
         // Predefined fixed path coordinates (x, y)预定义固定路径坐标 (x, y)
         int[][] fixedPath = {
@@ -229,6 +241,7 @@ public class MapEditor extends InputAdapter implements IMapEditor {
             waypoint.setPosition(wp.x / 2f, wp.y / 2f);
             if (modifier != null) {
                 waypoint.addComponent(new SpeedWaypointComponent(modifier));
+                slowZoneTiles.add(new GridPoint2(wp));
             }
             waypointList.add(waypoint);
         }
@@ -373,6 +386,12 @@ public class MapEditor extends InputAdapter implements IMapEditor {
             barrierTiles.put(key, new GridPoint2(p[0], p[1]));
         }
     }
+
+    @Override
+    public java.util.List<GridPoint2> getSlowZoneTiles() {
+        return new java.util.ArrayList<>(slowZoneTiles);
+    }
+
 
     /**
      * Register the snow tree coordinates for getInvalidTiles() to return uniformly

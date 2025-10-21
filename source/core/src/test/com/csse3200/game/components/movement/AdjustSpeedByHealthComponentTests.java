@@ -56,6 +56,9 @@ class AdjustSpeedByHealthComponentTest {
         stats = grunt.getComponent(CombatStatsComponent.class);
         waypointComponent = grunt.getComponent(WaypointComponent.class);
         initialHealth = stats.getHealth();
+        
+        // Initialize the component by calling update once
+        grunt.update();
     }
 
     @Test

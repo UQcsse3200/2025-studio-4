@@ -20,6 +20,7 @@ import com.csse3200.game.utils.Difficulty;
 import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
+import com.csse3200.game.components.effects.SlowEffectComponent;
 
 public class DividerChildEnemyFactory {
     // Default divider child configuration
@@ -77,7 +78,8 @@ public class DividerChildEnemyFactory {
             .addComponent(new CombatStatsComponent(health, damage, resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius));
+            .addComponent(new clickable(clickRadius))
+            .addComponent(new SlowEffectComponent()); // 添加减速特效组件
             CombatStatsComponent combatStats = DividerChild.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 

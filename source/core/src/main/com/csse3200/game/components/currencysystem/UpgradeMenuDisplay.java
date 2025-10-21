@@ -8,11 +8,16 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.GdxGame;
+import com.csse3200.game.entities.configs.HeroSkinAtlas;
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import org.slf4j.Logger;
@@ -32,7 +37,16 @@ public class UpgradeMenuDisplay extends UIComponent {
     private Map<GameStateService.HeroType, Boolean> heroUnlocks;
 
     private TextButton.TextButtonStyle btnStyle;
+    private TextButton.TextButtonStyle unlockBtnStyle;
+    private TextButton.TextButtonStyle selectedBtnStyle;
     private Label.LabelStyle nameStyle;
+    // === Customization boxes per hero (shell only) ===
+    private Map<GameStateService.HeroType, SelectBox<String>> weaponBoxes = new HashMap<>();
+    private Map<GameStateService.HeroType, SelectBox<String>> soundBoxes = new HashMap<>();
+    private Map<GameStateService.HeroType, SelectBox<String>> skinBoxes = new HashMap<>();
+    // 预览头像：每个英雄一张，用于切皮肤后立刻更新
+    private Map<GameStateService.HeroType, Image> heroPreviewImages = new HashMap<>();
+
 
     private static final String HERO_IMG = "images/hero/Heroshoot.png";
     private static final String ENG_IMG = "images/engineer/Engineer.png";
@@ -59,7 +73,13 @@ public class UpgradeMenuDisplay extends UIComponent {
         heroUnlocks = gameState.getHeroUnlocks();
 
         // ===== styles (match main menu) =====
+        // 普通样式（与你现有主菜单一致）
         btnStyle = createCustomButtonStyle();
+        // 点击/状态样式：需要把 up/over/down 都染色以便呈现纯色按钮
+        Color green = new Color(0.20f, 1.00f, 0.20f, 1f); // 绿色：点击/刚解锁
+        Color red = new Color(1.00f, 0.30f, 0.30f, 1f); // 红色：Selected
+        unlockBtnStyle = createSolidTintStyle(green);
+        selectedBtnStyle = createSolidTintStyle(red);
         nameStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
 
         heroButtons = new HashMap<>();
@@ -115,37 +135,94 @@ public class UpgradeMenuDisplay extends UIComponent {
         stage.addActor(makeInstructionBanner());
     }
 
-    private Table makeHeroCard(GameStateService.HeroType heroType, String heroName, Image heroImage, Integer heroCost) {
-        String heroBtnText = "Unlock";
-        if (heroUnlocks.get(heroType)) {
-            if (gameState.getSelectedHero() == heroType) {
-                heroBtnText = "Selected";
-            } else {
-                heroBtnText = "Select";
-            }
+    private Table makeHeroCard(GameStateService.HeroType heroType, String heroName, Image _unused, Integer heroCost) {
+        // === 1) 按当前皮肤生成头像 ===
+        String skinKey = gameState.getSelectedSkin(heroType);
+        String texPath = HeroSkinAtlas.body(heroType, skinKey);
+
+        var rs = ServiceLocator.getResourceService();
+        Texture tex = rs.getAsset(texPath, Texture.class);
+        if (tex == null) {
+            rs.loadTextures(new String[]{texPath});
+            while (!rs.loadForMillis(10)) { /* wait */ }
+            tex = rs.getAsset(texPath, Texture.class);
+        }
+        Image heroImage = new Image(new TextureRegionDrawable(new TextureRegion(tex)));
+        heroImage.setSize(IMG_SIZE, IMG_SIZE);
+        heroPreviewImages.put(heroType, heroImage); // 保存头像引用，便于切换皮肤时即时更新
+
+        // === 2) 按解锁与选择状态设置按钮文字与样式 ===
+        boolean unlocked = heroUnlocks.getOrDefault(heroType, false);
+        boolean isSelected = unlocked && (gameState.getSelectedHero() == heroType);
+
+        String heroBtnText;
+        if (!unlocked) {
+            heroBtnText = "Unlock";
+        } else {
+            heroBtnText = isSelected ? "Selected" : "Select";
         }
 
-        TextButton heroBtn = new TextButton(heroBtnText, btnStyle);
+        TextButton heroBtn = new TextButton(
+                heroBtnText,
+                isSelected ? selectedBtnStyle : (unlocked ? btnStyle : btnStyle)
+        );
+
+        // === 3) 悬停高亮（进入→绿色，离开→按状态恢复）===
+        heroBtn.addListener(new InputListener() {
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                heroBtn.setStyle(unlockBtnStyle); // hover: 统一绿色高亮
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                boolean nowUnlocked = heroUnlocks.get(heroType);
+                boolean nowSelected = nowUnlocked && (gameState.getSelectedHero() == heroType);
+                if (nowSelected) {
+                    heroBtn.setStyle(selectedBtnStyle);   // 选中=红
+                } else {
+                    heroBtn.setStyle(btnStyle);           // 其他=普通
+                }
+            }
+        });
+
+        // === 4) 点击逻辑：解锁 / 选择 ===
         heroBtn.addListener(e -> {
             if (!heroBtn.isPressed()) return false;
-            if (heroUnlocks.get(heroType)) {
-                gameState.setSelectedHero(heroType);
 
-                for (GameStateService.HeroType btnHeroType : heroButtons.keySet()) {
-                    TextButton button = heroButtons.get(btnHeroType);
-                    if (heroUnlocks.get(btnHeroType)) {
-                        if (btnHeroType == heroType) {
-                            button.setText("Selected");
+            boolean wasUnlocked = heroUnlocks.getOrDefault(heroType, false);
+            if (wasUnlocked) {
+                // 已解锁 → 设置选中，并刷新其它按钮
+                gameState.setSelectedHero(heroType);
+                for (Map.Entry<GameStateService.HeroType, TextButton> entry : heroButtons.entrySet()) {
+                    GameStateService.HeroType t = entry.getKey();
+                    TextButton b = entry.getValue();
+                    if (heroUnlocks.getOrDefault(t, false)) {
+                        if (t == heroType) {
+                            b.setText("Selected");
+                            b.setStyle(selectedBtnStyle);
                         } else {
-                            button.setText("Select");
+                            b.setText("Select");
+                            b.setStyle(btnStyle);
                         }
                     }
                 }
             } else {
-                if (gameState.spendStars(heroCost)) {
+                // 未解锁 → 尝试花星星解锁
+                int cost = (heroCost == null) ? 0 : heroCost;
+                if (gameState.spendStars(cost)) {
                     gameState.setHeroUnlocked(heroType);
                     heroBtn.setText("Select");
-                    starsLabel.setText(gameState.getStars());
+                    heroBtn.setStyle(unlockBtnStyle); // 解锁成功：绿色提示
+                    starsLabel.setText(String.valueOf(gameState.getStars()));
+
+                    // 解锁后允许更改皮肤/武器/音效
+                    SelectBox<String> sbSkin = skinBoxes.get(heroType);
+                    if (sbSkin != null) sbSkin.setDisabled(false);
+                    SelectBox<String> sbWeapon = weaponBoxes.get(heroType);
+                    if (sbWeapon != null) sbWeapon.setDisabled(false);
+                    SelectBox<String> sbSound = soundBoxes.get(heroType);
+                    if (sbSound != null) sbSound.setDisabled(false);
                 }
             }
             return true;
@@ -153,27 +230,152 @@ public class UpgradeMenuDisplay extends UIComponent {
 
         heroButtons.put(heroType, heroBtn);
 
+        // === 5) 组装卡片 UI ===
         Table heroCol = new Table();
         heroCol.defaults().pad(6f).center();
+
+        // 创建背景框
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+        NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        NinePatchDrawable backgroundFrame = new NinePatchDrawable(patch);
+        backgroundFrame = backgroundFrame.tint(new Color(0.2f, 0.2f, 0.2f, 0.8f)); // 半透明深灰色背景
+        
+        // 设置背景
+        heroCol.setBackground(backgroundFrame);
+        heroCol.pad(12f); // 增加内边距
+
+        // 头像 + 名称
         heroCol.add(heroImage).size(IMG_SIZE).padBottom(6f).row();
         heroCol.add(new Label(heroName, nameStyle)).padBottom(6f).row();
 
-        // star cost
+        // 星星花费（HERO=0 也显示，或你可按需隐藏）
         HorizontalGroup heroStarCost = new HorizontalGroup();
         heroStarCost.space(5);
         heroStarCost.addActor(new Image(
-                ServiceLocator.getResourceService().getAsset(
-                        "images/star.png",
-                        Texture.class
-                )
+                ServiceLocator.getResourceService()
+                        .getAsset("images/star.png", Texture.class)
         ));
-        heroStarCost.addActor(new Label(Integer.toString(heroCost), nameStyle));
-
+        heroStarCost.addActor(new Label(Integer.toString(heroCost == null ? 0 : heroCost), nameStyle));
         heroCol.add(heroStarCost).padBottom(6f).row();
-        heroCol.add(heroBtn).width(220f).height(56f);
+
+        // Select/Unlock/Selected 按钮
+        heroCol.add(heroBtn).width(220f).height(56f).padBottom(8f).row();
+
+        // 自定义区（Weapon / Sound / Skin 下拉）
+        Table customTable = buildCustomizationTable(heroType);
+        // 初始化：若未解锁则禁用下拉
+        boolean nowUnlocked = heroUnlocks.getOrDefault(heroType, false);
+        SelectBox<String> sbSkin = skinBoxes.get(heroType);
+        if (sbSkin != null) sbSkin.setDisabled(!nowUnlocked);
+        SelectBox<String> sbWeapon = weaponBoxes.get(heroType);
+        if (sbWeapon != null) sbWeapon.setDisabled(!nowUnlocked);
+        SelectBox<String> sbSound = soundBoxes.get(heroType);
+        if (sbSound != null) sbSound.setDisabled(!nowUnlocked);
+
+        heroCol.add(customTable).padBottom(6f).row();
 
         return heroCol;
     }
+
+
+    /**
+     * +     * 为指定英雄构建两个下拉框（外壳）。始终显示，不依赖是否选中/解锁。
+     * +
+     */
+    private Table buildCustomizationTable(GameStateService.HeroType heroType) {
+        Table customTable = new Table();
+        customTable.defaults().left().pad(2f);
+        customTable.columnDefaults(0).width(150f).right().padRight(8f);
+        customTable.columnDefaults(1).width(240f).left();
+
+        Label title = new Label(
+                (heroType == GameStateService.HeroType.SAMURAI ? "Samurai Customization" : "Hero Customization"),
+                new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE)
+        );
+        title.setAlignment(Align.left);
+        customTable.add(title).colspan(2).padTop(2f).padBottom(4f).left().row();
+
+        // === SAMURAI 专属：Weapon 下拉 ===
+        if (heroType == GameStateService.HeroType.SAMURAI) {
+            Label weaponLbl = new Label("Weapon:", nameStyle);
+            SelectBox<String> weaponBox = new SelectBox<>(skin);
+            weaponBox.setItems("Normal Sword", "Weapon 2", "Weapon 3");
+            weaponBox.setMaxListCount(5);
+
+            // label <-> key 映射，需与 HeroSkinAtlas.sword(...) 对齐
+            java.util.function.Function<String, String> toWeaponKey = lbl -> switch (lbl) {
+                case "Weapon 2" -> "crimson";
+                case "Weapon 3" -> "azure";
+                default         -> "default"; // Normal Sword
+            };
+            java.util.function.Function<String, String> toLabel = key -> switch (key) {
+                case "crimson" -> "Weapon 2";
+                case "azure"   -> "Weapon 3";
+                default        -> "Normal Sword";
+            };
+
+            // 初始选中 = 全局当前武器皮肤
+            String currKey = gameState.getSelectedWeaponSkin(GameStateService.HeroType.SAMURAI);
+            weaponBox.setSelected(toLabel.apply(currKey));
+
+            // 选择变化 -> 写回全局
+            weaponBox.addListener(new ChangeListener() {
+                @Override public void changed(ChangeEvent event, Actor actor) {
+                    String key = toWeaponKey.apply(weaponBox.getSelected());
+                    gameState.setSelectedWeaponSkin(GameStateService.HeroType.SAMURAI, key);
+                    logger.info("UI: Samurai weapon skin -> {}", key);
+                }
+            });
+
+            customTable.add(weaponLbl).right();
+            customTable.add(weaponBox).height(36f).padBottom(6f).left().row();
+
+            // 保存引用，方便外部统一禁用/启用
+            weaponBoxes.put(heroType, weaponBox);
+        }
+
+        // === Skin 下拉（所有英雄都有） ===
+        Label skinLbl = new Label("Skin:", nameStyle);
+        SelectBox<String> skinBox = new SelectBox<>(skin);
+
+        String[] skins = gameState.getAvailableSkins(heroType);
+        skinBox.setItems(skins);
+        skinBox.setSelected(gameState.getSelectedSkin(heroType));
+
+        boolean unlocked = heroUnlocks.getOrDefault(heroType, false);
+        skinBox.setDisabled(!unlocked);
+
+        skinBox.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent event, Actor actor) {
+                String chosen = skinBox.getSelected();
+                gameState.setSelectedSkin(heroType, chosen);
+
+                // 预览头像即时更新
+                Image preview = heroPreviewImages.get(heroType);
+                if (preview != null) {
+                    String newPath = HeroSkinAtlas.body(heroType, chosen);
+                    ResourceService rs = ServiceLocator.getResourceService();
+                    Texture newTex = rs.getAsset(newPath, Texture.class);
+                    if (newTex == null) {
+                        rs.loadTextures(new String[]{newPath});
+                        while (!rs.loadForMillis(10)) {}
+                        newTex = rs.getAsset(newPath, Texture.class);
+                    }
+                    preview.setDrawable(new TextureRegionDrawable(new TextureRegion(newTex)));
+                }
+            }
+        });
+
+        customTable.add(skinLbl).right();
+        customTable.add(skinBox).height(36f).padBottom(6f).left().row();
+
+        skinBoxes.put(heroType, skinBox);
+
+        return customTable;
+    }
+
+
 
     private Table makeUpgradeTable() {
         // ===== hero card =====
@@ -203,7 +405,7 @@ public class UpgradeMenuDisplay extends UIComponent {
         sumImg.setSize(IMG_SIZE, IMG_SIZE);
 
         Table sumCol = makeHeroCard(
-                GameStateService.HeroType. SAMURAI,
+                GameStateService.HeroType.SAMURAI,
                 "SAMURAI",
                 sumImg,
                 SAMURAI_COST
@@ -248,38 +450,74 @@ public class UpgradeMenuDisplay extends UIComponent {
     /**
      * Create custom button style using button background image
      */
+    // 原默认样式（悬停更亮、按下更暗）——用于普通棕色按钮
     private TextButton.TextButtonStyle createCustomButtonStyle() {
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        return createCustomButtonStyle(null, null);
+    }
 
-        // Use Segoe UI font
+    /**
+     * 可指定悬停/按下时的背景色叠加，用于 Unlock 绿色高亮。
+     *
+     * @param hoverTint 悬停颜色叠加；null 使用默认更亮
+     * @param downTint  按下颜色叠加；null 使用默认更暗
+     */
+    private TextButton.TextButtonStyle createCustomButtonStyle(Color hoverTint, Color downTint) {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
         style.font = skin.getFont("segoe_ui");
 
-        // Load button background image
         Texture buttonTexture = ServiceLocator.getResourceService()
                 .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
         TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-        // Create NinePatch for scalable button background
-        NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        NinePatch upPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        NinePatch overPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        NinePatch downPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
 
-        // Create pressed state NinePatch (slightly darker)
-        NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+        if (hoverTint == null) {
+            overPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f)); // 默认更亮
+        } else {
+            overPatch.setColor(hoverTint);                        // 自定义（绿色）
+        }
+        if (downTint == null) {
+            downPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));  // 默认更暗
+        } else {
+            downPatch.setColor(downTint);                         // 自定义（绿色）
+        }
 
-        // Create hover state NinePatch (slightly brighter)
-        NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+        style.up = new NinePatchDrawable(upPatch);
+        style.over = new NinePatchDrawable(overPatch);
+        style.down = new NinePatchDrawable(downPatch);
 
-        // Set button states
-        style.up = new NinePatchDrawable(buttonPatch);
-        style.down = new NinePatchDrawable(pressedPatch);
-        style.over = new NinePatchDrawable(hoverPatch);
-
-        // Set font colors
         style.fontColor = Color.WHITE;
-        style.downFontColor = Color.LIGHT_GRAY;
         style.overFontColor = Color.WHITE;
+        style.downFontColor = Color.LIGHT_GRAY;
+        return style;
+    }
 
+    /**
+     * +     * 生成“纯色按钮”样式：up/over/down 全部按指定颜色染色。
+     * +     * 用于：绿色(解锁但未选择)、红色(已选择)。
+     * +
+     */
+    private TextButton.TextButtonStyle createSolidTintStyle(Color tint) {
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.font = skin.getFont("segoe_ui");
+
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+
+        NinePatch up = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        NinePatch over = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        NinePatch down = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        up.setColor(tint);
+        over.setColor(tint);
+        down.setColor(tint);
+
+        style.up = new NinePatchDrawable(up);
+        style.over = new NinePatchDrawable(over);
+        style.down = new NinePatchDrawable(down);
+        style.fontColor = Color.WHITE;
         return style;
     }
 
@@ -287,44 +525,47 @@ public class UpgradeMenuDisplay extends UIComponent {
     protected void draw(SpriteBatch batch) {
         // draw stage
     }
+
     /**
-     +     * Generates an instructional banner with a semi-transparent background at the bottom of the screen.
-     +     */
+     * +     * Generates an instructional banner with a semi-transparent background at the bottom of the screen.
+     * +
+     */
     private Table makeInstructionBanner() {
-                // Use the existing main menu button basemap to create a semi-transparent background
-                        Texture buttonTexture = ServiceLocator.getResourceService()
-                                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
-                NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
-                NinePatchDrawable bg = new NinePatchDrawable(patch);
-                bg = bg.tint(new Color(0, 0, 0, 0.45f)); // translucent black
+        // Use the existing main menu button basemap to create a semi-transparent background
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
+        NinePatch patch = new NinePatch(new TextureRegion(buttonTexture), 10, 10, 10, 10);
+        NinePatchDrawable bg = new NinePatchDrawable(patch);
+        bg = bg.tint(new Color(0, 0, 0, 0.45f)); // translucent black
 
         // Instructions (English)
-                         String text =
-                                        "[S] Place hero\\n" +
-                                        "[Hero] 1: Default weapon | 2: Fast fire, low damage | 3: High damage, slow fire\\n" +
-                                        "[Engineer] 1: Place tower | 2: Place cannon | 3: Generate currency\\n" +
-                                        "[Samurai] 1: Stab | 2: Slash | 3: Spin slash"+
-                                                "Note: Engineer structures can only be placed on roads, Engineers can only place three robots at a time";
+        String text =
+                "[S] Place hero\\n" +
+                        "[Hero] 1: Default weapon | 2: Fast fire, low damage | 3: High damage, slow fire\\n" +
+                        "[Engineer] 1: Place tower | 2: Place cannon | 3: Generate currency\\n" +
+                        "[Samurai] 1: Stab | 2: Slash | 3: Spin slash" +
+                        "Note: Engineer structures can only be placed on roads, Engineers can only place three robots at a time";
 
-                        Label.LabelStyle ls = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
-                Label label = new Label(text, ls);
-                label.setAlignment(Align.center);
-                label.setWrap(true);
+        Label.LabelStyle ls = new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE);
+        Label label = new Label(text, ls);
+        label.setAlignment(Align.center);
+        label.setWrap(true);
 
 
         //Wrap a container and set the background and padding
-                        Table banner = new Table();
-                banner.setBackground(bg);
-                banner.pad(10f, 16f, 10f, 16f);
-                banner.add(label).width(Math.min(Gdx.graphics.getWidth() * 0.9f, 980f)).center();
+        Table banner = new Table();
+        banner.setBackground(bg);
+        banner.pad(10f, 16f, 10f, 16f);
+        banner.add(label).width(Math.min(Gdx.graphics.getWidth() * 0.9f, 980f)).center();
 
-                        // Wrap another full-screen table and position it at the bottom
-                                Table root = new Table();
-                root.setFillParent(true);
-                root.bottom().padBottom(12f);
-                root.add(banner).center();
-                return root;
-            }
+        // Wrap another full-screen table and position it at the bottom
+        Table root = new Table();
+        root.setFillParent(true);
+        root.bottom().padBottom(12f);
+        root.add(banner).center();
+        //  return root;
+        return new Table();
+    }
 
     private void exitMenu() {
         game.setScreen(GdxGame.ScreenType.MAP_SELECTION);

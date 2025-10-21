@@ -319,14 +319,14 @@ public class SimpleSaveService {
     GameStateService gs = new GameStateService();
     ServiceLocator.registerGameStateService(gs);
 
-    if (!data.heroUnlocks.isEmpty()) {
-        gs.setHeroUnlocks(data.heroUnlocks);
-    }
-
     gs.setStars(data.stars);
     gs.setSelectedHero(data.selectedHero);
 
     for (GameStateService.HeroType type :GameStateService.HeroType.values()) {
+        if (!data.heroUnlocks.isEmpty()) {
+            gs.setHeroUnlocked(type, data.heroUnlocks.get(type));
+        }
+
         gs.setSelectedSkin(type, data.selectedSkins.get(type));
         gs.setSelectedWeaponSkin(type, data.selectedWeaponSkins.get(type));
     }

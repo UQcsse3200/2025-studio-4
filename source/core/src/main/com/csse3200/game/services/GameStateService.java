@@ -217,21 +217,22 @@ public class GameStateService {
     }
 
     /**
-     * Sets the current unlock flags for the heroes
-     *
-     * @param unlocks map of the new hero unlocks
-     */
-    public void setHeroUnlocks(Map<HeroType, Boolean> unlocks) {
-        heroUnlocks = unlocks;
-    }
-
-    /**
      * Marks the given hero as unlocked
      *
      * @param hero hero to unlock
      */
     public void setHeroUnlocked(HeroType hero) {
         heroUnlocks.put(hero, true);
+    }
+
+    /**
+     * Marks the given hero as locked or unlocked based on input
+     *
+     * @param hero hero to unlock
+     * @param unlocked true if it should be unlocked, false otherwise
+     */
+    public void setHeroUnlocked(HeroType hero, boolean unlocked) {
+        heroUnlocks.put(hero, unlocked);
     }
 
     /**

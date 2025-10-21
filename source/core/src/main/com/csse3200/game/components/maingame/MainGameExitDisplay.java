@@ -30,12 +30,20 @@ public class MainGameExitDisplay extends UIComponent {
   
   private Table table;
   private TextButton speedButton;
+  private TextButton startWaveButton;
   private boolean isDoubleSpeed = false;
+  private boolean isWaveActive = false;
+  private boolean allWavesComplete = false;
 
   @Override
   public void create() {
     super.create();
     addActors();
+    
+    // Listen for wave state changes
+    entity.getEvents().addListener("waveStarted", this::onWaveStarted);
+    entity.getEvents().addListener("waveComplete", this::onWaveComplete);
+    entity.getEvents().addListener("allWavesComplete", this::onAllWavesComplete);
   }
 
   private void addActors() {
@@ -49,7 +57,7 @@ public class MainGameExitDisplay extends UIComponent {
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     speedButton = new TextButton("Speed: 1x", customButtonStyle);
-    TextButton startWaveButton = new TextButton("Start Wave", customButtonStyle);
+    startWaveButton = new TextButton("Start Wave", customButtonStyle);
 
     // Set button size
     float buttonWidth = 120f;
@@ -111,7 +119,9 @@ public class MainGameExitDisplay extends UIComponent {
     startWaveButton.addListener(new ChangeListener() {
         @Override
         public void changed(ChangeEvent event, Actor actor) {
-            startWave();
+            if (!isWaveActive && !allWavesComplete) {
+                startWave();
+            }
         }
     });
 
@@ -132,6 +142,56 @@ public class MainGameExitDisplay extends UIComponent {
   private void startWave() {
     logger.debug("Start Wave button clicked");
     entity.getEvents().trigger("startWave");
+  }
+
+  /**
+   * Called when a wave starts - disable the button
+   */
+  private void onWaveStarted() {
+    isWaveActive = true;
+    disableButton();
+    logger.debug("Wave started - button disabled");
+  }
+
+  /**
+   * Called when a wave completes - enable the button (unless all waves are complete)
+   */
+  private void onWaveComplete() {
+    isWaveActive = false;
+    if (!allWavesComplete) {
+      enableButton();
+      logger.debug("Wave complete - button enabled");
+    }
+  }
+
+  /**
+   * Called when all waves are complete - permanently disable the button
+   */
+  private void onAllWavesComplete() {
+    allWavesComplete = true;
+    isWaveActive = false;
+    disableButton();
+    logger.debug("All waves complete - button permanently disabled");
+  }
+
+  /**
+   * Disable the Start Wave button (grey out entire button)
+   */
+  private void disableButton() {
+    startWaveButton.setDisabled(true);
+    startWaveButton.getLabel().setColor(Color.GRAY);
+    // Grey out the entire button
+    startWaveButton.setColor(0.5f, 0.5f, 0.5f, 1f);
+  }
+
+  /**
+   * Enable the Start Wave button
+   */
+  private void enableButton() {
+    startWaveButton.setDisabled(false);
+    startWaveButton.getLabel().setColor(Color.CYAN);
+    // Restore full color
+    startWaveButton.setColor(Color.WHITE);
   }
 
   /**

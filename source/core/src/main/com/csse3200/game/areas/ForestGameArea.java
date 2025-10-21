@@ -188,6 +188,11 @@ public class ForestGameArea extends GameArea {
         timeRemainingWhenPaused = 0f;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
+        
+        // Notify UI that wave has started
+        if (MainGameScreen.ui != null) {
+            MainGameScreen.ui.getEvents().trigger("waveStarted");
+        }
     }
 
     /**
@@ -220,30 +225,30 @@ public class ForestGameArea extends GameArea {
      */
     public void onWaveDefeated() {
         logger.info("Wave {} defeated!", currentWaveIndex + 1);
-
+        
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory!
             logger.info("All waves completed! Victory!");
+            
+            // Notify UI that all waves are complete (permanently disable button)
             if (MainGameScreen.ui != null) {
+                MainGameScreen.ui.getEvents().trigger("allWavesComplete");
+                
                 MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
                 if (winComponent != null) {
                     winComponent.addActors();
                 }
             }
         } else {
-            // Start next wave after delay
+            // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
-            // Get current time scale, but don't divide by zero
-            float timeScale = ServiceLocator.getTimeSource().getTimeScale();
-            float adjustedDelay = timeScale > 0 ? 3.0f / timeScale : 3.0f;
+            logger.info("Wave {} ready. Waiting for player to start...", currentWaveIndex + 1);
             
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, adjustedDelay);
+            // Notify UI that current wave is complete (re-enable button)
+            if (MainGameScreen.ui != null) {
+                MainGameScreen.ui.getEvents().trigger("waveComplete");
+            }
         }
     }
 
@@ -613,13 +618,23 @@ public class ForestGameArea extends GameArea {
     }
 
     public void startWaves() {
-        initializeWaves();
+        // Only initialize waves once at the very beginning
+        if (waves == null) {
+            initializeWaves();
+        }
+        
+        // Check if all waves are already complete
+        if (currentWaveIndex >= waves.size()) {
+            logger.info("All waves already completed!");
+            return;
+        }
+        
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 startEnemyWave();
             }
-        }, 2.0f); // Start wave after 2 seconds
+        }, 2.0f);
     }
 
     /**

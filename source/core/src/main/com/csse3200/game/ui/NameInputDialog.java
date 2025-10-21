@@ -87,8 +87,8 @@ public class NameInputDialog extends Dialog {
         contentTable.pad(Theme.PAD);
         contentTable.setBackground(SimpleUI.solid(Theme.WINDOW_BG));
         
-        // Title - using segoe_ui font
-        Label.LabelStyle titleStyle = new Label.LabelStyle(getSkin().getFont("segoe_ui"), Theme.TITLE_FG);
+        // Title - using segoe_ui font with black color for emphasis
+        Label.LabelStyle titleStyle = new Label.LabelStyle(getSkin().getFont("segoe_ui"), Color.BLACK);
         Label titleLabel = new Label("Create Your Character", titleStyle);
         contentTable.add(titleLabel).colspan(2).padBottom(Theme.PAD);
         contentTable.row();

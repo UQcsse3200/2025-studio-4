@@ -407,6 +407,9 @@ public class IntroDialogueComponent extends UIComponent {
     // 停止当前播放的音频并清理资源
     audioManager.dispose();
 
+    // 显示"Ready for Fight!"提示
+    showReadyForFightMessage();
+
     if (overlayRoot != null) {
       overlayRoot.remove();
       overlayRoot = null;
@@ -604,5 +607,208 @@ public class IntroDialogueComponent extends UIComponent {
     }
     String normalised = path.replace("\\", "/").toLowerCase(Locale.ROOT);
     return normalised.endsWith("talker.png") || normalised.endsWith("talker2.png");
+  }
+
+  /**
+   * 显示"Ready for Fight!"提示消息
+   */
+  private void showReadyForFightMessage() {
+    // 创建更大更清晰的字体
+    BitmapFont largeFont = createLargeFont();
+    
+    // 分解文本为三个单词
+    String[] words = {"Ready", "for", "Fight!"};
+    float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    
+    // 为每个单词创建标签
+    Label[] wordLabels = new Label[words.length];
+    for (int i = 0; i < words.length; i++) {
+      Label.LabelStyle labelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
+      wordLabels[i] = new Label(words[i], labelStyle);
+      wordLabels[i].setAlignment(Align.center);
+      
+      // 设置初始位置（屏幕中央）
+      wordLabels[i].setPosition(
+          (screenWidth - wordLabels[i].getPrefWidth()) / 2f,
+          (screenHeight - wordLabels[i].getPrefHeight()) / 2f
+      );
+      
+      // 设置初始缩放（很大）
+      wordLabels[i].setScale(3.0f);
+      
+      // 初始隐藏所有单词
+      wordLabels[i].setVisible(false);
+      
+      // 添加到舞台
+      stage.addActor(wordLabels[i]);
+    }
+    
+    // 为每个单词添加动画效果
+    animateWordsSequentially(wordLabels, largeFont);
+  }
+  
+  /**
+   * 为单词添加顺序动画效果
+   */
+  private void animateWordsSequentially(Label[] wordLabels, BitmapFont largeFont) {
+    animateSingleWord(wordLabels, 0, largeFont);
+  }
+  
+  /**
+   * 为单个单词添加动画效果
+   */
+  private void animateSingleWord(Label[] wordLabels, int wordIndex, BitmapFont largeFont) {
+    if (wordIndex >= wordLabels.length) {
+      // 所有单词动画完成，清理资源
+      com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+        @Override
+        public void run() {
+          // 清理所有标签
+          for (Label label : wordLabels) {
+            if (label != null) {
+              label.remove();
+            }
+          }
+          // 清理字体资源
+          if (largeFont != null && largeFont != SimpleUI.font()) {
+            largeFont.dispose();
+          }
+        }
+      }, 1.0f); // 最后一个单词消失后等待1秒再清理
+      return;
+    }
+    
+    final Label currentLabel = wordLabels[wordIndex];
+    final int nextWordIndex = wordIndex + 1;
+    
+    // 显示当前单词
+    currentLabel.setVisible(true);
+    
+    // 开始缩放动画：从3.0倍缩放到1.0倍
+    animateScale(currentLabel, 3.0f, 1.0f, 0.8f, () -> {
+      // 缩放完成后，等待0.3秒然后开始消失动画
+      com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+        @Override
+        public void run() {
+          // 开始消失动画：从1.0倍匀速缩小到0.1倍
+          animateScaleLinear(currentLabel, 1.0f, 0.1f, 0.3f, () -> {
+            // 消失完成后隐藏单词
+            currentLabel.setVisible(false);
+            
+            // 立即开始下一个单词的动画
+            animateSingleWord(wordLabels, nextWordIndex, largeFont);
+          });
+        }
+      }, 0.3f);
+    });
+  }
+  
+  /**
+   * 执行缩放动画
+   */
+  private void animateScale(Label label, float startScale, float endScale, float duration, Runnable onComplete) {
+    final float[] currentTime = {0f};
+    final float totalDuration = duration;
+    
+    com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+      @Override
+      public void run() {
+        currentTime[0] += 0.016f; // 约60FPS
+        
+        if (currentTime[0] >= totalDuration) {
+          label.setScale(endScale);
+          this.cancel();
+          if (onComplete != null) {
+            onComplete.run();
+          }
+          return;
+        }
+        
+        // 使用缓动函数创建平滑动画
+        //float progress = currentTime[0] / totalDuration;
+        //float easedProgress = easeOutElastic(progress); // 使用弹性缓动产生跳动效果
+        
+        //float currentScale = startScale + (endScale - startScale) * easedProgress;
+        //label.setScale(currentScale);
+      }
+    }, 0f, 0.016f); // 每帧执行一次
+  }
+  
+  /**
+   * 执行匀速缩放动画
+   */
+  private void animateScaleLinear(Label label, float startScale, float endScale, float duration, Runnable onComplete) {
+    final float[] currentTime = {0f};
+    final float totalDuration = duration;
+    
+    com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+      @Override
+      public void run() {
+        currentTime[0] += 0.016f; // 约60FPS
+        
+        if (currentTime[0] >= totalDuration) {
+          label.setScale(endScale);
+          this.cancel();
+          if (onComplete != null) {
+            onComplete.run();
+          }
+          return;
+        }
+        
+        // 使用线性插值创建匀速动画
+        float progress = currentTime[0] / totalDuration;
+        float currentScale = startScale + (endScale - startScale) * progress;
+        label.setScale(currentScale);
+      }
+    }, 0f, 0.016f); // 每帧执行一次
+  }
+  
+  /**
+   * 弹跳缓动函数 - 产生明显的弹跳效果
+   */
+  // private float easeOutBounce(float t) {
+  //   if (t < 1f / 2.75f) {
+  //     return 7.5625f * t * t;
+  //   } else if (t < 2f / 2.75f) {
+  //     t -= 1.5f / 2.75f;
+  //     return 7.5625f * t * t + 0.75f;
+  //   } else if (t < 2.5f / 2.75f) {
+  //     t -= 2.25f / 2.75f;
+  //     return 7.5625f * t * t + 0.9375f;
+  //   } else {
+  //     t -= 2.625f / 2.75f;
+  //     return 7.5625f * t * t + 0.984375f;
+  //   }
+  // }
+  
+  // /**
+  //  * 弹性缓动函数 - 产生更明显的弹性效果
+  //  */
+  // private float easeOutElastic(float t) {
+  //   if (t == 0) return 0;
+  //   if (t == 1) return 1;
+    
+  //   float p = 0.3f;
+  //   float s = p / 4f;
+    
+  //   return (float) (Math.pow(2, -10 * t) * Math.sin((t - s) * (2 * Math.PI) / p) + 1);
+  // }
+  
+  /**
+   * 创建大字体
+   */
+  private BitmapFont createLargeFont() {
+    try {
+      // 尝试加载更大的字体
+      BitmapFont font = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
+      font.getData().setScale(2.0f); // 放大2倍
+      return font;
+    } catch (Exception e) {
+      // 如果加载失败，使用默认字体并放大
+      BitmapFont defaultFont = SimpleUI.font();
+      defaultFont.getData().setScale(3.0f); // 放大3倍
+      return defaultFont;
+    }
   }
 }

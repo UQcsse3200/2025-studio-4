@@ -45,6 +45,7 @@ public class SaveMenuDisplay extends UIComponent {
         
         entity.getEvents().addListener("showSaveUI", this::showOverlay);
         entity.getEvents().addListener("hideSaveUI", this::hideOverlay);
+        entity.getEvents().addListener("hideSaveMenuOnly", this::hideOverlayOnly);
         entity.getEvents().addListener("showSaveSuccess", this::showSaveSuccess);
         entity.getEvents().addListener("showSaveError", this::showSaveError);
     }
@@ -127,6 +128,20 @@ public class SaveMenuDisplay extends UIComponent {
         if (statusLabel != null) {
             statusLabel.setVisible(false);
         }
+        
+        // Re-show pause menu after closing save menu
+        entity.getEvents().trigger("showPauseUI");
+    }
+    
+    private void hideOverlayOnly() {
+        shown = false;
+        dimImage.setVisible(false);
+        overlayTable.setVisible(false);
+        
+        if (statusLabel != null) {
+            statusLabel.setVisible(false);
+        }
+        // Don't trigger showPauseUI - this is handled by the caller
     }
 
     private void showSaveSuccess() {

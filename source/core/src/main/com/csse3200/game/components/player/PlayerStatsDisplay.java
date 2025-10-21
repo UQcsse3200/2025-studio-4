@@ -1,5 +1,7 @@
 package com.csse3200.game.components.player;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -25,13 +27,11 @@ import java.util.Map;
  */
 public class PlayerStatsDisplay extends UIComponent {
   Table table;
-  private Image heartImage;
-  private Label healthLabel;
   private final Map<CurrencyType, Image> currencyImages = new EnumMap<>(CurrencyType.class);
   private final Map<CurrencyType, Label> currencyLabels = new EnumMap<>(CurrencyType.class);
   private Image scoreImage;
   private Label scoreLabel;
-
+  // private Texture bgTexture;
   /**
    * Creates reusable ui styles and adds actors to the stage.
    */
@@ -40,7 +40,6 @@ public class PlayerStatsDisplay extends UIComponent {
     super.create();
     addActors();
 
-    entity.getEvents().addListener("updateHealth", this::updatePlayerHealthUI);
     entity.getEvents().addListener("updateCurrencyUI", this::updatePlayerCurrencyAmountUI);
     entity.getEvents().addListener("updateScore", this::updatePlayerScoreUI);
   }
@@ -52,29 +51,23 @@ public class PlayerStatsDisplay extends UIComponent {
   private void addActors() {
     table = new Table();
     table.top().left();
+    table.setFillParent(true);
+    table.padTop(60f).padLeft(5f);
+
     float screenWidth = stage.getWidth();
     float screenHeight = stage.getHeight();
-    float rowWidth =  screenWidth * 0.03f;
-
-    // Heart image
-    heartImage = new Image(ServiceLocator.getResourceService().getAsset("images/heart.png", Texture.class));
-
-    // Health text
-    int health = entity.getComponent(PlayerCombatStatsComponent.class).getHealth();
-    CharSequence healthText = String.format("Health: %d", health);
-    healthLabel = new Label(healthText, skin, "large");
 
     // Score image (trophy)
+    float scoreSideLength = 64f;
     scoreImage = new Image(ServiceLocator.getResourceService().getAsset("images/score_trophy.png", Texture.class));
 
+    Label.LabelStyle labelStyle = new Label.LabelStyle(skin.get(Label.LabelStyle.class));
+    labelStyle.fontColor = Color.WHITE;
+    labelStyle.font = skin.getFont("segoe_ui");
     // Score text
     int score = 0; //entity.getComponent(ScrapStatsComponent.class).getScrap();
     CharSequence scoreText = String.format("Score: %d", score);
-    scoreLabel = new Label(scoreText, skin, "large");
-
-    table.add(heartImage).size(rowWidth).pad(5);
-    table.add(healthLabel);
-    table.row();
+    scoreLabel = new Label(scoreText, labelStyle);
 
     // Dynamically render currencies
     for (CurrencyType currencyType : CurrencyType.values()) {
@@ -86,46 +79,43 @@ public class PlayerStatsDisplay extends UIComponent {
       );
       int currencyAmount = entity.getComponent(CurrencyManagerComponent.class).getCurrencyAmount(currencyType);
       Label currencyLabel = new Label(
-              String.format("%s%n%d", currencyType.getDisplayName(), currencyAmount),
-              skin,
-              "large"
-      );
+              String.format("%s%n%d", currencyType.getDisplayName(), currencyAmount), labelStyle);
 
       currencyImages.put(currencyType, currencyImage);
       currencyLabels.put(currencyType, currencyLabel);
 
-      table.add(currencyImage).size(rowWidth).pad(5);
+      float sideLength = 64f;
+      table.add(currencyImage).size(sideLength).pad(5);
       table.add(currencyLabel).left();
       table.row();
     }
 
     // Score text position
     table.row();
-    table.add(scoreImage).size(rowWidth).pad(5);
+    table.add(scoreImage).size(scoreSideLength).pad(5);
     table.add(scoreLabel).left().padTop(5f);
-
-    // set table’s background
-    Texture bgTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
-    Drawable background = new TextureRegionDrawable(new TextureRegion(bgTexture));
-    table.setBackground(background);
-
-    // Wrap table inside a container for background + positioning
-    Container<Table> container = new Container<>(table);
-    container.align(Align.topLeft); // align the content inside
-    container.top().left();         // align the container itself
-    container.padTop(60f);
-
-    // Add container to root layout
-    Table rootTable = new Table();
-    rootTable.top().left(); // this line ensures it's anchored to top-left
-    rootTable.setFillParent(true);
-    rootTable.add(container)
-            .width(screenWidth * 0.15f)
-            .height(screenHeight * 0.3f)
-            .left().top();
-
-    stage.addActor(rootTable);
+//    bgTexture = buildSolidTexture(new Color(0.15f, 0.15f, 0.18f, 0.6f)); // 60% opacity
+//    Drawable background = new TextureRegionDrawable(new TextureRegion(bgTexture));
+//
+//    table.setBackground(background);
+//
+//    // Wrap table inside a container for background + positioning
+//    Container<Table> container = new Container<>(table);
+//    container.align(Align.topLeft); // align the content inside
+//    container.top().left();         // align the container itself
+//    container.padTop(60f);
+//
+//    // Add container to root layout
+//    Table rootTable = new Table();
+//    rootTable.top().left(); // this line ensures it's anchored to top-left
+//    rootTable.setFillParent(true);
+//    rootTable.add(container)
+//            .width(screenWidth * 0.15f)
+//            .height(screenHeight * 0.3f)
+//            .left().top();
+//
+//    stage.addActor(rootTable);
+    stage.addActor(table);
 
     applyUiScale();
   }
@@ -155,15 +145,6 @@ public class PlayerStatsDisplay extends UIComponent {
   }
 
   /**
-   * Updates the player's health on the ui.
-   * @param health player health
-   */
-  public void updatePlayerHealthUI(int health) {
-    CharSequence text = String.format("Health: %d", health);
-    healthLabel.setText(text);
-  }
-
-  /**
    * Updates the player's currency amount for certain type on the UI.
    * @param type currency type to render
    * @param amount player currency amount for certain type
@@ -184,12 +165,9 @@ public class PlayerStatsDisplay extends UIComponent {
     scoreLabel.setText(text);
   }
 
-
   @Override
   public void dispose() {
     super.dispose();
-    heartImage.remove();
-    healthLabel.remove();
 
     for (Image image : currencyImages.values()) {
       image.remove();

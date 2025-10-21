@@ -429,22 +429,20 @@ public class ForestGameArea extends GameArea {
             ServiceLocator.getAudioService().stopMusic();
             logger.info("主菜单音乐已停止");
         }
-        
+
         // Load assets (textures, sounds, etc.) before creating anything that needs them
         loadAssets();
         registerForCleanup();
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
-        
+
         // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
         TowerHotbarDisplay towerHotbar = new TowerHotbarDisplay();
         if (!hasExistingPlayer) {
             towerHotbar.setVisible(false); // 新游戏时隐藏，对话结束后显示
         }
         ui.addComponent(towerHotbar);
-        
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
         SimplePlacementController placementController = new SimplePlacementController();
         ui.addComponent(placementController); // Handles user input for tower placement
@@ -471,7 +469,7 @@ public class ForestGameArea extends GameArea {
 
         // Create background entity (renders behind everything)
         Entity background = new Entity();
-        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/game background.jpg"));
+        background.addComponent(new com.csse3200.game.rendering.BackgroundRenderComponent("images/main_game_background.png"));
         background.setPosition(0, 0); // Set position at origin
         spawnEntity(background);
 
@@ -752,11 +750,11 @@ public class ForestGameArea extends GameArea {
         // mapEditor = new com.csse3200.game.areas2.MapTwo.MapEditor2((TerrainComponent2)terrain, newPlayer);
         mapEditor = new MapEditor(terrain, newPlayer);
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
-        
+
         // Set path layer opacity to 0.7 (70% opacity) for map1
         // 调整map1路径砖块的透明度为70%
         mapEditor.setPathLayerOpacity(0.7f);
-        
+
         // Uncomment if crystal spawning is needed:
         // mapEditor.spawnCrystal(); // Generate crystal
 
@@ -1106,7 +1104,7 @@ public class ForestGameArea extends GameArea {
                             // 对话结束后显示防御塔列表和播放背景音乐
                             showTowerUI();
                             playMusic();
-                            
+
                             if (MainGameScreen.ui != null) {
                                 MainGameScreen.ui.getEvents().trigger("startWave");
                             } else {

@@ -8,7 +8,7 @@ import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
-
+import com.badlogic.gdx.audio.Sound;
 import java.util.Map;
 
 /**
@@ -22,10 +22,12 @@ public class HeroUpgradeComponent extends Component {
     /** Current level and maximum level cap */
     private int level = 1;
     private final int maxLevel = 2;
-
+    private String upgradeSfxKey = "sounds/hero_upgrade.ogg";
+    private float upgradeSfxVolume = 1.0f;
     /** Currency type and cost formula */
     private final CurrencyType costType = CurrencyType.METAL_SCRAP;
-
+    private String shootSfxLevel2 = "sounds/hero_lv2_shot.ogg";
+    private float shootSfxVolume = 1.0f;
     /** Cached references to player entity and wallet to avoid repeated global searches */
     private Entity player;
     private CurrencyManagerComponent wallet;
@@ -37,6 +39,18 @@ public class HeroUpgradeComponent extends Component {
     public HeroUpgradeComponent attachPlayer(Entity player) {
         this.player = player;
         this.wallet = (player != null) ? player.getComponent(CurrencyManagerComponent.class) : null;
+        return this;
+    }
+    public HeroUpgradeComponent setUpgradeSfxVolume(float vol) {
+        this.upgradeSfxVolume = Math.max(0f, Math.min(1f, vol));
+        return this;
+    }
+    public HeroUpgradeComponent setLv2ShootSfx(String key) {
+        if (key != null && !key.isBlank()) this.shootSfxLevel2 = key;
+        return this;
+    }
+    public HeroUpgradeComponent setShootSfxVolume(float vol) {
+        this.shootSfxVolume = Math.max(0f, Math.min(1f, vol));
         return this;
     }
 
@@ -117,8 +131,10 @@ public class HeroUpgradeComponent extends Component {
         applyStatGrowth(level);
         Gdx.app.log("HeroUpgrade", "success: level=" + level + ", cost=" + cost);
         entity.getEvents().trigger("upgraded", level, costType, cost);
-
-
+        playUpgradeSfx();
+        if (level >= 2) {
+            applyLv2ShootSfx();
+        }
         // ✅ 广播新数值，供UI刷新
         entity.getEvents().trigger("hero.level", level);
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
@@ -128,13 +144,24 @@ public class HeroUpgradeComponent extends Component {
     }
 
     /** Applies stat growth when hero levels up (customizable). */
+    /** Applies stat growth when hero levels up (customizable). */
     private void applyStatGrowth(int newLevel) {
+        // ① 固定基础攻击为 12（无论之前是多少）
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
-            stats.setBaseAttack(stats.getBaseAttack() + 10);
-            stats.setHealth(stats.getHealth() + 20);
+            stats.setBaseAttack(12);
+            // 如果不想改生命，这里就不再 +20 了；若仍想顺带加血，可自行加：
+            // stats.setHealth(stats.getHealth() + 20);
+        }
+
+        // ② 固定攻速为 1 秒 1 发（即冷却 = 1.0f 秒）
+        //    这里假设你的射击逻辑在 HeroTurretAttackComponent 里
+        HeroTurretAttackComponent atk = entity.getComponent(HeroTurretAttackComponent.class);
+        if (atk != null) {
+            atk.setCooldown(1.0f); // 冷却秒数：每 1.0s 可射一发
         }
     }
+
 
     /**
      * Fallback player lookup:
@@ -163,4 +190,49 @@ public class HeroUpgradeComponent extends Component {
     public Entity getPlayer() {
         return player;
     }
+    private void playUpgradeSfx() {
+        if (upgradeSfxKey == null || upgradeSfxKey.isBlank()) return;
+        float vol = Math.max(0f, Math.min(1f, upgradeSfxVolume));
+        try {
+            var rs = ServiceLocator.getResourceService();
+            if (rs != null) {
+                Sound s = null;
+                try { s = rs.getAsset(upgradeSfxKey, Sound.class); } catch (Throwable ignored) {}
+                if (s != null) {
+                    long id = s.play(vol);
+                    Gdx.app.log("HeroUpgradeSFX", "Played via ResourceService: " + upgradeSfxKey + " id=" + id);
+                    return;
+                } else {
+                    Gdx.app.error("HeroUpgradeSFX", "Not in ResourceService (or null): " + upgradeSfxKey);
+                }
+            } else {
+                Gdx.app.error("HeroUpgradeSFX", "ResourceService is null");
+            }
+
+            // 回退播放（可选）
+            if (!Gdx.files.internal(upgradeSfxKey).exists()) {
+                Gdx.app.error("HeroUpgradeSFX", "File NOT FOUND: " + upgradeSfxKey);
+                return;
+            }
+            if (Gdx.audio == null) {
+                Gdx.app.error("HeroUpgradeSFX", "Gdx.audio is NULL");
+                return;
+            }
+            Sound s2 = Gdx.audio.newSound(Gdx.files.internal(upgradeSfxKey));
+            long id2 = s2.play(vol);
+            Gdx.app.log("HeroUpgradeSFX", "Played via fallback newSound: " + upgradeSfxKey + " id=" + id2);
+        } catch (Throwable t) {
+            Gdx.app.error("HeroUpgradeSFX", "Play failed: " + upgradeSfxKey, t);
+        }
+    }
+    /** Lv2 统一射击音效写入攻击组件 */
+    private void applyLv2ShootSfx() {
+        if (shootSfxLevel2 == null || shootSfxLevel2.isBlank()) return;
+        HeroTurretAttackComponent atk = entity.getComponent(HeroTurretAttackComponent.class);
+        if (atk != null) {
+            atk.setShootSfxKey(shootSfxLevel2).setShootSfxVolume(shootSfxVolume);
+            Gdx.app.log("HeroUpgrade", "Lv2 shoot sfx -> " + shootSfxLevel2);
+        }
+    }
+
 }

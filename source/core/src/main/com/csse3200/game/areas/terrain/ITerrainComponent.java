@@ -10,5 +10,6 @@ public interface ITerrainComponent {
     float getTileSize();
     GridPoint2 getMapBounds(int layer);
     TiledMap getMap();
+
 }
 

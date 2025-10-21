@@ -74,13 +74,13 @@ public class MapSelectionDisplay extends UIComponent {
     private void buildEntries() {
         MapEntry defaultMap = new MapEntry();
         defaultMap.mapId = null;            // default game area
-        defaultMap.displayName = "Forest Demo";
+        defaultMap.displayName = "Icebox";
         defaultMap.thumbTex = thumbTexMap1;
         entries.add(defaultMap);
 
         MapEntry mapTwo = new MapEntry();
         mapTwo.mapId = "MapTwo";
-        mapTwo.displayName = "Map Two";
+        mapTwo.displayName = "Ascent";
         mapTwo.thumbTex = thumbTexMap2;
         entries.add(mapTwo);
 
@@ -166,7 +166,7 @@ public class MapSelectionDisplay extends UIComponent {
 
         // Bottom menu bar with Back / Unlocks / Play (orange)
         TextButton backBtn = new TextButton("Back", orange);
-        TextButton unlocksBtn = new TextButton("Unlocks", orange);
+        TextButton unlocksBtn = new TextButton("Select hero", orange);
         TextButton playBtn = new TextButton("Play", orange);
 
         backBtn.addListener(new ChangeListener() {

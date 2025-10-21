@@ -56,6 +56,9 @@ Application mockApp;
         // Mock renderer and its dependencies
         mockCamera = mock(OrthographicCamera.class);
         cameraComponent = new CameraComponent(mockCamera);
+        // Ensure unproject returns the same vector instance passed in (no-op transform)
+        doAnswer(inv -> inv.getArgument(0)).when(mockCamera).unproject(any(Vector3.class));
+
         mockBatch = mock(SpriteBatch.class);
         mockStage = mock(Stage.class);
         mockRenderService = mock(RenderService.class);
@@ -83,8 +86,7 @@ Application mockApp;
         when(Gdx.input.getX()).thenReturn(5);
         when(Gdx.input.getY()).thenReturn(5);
 
-        // Stubbing behavior for camera
-        when(mockCamera.unproject(new Vector3(5,5, 0))).thenReturn(new Vector3(5, 5, 0));
+        // No need to stub unproject for specific coords; generic any(...) is set in setUp
 
         // Do nothing when dispose the entity
         doNothing().when(mockApp).postRunnable(any(Runnable.class));
@@ -108,9 +110,6 @@ Application mockApp;
         when(Gdx.input.getX()).thenReturn(5);
         when(Gdx.input.getY()).thenReturn(5);
 
-        // Stubbing behavior for camera
-        when(mockCamera.unproject(new Vector3(5,5, 0))).thenReturn(new Vector3(5, 5, 0));
-
         // Do nothing when dispose the entity
         doNothing().when(mockApp).postRunnable(any(Runnable.class));
 
@@ -122,16 +121,23 @@ Application mockApp;
 
         // Check if update() called and the desired result
         verify(collectibleComponent).update();
-        // Should be false as (6-5) > clickRadius == 1
+        // Should be false as (6-5) > clickRadius and hover radius checks both axes
         assertEquals(false, collectibleComponent.isCollected());
     }
 
     @Test
     public void ShouldNotCollectWhenNotTouched() {
         when(Gdx.input.justTouched()).thenReturn(false);
+
+        // Place mouse far away so hover does NOT trigger
+        when(Gdx.input.getX()).thenReturn(1000);
+        when(Gdx.input.getY()).thenReturn(1000);
+        // Ensure entity is not under the cursor
+        entity.setPosition(0, 0);
+
         entity.update();
         assertFalse(collectibleComponent.isCollected(),
-                "Should not collect when screen not touched");
+                "Should not collect when not touched and cursor not hovering over entity");
     }
 
     @Test
@@ -148,6 +154,6 @@ Application mockApp;
         entity.update();
 
         assertFalse(collectibleComponent.isCollected(),
-                "Should not collect when Y difference > clickRadius");
+                "Should not collect when Y difference > click/hover radius");
     }
 }

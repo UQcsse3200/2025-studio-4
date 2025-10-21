@@ -59,7 +59,8 @@ public final class SummonFactory {
                 .addComponent(new TextureRenderComponent(texturePath))
                 .addComponent(new CombatStatsComponent(100, 0, resistance, weakness))
                 .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 4.0f))
-                .addComponent(new AutoDespawnOnDeathComponent()); // ✅ Auto-despawn on death
+                .addComponent(new AutoDespawnOnDeathComponent())// ✅ Auto-despawn on death
+                .addComponent(new SfxOnDeathComponent("sounds/explosion_2s.ogg", 0.9f));
 
         var phys = s.getComponent(PhysicsComponent.class);
         if (phys != null) {
@@ -70,6 +71,7 @@ public final class SummonFactory {
         s.setScale(scale, scale);
         return s;
     }
+
 
     // === Directional Turret ===
 
@@ -101,7 +103,8 @@ public final class SummonFactory {
                         .setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new TextureRenderComponent(texturePath))
                 .addComponent(new CombatStatsComponent(20, 25, resistance, weakness))
-                .addComponent(new AutoDespawnOnDeathComponent()); // ✅ Auto-despawn on death
+                .addComponent(new AutoDespawnOnDeathComponent())// ✅ Auto-despawn on death
+                .addComponent(new SfxOnDeathComponent("sounds/explosion_2s.ogg", 0.9f));
 
         var phys = turret.getComponent(PhysicsComponent.class);
         if (phys != null) {
@@ -112,9 +115,16 @@ public final class SummonFactory {
         turret.setScale(scale, scale);
 
         // Attack behavior: shoot bullets and rotate firing direction cyclically
-        turret.addComponent(new TurretAttackComponent(
-                fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/hero/Bullet.png"));
+
         turret.addComponent(new FourWayCycleComponent(attackCooldown, fireDirection));
+        // 先创建组件
+        TurretAttackComponent tac = new TurretAttackComponent(
+                fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/engineer/Turret_Bullet.png"
+        ).setShootSfxKey("sounds/turret_shoot.ogg")  // ★ 音效路径（放你项目的 assets）
+                .setShootSfxVolume(0.9f)                    // 可调
+                .setShootSfxMinInterval(0.05f);             // 可调
+
+        turret.addComponent(tac);
 
         return turret;
     }
@@ -156,6 +166,7 @@ public final class SummonFactory {
                 .addComponent(new TextureRenderComponent(texturePath))
                 .addComponent(new CombatStatsComponent(5, 0, resistance, weakness)) // Minimal HP
                 .addComponent(new AutoDespawnOnDeathComponent())
+                .addComponent(new SfxOnDeathComponent("sounds/explosion_2s.ogg", 0.9f))
                 .addComponent(new OwnerComponent(owner))
                 .addComponent(new CurrencyGeneratorComponent(owner, currencyType, amountPerTick, intervalSec));
 

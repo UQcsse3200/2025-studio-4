@@ -140,8 +140,8 @@
       "neurochipCost": 0,
       "projectileSpeed": 5.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/raftproj.png",
-      "image": "images/towers/viking/vikinglvl1.png"
+      "projectileTexture": "images/towers/projectile animations/arrow.png",
+      "image": "images/towers/viking/archerlvl1.png"
     }
   },
   "frozenmamoothskullTower": {

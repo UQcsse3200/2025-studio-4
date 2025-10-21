@@ -106,10 +106,10 @@ public class TowerUpgradeData {
 
 
         Map<Integer, UpgradeStats> raftA = new HashMap<>();
-        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 300, "images/towers/viking/vikinglvl2"));
-        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 350, "images/towers/viking/vikinglvl3"));
-        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 400, "images/towers/viking/vikinglvl4"));
-        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 450, "images/towers/viking/vikinglvl4"));
+        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 300, "images/towers/viking/archerlvl2"));
+        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 350, "images/towers/viking/archerlvl3"));
+        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 400, "images/towers/viking/archerlvl4"));
+        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 450, "images/towers/viking/archerlvl4"));
         pathA.put("raft", raftA);
 
         Map<Integer, UpgradeStats> frozenA = new HashMap<>();
@@ -195,10 +195,10 @@ public class TowerUpgradeData {
         pathB.put("supercavemen", superCavemenB);
 
         Map<Integer, UpgradeStats> raftB = new HashMap<>();
-        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 300, "images/towers/viking/vikinglvl2"));
-        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 400, "images/towers/viking/vikinglvl2"));
-        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 500, "images/towers/viking/vikinglvl3"));
-        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 600, "images/towers/viking/vikinglvl4"));
+        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 300, "images/towers/viking/archerlvl2"));
+        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 400, "images/towers/viking/archerlvl2"));
+        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 500, "images/towers/viking/archerlvl3"));
+        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 600, "images/towers/viking/archerlvl4"));
         pathB.put("raft", raftB);
 
         Map<Integer, UpgradeStats> frozenB = new HashMap<>();

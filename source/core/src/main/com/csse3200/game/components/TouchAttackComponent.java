@@ -106,6 +106,8 @@ public class TouchAttackComponent extends Component {
             //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - Marked as reached base");
         }
 
+        entity.getEvents().trigger("stopMovement");
+
         //Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
 
         entity.getEvents().trigger("attackStart");

@@ -93,6 +93,10 @@ public class DroneEnemyFactory {
 
         drone.getEvents().addListener("entityDeath", () -> destroyEnemy(drone));
 
+        drone.getEvents().addListener("stopMovement", () -> {
+            updateSpeed(drone, Vector2.Zero);
+        });
+
         // Each drone handles its own waypoint progression
         drone.getEvents().addListener("chaseTaskFinished", () -> {
             WaypointComponent dwc = drone.getComponent(WaypointComponent.class);

@@ -15,6 +15,7 @@ import com.csse3200.game.ui.UIComponent;
  */
 public class WaveTrackerDisplay extends UIComponent {
     private Label waveNumberLabel;
+    private Label waveLabel;
     private Label totalLabel;
     private Table table;
     private Table backgroundPanel;
@@ -22,8 +23,11 @@ public class WaveTrackerDisplay extends UIComponent {
     private ProgressBar progressBar;
     private int currentWave = 1;
     private final int totalWaves;
-    private static final float FLOAT_DISTANCE = 5f;
-    private static final float FLOAT_DURATION = 2f;
+
+    // Base scale factors for responsive scaling
+    private static final float BASE_WIDTH = 1920f;
+    private static final float BASE_HEIGHT = 1080f;
+    private float currentScale = 1f;
 
     public WaveTrackerDisplay(int totalWaves) {
         this.totalWaves = totalWaves;
@@ -33,22 +37,28 @@ public class WaveTrackerDisplay extends UIComponent {
     public void create() {
         super.create();
 
-        // Create the wave number label
-        waveNumberLabel = new Label(String.valueOf(currentWave), skin, "title");
-        waveNumberLabel.setFontScale(2.5f);
-        waveNumberLabel.setAlignment(Align.center);
+        // Calculate initial scale based on window size
+        updateScale();
 
-        Label waveLabel = new Label("WAVE", skin, "large");
+        // Create labels
+        waveLabel = new Label("WAVE", skin, "large");
         waveLabel.setAlignment(Align.center);
-        waveLabel.setColor(new Color(0.9f, 0.9f, 0.9f, 1f));
+        waveLabel.setColor(new Color(0.85f, 0.85f, 0.85f, 1f)); // Light grey
+        waveLabel.setFontScale(0.8f * currentScale);
+
+        waveNumberLabel = new Label(String.valueOf(currentWave), skin, "title");
+        waveNumberLabel.setFontScale(1.8f * currentScale);
+        waveNumberLabel.setAlignment(Align.center);
+        waveNumberLabel.setColor(Color.WHITE); // White for contrast
 
         totalLabel = new Label("/ " + totalWaves, skin, "large");
-        totalLabel.setColor(new Color(0.7f, 0.7f, 0.7f, 1f));
+        totalLabel.setColor(new Color(0.65f, 0.65f, 0.65f, 1f)); // Medium grey
+        totalLabel.setFontScale(0.9f * currentScale);
 
-        // Create progress bar for wave progression
+        // Create progress bar
         ProgressBar.ProgressBarStyle progressBarStyle = new ProgressBar.ProgressBarStyle();
-        progressBarStyle.background = skin.newDrawable("white", new Color(0.2f, 0.2f, 0.2f, 0.8f));
-        progressBarStyle.knobBefore = skin.newDrawable("white", new Color(0.3f, 1f, 0.5f, 0.9f));
+        progressBarStyle.background = skin.newDrawable("white", new Color(0.25f, 0.25f, 0.25f, 0.9f)); // Dark grey
+        progressBarStyle.knobBefore = skin.newDrawable("white", new Color(0.9f, 0.9f, 0.9f, 1f)); // White progress
         progressBarStyle.knob = skin.newDrawable("white", new Color(0, 0, 0, 0));
 
         progressBar = new ProgressBar(0, totalWaves, 1, false, progressBarStyle);
@@ -56,22 +66,22 @@ public class WaveTrackerDisplay extends UIComponent {
         progressBar.setAnimateDuration(0.5f);
 
         borderPanel = new Table();
-        Drawable borderBackground = skin.newDrawable("white", new Color(0.3f, 1f, 0.5f, 0.4f));
+        Drawable borderBackground = skin.newDrawable("white", new Color(0.5f, 0.5f, 0.5f, 0.5f)); // Grey border
         borderPanel.setBackground(borderBackground);
-        borderPanel.pad(3f);
+        borderPanel.pad(2f * currentScale);
 
         // Create background panel
         backgroundPanel = new Table();
-        Drawable background = skin.newDrawable("white", new Color(0.05f, 0.05f, 0.1f, 0.85f));
+        Drawable background = skin.newDrawable("white", new Color(0.15f, 0.15f, 0.15f, 0.9f)); // Dark grey
         backgroundPanel.setBackground(background);
-        backgroundPanel.pad(20f, 30f, 20f, 30f);
+        backgroundPanel.pad(12f * currentScale, 20f * currentScale, 12f * currentScale, 20f * currentScale);
 
-        // Layout the wave information vertically
+        // Layout the wave information
         Table contentTable = new Table();
-        contentTable.add(waveLabel).padBottom(5f).row();
-        contentTable.add(waveNumberLabel).padBottom(3f).row();
-        contentTable.add(totalLabel).padBottom(10f).row();
-        contentTable.add(progressBar).width(150f).height(8f);
+        contentTable.add(waveLabel).padRight(8f * currentScale);
+        contentTable.add(waveNumberLabel).padRight(3f * currentScale);
+        contentTable.add(totalLabel).padRight(15f * currentScale);
+        contentTable.add(progressBar).width(120f * currentScale).height(6f * currentScale);
 
         backgroundPanel.add(contentTable);
         borderPanel.add(backgroundPanel);
@@ -80,7 +90,7 @@ public class WaveTrackerDisplay extends UIComponent {
         table = new Table();
         table.top();
         table.setFillParent(true);
-        table.add(borderPanel).expandX().center().padTop(10f).row();
+        table.add(borderPanel).expandX().center().padTop(10f * currentScale).row();
 
         stage.addActor(table);
 
@@ -95,8 +105,8 @@ public class WaveTrackerDisplay extends UIComponent {
                         Actions.scaleTo(1.15f, 1.15f, 0.4f),
                         Actions.rotateTo(0f, 0.4f)
                 ),
-                Actions.scaleTo(1f, 1f, 0.2f),
-                Actions.run(this::startFloatingAnimation)
+                Actions.scaleTo(1f, 1f, 0.2f)
+                // No floating animation - stays still
         ));
 
         // Update wave color
@@ -107,15 +117,62 @@ public class WaveTrackerDisplay extends UIComponent {
     }
 
     /**
-     * Start a continuous subtle floating animation
+     * Calculate scale factor based on current window size
      */
-    private void startFloatingAnimation() {
-        borderPanel.addAction(Actions.forever(
-                Actions.sequence(
-                        Actions.moveBy(0f, FLOAT_DISTANCE, FLOAT_DURATION),
-                        Actions.moveBy(0f, -FLOAT_DISTANCE, FLOAT_DURATION)
-                )
-        ));
+    private float calculateScale() {
+        float widthScale = stage.getWidth() / BASE_WIDTH;
+        float heightScale = stage.getHeight() / BASE_HEIGHT;
+        float scale = Math.min(widthScale, heightScale);
+        // Clamp scale to reasonable bounds
+        return Math.max(0.5f, Math.min(scale, 2.0f));
+    }
+
+    /**
+     * Update scale based on current window size
+     */
+    private void updateScale() {
+        currentScale = calculateScale();
+    }
+
+    /**
+     * Check if window has been resized and update layout if needed
+     */
+    private void checkAndHandleResize() {
+        float newScale = calculateScale();
+
+        if (Math.abs(newScale - currentScale) > 0.01f) {
+            currentScale = newScale;
+
+            // Update font scales
+            waveLabel.setFontScale(0.8f * currentScale);
+            waveNumberLabel.setFontScale(1.8f * currentScale);
+            totalLabel.setFontScale(0.9f * currentScale);
+
+            // Recreate the layout with new scale
+            table.clear();
+
+            // Update padding
+            borderPanel.pad(2f * currentScale);
+            backgroundPanel.pad(12f * currentScale, 20f * currentScale, 12f * currentScale, 20f * currentScale);
+
+            // Update progress bar size and rebuild content
+            Table contentTable = new Table();
+            contentTable.add(waveLabel).padRight(8f * currentScale);
+            contentTable.add(waveNumberLabel).padRight(3f * currentScale);
+            contentTable.add(totalLabel).padRight(15f * currentScale);
+            contentTable.add(progressBar).width(120f * currentScale).height(6f * currentScale);
+
+            backgroundPanel.clear();
+            backgroundPanel.add(contentTable);
+
+            table.add(borderPanel).expandX().center().padTop(10f * currentScale).row();
+        }
+    }
+
+    @Override
+    public void update() {
+        super.update();
+        checkAndHandleResize();
     }
 
     /**
@@ -127,14 +184,19 @@ public class WaveTrackerDisplay extends UIComponent {
         waveNumberLabel.setText(String.valueOf(currentWave));
         progressBar.setValue(currentWave);
 
+        // Clear any existing actions
+        borderPanel.clearActions();
+
+        updateWaveColor();
+    }
+
+    /**
+     * Trigger boss wave message when wave actually starts
+     */
+    public void triggerBossWaveMessage() {
         if (currentWave == totalWaves) {
             showBossWaveMessage();
         }
-
-        borderPanel.clearActions();
-        startFloatingAnimation();
-
-        updateWaveColor();
     }
 
     /**
@@ -180,48 +242,36 @@ public class WaveTrackerDisplay extends UIComponent {
     }
 
     /**
-     * Get the color based on current progression
-     */
-    private Color getProgressionColor() {
-        float progression = (float) currentWave / totalWaves;
-
-        if (progression < 0.33f) {
-            return new Color(0.3f, 1f, 0.5f, 0.8f);
-        } else if (progression < 0.66f) {
-            return new Color(1f, 0.9f, 0.3f, 0.8f);
-        } else {
-            return new Color(1f, 0.4f, 0.2f, 0.8f);
-        }
-    }
-
-    /**
      * Update the color of the wave number and progress bar based on progression
+     * Uses grey/white theme, with red for boss wave
      */
     private void updateWaveColor() {
-        float progression = (float) currentWave / totalWaves;
-
         Color numberColor;
         Color progressColor;
+        Color borderColor;
 
         if (currentWave == totalWaves) {
-            numberColor = new Color(1f, 0.1f, 0.1f, 1f);
-            progressColor = new Color(1f, 0.1f, 0.1f, 1f);
-        } else if (progression < 0.33f) {
-            numberColor = new Color(0.3f, 1f, 0.5f, 1f);
-            progressColor = new Color(0.3f, 1f, 0.5f, 0.9f);
-        } else if (progression < 0.66f) {
-            numberColor = new Color(1f, 0.9f, 0.3f, 1f);
-            progressColor = new Color(1f, 0.8f, 0.2f, 0.9f);
+            // Boss wave - Red theme
+            numberColor = new Color(1f, 0.2f, 0.2f, 1f);
+            progressColor = new Color(0.95f, 0.2f, 0.2f, 1f);
+            borderColor = new Color(0.8f, 0.1f, 0.1f, 0.6f);
         } else {
-            numberColor = new Color(1f, 0.4f, 0.2f, 1f);
-            progressColor = new Color(1f, 0.3f, 0.1f, 0.9f);
+            // Normal waves - Grey/White theme
+            numberColor = Color.WHITE;
+            progressColor = new Color(0.9f, 0.9f, 0.9f, 1f);
+            borderColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         }
 
         waveNumberLabel.setColor(numberColor);
 
+        // Update progress bar color
         ProgressBar.ProgressBarStyle style = progressBar.getStyle();
         style.knobBefore = skin.newDrawable("white", progressColor);
         progressBar.setStyle(style);
+
+        // Update border color
+        Drawable newBorder = skin.newDrawable("white", borderColor);
+        borderPanel.setBackground(newBorder);
     }
 
     @Override

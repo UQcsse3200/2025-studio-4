@@ -41,6 +41,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.maingame.WeatherStatusDisplay;
+import com.csse3200.game.components.maingame.WaveTrackerDisplay;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
@@ -86,6 +87,9 @@ public class ForestGameArea2 extends GameArea2 {
     private long spawnScheduledTime = 0; // When the current spawn was scheduled (in milliseconds)
     private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
+
+    private Entity waveTrackerUI;
+    private static final int TOTAL_WAVES = 1; // Update this if you uncomment more waves
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
@@ -208,6 +212,14 @@ public class ForestGameArea2 extends GameArea2 {
         if (MainGameScreen.ui != null) {
             MainGameScreen.ui.getEvents().trigger("waveStarted");
         }
+
+        // Trigger boss wave message when starting the final wave
+        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
+            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
+            if (display != null) {
+                display.triggerBossWaveMessage();
+            }
+        }
     }
 
     /**
@@ -256,6 +268,10 @@ public class ForestGameArea2 extends GameArea2 {
             currentWaveIndex++;
             logger.info("Wave {} ready. Waiting for player to start...", currentWaveIndex + 1);
             
+            if (waveTrackerUI != null) {
+                waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+            }
+
             // Notify UI that current wave is complete (re-enable button)
             if (MainGameScreen.ui != null) {
                 MainGameScreen.ui.getEvents().trigger("waveComplete");
@@ -554,6 +570,8 @@ public class ForestGameArea2 extends GameArea2 {
             // 如果已有玩家（从存档加载），直接播放音乐
             createHeroPlacementUI();
             playMusic();
+            // Spawn wave tracker immediately if loading from save
+            spawnWaveTracker();
         }
 
         // Add hero placement system
@@ -773,7 +791,12 @@ public class ForestGameArea2 extends GameArea2 {
         if (waves == null) {
             initializeWaves();
         }
-        
+
+        // Update wave tracker to show current wave
+        if (waveTrackerUI != null) {
+            waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+        }
+
         // Check if all waves are already complete
         if (currentWaveIndex >= waves.size()) {
             logger.info("All waves already completed!");
@@ -1131,10 +1154,23 @@ public class ForestGameArea2 extends GameArea2 {
                             if (waves == null) {
                                 initializeWaves();
                             }
+
+                            // Spawn wave tracker after dialogue completes
+                            spawnWaveTracker();
                         })
         );
         spawnEntity(dialogueEntity);
     }
+
+    /**
+     * Spawn the wave tracker UI
+     */
+    private void spawnWaveTracker() {
+        waveTrackerUI = new Entity();
+        waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
+        spawnEntity(waveTrackerUI);
+    }
+
 
     /**
      * 显示防御塔UI（在对话结束后调用）

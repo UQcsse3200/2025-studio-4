@@ -218,6 +218,22 @@ public class ForestGameArea extends GameArea {
         if (MainGameScreen.ui != null) {
             MainGameScreen.ui.getEvents().trigger("waveStarted");
         }
+
+        // Trigger boss wave message when starting wave 5
+        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
+            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
+            if (display != null) {
+                display.triggerBossWaveMessage();
+            }
+        }
+
+        // Trigger boss wave message when starting wave 5
+        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
+            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
+            if (display != null) {
+                display.triggerBossWaveMessage();
+            }
+        }
     }
 
     /**
@@ -572,11 +588,9 @@ public class ForestGameArea extends GameArea {
             createHeroPlacementUI();
             // 如果已有玩家（从存档加载），直接播放音乐
             playMusic();
+            // Spawn wave tracker immediately if loading from save
+            spawnWaveTracker();
         }
-
-        waveTrackerUI = new Entity();
-        waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
-        spawnEntity(waveTrackerUI);
     }
 
     private void spawnTerrain() {
@@ -1131,6 +1145,9 @@ public class ForestGameArea extends GameArea {
                         () -> {
                             // 对话结束后显示防御塔列表和播放背景音乐
                             showTowerUI();
+
+                            // Spawn wave tracker after dialogue completes
+                            spawnWaveTracker();
                             createHeroPlacementUI();
                             playMusic();
 
@@ -1140,6 +1157,15 @@ public class ForestGameArea extends GameArea {
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+
+    /**
+     * Spawn the wave tracker UI
+     */
+    private void spawnWaveTracker() {
+        waveTrackerUI = new Entity();
+        waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
+        spawnEntity(waveTrackerUI);
     }
 
     /**

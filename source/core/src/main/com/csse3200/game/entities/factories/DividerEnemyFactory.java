@@ -18,6 +18,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +38,10 @@ public class DividerEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final String DIVIDER_WALK_SOUND = "sounds/Enemy Sounds/divider/Divider_Walk.mp3";
+    private static final String DIVIDER_ATTACK_SOUND = "sounds/Enemy Sounds/divider/Divider_Attack.mp3";
+    private static final String DIVIDER_DEATH_SOUND = "sounds/Enemy Sounds/divider/Divider_Death.mp3";
+    private static final String DIVIDER_AMBIENT_SOUND = "sounds/Enemy Sounds/divider/Divider_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 50,
     CurrencyType.TITANIUM_CORE, 25,
@@ -83,7 +88,13 @@ public class DividerEnemyFactory {
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius))
-                .addComponent(new com.csse3200.game.components.ReachedBaseComponent()); // ADD THIS LINE
+                .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+                .addComponent(new EnemySoundComponent(
+                    ServiceLocator.getResourceService().getAsset(DIVIDER_WALK_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(DIVIDER_ATTACK_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(DIVIDER_DEATH_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(DIVIDER_AMBIENT_SOUND, Sound.class)
+                ));
                 
         CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
         if (combatStats != null) combatStats.setIsEnemy(true);

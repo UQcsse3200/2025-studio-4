@@ -17,6 +17,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,10 @@ public class DroneEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/drone_enemy.png";
     private static final String DEFAULT_NAME = "Drone Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final String DRONE_WALK_SOUND = "sounds/Enemy Sounds/drone/Drone_Walk.mp3";
+    private static final String DRONE_ATTACK_SOUND = "sounds/Enemy Sounds/drone/Drone_Attack.mp3";
+    private static final String DRONE_DEATH_SOUND = "sounds/Enemy Sounds/drone/Drone_Death.mp3";
+    private static final String DRONE_AMBIENT_SOUND = "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 75,
     CurrencyType.TITANIUM_CORE, 25,
@@ -87,7 +92,13 @@ public class DroneEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("drone"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius))
-            .addComponent(new com.csse3200.game.components.ReachedBaseComponent());
+            .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+            .addComponent(new EnemySoundComponent(
+                ServiceLocator.getResourceService().getAsset(DRONE_WALK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(DRONE_ATTACK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(DRONE_DEATH_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(DRONE_AMBIENT_SOUND, Sound.class)
+            ));
             CombatStatsComponent combatStats = drone.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 

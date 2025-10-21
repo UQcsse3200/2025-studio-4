@@ -17,6 +17,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,10 @@ public class TankEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/tank_enemy.png";
     private static final String DEFAULT_NAME = "Tank Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final String TANK_WALK_SOUND = "sounds/Enemy Sounds/tank/Tank_Walk.mp3";
+    private static final String TANK_ATTACK_SOUND = "sounds/Enemy Sounds/tank/Tank_Attack.mp3";
+    private static final String TANK_DEATH_SOUND = "sounds/Enemy Sounds/tank/Tank_Death.mp3";
+    private static final String TANK_AMBIENT_SOUND = "sounds/Enemy Sounds/tank/Tank_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 150,
     CurrencyType.TITANIUM_CORE, 100,
@@ -87,7 +92,13 @@ public class TankEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"))
-            .addComponent(new com.csse3200.game.components.ReachedBaseComponent());
+            .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+            .addComponent(new EnemySoundComponent(
+                ServiceLocator.getResourceService().getAsset(TANK_WALK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(TANK_ATTACK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(TANK_DEATH_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(TANK_AMBIENT_SOUND, Sound.class)
+            ));
             CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 

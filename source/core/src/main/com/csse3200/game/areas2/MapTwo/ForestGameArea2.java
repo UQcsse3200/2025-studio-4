@@ -106,7 +106,33 @@ public class ForestGameArea2 extends GameArea2 {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Death.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Walk.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Attack.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Random_Noise.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Death.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Walk.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Attack.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Death.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Walk.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Attack.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3",
+            "sounds/Enemy Sounds/boss/Boss_Death.wav",
+            "sounds/Enemy Sounds/boss/Boss_Walk_1.wav",
+            "sounds/Enemy Sounds/boss/Boss_Walk_2.wav",
+            "sounds/Enemy Sounds/boss/Boss_Attack.mp3",
+            "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3",
+            "sounds/Enemy Sounds/boss/Boss Music.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Death.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Walk.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Attack.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Random_Noise.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Death.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Walk.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Attack.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Random_Noise.mp3"
     };
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};

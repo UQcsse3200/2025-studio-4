@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 import com.csse3200.game.components.effects.SlowEffectComponent;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 
 
 public class BossEnemyFactory {
@@ -34,6 +35,13 @@ public class BossEnemyFactory {
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);
     private static final String DEFAULT_TEXTURE = "images/boss_enemy.png";
     private static final String DEFAULT_NAME = "Boss Enemy";
+    private static final String BOSS_WALK_SOUND_1 = "sounds/Enemy Sounds/boss/Boss_Walk_1.wav";
+    private static final String BOSS_WALK_SOUND_2 = "sounds/Enemy Sounds/boss/Boss_Walk_2.wav";
+    private static final String BOSS_ATTACK_SOUND = "sounds/Enemy Sounds/boss/Boss_Attack.mp3";
+    private static final String BOSS_DEATH_SOUND = "sounds/Enemy Sounds/boss/Boss_Death.wav";
+    private static final String BOSS_AMBIENT_SOUND = "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3";
+    private static final String BOSS_THEME = "sounds/Enemy Sounds/boss/Boss Music.mp3";
+private static final float BOSS_WALK_1_DURATION = 0.5f; // Duration before second walk sound plays
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 500,
@@ -83,12 +91,27 @@ public class BossEnemyFactory {
         boss.addComponent(waypointComponent);
         applySpeedModifier(boss, waypointComponent, waypoints.get(idx));
 
+        EnemySoundComponent bossSoundComponent = new EnemySoundComponent(
+            ServiceLocator.getResourceService().getAsset(BOSS_WALK_SOUND_1, Sound.class),
+            ServiceLocator.getResourceService().getAsset(BOSS_ATTACK_SOUND, Sound.class),
+            ServiceLocator.getResourceService().getAsset(BOSS_DEATH_SOUND, Sound.class),
+            ServiceLocator.getResourceService().getAsset(BOSS_AMBIENT_SOUND, Sound.class),
+            ServiceLocator.getResourceService().getAsset(BOSS_THEME, Sound.class) // Boss music!
+        );
+
+        // Set the second walk sound
+        bossSoundComponent.setSecondWalkSound(
+            ServiceLocator.getResourceService().getAsset(BOSS_WALK_SOUND_2, Sound.class),
+            BOSS_WALK_1_DURATION
+        );
+
         boss
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("boss"))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius))
-                .addComponent(new com.csse3200.game.components.ReachedBaseComponent());
+                .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+                .addComponent(bossSoundComponent);
                 CombatStatsComponent combatStats = boss.getComponent(CombatStatsComponent.class);
                 if (combatStats != null) combatStats.setIsEnemy(true);
 

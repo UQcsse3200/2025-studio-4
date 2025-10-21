@@ -17,6 +17,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +43,10 @@ public class SpeederEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/speedster_enemy.png";
     private static final String DEFAULT_NAME = "Speeder Enemy";
     private static final float DEFAULT_CLICKRADIUS = 1f;  // Bigger click radius for boss
+    private static final String SPEEDSTER_WALK_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Walk.mp3";
+    private static final String SPEEDSTER_ATTACK_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Attack.mp3";
+    private static final String SPEEDSTER_DEATH_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Death.mp3";
+    private static final String SPEEDSTER_AMBIENT_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 200,
     CurrencyType.TITANIUM_CORE, 100,
@@ -100,7 +106,13 @@ public class SpeederEnemyFactory {
                 .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
                 // KEY COMPONENT: Add acceleration mechanic
                 .addComponent(new AccelerateOverTimeComponent(speed.x, maxSpeed, accelerationRate))
-                .addComponent(new SlowEffectComponent()); // 添加减速特效组件
+                .addComponent(new SlowEffectComponent()) // 添加减速特效组件
+                .addComponent(new EnemySoundComponent(
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_WALK_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_ATTACK_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_DEATH_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_AMBIENT_SOUND, Sound.class)
+                ));
 
         speeder.getEvents().addListener("entityDeath", () -> destroyEnemy(speeder));
 

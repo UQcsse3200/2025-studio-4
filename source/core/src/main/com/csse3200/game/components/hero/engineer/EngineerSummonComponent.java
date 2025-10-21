@@ -72,6 +72,8 @@ public class EngineerSummonComponent extends Component {
      */
     private InputAdapter qAdapter;
 
+    private float lastEmitCd = -999f;
+
     /**
      * Constructor.
      *
@@ -113,6 +115,35 @@ public class EngineerSummonComponent extends Component {
 
         // Attach keyboard input adapter for hotkeys (Plan A)
         attachToMultiplexer(qAdapter = makeKeyAdapter());
+        emitCooldownEvent();
+        entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+
+        // 来自 UI 的图标点击请求
+        entity.getEvents().addListener("ui:summon:request", (String type) -> {
+            if (type == null) return;
+            if (cd > 0f) {
+                entity.getEvents().trigger("ui:toast", "On cooldown");
+                emitCooldownEvent();
+                return;
+            }
+            if (!canPlace(type)) {
+                entity.getEvents().trigger("ui:toast", "Summon limit reached");
+                entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+                return;
+            }
+            var summonCtrl = findSummonPlacementComponent();
+            if (summonCtrl == null) return;
+
+            String tex = switch (type) {
+                case "melee"       -> "images/engineer/Sentry.png";
+                case "turret"      -> "images/engineer/Turret.png";
+                case "currencyBot" -> "images/engineer/Currency_tower.png";
+                default -> summonTexture != null ? summonTexture : "images/engineer/Turret.png";
+            };
+
+            summonCtrl.armSummon(new com.csse3200.game.components.hero.engineer.SummonPlacementComponent.SummonSpec(tex, type));
+        });
+
     }
 
     /**
@@ -124,6 +155,10 @@ public class EngineerSummonComponent extends Component {
         detachFromMultiplexer(qAdapter);
         qAdapter = null;
     }
+    private void emitCooldownEvent() {
+        float remaining = Math.max(cd, 0f);
+        entity.getEvents().trigger("summon:cooldown", remaining, cooldownSec);
+    }
 
     /**
      * Updates the cooldown timer every frame.
@@ -131,7 +166,18 @@ public class EngineerSummonComponent extends Component {
     @Override
     public void update() {
         float dt = ServiceLocator.getTimeSource().getDeltaTime();
-        if (cd > 0f) cd -= dt;
+        if (cd > 0f) {
+            float prev = cd;
+            cd = Math.max(0f, cd - dt);
+
+            // 以0.05s为步长节流广播，或从>0变为0时强制广播
+            float quantPrev = (float)Math.floor(prev * 20f) / 20f;
+            float quantNow  = (float)Math.floor(cd   * 20f) / 20f;
+            if (quantNow != lastEmitCd || (prev > 0f && cd == 0f)) {
+                lastEmitCd = quantNow;
+                emitCooldownEvent();
+            }
+        }
     }
 
     public void addMaxSummons(int delta) {
@@ -157,8 +203,8 @@ public class EngineerSummonComponent extends Component {
             @Override
             public boolean keyDown(int keycode) {
                 if (cd > 0f) return true; // Ignore key if on cooldown
-                var ctrl = findPlacementController();
-                if (ctrl == null) return false;
+                var summonCtrl = findSummonPlacementComponent();
+                if (summonCtrl == null) return false;
 
                 String type = null;
                 String tex = null;
@@ -177,10 +223,27 @@ public class EngineerSummonComponent extends Component {
                 }
 
                 // Switch to placement mode; actual spawn validation happens later via events
-                ctrl.armSummon(new SimplePlacementController.SummonSpec(tex, type));
+                summonCtrl.armSummon(
+                        new com.csse3200.game.components.hero.engineer.SummonPlacementComponent.SummonSpec(tex, type)
+                );
                 return true;
             }
         };
+    }
+
+    /**
+     * Finds the SummonPlacementComponent in the current entity service.
+     * 确保 SummonPlacementComponent 挂在了你创建的 ui 实体上。
+     */
+    private com.csse3200.game.components.hero.engineer.SummonPlacementComponent findSummonPlacementComponent() {
+        var all = ServiceLocator.getEntityService().getEntitiesCopy();
+        if (all == null) return null;
+        for (var e : all) {
+            if (e == null) continue;
+            var c = e.getComponent(com.csse3200.game.components.hero.engineer.SummonPlacementComponent.class);
+            if (c != null) return c;
+        }
+        return null;
     }
 
     // =================== Summon Limit Logic ===================
@@ -213,6 +276,7 @@ public class EngineerSummonComponent extends Component {
         aliveByType.put(type, aliveByType.getOrDefault(type, 0) + 1);
         cd = cooldownSec;
         entity.getEvents().trigger("summonAliveChanged", alive, maxSummons);
+        emitCooldownEvent();
     }
 
     /**

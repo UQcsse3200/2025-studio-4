@@ -1,114 +1,80 @@
 package com.csse3200.game.entities.factories;
 
-import com.csse3200.game.components.CombatStatsComponent;
-import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.hero.samurai.SkillCooldowns;
 import com.csse3200.game.components.hero.samurai.SwordAppearanceComponent;
-import com.csse3200.game.components.hero.samurai.SwordJabPhysicsComponent;
 import com.csse3200.game.components.hero.samurai.SwordLevelSyncComponent;
 import com.csse3200.game.entities.Entity;
-import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.entities.configs.SamuraiConfig;
-import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.physics.components.ColliderComponent;
-import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 
 /**
  * Factory class for creating the Samurai's sword entity.
- * <p>
- * The sword is treated as a separate orbiting entity attached to the Samurai.
- * It handles its own visual rendering, rotation physics, and collision-based
- * attack logic. The sword can jab (thrust forward) and deal periodic damage
- * to enemies within range.
- * </p>
+ *
+ * ❗ 本工厂只创建“可视 + 物理”的剑；不再附加近战命中/老的 SwordJabPhysicsComponent。
+ * 三种攻击组件（Jab/Sweep/Spin）、互斥锁、控制器由上层（如 SamuraiSpinAttackComponent）负责挂载。
  */
 public final class SwordFactory {
-    private SwordFactory() {
-        // Prevent instantiation (utility class)
-    }
+    private SwordFactory() {}
 
     /**
-     * Creates a sword entity that orbits around its owner like a rotating blade.
-     * This version allows detailed configuration of sword behavior, including
-     * angular speed, sprite alignment, jab timing, and hit cooldown.
+     * 创建“纯可视 + 物理”的剑实体，并配置冷却与等级同步。
      *
-     * @param owner                  The Samurai entity that owns the sword.
-     * @param swordTexture           Path to the sword’s texture.
-     * @param radius                 Orbit radius where the sword handle sits (in world units).
-     * @param cfg                    The {@link SamuraiConfig} containing hero stats and settings.
-     * @param angularSpeedDeg        Angular speed in degrees per second (counterclockwise positive).
-     * @param spriteForwardOffsetDeg Default facing direction for the sword sprite:
-     *                               → = 0°, ↑ = 90°, ← = 180°, ↓ = 270°.
-     * @param centerToHandle         Distance from the sprite’s center to its handle
-     *                               along the forward direction (usually negative).
-     * @param damage                 Base damage dealt by the sword.
-     * @param hitCooldown            Cooldown between hitting the same target (in seconds).
-     * @return A configured sword entity orbiting the Samurai.
-     */
-    public static Entity createSword(Entity owner,
-                                     String swordTexture,
-                                     float radius,
-                                     SamuraiConfig cfg,
-                                     float angularSpeedDeg,
-                                     float spriteForwardOffsetDeg,
-                                     float centerToHandle,
-                                     int damage,
-                                     float hitCooldown) {
-
-        Entity sword = new Entity()
-                // === Physics and collision setup ===
-                .addComponent(new PhysicsComponent())
-                .addComponent(new ColliderComponent())
-                .addComponent(new HitboxComponent()
-                        .setLayer(PhysicsLayer.PLAYER_ATTACK)
-                        .setSensor(true)) // Sensor: detects collisions but doesn’t apply physics forces
-                // === Rendering ===
-                .addComponent(new RotatingTextureRenderComponent(swordTexture))
-                .addComponent(new SwordAppearanceComponent(owner, cfg))
-                // === Movement and orbiting physics ===
-                .addComponent(new SwordJabPhysicsComponent(owner, radius)
-                        .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
-                        .setCenterToHandle(centerToHandle)
-                        .setJabParams(0.18f, 0.8f)     // Jab duration/distance (tweak for animation feel)
-                        .setJabCooldown(0.05f))        // Minimum interval between jabs
-                // === Combat logic ===
-                .addComponent(new CombatStatsComponent(
-                        10, damage,                   // Health, Attack Power
-                        DamageTypeConfig.None,
-                        DamageTypeConfig.None))
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, hitCooldown))
-                // === Level sync ===
-                .addComponent(new SwordLevelSyncComponent(owner, cfg));
-
-        return sword;
-    }
-
-    /**
-     * Overloaded helper method that creates a sword with common default parameters.
-     * @param owner           The Samurai entity that owns the sword.
-     * @param cfg             The {@link SamuraiConfig} with stats and texture paths.
-     * @param swordTexture    Path to the sword’s texture.
-     * @param radius          Orbit radius around the Samurai.
-     * @param angularSpeedDeg Angular speed in degrees per second.
-     * @return A sword entity configured with default combat and animation values.
+     * @param owner                武士实体（用于外观/事件转发/等级同步）
+     * @param swordTexture         剑贴图路径
+     * @param radius               视觉上剑柄绕 owner 的半径（供外观组件/攻击组件计算用）
+     * @param cfg                  Samurai 配置
+     * @param angularSpeedDeg      （可选）保留签名；当前不在工厂内使用，由上层控制
+     * @return                     已配置好的“剑”实体（未注册；由调用者自行注册）
      */
     public static Entity createSword(Entity owner,
                                      SamuraiConfig cfg,
                                      String swordTexture,
                                      float radius,
                                      float angularSpeedDeg) {
-        return createSword(
-                owner,
-                swordTexture,
-                radius,
-                cfg,
-                angularSpeedDeg,
-                0f,        // Sprite forward offset (facing right)
-                -0.25f,    // Distance from sprite center to handle
-                10,        // Default damage
-                0.2f       // Default hit cooldown (seconds)
-        );
+
+        Entity sword = new Entity()
+                // 仅用于 setTransform 的物理体
+                .addComponent(new PhysicsComponent())
+
+                // 渲染（旋转贴图）+ 外观（可根据等级/配置调整显示）
+                .addComponent(new RotatingTextureRenderComponent(swordTexture))
+                .addComponent(new SwordAppearanceComponent(owner, cfg))
+
+                // 多技能冷却（供 Jab/Sweep/Spin 使用）
+                .addComponent(new SkillCooldowns()
+                        .setTotal("jab",   3.0f)
+                        .setTotal("spin",  5.0f)
+                        .setTotal("sweep", 1.2f))
+
+                // 等级同步（如需根据武士等级动态调整外观/参数）
+                .addComponent(new SwordLevelSyncComponent(owner, cfg));
+
+        // 冷却事件向 owner 透传（UI 在 hero 上监听即可）
+        sword.getEvents().addListener("skill:cooldown",
+                (com.csse3200.game.components.hero.samurai.SkillCooldowns.SkillCooldownInfo info) -> {
+                    if (owner != null) owner.getEvents().trigger("skill:cooldown", info);
+                });
+        sword.getEvents().addListener("skill:ready",
+                (String skill) -> {
+                    if (owner != null) owner.getEvents().trigger("skill:ready", skill);
+                });
+
+        return sword;
+    }
+
+    /**
+     * 旧签名：保留一个重载以兼容你现有调用处。
+     * （参数顺序与你当前使用一致：owner, cfg, swordTexture, radius, angularSpeedDeg）
+     */
+    public static Entity createSword(Entity owner,
+                                     String swordTexture,
+                                     float radius,
+                                     SamuraiConfig cfg,
+                                     float angularSpeedDeg) {
+        // 转调到新的主实现（参数顺序略不同，这里统一一下）
+        return createSword(owner, cfg, swordTexture, radius, angularSpeedDeg);
     }
 }
+
 

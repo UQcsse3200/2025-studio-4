@@ -52,6 +52,13 @@ public class TurretAttackComponent extends Component {
      * Internal cooldown timer.
      */
     private float cdTimer = 0f;
+    // --- SFX ---
+    private String shootSfxKey = null;   // 比如 "sounds/turret_shoot.ogg"
+    private float shootSfxVolume = 1.0f; // 0~1
+    private float sfxMinInterval = 0.05f;
+    private float sfxCooldown = 0f;
+
+
 
     /**
      * Constructs a new {@code TurretAttackComponent}.
@@ -62,6 +69,7 @@ public class TurretAttackComponent extends Component {
      * @param bulletLife    How long each bullet lasts before disappearing.
      * @param bulletTexture Texture path for the bullet sprite.
      */
+
     public TurretAttackComponent(Vector2 direction, float cooldown,
                                  float bulletSpeed, float bulletLife, String bulletTexture) {
         this.direction = direction.nor();
@@ -88,9 +96,10 @@ public class TurretAttackComponent extends Component {
 
         // Get delta time (safe fallback if Gdx.graphics is null)
         float dt = (Gdx.graphics != null) ? Gdx.graphics.getDeltaTime() : (1f / 60f);
-
+        if (sfxCooldown > 0f) sfxCooldown -= dt;
         // Countdown the cooldown timer
         if (cdTimer > 0f) {
+
             cdTimer -= dt;
             return;
         }
@@ -117,8 +126,22 @@ public class TurretAttackComponent extends Component {
         }
 
         // Reset cooldown timer
+        playShootSfx();
         cdTimer = cooldown;
     }
+    public TurretAttackComponent setShootSfxKey(String key) {
+        this.shootSfxKey = key;
+        return this;
+    }
+    public TurretAttackComponent setShootSfxVolume(float v) {
+        this.shootSfxVolume = Math.max(0f, Math.min(1f, v));
+        return this;
+    }
+    public TurretAttackComponent setShootSfxMinInterval(float sec) {
+        this.sfxMinInterval = Math.max(0f, sec);
+        return this;
+    }
+
 
     /**
      * Retrieves the attack damage from the {@link CombatStatsComponent}.
@@ -154,7 +177,28 @@ public class TurretAttackComponent extends Component {
 
         return new Vector2(cx, cy);
     }
+    private void playShootSfx() {
+        if (shootSfxKey == null || shootSfxKey.isBlank()) return;
+        if (sfxCooldown > 0f) return;
+
+        float vol = Math.max(0f, Math.min(1f, shootSfxVolume));
+        try {
+            var rs = ServiceLocator.getResourceService();
+            com.badlogic.gdx.audio.Sound s = null;
+            if (rs != null) {
+                try { s = rs.getAsset(shootSfxKey, com.badlogic.gdx.audio.Sound.class); } catch (Throwable ignored) {}
+            }
+            if (s != null) {
+                s.play(vol);
+            } else {
+                if (!Gdx.files.internal(shootSfxKey).exists() || Gdx.audio == null) return;
+                com.badlogic.gdx.audio.Sound s2 = Gdx.audio.newSound(Gdx.files.internal(shootSfxKey));
+                s2.play(vol);
+            }
+        } catch (Throwable t) {
+            // 仅记录或忽略都行
+        }
+        sfxCooldown = sfxMinInterval;
+    }
+
 }
-
-
-

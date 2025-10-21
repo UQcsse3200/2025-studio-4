@@ -68,6 +68,36 @@ public class TerrainComponent2 extends RenderComponent implements ITerrainCompon
     return tiledMap;
   }
 
+  /** Set layer opacity设置图层透明度
+   * @param layerIndex 图层索引
+   * @param opacity 透明度值，范围0.0-1.0，0.0为完全透明，1.0为完全不透明
+   */
+  public void setLayerOpacity(int layerIndex, float opacity) {
+    if (layerIndex >= 0 && layerIndex < tiledMap.getLayers().getCount()) {
+      TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(layerIndex);
+      layer.setOpacity(Math.max(0.0f, Math.min(1.0f, opacity)));
+      System.out.println("✅ Layer " + layerIndex + " opacity set to: " + opacity);
+    } else {
+      System.out.println("⚠️ Invalid layer index: " + layerIndex);
+    }
+  }
+
+  /** Set path layer opacity设置路径图层透明度
+   * @param opacity 透明度值，范围0.0-1.0，0.0为完全透明，1.0为完全不透明
+   */
+  public void setPathLayerOpacity(float opacity) {
+    // 查找名为"path-layer"的图层
+    for (int i = 0; i < tiledMap.getLayers().getCount(); i++) {
+      TiledMapTileLayer layer = (TiledMapTileLayer) tiledMap.getLayers().get(i);
+      if ("path-layer".equals(layer.getName())) {
+        layer.setOpacity(Math.max(0.0f, Math.min(1.0f, opacity)));
+        System.out.println("✅ Path layer opacity set to: " + opacity);
+        return;
+      }
+    }
+    System.out.println("⚠️ Path layer not found");
+  }
+
   @Override
   public void draw(SpriteBatch batch) {
     // End the batch before rendering the tilemap, then restart it

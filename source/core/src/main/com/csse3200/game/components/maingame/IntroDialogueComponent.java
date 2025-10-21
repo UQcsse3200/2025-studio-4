@@ -304,10 +304,14 @@ public class IntroDialogueComponent extends UIComponent {
       portraitImage.setDrawable(new Image(portraitTexture).getDrawable());
       // 根据头像位置调整布局
       adjustPortraitLayout(entry.portraitSide());
+      // 根据头像位置调整对话框文字位置
+      adjustDialogueTextPosition(entry.portraitSide());
     } else {
       // 没有头像时隐藏
       portraitImage.setDrawable(null);
       portraitImage.setVisible(false);
+      // 重置对话框文字位置
+      adjustDialogueTextPosition(null);
     }
 
     // 播放对话音频
@@ -398,6 +402,47 @@ public class IntroDialogueComponent extends UIComponent {
     }
   }
 
+  /**
+   * 根据头像位置调整对话框文字位置
+   * @param portraitSide 头像位置（"left"或"right"）
+   */
+  private void adjustDialogueTextPosition(String portraitSide) {
+    if (dialogueTable == null) {
+      return;
+    }
+    
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    
+    // 清除现有的对话内容
+    dialogueTable.clearChildren();
+    
+    // 创建对话内容容器
+    Container<Label> dialogueContent = new Container<>(dialogueLabel);
+    dialogueContent.align(Align.center);
+    dialogueContent.fill();
+    
+    // 根据头像位置设置不同的顶部间距
+    float topPadding;
+    if ("left".equalsIgnoreCase(portraitSide)) {
+      // 头像在左侧时，将对话框文字向上移动
+      topPadding = screenHeight * 0.02f; // 减少顶部间距
+    } else {
+      // 头像在右侧或没有头像时，使用默认位置
+      topPadding = screenHeight * 0.05f; // 默认顶部间距
+    }
+    
+    // 重新添加对话内容到对话框
+    dialogueTable.add(dialogueContent)
+            .grow()
+            .center()
+            .padTop(topPadding);
+    dialogueTable.row();
+    
+    // 重新布局
+    dialogueTable.invalidateHierarchy();
+    overlayRoot.invalidateHierarchy();
+  }
+
   private void finishDialogue() {
     if (finished) {
       return;
@@ -474,11 +519,13 @@ public class IntroDialogueComponent extends UIComponent {
       }
       
       dialogueFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal(fontPath));
+      dialogueFont.getData().setScale(0.8f); // 缩放到80%
       dialogueFont.setColor(Color.WHITE);
     } catch (Exception e) {
       logger.warn("Failed to load custom font, using default font", e);
       // 如果加载失败，使用默认字体
       dialogueFont = SimpleUI.font();
+      dialogueFont.getData().setScale(0.8f); // 缩放到80%
       dialogueFont.setColor(Color.WHITE);
     }
   }

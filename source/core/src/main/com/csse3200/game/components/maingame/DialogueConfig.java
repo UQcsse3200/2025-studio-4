@@ -47,7 +47,7 @@ public class DialogueConfig {
     public static List<IntroDialogueComponent.DialogueEntry> getMap1Dialogue() {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
-                "Man... I never thought I'd wake up again.\nThanks for bringing me back... even if it's into this broken world.", 
+                "Man... I never thought I'd wake up again.\nThanks for bringing me back... \neven if it's into this broken world.", 
                 "images/map1talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
@@ -56,7 +56,7 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "You're lucky to still have a core. The AI tore everything apart.\nWe rebuilt you because we need to understand what we're fighting.", 
+                "You're lucky to still have a core. \nThe AI tore everything apart.\nWe rebuilt you because we need to \nunderstand what we're fighting.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/man.mp3",
                 "right",
@@ -65,7 +65,7 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "...What can I say...\n(He lifts his head, the blue light in his eyes flickers to life.)\nThey're already here.", 
+                "...What can I say...\n(He lifts his head, \nthe blue light in his eyes flickers to life.)\nThey're already here.", 
                 "images/map1talker.png", 
                 "sounds/map/say.mp3",
                 "left",

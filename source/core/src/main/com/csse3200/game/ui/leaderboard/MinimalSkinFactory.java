@@ -66,6 +66,15 @@ public final class MinimalSkinFactory {
         BitmapFont font = new BitmapFont();
         skin.add("default-font", font, BitmapFont.class);
         skin.add("default", font, BitmapFont.class); // 添加 "default" 别名以兼容不同调用
+        
+        // 加载 segoe_ui 字体以保持与主界面一致
+        try {
+            BitmapFont segoeFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/segoe_ui_18.fnt"));
+            skin.add("segoe_ui", segoeFont, BitmapFont.class);
+        } catch (Exception e) {
+            // 如果加载失败，使用默认字体作为备用
+            skin.add("segoe_ui", font, BitmapFont.class);
+        }
 
         // 使用 Theme 中定义的颜色
         skin.add("text", Theme.ROW_FG);

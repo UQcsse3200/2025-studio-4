@@ -220,12 +220,16 @@ public class BookDisplay extends UIComponent {
             TextButton.TextButtonStyle buttonStyle;
             TextButton button;
             String lockedValue = stats.get(DeckComponent.StatType.LOCKED);
-            if (lockedValue != null && lockedValue.equals("true")) {
-                buttonStyle = createCustomButtonStyle(DeckComponent.StatType.LOCKED.getTexturePath(), false);
-                button = new TextButton("", buttonStyle);
+            boolean isLocked = lockedValue != null && lockedValue.equals("true");
+            
+            // 始终使用成就的图标，不管是否锁定
+            buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), !isLocked);
+            button = new TextButton("", buttonStyle);
+            
+            // 如果锁定，添加半透明效果
+            if (isLocked) {
+                button.setColor(1f, 1f, 1f, 0.4f); // 40% 透明度
             } else {
-                buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), true);
-                button = new TextButton("", buttonStyle);
                 button.addListener(new ChangeListener() {
                     @Override
                     public void changed(ChangeEvent changeEvent, Actor actor) {

@@ -1072,6 +1072,7 @@ public class ForestGameArea extends GameArea {
     }
 
     private void createHeroPlacementUI() {
+        // 先创建英雄放置实体，但初始隐藏
         var gs = ServiceLocator.getGameStateService();
         GameStateService.HeroType chosen = gs.getSelectedHero();
         java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
@@ -1084,6 +1085,45 @@ public class ForestGameArea extends GameArea {
                 .addComponent(new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb))
                 .addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
+        
+        // 立即隐藏英雄UI
+        hideHeroUI();
+        
+        // 2秒后显示英雄UI
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                showHeroUI();
+            }
+        }, 2.0f);
+    }
+    
+    /**
+     * 隐藏英雄UI
+     */
+    private void hideHeroUI() {
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
+            if (heroUI != null) {
+                heroUI.setVisible(false);
+                logger.info("英雄UI已隐藏");
+                break;
+            }
+        }
+    }
+    
+    /**
+     * 显示英雄UI
+     */
+    private void showHeroUI() {
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
+            if (heroUI != null) {
+                heroUI.setVisible(true);
+                logger.info("英雄UI已显示");
+                break;
+            }
+        }
     }
 
     private void spawnIntroDialogue() {

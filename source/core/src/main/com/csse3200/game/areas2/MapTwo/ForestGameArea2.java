@@ -1285,6 +1285,17 @@ public class ForestGameArea2 extends GameArea2 {
         ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
         
+        // 立即隐藏英雄UI
+        hideHeroUI();
+        
+        // 2秒后显示英雄UI
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                showHeroUI();
+            }
+        }, 2.0f);
+        
         logger.info("Hero placement UI created after dialogue");
     }
 
@@ -1309,5 +1320,33 @@ public class ForestGameArea2 extends GameArea2 {
             //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
+    }
+    
+    /**
+     * 隐藏英雄UI
+     */
+    private void hideHeroUI() {
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
+            if (heroUI != null) {
+                heroUI.setVisible(false);
+                logger.info("英雄UI已隐藏");
+                break;
+            }
+        }
+    }
+    
+    /**
+     * 显示英雄UI
+     */
+    private void showHeroUI() {
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
+            if (heroUI != null) {
+                heroUI.setVisible(true);
+                logger.info("英雄UI已显示");
+                break;
+            }
+        }
     }
 }

@@ -31,7 +31,7 @@ public class MainBookDisplay extends UIComponent {
             "images/book/enemies_book.png",
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
-            "images/score_trophy.png",
+            "images/book/achievements_book.png",
             "images/book/heroes_book.png",
             "images/book/hologram.png"
     };
@@ -221,21 +221,29 @@ public class MainBookDisplay extends UIComponent {
 
         style.font = skin.getFont("segoe_ui");
 
-        Texture buttonTexture = ServiceLocator.getResourceService()
-                .getAsset(backGround, Texture.class);
-        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+        try {
+            Texture buttonTexture = ServiceLocator.getResourceService()
+                    .getAsset(backGround, Texture.class);
+            TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-        NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+            NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
 
-        NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+            NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+            pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
 
-        NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+            NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+            hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
 
-        style.up = new NinePatchDrawable(buttonPatch);
-        style.down = new NinePatchDrawable(pressedPatch);
-        style.over = new NinePatchDrawable(hoverPatch);
+            style.up = new NinePatchDrawable(buttonPatch);
+            style.down = new NinePatchDrawable(pressedPatch);
+            style.over = new NinePatchDrawable(hoverPatch);
+        } catch (Exception e) {
+            logger.error("Failed to load button texture: {}", backGround, e);
+            // 使用默认样式作为后备
+            style.up = skin.getDrawable("default");
+            style.down = skin.getDrawable("default");
+            style.over = skin.getDrawable("default");
+        }
 
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;

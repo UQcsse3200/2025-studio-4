@@ -116,7 +116,7 @@ public final class HeroFactory {
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent())
                 .addComponent(new UltimateButtonComponent())
-                .addComponent(new HeroAppearanceComponent(cfg))
+                //.addComponent(new HeroAppearanceComponent(cfg))
                 .addComponent(new HeroCustomizationComponent());
 
         hero.setScale(1f, 1f);

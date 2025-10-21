@@ -79,6 +79,9 @@ public class TowerUpgradeMenu extends UIComponent {
     // private Texture pathAButtonBg; // removed: keep skin 9-patch shape
     // private Texture pathBButtonBg; // removed: keep skin 9-patch shape
 
+    // NEW: cached snapshot of last rendered UI state
+    private UiSnapshot lastUiSnapshot;
+
     /**
      * Creates the UI for the tower upgrade menu and sets up listeners.
      */
@@ -270,8 +273,8 @@ public class TowerUpgradeMenu extends UIComponent {
             @Override
             public void run() {
                 if (rootTable != null && rootTable.isVisible()) {
-                    // Safe to call on render thread because Timer runs on libGDX main thread
-                    updateLabels();
+                    // Gate UI updates so labels aren't rebuilt every 0.25s
+                    updateLabelsIfChanged();
                 }
             }
         }, 0.15f /* delay */, 0.25f /* interval */);
@@ -322,7 +325,8 @@ public class TowerUpgradeMenu extends UIComponent {
         }
         this.currentTowerType = canonicalTowerType(towerType);
         rootTable.setVisible(tower != null);
-        updateLabels();
+        // CHANGED: only update UI now (when opened/changed)
+        updateLabelsIfChanged();
     }
 
     /**
@@ -599,7 +603,8 @@ public class TowerUpgradeMenu extends UIComponent {
         // NEW: notify all active totem boosters to reapply their boost to this upgraded tower
         notifyTotemBoostersOfUpgrade(selectedTower);
 
-        updateLabels();
+        // CHANGED: gate the label refresh
+        updateLabelsIfChanged();
         System.out.println("Upgrade successful!");
         
         // 重置升级标志
@@ -982,5 +987,139 @@ public class TowerUpgradeMenu extends UIComponent {
             if (lvl != null && lvl > max) max = lvl;
         }
         return max;
+    }
+
+    // NEW: lightweight value object for comparing UI state
+    private static final class UiSnapshot {
+        String towerType;
+        int levelA, levelB, maxA, maxB;
+        int nextCostA, nextCostB;
+        int refundAmount;
+        boolean canAffordA, canAffordB;
+        float freezeTime; // only used for frozen skull
+        boolean visible;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof UiSnapshot)) return false;
+            UiSnapshot s = (UiSnapshot) o;
+            return visible == s.visible
+                    && levelA == s.levelA
+                    && levelB == s.levelB
+                    && maxA == s.maxA
+                    && maxB == s.maxB
+                    && nextCostA == s.nextCostA
+                    && nextCostB == s.nextCostB
+                    && refundAmount == s.refundAmount
+                    && canAffordA == s.canAffordA
+                    && canAffordB == s.canAffordB
+                    && Float.compare(freezeTime, s.freezeTime) == 0
+                    && java.util.Objects.equals(towerType, s.towerType);
+        }
+
+        @Override
+        public int hashCode() {
+            return java.util.Objects.hash(
+                    towerType, levelA, levelB, maxA, maxB,
+                    nextCostA, nextCostB, refundAmount,
+                    canAffordA, canAffordB, freezeTime, visible
+            );
+        }
+    }
+
+    // NEW: build the current snapshot without touching UI widgets
+    private UiSnapshot buildUiSnapshot() {
+        UiSnapshot snap = new UiSnapshot();
+        snap.visible = rootTable != null && rootTable.isVisible();
+
+        if (!snap.visible || selectedTower == null || currentTowerType == null) {
+            snap.towerType = "";
+            return snap;
+        }
+
+        snap.towerType = currentTowerType;
+        TowerStatsComponent stats = selectedTower.getComponent(TowerStatsComponent.class);
+
+        if (stats != null) {
+            snap.levelA = stats.getLevel_A();
+            snap.levelB = stats.getLevel_B();
+            snap.maxA = getMaxLevelForPath(currentTowerType, true);
+            snap.maxB = getMaxLevelForPath(currentTowerType, false);
+            if ("frozenmamoothskull".equalsIgnoreCase(currentTowerType)) {
+                float ft = stats.getProjectileLife() > 0f ? stats.getProjectileLife() : 1.0f;
+                snap.freezeTime = ft;
+            }
+        }
+
+        // Costs and affordability
+        int nextLevelA = snap.levelA + 1;
+        int nextLevelB = snap.levelB + 1;
+        var upgradesA = pathAUpgradesPerTower.get(currentTowerType);
+        var upgradesB = pathBUpgradesPerTower.get(currentTowerType);
+        snap.nextCostA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
+        snap.nextCostB = (upgradesB != null && upgradesB.containsKey(nextLevelB)) ? upgradesB.get(nextLevelB).cost : 0;
+
+        CurrencyType displayCurrency = currencyForTowerType(currentTowerType);
+        snap.canAffordA = canAffordCost(snap.nextCostA, displayCurrency);
+        snap.canAffordB = canAffordCost(snap.nextCostB, displayCurrency);
+
+        // Refund amount
+        TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
+        TowerCostComponent costComp = selectedTower.getComponent(TowerCostComponent.class);
+        if (towerComp != null && costComp != null) {
+            String towerKey = canonicalTowerType(towerComp.getType());
+            CurrencyType refundCur = currencyForTowerType(towerKey);
+            int total = costComp.getCostForCurrency(refundCur);
+
+            if (upgradesA != null) {
+                for (int lvl = 2; lvl <= snap.levelA; lvl++) {
+                    var u = upgradesA.get(lvl);
+                    if (u != null) total += u.cost;
+                }
+            }
+            if (upgradesB != null) {
+                for (int lvl = 2; lvl <= snap.levelB; lvl++) {
+                    var u = upgradesB.get(lvl);
+                    if (u != null) total += u.cost;
+                }
+            }
+            snap.refundAmount = Math.round(total * 0.75f);
+        }
+
+        return snap;
+    }
+
+    // NEW: only applies UI if something actually changed
+    private void updateLabelsIfChanged() {
+        // If the selected tower was despawned or is inactive, hide the menu and clear cache
+        if (selectedTower != null && (!isEntityRegistered(selectedTower) || !selectedTower.isActive())) {
+            selectedTower = null;
+            if (rootTable != null) {
+                rootTable.setVisible(false);
+            }
+            lastUiSnapshot = null; // clear cache so next open renders fresh
+            return;
+        }
+
+        UiSnapshot snap = buildUiSnapshot();
+        if (lastUiSnapshot != null && lastUiSnapshot.equals(snap)) {
+            return; // nothing changed, skip any UI work
+        }
+        lastUiSnapshot = snap;
+        updateLabels(); // reuse existing method to render the new state
+    }
+
+    // Helper: check if an entity is still registered with the entity service
+    private boolean isEntityRegistered(Entity target) {
+        if (target == null) return false;
+        Array<Entity> list = safeEntities();
+        if (list == null) return false;
+        for (Entity e : list) {
+            if (e == target) {
+                return true;
+            }
+        }
+        return false;
     }
 }

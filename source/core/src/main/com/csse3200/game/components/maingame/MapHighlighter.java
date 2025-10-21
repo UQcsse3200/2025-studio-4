@@ -368,6 +368,14 @@ public class MapHighlighter extends UIComponent {
      * Draws the attack range of the currently selected tower.
      */
     private void drawSelectedTowerRange() {
+        // Clear selection if the entity was sold/despawned or is inactive
+        if (selectedTower != null && (!isEntityRegistered(selectedTower) || !selectedTower.isActive())) {
+            selectedTower = null;
+            // Also hide/clear the upgrade menu if present
+            if (towerUpgradeMenu != null) {
+                towerUpgradeMenu.setSelectedTower(null, "");
+            }
+        }
         if (selectedTower == null) return;
 
         TowerComponent tower = selectedTower.getComponent(TowerComponent.class);
@@ -499,5 +507,18 @@ public class MapHighlighter extends UIComponent {
     @Override
     public void dispose() {
         shapeRenderer.dispose();
+    }
+
+    // Helper: check if an entity is still registered with the entity service
+    private boolean isEntityRegistered(Entity target) {
+        if (target == null) return false;
+        Array<Entity> list = safeEntities();
+        if (list == null) return false;
+        for (Entity e : list) {
+            if (e == target) {
+                return true;
+            }
+        }
+        return false;
     }
 }

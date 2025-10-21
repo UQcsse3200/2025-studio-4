@@ -79,6 +79,9 @@ public class ForestGameArea extends GameArea {
     private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
 
+    private Entity waveTrackerUI;
+    private static final int TOTAL_WAVES = 5;
+
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea currentGameArea;
@@ -269,7 +272,11 @@ public class ForestGameArea extends GameArea {
         } else {
             // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
-            
+
+            if (waveTrackerUI != null) {
+                waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+            }
+
             // Notify UI that current wave is complete (re-enable button)
             if (MainGameScreen.ui != null) {
                 MainGameScreen.ui.getEvents().trigger("waveComplete");
@@ -567,6 +574,9 @@ public class ForestGameArea extends GameArea {
             playMusic();
         }
 
+        waveTrackerUI = new Entity();
+        waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
+        spawnEntity(waveTrackerUI);
     }
 
     private void spawnTerrain() {
@@ -763,6 +773,11 @@ public class ForestGameArea extends GameArea {
         // Only initialize waves once at the very beginning
         if (waves == null) {
             initializeWaves();
+        }
+
+        // Update wave tracker to show current wave
+        if (waveTrackerUI != null) {
+            waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
         }
         
         // Check if all waves are already complete

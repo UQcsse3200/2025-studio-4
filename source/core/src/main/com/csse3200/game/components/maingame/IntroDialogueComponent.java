@@ -624,7 +624,9 @@ public class IntroDialogueComponent extends UIComponent {
     // 为每个单词创建标签
     Label[] wordLabels = new Label[words.length];
     for (int i = 0; i < words.length; i++) {
-      Label.LabelStyle labelStyle = new Label.LabelStyle(largeFont, Color.YELLOW);
+      // 使用指定的颜色 RGB(246, 255, 205) - 淡黄绿色
+      Color customColor = new Color(246f/255f, 255f/255f, 205f/255f, 1f);
+      Label.LabelStyle labelStyle = new Label.LabelStyle(largeFont, customColor);
       wordLabels[i] = new Label(words[i], labelStyle);
       wordLabels[i].setAlignment(Align.center);
       

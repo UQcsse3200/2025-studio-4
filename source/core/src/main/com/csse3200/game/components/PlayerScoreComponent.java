@@ -2,6 +2,7 @@ package com.csse3200.game.components;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.csse3200.game.services.ServiceLocator;
 
 /**
  * Holds the player's points and notifies the HUD on change.
@@ -26,6 +27,17 @@ public class PlayerScoreComponent extends Component {
         int oldScore = totalScore;
         totalScore += points;
         logger.info("Added {} points to player score: {} -> {}", points, oldScore, totalScore);
+        
+        // 更新GameScoreService的缓存
+        try {
+            var scoreService = ServiceLocator.getGameScoreService();
+            if (scoreService != null && scoreService.isGameInProgress()) {
+                scoreService.setCurrentScore(totalScore);
+            }
+        } catch (Exception e) {
+            logger.debug("Could not update GameScoreService cache: {}", e.getMessage());
+        }
+        
         if (entity != null) {
             entity.getEvents().trigger("updateScore", totalScore);
         }

@@ -9,5 +9,6 @@ public enum BookPage {
     ENEMY_PAGE,
     CURRENCY_PAGE,
     ACHIEVEMENT_PAGE,
+    HERO_PAGE,
     NONE
 }

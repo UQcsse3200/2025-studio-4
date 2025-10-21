@@ -26,12 +26,13 @@ import org.slf4j.LoggerFactory;
 public class MainBookDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
 
-    /** Background images for buttons: enemies, currencies, towers, achievements, back button. */
+    /** Background images for buttons: enemies, currencies, towers, achievements, heroes, back button. */
     private final String[] buttonBackGround = {
             "images/book/enemies_book.png",
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
             "images/score_trophy.png",
+            "images/book/heroes_book.png",
             "images/book/hologram.png"
     };
 
@@ -98,14 +99,14 @@ public class MainBookDisplay extends UIComponent {
         stage.addActor(backgroundImage);
     }
 
-    /** Renders the navigation buttons for enemies, currencies, towers, and achievements. */
+    /** Renders the navigation buttons for enemies, currencies, towers, achievements, and heroes. */
     private void renderContentList() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
 
-        // Scale buttons relative to stage size (now 4 buttons instead of 3)
-        float buttonWidth = stageWidth * 0.22f;   // Slightly smaller to fit 4 buttons
-        float buttonHeight = stageHeight * 0.45f; 
+        // Scale buttons relative to stage size (now 5 buttons)
+        float buttonWidth = stageWidth * 0.18f;   // Adjusted to fit 5 buttons
+        float buttonHeight = stageHeight * 0.24f; 
 
         Table table = new Table();
         table.setFillParent(true);
@@ -114,6 +115,7 @@ public class MainBookDisplay extends UIComponent {
         TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
         TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
         TextButton.TextButtonStyle achievementButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
+        TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
 
         TextButton enemyButton = new TextButton("", enemyButtonStyle);
         enemyButton.getLabel().setColor(Color.WHITE);
@@ -155,11 +157,22 @@ public class MainBookDisplay extends UIComponent {
             }
         });
 
-        table.row().padTop(stageHeight * 0.02f);
+        TextButton heroButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+
+        table.row().padTop(stageHeight * 0.02f); // First row of books
         table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
         table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
         table.add(towerButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
-        table.add(achievementButton).size(buttonWidth, buttonHeight);
+        table.row().padTop(stageHeight * 0.02f); // Second row of books
+        table.add(achievementButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
+        table.add(heroButton).size(buttonWidth, buttonHeight);
 
         table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 
@@ -175,7 +188,7 @@ public class MainBookDisplay extends UIComponent {
         float buttonWidth = stageWidth * 0.15f;   // 5% of stage width
         float buttonHeight = stageHeight * 0.24f; // 8% of stage height
 
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[5]);
         TextButton exitButton = new TextButton("", exitButtonStyle);
         exitButton.getLabel().setColor(Color.WHITE);
 

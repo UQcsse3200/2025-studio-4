@@ -57,6 +57,11 @@ public class TextureRenderComponent extends RenderComponent {
     }
   }
 
+  /** Get the current tint color. */
+  public Color getColor() {
+    return new Color(tint);
+  }
+
   /** Set only the alpha (transparency) value, clamped to [0,1]. */
   public void setAlpha(float a) {
     this.tint.a = Math.max(0f, Math.min(a, 1f));

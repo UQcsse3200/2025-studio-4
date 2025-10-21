@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
-import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
+import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas2.MapTwo.GameArea2;
 import com.csse3200.game.components.CombatStatsComponent;
 import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import com.csse3200.game.components.PlayerScoreComponent;
 
+
 public class DividerEnemyFactoryLevel2 {
-    // Default drone configuration
+    // Default divider configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 150;
@@ -35,7 +36,6 @@ public class DividerEnemyFactoryLevel2 {
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
-    private static final int DEFAULT_CURRENCY_AMOUNT = 5;
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 50,
     CurrencyType.TITANIUM_CORE, 25,
@@ -55,7 +55,6 @@ public class DividerEnemyFactoryLevel2 {
     private static String texturePath = DEFAULT_TEXTURE;
     private static String displayName = DEFAULT_NAME;
     private static float clickRadius = DEFAULT_CLICKRADIUS;
-    private static int currencyAmount = DEFAULT_CURRENCY_AMOUNT;
     private static Map<CurrencyType, Integer> currencyDrops = new HashMap<>(DEFAULT_CURRENCY_DROPS);
     private static int points = DEFAULT_POINTS;
     private static String deathSoundPath = DEFAULT_DEATH_SOUND_PATH;
@@ -82,10 +81,14 @@ public class DividerEnemyFactoryLevel2 {
         divider
                 .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-                .addComponent(new clickable(clickRadius));
+                .addComponent(new clickable(clickRadius))
+                .addComponent(new com.csse3200.game.components.ReachedBaseComponent()); // ADD THIS LINE
+                
+        CombatStatsComponent combatStats = divider.getComponent(CombatStatsComponent.class);
+        if (combatStats != null) combatStats.setIsEnemy(true);
 
-        // ⚠️ 监听死亡：用闭包把 divider/target/area 捕获进去，避免 static 共享状态
         divider.getEvents().addListener("entityDeath", () -> destroyEnemy(divider, player, area));
+
 
         // Each divider handles its own waypoint progression
         divider.getEvents().addListener("chaseTaskFinished", () -> {
@@ -172,57 +175,80 @@ public class DividerEnemyFactoryLevel2 {
         }
     }
 
-    /** 敌人死亡：统一延迟执行“销毁 + 分裂 + 计数” */
+    /** Enemy death: unified delayed execution for "destroy + split + count" */
     private static void destroyEnemy(Entity entity, Entity target, GameArea2 area) {
         if (entity == null) return;
 
         // Check which game area is active and use its counters
         if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
-            // We're in ForestGameArea2
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
         } else {
-            // Default to ForestGameArea (original behavior)
-            ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
-            ForestGameArea2.checkEnemyCount();
+            ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
+            ForestGameArea.checkEnemyCount();
         }
 
+        // Check if enemy reached the base (don't reward if they did)
+        com.csse3200.game.components.ReachedBaseComponent reachedBaseComp = 
+            entity.getComponent(com.csse3200.game.components.ReachedBaseComponent.class);
+        boolean reachedBase = (reachedBaseComp != null && reachedBaseComp.hasReachedBase());
+        
+        Gdx.app.log("CURRENCY", "Divider " + entity.getId() + " died. ReachedBase: " + reachedBase);
+
+        // Only award points and currency if the enemy was killed by the player (not at base)
+        if (!reachedBase) {
+            Gdx.app.log("CURRENCY", "Divider " + entity.getId() + " - DROPPING REWARDS (killed by player)");
+            
+            WaypointComponent wcForScore = entity.getComponent(WaypointComponent.class);
+            if (wcForScore != null) {
+                Entity player = wcForScore.getPlayerRef();
+                if (player != null) {
+                    // Award points
+                    PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+                    if (psc != null) {
+                        psc.addPoints(points);
+                    }
+
+                    // Track kill for ranking component
+                    com.csse3200.game.components.PlayerRankingComponent prc = 
+                        player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+                    if (prc != null) {
+                        prc.addKill();
+                    }
+
+                    // Drop currency
+                    CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                    if (currencyManager != null) {
+                        player.getEvents().trigger("dropCurrency", currencyDrops);
+                    }
+                }
+            }
+        } else {
+            Gdx.app.log("CURRENCY", "Divider " + entity.getId() + " - NO REWARDS (reached base)");
+        }
+
+        // Play death sound regardless
+        playDeathSound(deathSoundPath);
+
+        // Store position and waypoint info before disposal
         final Vector2 pos = entity.getPosition().cpy();
         final Vector2[] offsets = new Vector2[]{
                 new Vector2(+0.3f, 0f),
                 new Vector2(-0.3f, 0f),
                 new Vector2(0f, +0.3f)
         };
-        
 
-        // Award points to player upon defeating enemy
-        WaypointComponent wcForScore = entity.getComponent(WaypointComponent.class);
-        if (wcForScore != null) {
-            Entity player = wcForScore.getPlayerRef();
-            if (player != null) {
-                PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
-                if (psc != null) {
-                    psc.addPoints(points);
-                }
+        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+        final int targetWaypointIndex = (wc != null) ? Math.max(0, wc.getCurrentWaypointIndex() - 1) : 0;
 
-                // Track kill for ranking component
-                com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
-                if (prc != null) {
-                    prc.addKill();
-                }
-            }
-        }
-
+        // Dispose and spawn children
         Gdx.app.postRunnable(() -> {
-
-            WaypointComponent wc = entity.getComponent(WaypointComponent.class);
             // Dispose of the parent entity
             entity.dispose();
 
             // Spawn child entities with waypoints
             if (area != null && savedWaypoints != null) {
                 for (Vector2 offset : offsets) {
-                    int targetWaypointIndex = Math.max(0, wc.getCurrentWaypointIndex() - 1);
                     Entity child = DividerChildEnemyFactory.createDividerChildEnemy(
                             target, savedWaypoints, targetWaypointIndex, difficulty
                     );
@@ -232,23 +258,20 @@ public class DividerEnemyFactoryLevel2 {
                 }
             }
         });
-
-        playDeathSound(deathSoundPath);
-
-        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        if (wc != null && wc.getPlayerRef() != null) {
-            Entity player = wc.getPlayerRef();
-            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-            if (currencyManager != null) {
-                player.getEvents().trigger("dropCurrency", currencyDrops);
-            }
-        }
     }
 
-   private static void playDeathSound(String soundPath) {
+    private static void playDeathSound(String soundPath) {
         ServiceLocator.getResourceService()
                 .getAsset(soundPath, Sound.class)
                 .play(2.0f);
+    }
+
+    /** Optional: adjust speed at runtime (example retained) */
+    @SuppressWarnings("unused")
+    private static void updateSpeed(Entity self, Entity target, Vector2 newSpeed) {
+        priorityTaskCount += 1;
+        self.getComponent(AITaskComponent.class)
+                .addTask(new ChaseTask(target, priorityTaskCount, 100f, 100f, newSpeed));
     }
 
     private static void updateChaseTarget(Entity entity, Entity newTarget) {
@@ -262,16 +285,14 @@ public class DividerEnemyFactoryLevel2 {
         }
     }
 
-    // Getters / Setters / Reset（与原版一致，略微收敛空值）
+    // Getters / Setters / Reset
     public static DamageTypeConfig getResistance() { return resistance; }
     public static DamageTypeConfig getWeakness() { return weakness; }
     public static Vector2 getSpeed() { return new Vector2(speed); }
     public static String getTexturePath() { return texturePath; }
     public static String getDisplayName() { return displayName; }
     public static Difficulty getDifficulty() { return difficulty; }
-    public static int getPoints() {
-        return points;
-    }
+    public static int getPoints() { return points; }
 
     public static void setResistance(DamageTypeConfig r) { resistance = (r != null) ? r : DEFAULT_RESISTANCE; }
     public static void setWeakness(DamageTypeConfig w) { weakness = (w != null) ? w : DEFAULT_WEAKNESS; }

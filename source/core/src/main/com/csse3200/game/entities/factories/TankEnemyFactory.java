@@ -85,7 +85,8 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"));
+            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"))
+            .addComponent(new com.csse3200.game.components.ReachedBaseComponent());
             CombatStatsComponent combatStats = tank.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 
@@ -146,42 +147,50 @@ public class TankEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         // Check which game area is active and use its counters
         if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
-            // We're in ForestGameArea2
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
         } else {
-            // Default to ForestGameArea (original behavior)
             ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
             ForestGameArea.checkEnemyCount();
         }
 
-        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        if (wc != null && wc.getPlayerRef() != null) {
-            Entity player = wc.getPlayerRef();
+        // Check if enemy reached the base
+        com.csse3200.game.components.ReachedBaseComponent reachedBaseComp = 
+            entity.getComponent(com.csse3200.game.components.ReachedBaseComponent.class);
+        boolean reachedBase = (reachedBaseComp != null && reachedBaseComp.hasReachedBase());
+        
+        //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " died. ReachedBase: " + reachedBase);
+        
+        if (!reachedBase) {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - DROPPING CURRENCY (killed by player)");
+            
+            WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+            if (wc != null && wc.getPlayerRef() != null) {
+                Entity player = wc.getPlayerRef();
 
-            // Award points to player upon defeating enemy
-            PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
-            if (psc != null) {
-                psc.addPoints(points);
-            }
+                // Drop currency upon defeat
+                CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                if (currencyManager != null) {
+                    player.getEvents().trigger("dropCurrency", currencyDrops);
+                }
 
-            // Track kill for ranking component
-            com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
-            if (prc != null) {
-                prc.addKill();
-            }
+                // Add points to score
+                PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+                if (psc != null) {
+                    psc.addPoints(points);
+                }
 
-            // Drop currency upon defeat
-            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-            if (currencyManager != null) {
-                player.getEvents().trigger("dropCurrency", currencyDrops);
+                // Track kill for ranking component
+                com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+                if (prc != null) {
+                    prc.addKill();
+                }
             }
+        } else {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - NO CURRENCY (reached base)");
         }
 
-
         playDeathSound(deathSoundPath);
-        //Gdx.app.postRunnable(entity::dispose);
-        //Eventually add point/score logic here maybe?
     }
 
     private static void playDeathSound(String soundPath) {

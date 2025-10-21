@@ -97,11 +97,18 @@ public class TouchAttackComponent extends Component {
         playerStats.hit(combatStats);
         hasAttacked = true;
         attackedPlayerBase = true; // This WAS a base attack
+        
+        // Mark this enemy as having reached the base
+        com.csse3200.game.components.ReachedBaseComponent reachedBase = 
+            entity.getComponent(com.csse3200.game.components.ReachedBaseComponent.class);
+        if (reachedBase != null) {
+            reachedBase.markAsReachedBase();
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - Marked as reached base");
+        }
 
         //Gdx.app.log("ATTACK", "Enemy " + entity.getId() + " attacking player base - triggering attackStart");
 
         entity.getEvents().trigger("attackStart");
-
       }
     }
 

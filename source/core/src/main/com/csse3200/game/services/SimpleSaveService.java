@@ -186,6 +186,11 @@ public class SimpleSaveService {
         data.heroUnlocks = gs.getHeroUnlocks();
         data.stars = gs.getStars();
         data.selectedHero = gs.getSelectedHero();
+
+        for (GameStateService.HeroType type :GameStateService.HeroType.values()) {
+            data.selectedWeaponSkins.put(type, gs.getSelectedWeaponSkin(type));
+            data.selectedSkins.put(type, gs.getSelectedSkin(type));
+        }
     }
 
     return data;
@@ -321,6 +326,11 @@ public class SimpleSaveService {
     gs.setStars(data.stars);
     gs.setSelectedHero(data.selectedHero);
 
+    for (GameStateService.HeroType type :GameStateService.HeroType.values()) {
+        gs.setSelectedSkin(type, data.selectedSkins.get(type));
+        gs.setSelectedWeaponSkin(type, data.selectedWeaponSkins.get(type));
+    }
+
   }
 
   private Entity createEnemy(String type, Entity player, List<Entity> waypoints) {
@@ -402,6 +412,8 @@ public class SimpleSaveService {
 
     public Map<GameStateService.HeroType, Boolean> heroUnlocks = new HashMap<>();
     public GameStateService.HeroType selectedHero = GameStateService.HeroType.HERO;
+    public Map<GameStateService.HeroType, String> selectedWeaponSkins = new HashMap<>();
+    public Map<GameStateService.HeroType, String> selectedSkins = new HashMap<>();
     public int stars = 0;
 
     public static class Player { public Vector2 pos; public int hp; public int gold; }

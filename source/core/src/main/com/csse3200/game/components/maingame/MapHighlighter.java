@@ -478,11 +478,9 @@ public class MapHighlighter extends UIComponent {
     }
 
     private boolean isPathTile(int tileX, int tileY) {
-        int[][] path = (placementController != null) ? placementController.getFixedPath() : null;
-        if (path == null) return false;
-        for (int[] p : path) if (p[0] == tileX && p[1] == tileY) return true;
-        return false;
+        return placementController != null && placementController.isPath(tileX, tileY);
     }
+
 
     private boolean hasSummonAt(int tileX, int tileY, Array<Entity> entities) {
         if (entities == null) return false;

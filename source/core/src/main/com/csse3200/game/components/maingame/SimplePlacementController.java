@@ -81,6 +81,8 @@ public class SimplePlacementController extends Component {
     private static int[][] FIXED_PATH = {};
     private static int[][] WATER_TILES = {};
 
+    private static int[][] PATH_TILES = {};
+
     // --- Currency selection for placement ---
     private com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType selectedCurrencyType =
             com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
@@ -106,6 +108,7 @@ public class SimplePlacementController extends Component {
     public void setMapEditor(IMapEditor mapEditor) {
         this.mapEditor = mapEditor;
         refreshInvalidTiles();
+        refreshPathTiles();
         refreshWaterTiles();
     }
 
@@ -675,6 +678,25 @@ public class SimplePlacementController extends Component {
         return false;
     }
 
+    public void refreshPathTiles() {
+        if (mapEditor == null) return;
+        List<GridPoint2> tiles = mapEditor.getPathTiles(); // ✅ 只拿路径
+        if (tiles == null || tiles.isEmpty()) { PATH_TILES = new int[0][0]; return; }
+
+        int[][] arr = new int[tiles.size()][2];
+        for (int i = 0; i < tiles.size(); i++) {
+            arr[i][0] = tiles.get(i).x;
+            arr[i][1] = tiles.get(i).y;
+        }
+        PATH_TILES = arr;
+    }
+
+    public boolean isPath(int x, int y) {
+        // 优先问 IMapEditor，拿不到就用缓存（或遍历 PATH_TILES）
+        if (mapEditor != null) return mapEditor.isPath(x, y);
+        for (int[] p : PATH_TILES) if (p[0] == x && p[1] == y) return true;
+        return false;
+    }
 
 }
 

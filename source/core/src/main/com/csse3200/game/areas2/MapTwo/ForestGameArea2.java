@@ -424,7 +424,7 @@ public class ForestGameArea2 extends GameArea2 {
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
+        // ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
         
         // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
         com.csse3200.game.components.maingame.TowerHotbarDisplay towerHotbar = new com.csse3200.game.components.maingame.TowerHotbarDisplay();
@@ -544,36 +544,10 @@ public class ForestGameArea2 extends GameArea2 {
         if (!hasExistingPlayer) {
             spawnIntroDialogue();
         } else {
-            // 如果已有玩家（从存档加载），直接播放音乐
+            // 如果已有玩家（从存档加载），直接创建hero放置UI和播放音乐
+            createHeroPlacementUI();
             playMusic();
         }
-
-        // Add hero placement system
-        // Note: HeroPlacementComponent expects TerrainComponent and MapEditor, but we have TerrainComponent2 and MapEditor2
-        // We need to create a compatible version - for now, comment out
-        // Entity placement = new Entity().addComponent(new HeroPlacementComponent(terrain,mapEditor, this::spawnHeroAt));
-        // spawnEntity(placement);
-
-        var gameState = ServiceLocator.getGameStateService();
-        if (gameState == null) {
-            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
-        }
-        GameStateService.HeroType chosen = gameState.getSelectedHero();
-        Gdx.app.log("ForestGameArea", "chosen=" + chosen);
-
-        playMusic();
-
-        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
-        switch (chosen) {
-            case ENGINEER -> placeCb = this::spawnEngineerAt;
-            case SAMURAI -> placeCb = this::spawnSamuraiAt;   // ★ 新增武士
-            default -> placeCb = this::spawnHeroAt;
-        }
-
-        Entity placementEntity = new Entity().addComponent(
-                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
-        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
-        spawnEntity(placementEntity);
 
         // --- ADD: MapHighlighter for tower placement preview ---
         com.csse3200.game.components.maingame.MapHighlighter mapHighlighter2 =
@@ -1045,8 +1019,9 @@ public class ForestGameArea2 extends GameArea2 {
                 new com.csse3200.game.components.maingame.IntroDialogueComponent(
                         script,
                         () -> {
-                            // 对话结束后显示防御塔列表和播放背景音乐
+                            // 对话结束后显示防御塔列表、创建hero放置UI和播放背景音乐
                             showTowerUI();
+                            createHeroPlacementUI();
                             playMusic();
                             
                             if (MainGameScreen.ui != null) {
@@ -1195,6 +1170,34 @@ public class ForestGameArea2 extends GameArea2 {
             camera.position.add(moveDistance, 0, 0);
             camera.update();
         }
+    }
+
+    /**
+     * 创建hero放置UI（在对话结束后调用）
+     */
+    private void createHeroPlacementUI() {
+        // Add hero placement system
+        var gameState = ServiceLocator.getGameStateService();
+        if (gameState == null) {
+            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
+        }
+        GameStateService.HeroType chosen = gameState.getSelectedHero();
+        Gdx.app.log("ForestGameArea2", "chosen=" + chosen);
+
+        // 根据选择安装一个只放"指定英雄"的放置器
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
+        switch (chosen) {
+            case ENGINEER -> placeCb = this::spawnEngineerAt;
+            case SAMURAI -> placeCb = this::spawnSamuraiAt;   // ★ 新增武士
+            default -> placeCb = this::spawnHeroAt;
+        }
+
+        Entity placementEntity = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
+        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
+        spawnEntity(placementEntity);
+        
+        logger.info("Hero placement UI created after dialogue");
     }
 
     @Override

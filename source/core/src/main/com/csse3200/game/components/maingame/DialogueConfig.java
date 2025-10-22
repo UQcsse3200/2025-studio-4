@@ -47,34 +47,35 @@ public class DialogueConfig {
     public static List<IntroDialogueComponent.DialogueEntry> getMap1Dialogue() {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
-                "1111111111111111", 
-                "images/talker1.png", 
+                "Man... I never thought I'd wake up again.\nThanks for bringing me back... \neven if it's into this broken world.", 
+                "images/map1talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA"  // 对话者名字
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "Hello", 
+                "You're lucky to still have a core. \nThe AI tore everything apart.\nWe rebuilt you because we need to \nunderstand what we're fighting.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/man.mp3",
                 "right",
                 "images/talker2.png",  // 使用talker.png作为对话框背景
-                getPlayerName()  // 对话者名字
+                getPlayerName(),  // 对话者名字
+                0.8f  // 字体缩放比例
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "3333333333333333", 
-                "images/talker1.png", 
+                "...What can I say...\n(He lifts his head, \nthe blue light in his eyes flickers to life.)\nThey're already here.", 
+                "images/map1talker.png", 
                 "sounds/map/say.mp3",
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA"  // 对话者名字
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "4444444444444444", 
+                "Then it's our turn.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/out.mp3",
                 "right",
@@ -91,16 +92,17 @@ public class DialogueConfig {
     public static List<IntroDialogueComponent.DialogueEntry> getMap2Dialogue() {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
-                "1111111111111111", 
-                "images/talker1.png", 
+                "Ha... Ha-ha-ha! Man!\n I missed this feeling, chaos, heat, and the pulse of war.\nGuess even death couldn't keep me away forever.", 
+                "images/map2talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA",  // 对话者名字
+                0.77f  // 字体缩放比例
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "2222222222222222", 
+                "Enjoy it while you can, MAMBA. \nThe city's heart is close, \nand it's crawling with AI patrols.\nThis is where we end it.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/man.mp3",
                 "right",
@@ -109,16 +111,16 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "3333333333333333", 
-                "images/talker1.png", 
+                "(grinning, blue light flickering in his eyes) \nYou think you can end it?\nThe network never sleeps, Commander... \nbut I like your spirit.", 
+                "images/map2talker.png", 
                 "sounds/map/say.mp3",
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA"  // 对话者名字
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "4444444444444444", 
+                "Then let's finish what we started.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/out.mp3",
                 "right",

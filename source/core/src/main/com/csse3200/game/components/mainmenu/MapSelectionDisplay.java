@@ -26,7 +26,7 @@ import java.util.List;
  * Map Selection UI using the universal orange button style and a neat centered layout.
  */
 public class MapSelectionDisplay extends UIComponent {
-    private static final String BG_TEX = "images/main_menu_background.png";
+    private static final String BG_TEX = "images/main_menu_notext.png";
     private static final String THUMB_TEX = "images/Main_Game_Button.png"; // fallback
     private String thumbTexMap1;
     private String thumbTexMap2;
@@ -166,7 +166,7 @@ public class MapSelectionDisplay extends UIComponent {
 
         // Bottom menu bar with Back / Unlocks / Play (orange)
         TextButton backBtn = new TextButton("Back", orange);
-        TextButton unlocksBtn = new TextButton("Unlocks", orange);
+        TextButton unlocksBtn = new TextButton("Select hero", orange);
         TextButton playBtn = new TextButton("Play", orange);
 
         backBtn.addListener(new ChangeListener() {

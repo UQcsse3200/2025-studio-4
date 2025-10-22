@@ -18,7 +18,8 @@ public class HeroUltimateComponent extends Component {
     private static final int ULT_COST = 200;             // Currency cost per ultimate activation
     private static final long ULT_DURATION_MS = 5000;  // Duration: 5 seconds
     private static final float ULT_MULTIPLIER = 2.0f;  // Damage multiplier during ultimate
-
+    private String ultShootSfxKey = "sounds/ult_shot.ogg";
+    private float  ultShootSfxVol = 1.0f;
     private boolean active = false;
     private long endAtMs = 0L;
     private int lastTenths = -1; // Last broadcast "tenths of a second" count
@@ -81,6 +82,7 @@ public class HeroUltimateComponent extends Component {
 
         // Notify other components
         entity.getEvents().trigger("attack.multiplier", ULT_MULTIPLIER);
+        entity.getEvents().trigger("attack.sfx.override", ultShootSfxKey, ultShootSfxVol);
         entity.getEvents().trigger("ultimate.state", true);
     }
 
@@ -107,6 +109,7 @@ public class HeroUltimateComponent extends Component {
         if (remainMs == 0) {
             active = false;
             entity.getEvents().trigger("attack.multiplier", 1.0f);
+            entity.getEvents().trigger("attack.sfx.clear");
             entity.getEvents().trigger("ultimate.state", false);
             entity.getEvents().trigger("ultimate.remaining", 0f); // Final broadcast
         }
@@ -117,6 +120,7 @@ public class HeroUltimateComponent extends Component {
         if (active) {
             // Ensure state is reset if disposed mid-ultimate
             entity.getEvents().trigger("attack.multiplier", 1.0f);
+            entity.getEvents().trigger("attack.sfx.clear");
             entity.getEvents().trigger("ultimate.state", false);
             active = false;
         }

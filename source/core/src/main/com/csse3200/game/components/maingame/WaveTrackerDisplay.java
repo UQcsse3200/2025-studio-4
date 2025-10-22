@@ -40,19 +40,26 @@ public class WaveTrackerDisplay extends UIComponent {
         // Calculate initial scale based on window size
         updateScale();
 
-        // Create labels
-        waveLabel = new Label("WAVE", skin, "large");
+        // Create custom label styles with white font color
+        Label.LabelStyle waveLabelStyle = new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+        waveLabelStyle.fontColor = Color.WHITE;
+
+        Label.LabelStyle numberLabelStyle = new Label.LabelStyle(skin.get("title", Label.LabelStyle.class));
+        numberLabelStyle.fontColor = Color.WHITE;
+
+        Label.LabelStyle totalLabelStyle = new Label.LabelStyle(skin.get("large", Label.LabelStyle.class));
+        totalLabelStyle.fontColor = Color.WHITE;
+
+        // Create labels with custom styles
+        waveLabel = new Label("WAVE", waveLabelStyle);
         waveLabel.setAlignment(Align.center);
-        waveLabel.setColor(new Color(0.85f, 0.85f, 0.85f, 1f)); // Light grey
         waveLabel.setFontScale(0.8f * currentScale);
 
-        waveNumberLabel = new Label(String.valueOf(currentWave), skin, "title");
+        waveNumberLabel = new Label(String.valueOf(currentWave), numberLabelStyle);
         waveNumberLabel.setFontScale(1.8f * currentScale);
         waveNumberLabel.setAlignment(Align.center);
-        waveNumberLabel.setColor(Color.WHITE); // White for contrast
 
-        totalLabel = new Label("/ " + totalWaves, skin, "large");
-        totalLabel.setColor(new Color(0.65f, 0.65f, 0.65f, 1f)); // Medium grey
+        totalLabel = new Label("/ " + totalWaves, totalLabelStyle);
         totalLabel.setFontScale(0.9f * currentScale);
 
         // Create progress bar
@@ -81,7 +88,7 @@ public class WaveTrackerDisplay extends UIComponent {
         contentTable.add(waveLabel).padRight(8f * currentScale);
         contentTable.add(waveNumberLabel).padRight(3f * currentScale);
         contentTable.add(totalLabel).padRight(15f * currentScale);
-        contentTable.add(progressBar).width(120f * currentScale).height(6f * currentScale);
+        contentTable.add(progressBar).width(120f * currentScale).height(18f * currentScale);
 
         backgroundPanel.add(contentTable);
         borderPanel.add(backgroundPanel);
@@ -160,7 +167,7 @@ public class WaveTrackerDisplay extends UIComponent {
             contentTable.add(waveLabel).padRight(8f * currentScale);
             contentTable.add(waveNumberLabel).padRight(3f * currentScale);
             contentTable.add(totalLabel).padRight(15f * currentScale);
-            contentTable.add(progressBar).width(120f * currentScale).height(6f * currentScale);
+            contentTable.add(progressBar).width(120f * currentScale).height(18f * currentScale);
 
             backgroundPanel.clear();
             backgroundPanel.add(contentTable);
@@ -246,23 +253,26 @@ public class WaveTrackerDisplay extends UIComponent {
      * Uses grey/white theme, with red for boss wave
      */
     private void updateWaveColor() {
-        Color numberColor;
+        Color textColor;
         Color progressColor;
         Color borderColor;
 
         if (currentWave == totalWaves) {
             // Boss wave - Red theme
-            numberColor = new Color(1f, 0.2f, 0.2f, 1f);
+            textColor = new Color(1f, 0.2f, 0.2f, 1f);
             progressColor = new Color(0.95f, 0.2f, 0.2f, 1f);
             borderColor = new Color(0.8f, 0.1f, 0.1f, 0.6f);
         } else {
             // Normal waves - Grey/White theme
-            numberColor = Color.WHITE;
+            textColor = Color.WHITE;
             progressColor = new Color(0.9f, 0.9f, 0.9f, 1f);
             borderColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         }
 
-        waveNumberLabel.setColor(numberColor);
+        // Set all label font colors by updating their styles
+        waveLabel.getStyle().fontColor = textColor;
+        waveNumberLabel.getStyle().fontColor = textColor;
+        totalLabel.getStyle().fontColor = textColor;
 
         // Update progress bar color
         ProgressBar.ProgressBarStyle style = progressBar.getStyle();

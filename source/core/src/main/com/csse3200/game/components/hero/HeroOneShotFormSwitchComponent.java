@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Central controller for the default Hero’s appearance/form/skin/upgrade flow.
  * <ul>
  *   <li>Three forms (1/2/3) with cooldown-based switching</li>
- *   <li>Skin changes (hot-swaps body & bullet textures)</li>
+ *   <li>Skin changes (hot-swaps body and bullet textures)</li>
  *   <li>On upgrade: lock weapon bar, upgrade bullet texture, and switch body texture by level</li>
  *   <li>Preloads heroTexture / bulletTexture / levelTextures[*] to avoid flicker on upgrade</li>
  * </ul>

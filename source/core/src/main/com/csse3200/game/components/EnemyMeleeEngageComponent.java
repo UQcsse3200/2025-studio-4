@@ -25,7 +25,7 @@ import java.util.Map;
  * Optionally, it can pause the AI while at least one target is engaged, and resume
  * when all targets disengage.
  *
- * <h3>Key behaviors</h3>
+ * <p><strong>Key behaviors</strong></p>
  * <ul>
  *   <li>On {@code collisionStart}: if the other fixture's category matches {@code targetMask},
  *       the other entity is added to the engaged set.</li>

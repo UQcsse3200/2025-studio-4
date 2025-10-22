@@ -105,7 +105,7 @@ public class TurretAttackComponentTest {
 
         try (MockedStatic<ProjectileFactory> mocked = mockStatic(ProjectileFactory.class)) {
             mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(Vector2.class),
-                            anyFloat(), anyFloat(), anyFloat(), anyInt()))
+                            anyFloat(), anyFloat(), anyFloat(), anyInt(), eq(true)))
                     .thenReturn(bullet);
 
             // 首次 update 应立即开火
@@ -121,7 +121,7 @@ public class TurretAttackComponentTest {
 
             mocked.verify(() -> ProjectileFactory.createBullet(
                     texCap.capture(), posCap.capture(), vxCap.capture(), vyCap.capture(),
-                    lifeCap.capture(), dmgCap.capture()
+                    lifeCap.capture(), dmgCap.capture(), eq(true)
             ), times(1));
 
             assertEquals("bullet.png", texCap.getValue());
@@ -149,12 +149,12 @@ public class TurretAttackComponentTest {
         Entity bullet = mock(Entity.class);
 
         try (MockedStatic<ProjectileFactory> mocked = mockStatic(ProjectileFactory.class)) {
-            mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt()))
+            mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt(), eq(true)))
                     .thenReturn(bullet);
 
             // 第一次：立即开火
             comp.update();
-            mocked.verify(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt()), times(1));
+            mocked.verify(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt(), eq(true)), times(1));
             verify(entityService, times(1)).register(bullet);
 
             // 用一帧“大 dt”穿越冷却：这一帧只会把 cd <= 0，然后 return，不会开火
@@ -165,7 +165,7 @@ public class TurretAttackComponentTest {
             when(Gdx.graphics.getDeltaTime()).thenReturn(1f / 60f);
             comp.update();
 
-            mocked.verify(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt()), times(2));
+            mocked.verify(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt(), eq(true)), times(2));
             verify(entityService, times(2)).register(bullet);
         }
     }
@@ -183,7 +183,7 @@ public class TurretAttackComponentTest {
         Entity bullet = mock(Entity.class);
 
         try (MockedStatic<ProjectileFactory> mocked = mockStatic(ProjectileFactory.class)) {
-            mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt()))
+            mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt(), eq(true)))
                     .thenReturn(bullet);
 
             comp.update();
@@ -191,7 +191,7 @@ public class TurretAttackComponentTest {
             ArgumentCaptor<Vector2> posCap = ArgumentCaptor.forClass(Vector2.class);
             mocked.verify(() -> ProjectileFactory.createBullet(
                     eq("b.png"), posCap.capture(), anyFloat(), anyFloat(),
-                    eq(0.8f), eq(1)
+                    eq(0.8f), eq(1), eq(true)
             ), times(1));
 
             assertVec2(posCap.getValue(), 4f, 6f, 1e-6f);
@@ -212,13 +212,13 @@ public class TurretAttackComponentTest {
         Entity bullet = mock(Entity.class);
 
         try (MockedStatic<ProjectileFactory> mocked = mockStatic(ProjectileFactory.class)) {
-            mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt()))
+            mocked.when(() -> ProjectileFactory.createBullet(anyString(), any(), anyFloat(), anyFloat(), anyFloat(), anyInt(), eq(true)))
                     .thenReturn(bullet);
 
             // 第一次：以 (6,8) 速度开火
             comp.update();
             mocked.verify(() -> ProjectileFactory.createBullet(
-                    eq("c.png"), any(), eq(6f), eq(8f), eq(1f), anyInt()
+                    eq("c.png"), any(), eq(6f), eq(8f), eq(1f), anyInt(), eq(true)
             ), times(1));
 
             // 改方向为 (0, -2) -> 归一化 (0,-1) -> 速度 (0,-10)
@@ -234,7 +234,7 @@ public class TurretAttackComponentTest {
 
             // 第二次：以 (0,-10) 速度开火（这里只验证出现一次该组参数）
             mocked.verify(() -> ProjectileFactory.createBullet(
-                    eq("c.png"), any(), eq(0f), eq(-10f), eq(1f), anyInt()
+                    eq("c.png"), any(), eq(0f), eq(-10f), eq(1f), anyInt(), eq(true)
             ), times(1));
 
             verify(entityService, times(2)).register(bullet);

@@ -11,18 +11,46 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * Renders a warning marker indicating where a plasma strike will occur.
+ * 
+ * <p>This component displays a pulsing warning marker at the target location
+ * before a plasma strike hits. The marker consists of a vertical lightning bolt
+ * design that pulses in size to draw attention.</p>
+ * 
+ * <p>The warning plays a sound on creation and automatically disposes itself
+ * when the warning period expires.</p>
+ * 
+ * @author Team1
+ * @since sprint 4
+ */
 public class PlasmaWarningComponent extends RenderComponent {
+  /** Shared texture for all warning markers */
   private static TextureRegion texture;
+  /** Duration of the warning in seconds */
   private final float duration;
+  /** Base size of the warning marker */
   private final float size;
+  /** Time elapsed since warning started */
   private float elapsed;
+  /** Whether disposal has been scheduled */
   private boolean disposeScheduled;
 
+  /**
+   * Creates a plasma warning component.
+   * 
+   * @param duration duration of the warning in seconds
+   * @param size base size of the warning marker
+   */
   public PlasmaWarningComponent(float duration, float size) {
     this.duration = duration;
     this.size = size;
   }
 
+  /**
+   * Ensures the warning texture is created and cached.
+   * Creates a lightning bolt design procedurally.
+   */
   private static void ensureTexture() {
     if (texture != null) {
       return;
@@ -73,6 +101,10 @@ public class PlasmaWarningComponent extends RenderComponent {
     batch.setColor(previous);
   }
 
+  /**
+   * Schedules the entity for disposal after the warning expires.
+   * Uses postRunnable to ensure safe disposal.
+   */
   private void scheduleDispose() {
     if (disposeScheduled) {
       return;

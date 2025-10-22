@@ -28,7 +28,6 @@ public class CurrencyManagerComponent extends Component {
         if (this.entity != null) {
             this.entity.getEvents().addListener("dropCurrency", this::dropCurrency);
         }
-        // Initial currency amounts for new game (matching save template)
         this.addCurrencyAmount(CurrencyType.METAL_SCRAP, 500);
         this.addCurrencyAmount(CurrencyType.TITANIUM_CORE, 50);
         this.addCurrencyAmount(CurrencyType.NEUROCHIP, 0);

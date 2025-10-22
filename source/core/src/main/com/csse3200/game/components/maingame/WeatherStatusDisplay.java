@@ -12,18 +12,38 @@ import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
+/**
+ * Displays the current weather status in the game UI.
+ *
+ * <p>This component creates a centred UI toast that shows the current weather condition
+ * (Sunny or Plasma Storm). It continuously updates to reflect changes in the weather
+ * state from the {@link PlasmaWeatherController}.</p>
+ *
+ * <p>The display uses a brilliant white label with scaled font to ensure visibility
+ * against various background elements. The toast animates in, stays visible for a short
+ * duration, and fades out automatically.</p>
+ * 
+ * @author Team1
+ * @since sprint 4
+ */
 public class WeatherStatusDisplay extends UIComponent {
   private static final float DISPLAY_DURATION = 4f;
   private static final float FADE_DURATION = 0.35f;
   private static final Color BRILLIANT_WHITE = new Color(0.96f, 0.98f, 1f, 1f);
-
+  /** The weather controller to monitor for status changes */
   private final PlasmaWeatherController controller;
+  /** Root table container for the UI elements */
   private Table root;
+  /** Label displaying the current weather status */
   private Label statusLabel;
   private String lastRenderedLabel = "";
   private boolean initialToastPending = true;
-  private String pendingLabel = "";
 
+  /**
+   * Creates a weather status display component.
+   * 
+   * @param controller the plasma weather controller to monitor
+   */
   public WeatherStatusDisplay(PlasmaWeatherController controller) {
     this.controller = controller;
   }
@@ -39,18 +59,17 @@ public class WeatherStatusDisplay extends UIComponent {
     root.setVisible(false);
 
     statusLabel = new Label("", skin, "title");
-   statusLabel.setAlignment(Align.center);
+    statusLabel.setAlignment(Align.center);
     statusLabel.setFontScale(0.8f);
     statusLabel.setColor(BRILLIANT_WHITE);
 
     root.add(statusLabel).center();
     stage.addActor(root);
-    pendingLabel =
+    lastRenderedLabel =
         controller != null
             ? "Weather: " + controller.getCurrentWeatherLabel()
             : "Weather: Unknown";
-    lastRenderedLabel = pendingLabel;
-    statusLabel.setText(pendingLabel);
+    statusLabel.setText(lastRenderedLabel);
     statusLabel.getColor().a = 0f;
   }
 
@@ -67,6 +86,10 @@ public class WeatherStatusDisplay extends UIComponent {
     updateLabel();
   }
 
+  /**
+   * Updates the weather status label with current information from the controller.
+   * Handles null controller gracefully by displaying "Unknown" status.
+   */
   private void updateLabel() {
     if (controller == null) {
       handleLabelChange("Weather: Unknown");
@@ -82,13 +105,11 @@ public class WeatherStatusDisplay extends UIComponent {
     if (content.equals(lastRenderedLabel)) {
       return;
     }
+    lastRenderedLabel = content;
     if (initialToastPending) {
-      lastRenderedLabel = content;
-      pendingLabel = content;
       statusLabel.setText(content);
       return;
     }
-    lastRenderedLabel = content;
     triggerToast(content);
   }
 

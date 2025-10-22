@@ -6,6 +6,7 @@ import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
+import com.csse3200.game.components.book.BookOnMainGame;
 import com.csse3200.game.ui.leaderboard.LeaderboardController;
 import com.csse3200.game.ui.leaderboard.LeaderboardPopup;
 import com.csse3200.game.ui.leaderboard.MinimalSkinFactory;
@@ -38,10 +39,26 @@ public class MainGameActions extends Component {
     entity.getEvents().addListener("openSettings", this::onOpenSettings);
     entity.getEvents().addListener("quitToMenu", this::onQuitToMenu);
     entity.getEvents().addListener("showRanking", this::onShowRanking);
+    entity.getEvents().addListener("showBook", this::onShowBook);
   }
 
   private void onOpenSettings() {
     game.setScreen(GdxGame.ScreenType.SETTINGS);
+  }
+
+  private void onShowBook() {
+    logger.info("Showing Book in main game");
+
+    try {
+      Stage stage = ServiceLocator.getRenderService().getStage();
+      Skin skin = MinimalSkinFactory.create();
+
+      BookOnMainGame popup = new BookOnMainGame(skin);
+      popup.showOn(stage);
+
+    } catch (Exception e) {
+      logger.error("Error showing ranking", e);
+    }
   }
 
   private void onQuitToMenu() {
@@ -213,6 +230,8 @@ public class MainGameActions extends Component {
                 if (success) {
                   logger.info("Saved as '{}' successfully", name);
                   entity.getEvents().trigger("showSaveSuccess");
+
+                    entity.getEvents().trigger("resume"); //unpause after save
                 } else {
                   entity.getEvents().trigger("showSaveError");
                 }
@@ -222,7 +241,8 @@ public class MainGameActions extends Component {
               }
             }
             @Override public void onCancelled() { 
-              // Dialog cancelled, no action needed
+              // Dialog cancelled, unpause
+                entity.getEvents().trigger("resume");
             }
           }
       );

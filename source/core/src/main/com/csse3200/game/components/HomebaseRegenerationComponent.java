@@ -6,50 +6,56 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Homebase生命回复组件
- * 当homebase在5秒内没有受到伤害时，每4秒回复5点生命值，并在周围显示回复数字
+ * Homebase regeneration component.
+ * Regenerates 5 HP every 4 seconds after 4 seconds without damage.
+ * 
+ * @author MapTeam
+ * @since Sprint 4
  */
 public class HomebaseRegenerationComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(HomebaseRegenerationComponent.class);
     
-    // 配置常量
-    private static final float TIME_WITHOUT_DAMAGE_REQUIRED = 4f; // 需要多少秒不受伤才能开始回复
-    private static final float REGENERATION_INTERVAL = 4.0f; // 每隔多少秒回复一次
-    private static final int REGENERATION_AMOUNT = 5; // 每次回复的生命值
+    // Configuration constants
+    private static final float TIME_WITHOUT_DAMAGE_REQUIRED = 4f; // How many seconds without damage required to start regeneration
+    private static final float REGENERATION_INTERVAL = 4.0f; // How often to regenerate (in seconds)
+    private static final int REGENERATION_AMOUNT = 5; // Amount of health regenerated each time
     
-    // 状态追踪
-    private long lastDamageTime; // 最后一次受伤的时间（毫秒）
-    private long lastRegenerationTime; // 最后一次回复的时间（毫秒）
-    private int previousHealth = -1; // 上一次的生命值，用于检测受伤
-    private boolean isRegenerating = false; // 当前是否处于回复状态
+    // State tracking
+    private long lastDamageTime; // Time of last damage taken (in milliseconds)
+    private long lastRegenerationTime; // Time of last regeneration (in milliseconds)
+    private int previousHealth = -1; // Previous health value, used to detect damage
+    private boolean isRegenerating = false; // Whether currently regenerating
     
     private GameTime gameTime;
     private PlayerCombatStatsComponent combatStats;
     
+    /**
+     * Initializes the component.
+     */
     @Override
     public void create() {
         super.create();
         
-        // 获取游戏时间服务
+        // Get game time service
         gameTime = ServiceLocator.getTimeSource();
         if (gameTime == null) {
             logger.error("GameTime service not available");
             return;
         }
         
-        // 获取战斗状态组件
+        // Get combat stats component
         combatStats = entity.getComponent(PlayerCombatStatsComponent.class);
         if (combatStats == null) {
             logger.error("HomebaseRegenerationComponent requires PlayerCombatStatsComponent");
             return;
         }
         
-        // 初始化时间
+        // Initialize time values
         lastDamageTime = gameTime.getTime();
         lastRegenerationTime = gameTime.getTime();
         previousHealth = combatStats.getHealth();
         
-        // 监听生命值变化事件
+        // Listen for health update events
         entity.getEvents().addListener("updateHealth", this::onHealthUpdate);
         
         logger.info("HomebaseRegenerationComponent created - will regenerate {} HP every {} seconds after {} seconds without damage",
@@ -57,21 +63,25 @@ public class HomebaseRegenerationComponent extends Component {
     }
     
     /**
-     * 当生命值更新时触发，用于检测是否受到伤害
+     * Handles health updates to detect damage.
+     * @param newHealth the new health value
      */
     private void onHealthUpdate(int newHealth) {
-        // 检查是否受到伤害（生命值减少）
+        // Check if damage was taken (health decreased)
         if (previousHealth > 0 && newHealth < previousHealth) {
-            // 受到伤害，重置最后受伤时间
+            // Damage taken, reset last damage time
             lastDamageTime = gameTime.getTime();
             isRegenerating = false;
             logger.debug("Homebase took damage. Regeneration paused.");
         }
         
-        // 更新previousHealth
+        // Update previousHealth
         previousHealth = newHealth;
     }
     
+    /**
+     * Updates regeneration logic every frame.
+     */
     @Override
     public void update() {
         if (combatStats == null || gameTime == null) {
@@ -80,10 +90,10 @@ public class HomebaseRegenerationComponent extends Component {
         
         long currentTime = gameTime.getTime();
         
-        // 计算距离最后一次受伤的时间（秒）
+        // Calculate time since last damage (in seconds)
         float timeSinceLastDamage = (currentTime - lastDamageTime) / 1000.0f;
         
-        // 检查是否满足开始回复的条件
+        // Check if conditions are met to start regeneration
         if (timeSinceLastDamage >= TIME_WITHOUT_DAMAGE_REQUIRED) {
             if (!isRegenerating) {
                 isRegenerating = true;
@@ -91,17 +101,17 @@ public class HomebaseRegenerationComponent extends Component {
                 logger.debug("Homebase regeneration started");
             }
             
-            // 计算距离最后一次回复的时间（秒）
+            // Calculate time since last regeneration (in seconds)
             float timeSinceLastRegen = (currentTime - lastRegenerationTime) / 1000.0f;
             
-            // 检查是否到了回复时间
+            // Check if it's time to regenerate
             if (timeSinceLastRegen >= REGENERATION_INTERVAL) {
-                // 执行回复
+                // Execute regeneration
                 regenerateHealth();
                 lastRegenerationTime = currentTime;
             }
         } else {
-            // 还没有达到开始回复的条件
+            // Haven't met conditions to start regeneration yet
             if (isRegenerating) {
                 isRegenerating = false;
                 logger.debug("Homebase regeneration stopped due to recent damage");
@@ -110,7 +120,7 @@ public class HomebaseRegenerationComponent extends Component {
     }
     
     /**
-     * 执行生命回复
+     * Executes health regeneration.
      */
     private void regenerateHealth() {
         if (combatStats == null) {
@@ -120,19 +130,19 @@ public class HomebaseRegenerationComponent extends Component {
         int currentHealth = combatStats.getHealth();
         int maxHealth = combatStats.getMaxHealth();
         
-        // 如果已经满血，不回复
+        // If already at full health, no regeneration needed
         if (currentHealth >= maxHealth) {
             logger.debug("Homebase already at full health, no regeneration needed");
             return;
         }
         
-        // 计算实际回复量（不超过最大生命值）
+        // Calculate actual regeneration amount (not exceeding max health)
         int actualRegenAmount = Math.min(REGENERATION_AMOUNT, maxHealth - currentHealth);
         
-        // 回复生命
+        // Regenerate health
         combatStats.addHealth(actualRegenAmount);
         
-        // 显示回复数字（使用负数表示回复，绿色显示）
+        // Show regeneration number (use negative value to indicate regeneration, displayed in green)
         showRegenerationNumber(actualRegenAmount);
         
         logger.info("Homebase regenerated {} HP (current: {}/{})", 
@@ -140,12 +150,12 @@ public class HomebaseRegenerationComponent extends Component {
     }
     
     /**
-     * 显示回复数字
-     * @param regenAmount 回复的数量
+     * Shows regeneration number above homebase.
+     * @param regenAmount amount of health regenerated
      */
     private void showRegenerationNumber(int regenAmount) {
         try {
-            // 触发显示事件，使用负数表示回复（在DamagePopupComponent中会显示为绿色）
+            // Trigger display event, use negative value to indicate regeneration (will be displayed in green by DamagePopupComponent)
             entity.getEvents().trigger("showDamage", -regenAmount, entity.getCenterPosition().cpy());
             logger.debug("Triggered regeneration number display: +{} HP", regenAmount);
         } catch (Exception e) {
@@ -154,16 +164,16 @@ public class HomebaseRegenerationComponent extends Component {
     }
     
     /**
-     * 获取当前是否处于回复状态
-     * @return true如果正在回复，false否则
+     * Get whether currently regenerating
+     * @return true if regenerating, false otherwise
      */
     public boolean isRegenerating() {
         return isRegenerating;
     }
     
     /**
-     * 获取距离上次受伤的时间（秒）
-     * @return 距离上次受伤的秒数
+     * Get time since last damage (in seconds)
+     * @return Seconds since last damage
      */
     public float getTimeSinceLastDamage() {
         if (gameTime == null) {
@@ -173,8 +183,8 @@ public class HomebaseRegenerationComponent extends Component {
     }
     
     /**
-     * 获取距离下次回复的剩余时间（秒）
-     * @return 距离下次回复的秒数，如果不在回复状态则返回-1
+     * Get time until next regeneration (in seconds)
+     * @return Seconds until next regeneration, returns -1 if not regenerating
      */
     public float getTimeUntilNextRegen() {
         if (!isRegenerating || gameTime == null) {

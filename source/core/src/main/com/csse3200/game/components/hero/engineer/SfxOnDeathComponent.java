@@ -7,11 +7,11 @@ import com.csse3200.game.components.Component;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * 在实体销毁（dispose）前播放一次音效。
- * 用于召唤物死亡/回收的爆炸音效等。
+ * Play a sound effect once right before the entity is disposed.
+ * Used for explosion SFX when summons die/are reclaimed, etc.
  */
 public class SfxOnDeathComponent extends Component {
-    private String sfxKey = "sounds/explosion_2s.ogg"; // 你也可以用已有的 "sounds/Explosion_sfx.ogg"
+    private String sfxKey = "sounds/explosion_2s.ogg"; // You can also use the existing "sounds/Explosion_sfx.ogg"
     private float volume = 2.0f;
     private boolean played = false;
 
@@ -46,7 +46,7 @@ public class SfxOnDeathComponent extends Component {
                 s.play(vol);
                 return;
             }
-            // 回退：直接从文件创建（确保打包在 assets）
+            // Fallback: create directly from file (ensure it's packaged in assets)
             if (Gdx.files.internal(sfxKey).exists() && Gdx.audio != null) {
                 Sound s2 = Gdx.audio.newSound(Gdx.files.internal(sfxKey));
                 s2.play(vol);
@@ -60,7 +60,7 @@ public class SfxOnDeathComponent extends Component {
 
     @Override
     public void dispose() {
-        // 记录下位置仅用于调试（可选）
+        // Optionally record position for debugging
         Vector2 pos = (entity != null) ? entity.getPosition() : null;
         playOnce();
         super.dispose();

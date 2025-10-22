@@ -211,7 +211,7 @@ public class ForestGameArea2 extends GameArea2 {
 
         waves.add(new Wave(10, 36, 28, 24, 6, 10, 10, 1.0f, waypointLists));
 
-        waves.add(new Wave(10, 40, 36, 30, 10, 20, 20, 1.0f, waypointLists));
+        waves.add(new Wave(11, 40, 36, 30, 10, 20, 20, 1.0f, waypointLists));
 
         TOTAL_WAVES = waves.size();
     }

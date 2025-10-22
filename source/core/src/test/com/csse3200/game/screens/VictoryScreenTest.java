@@ -50,6 +50,10 @@ class VictoryScreenTest {
         when(mockGraphics.getDeltaTime()).thenReturn(0.016f);
         Gdx.graphics = mockGraphics;
         
+        // Mock Input
+        Gdx.input = mock(com.badlogic.gdx.Input.class);
+        when(Gdx.input.justTouched()).thenReturn(false);
+        
         // Mock Files
         Gdx.files = mock(com.badlogic.gdx.Files.class);
         FileHandle mockFileHandle = mock(FileHandle.class);
@@ -64,6 +68,9 @@ class VictoryScreenTest {
         // Mock textures
         Texture mockTexture = mock(Texture.class);
         when(resourceService.getAsset(anyString(), eq(Texture.class))).thenReturn(mockTexture);
+        
+        // Mock successful submission
+        when(sessionManager.submitScoreIfNotSubmitted(anyBoolean())).thenReturn(true);
         
         ServiceLocator.registerResourceService(resourceService);
         ServiceLocator.registerEntityService(new EntityService());
@@ -103,7 +110,7 @@ class VictoryScreenTest {
         victoryScreen.show();
         
         // Verify that input processor was set (stage is set as input processor)
-        assertNotNull(Gdx.input);
+        verify(Gdx.input, atLeastOnce()).setInputProcessor(any());
     }
     
     @Test
@@ -234,8 +241,6 @@ class VictoryScreenTest {
     
     @Test
     void testSubmitCurrentScoreOnCreation() {
-        when(sessionManager.submitScoreIfNotSubmitted(true)).thenReturn(true);
-        
         VictoryScreen victoryScreen = new VictoryScreen(mockGame);
         assertNotNull(victoryScreen);
         
@@ -244,8 +249,6 @@ class VictoryScreenTest {
     
     @Test
     void testSubmitCurrentScoreOnShow() {
-        when(sessionManager.submitScoreIfNotSubmitted(true)).thenReturn(true);
-        
         VictoryScreen victoryScreen = new VictoryScreen(mockGame);
         victoryScreen.show();
         

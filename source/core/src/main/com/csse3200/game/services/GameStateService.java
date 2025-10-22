@@ -48,7 +48,6 @@ public class GameStateService {
     private final Map<HeroType, String[]> availableSkins = new HashMap<>();
 
     public GameStateService() {
-        // should load from save file later
         logger.info("Loading GameStateService");
         stars = 0;
         heroUnlocks = new HashMap<>();
@@ -224,6 +223,16 @@ public class GameStateService {
      */
     public void setHeroUnlocked(HeroType hero) {
         heroUnlocks.put(hero, true);
+    }
+
+    /**
+     * Marks the given hero as locked or unlocked based on input
+     *
+     * @param hero hero to unlock
+     * @param unlocked true if it should be unlocked, false otherwise
+     */
+    public void setHeroUnlocked(HeroType hero, boolean unlocked) {
+        heroUnlocks.put(hero, unlocked);
     }
 
     /**

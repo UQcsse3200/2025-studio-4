@@ -56,11 +56,11 @@ public class MainGameExitDisplay extends UIComponent {
     float buttonWidth = 140f;
     float buttonHeight = 40f;
 
-    mainMenuBtn.getLabel().setColor(Color.CYAN);
-    rankingBtn.getLabel().setColor(Color.CYAN);
-    speedButton.getLabel().setColor(Color.CYAN);
-    startWaveButton.getLabel().setColor(Color.CYAN);
-    bookBtn.getLabel().setColor(Color.CYAN);
+    mainMenuBtn.getLabel().setColor(Color.WHITE);
+    rankingBtn.getLabel().setColor(Color.WHITE);
+    speedButton.getLabel().setColor(Color.WHITE);
+    startWaveButton.getLabel().setColor(Color.WHITE);
+    bookBtn.getLabel().setColor(Color.WHITE);
 
     mainMenuBtn.addListener(
       new ChangeListener() {

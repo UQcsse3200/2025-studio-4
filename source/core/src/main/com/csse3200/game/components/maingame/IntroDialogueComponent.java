@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.SimpleUI;
@@ -97,6 +98,10 @@ public class IntroDialogueComponent extends UIComponent {
   @Override
   public void create() {
     super.create();
+    GameStateService gameState = ServiceLocator.getGameStateService();
+    if (gameState != null) {
+      gameState.resetReadyPromptFinished();
+    }
     if (entries.isEmpty()) {
       logger.warn("IntroDialogueComponent started with no dialogue entries");
       finishDialogue();
@@ -838,6 +843,10 @@ public class IntroDialogueComponent extends UIComponent {
    */
   private void animateSingleWord(Label[] wordLabels, int wordIndex, BitmapFont largeFont) {
     if (wordIndex >= wordLabels.length) {
+      GameStateService gameState = ServiceLocator.getGameStateService();
+      if (gameState != null) {
+        gameState.markReadyPromptFinished();
+      }
       // All word animations complete, clean up resources
       com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
         @Override

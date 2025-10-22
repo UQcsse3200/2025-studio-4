@@ -16,19 +16,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 章节介绍组件，在屏幕中心显示故事文本
+ * Component for displaying chapter introduction text in the center of the screen.
+ * 
+ * <p>This component creates a full-screen overlay that displays story text paragraphs
+ * sequentially. It supports both automatic progression (3 seconds per text) and
+ * manual advancement through user clicks. The first text is displayed as a title
+ * with larger font, while subsequent texts use story formatting.</p>
+ * 
+ * <p>The component includes a semi-transparent black background overlay and
+ * automatically manages font resources, ensuring proper cleanup when the
+ * introduction sequence completes.</p>
+ * 
+ * @author Team1
+ * @since sprint 4
  */
 public class ChapterIntroComponent extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(ChapterIntroComponent.class);
     
+    /** Array of story texts to display sequentially */
     private final String[] storyTexts;
+    /** Callback function to execute when the introduction sequence completes */
     private final Runnable onComplete;
+    /** Main overlay table containing the text display */
     private Table overlayTable;
+    /** Index of the currently displayed text */
     private int currentTextIndex = 0;
+    /** Whether the introduction sequence has finished */
     private boolean finished = false;
+    /** Font used for story text content */
     private BitmapFont storyFont;
+    /** Font used for title text (first paragraph) */
     private BitmapFont titleFont;
     
+    /**
+     * Creates a chapter introduction component.
+     * 
+     * @param storyTexts array of text strings to display sequentially
+     * @param onComplete callback function executed when introduction finishes
+     */
     public ChapterIntroComponent(String[] storyTexts, Runnable onComplete) {
         this.storyTexts = storyTexts;
         this.onComplete = onComplete;
@@ -49,9 +74,16 @@ public class ChapterIntroComponent extends UIComponent {
         showNextText();
     }
     
+    /**
+     * Creates and configures fonts for title and story text display.
+     * 
+     * <p>Attempts to load custom fonts from the flat-earth skin directory.
+     * If font loading fails, falls back to the default SimpleUI font
+     * with appropriate scaling adjustments.</p>
+     */
     private void createFonts() {
         try {
-            // 创建标题字体（更大）
+            // Create title font (larger)
             titleFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
             titleFont.getData().setScale(1.5f);
             titleFont.setColor(Color.WHITE);
@@ -63,10 +95,10 @@ public class ChapterIntroComponent extends UIComponent {
         }
         
         try {
-            // 创建故事文本字体
+            // Create story text font
             storyFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/pixel_32.fnt"));
             storyFont.getData().setScale(1.2f);
-            storyFont.setColor(new Color(0.9f, 0.9f, 0.9f, 1f)); // 淡灰色
+            storyFont.setColor(new Color(0.9f, 0.9f, 0.9f, 1f)); // Light gray
         } catch (Exception e) {
             logger.warn("Failed to load story font, using default font", e);
             storyFont = SimpleUI.font();
@@ -75,17 +107,24 @@ public class ChapterIntroComponent extends UIComponent {
         }
     }
     
+    /**
+     * Builds the full-screen overlay with semi-transparent background.
+     * 
+     * <p>Creates a touchable overlay that covers the entire screen with
+     * a semi-transparent black background. Adds a click listener to allow
+     * manual progression through the text sequence.</p>
+     */
     private void buildOverlay() {
         float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
         float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
         
-        // 创建半透明黑色背景
+        // Create semi-transparent black background
         overlayTable = new Table();
         overlayTable.setFillParent(true);
         overlayTable.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.8f)));
         overlayTable.setTouchable(Touchable.enabled);
         
-        // 添加点击监听器，点击任意位置继续
+        // Add click listener to advance text on any click
         overlayTable.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,24 +135,31 @@ public class ChapterIntroComponent extends UIComponent {
         stage.addActor(overlayTable);
     }
     
+    /**
+     * Displays the next text in the sequence or finishes the introduction.
+     * 
+     * <p>Shows the current text with appropriate formatting (title font for first
+     * text, story font for others). Automatically schedules the next text to appear
+     * after 3 seconds, or allows manual advancement through user clicks.</p>
+     */
     private void showNextText() {
         if (finished || currentTextIndex >= storyTexts.length) {
             finishIntro();
             return;
         }
         
-        // 清除之前的内容
+        // Clear previous content
         overlayTable.clearChildren();
         
         String currentText = storyTexts[currentTextIndex];
         
-        // 创建文本标签
+        // Create text label
         Label.LabelStyle labelStyle;
         if (currentTextIndex == 0) {
-            // 第一段是标题，使用标题字体
+            // First paragraph is title, use title font
             labelStyle = new Label.LabelStyle(titleFont, Color.WHITE);
         } else {
-            // 其他段落使用故事字体
+            // Other paragraphs use story font
             labelStyle = new Label.LabelStyle(storyFont, new Color(0.9f, 0.9f, 0.9f, 1f));
         }
         
@@ -121,7 +167,7 @@ public class ChapterIntroComponent extends UIComponent {
         textLabel.setWrap(true);
         textLabel.setAlignment(Align.center);
         
-        // 设置文本区域大小（屏幕宽度的70%，高度自适应）
+        // Set text area size (70% of screen width, adaptive height)
         float textWidth = com.badlogic.gdx.Gdx.graphics.getWidth() * 0.7f;
         float textHeight = com.badlogic.gdx.Gdx.graphics.getHeight() * 0.6f;
         
@@ -132,7 +178,7 @@ public class ChapterIntroComponent extends UIComponent {
         
         currentTextIndex++;
         
-        // 自动继续（3秒后）
+        // Auto-advance (after 3 seconds)
         com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
             public void run() {
@@ -141,19 +187,26 @@ public class ChapterIntroComponent extends UIComponent {
         }, 3.0f);
     }
     
+    /**
+     * Completes the introduction sequence and cleans up resources.
+     * 
+     * <p>Removes the overlay, disposes of font resources, executes the completion
+     * callback, and disposes of the entity. This method is idempotent and
+     * can be called multiple times safely.</p>
+     */
     private void finishIntro() {
         if (finished) {
             return;
         }
         finished = true;
         
-        // 移除覆盖层
+        // Remove overlay
         if (overlayTable != null) {
             overlayTable.remove();
             overlayTable = null;
         }
         
-        // 释放字体资源
+        // Dispose font resources
         if (storyFont != null && storyFont != SimpleUI.font()) {
             storyFont.dispose();
         }
@@ -161,7 +214,7 @@ public class ChapterIntroComponent extends UIComponent {
             titleFont.dispose();
         }
         
-        // 执行完成回调
+        // Execute completion callback
         if (onComplete != null) {
             try {
                 onComplete.run();
@@ -173,11 +226,22 @@ public class ChapterIntroComponent extends UIComponent {
         entity.dispose();
     }
     
+    /**
+     * Override of draw method - stage handles all drawing.
+     * 
+     * @param batch the sprite batch for rendering
+     */
     @Override
     protected void draw(SpriteBatch batch) {
         // Stage handles drawing
     }
     
+    /**
+     * Ensures proper cleanup when the component is disposed.
+     * 
+     * <p>If the introduction hasn't finished naturally, this method
+     * will complete it and clean up resources before disposing.</p>
+     */
     @Override
     public void dispose() {
         if (!finished) {

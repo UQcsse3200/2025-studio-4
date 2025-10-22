@@ -47,6 +47,7 @@ public class GameStateService {
      * 每个英雄可用皮肤列表（如需换成从 JSON 读取，也能很方便替换）
      */
     private final Map<HeroType, String[]> availableSkins = new HashMap<>();
+    private volatile boolean readyPromptFinished = false;
 
     public GameStateService() {
         logger.info("Loading GameStateService");
@@ -323,6 +324,17 @@ public class GameStateService {
         return () -> selectedHeroChangedListeners.remove(l);
     }
 
+    public void resetReadyPromptFinished() {
+        readyPromptFinished = false;
+    }
+
+    public void markReadyPromptFinished() {
+        readyPromptFinished = true;
+    }
+
+    public boolean isReadyPromptFinished() {
+        return readyPromptFinished;
+    }
     /**
      * Sets the current map ID
      * @param mapId the map identifier (e.g., "MapTwo" for level 2, null for level 1)

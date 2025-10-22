@@ -116,7 +116,7 @@ public class TurretAttackComponent extends Component {
 
         // Create a new bullet entity
         final Entity bullet = ProjectileFactory.createBullet(
-                bulletTexture, firePos, vx, vy, bulletLife, dmg
+                bulletTexture, firePos, vx, vy, bulletLife, dmg, true
         );
 
         // Register the bullet entity safely on the next frame

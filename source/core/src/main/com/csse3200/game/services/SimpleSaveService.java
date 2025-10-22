@@ -13,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class SimpleSaveService {
@@ -27,6 +29,7 @@ public class SimpleSaveService {
   public SimpleSaveService(EntityService entityService) {
     this.entityService = entityService;
     this.json = new Json();
+    this.json.setTypeName(null); //removes class name in json for hashmap
     this.json.setOutputType(JsonWriter.OutputType.json);
   }
 
@@ -139,7 +142,7 @@ public class SimpleSaveService {
       data.player.pos = player.getPosition();
       var combat = player.getComponent(com.csse3200.game.components.PlayerCombatStatsComponent.class);
       if (combat != null) data.player.hp = combat.getHealth();
-      
+
       // Save all currency types
       var cm = player.getComponent(com.csse3200.game.components.currencysystem.CurrencyManagerComponent.class);
       if (cm != null) {
@@ -189,6 +192,19 @@ public class SimpleSaveService {
       }
     }
 
+    GameStateService gs = ServiceLocator.getGameStateService();
+
+    if (gs != null) {
+        data.heroUnlocks = gs.getHeroUnlocks();
+        data.stars = gs.getStars();
+        data.selectedHero = gs.getSelectedHero();
+
+        for (GameStateService.HeroType type :GameStateService.HeroType.values()) {
+            data.selectedWeaponSkins.put(type, gs.getSelectedWeaponSkin(type));
+            data.selectedSkins.put(type, gs.getSelectedSkin(type));
+        }
+    }
+
     return data;
   }
 
@@ -209,7 +225,7 @@ public class SimpleSaveService {
       player.setPosition(validPos(data.player.pos));
       var combat = player.getComponent(com.csse3200.game.components.PlayerCombatStatsComponent.class);
       if (combat != null) combat.setHealth(data.player.hp);
-      
+
       // Restore all currency types
       var cm = player.getComponent(com.csse3200.game.components.currencysystem.CurrencyManagerComponent.class);
       if (cm != null) {
@@ -217,7 +233,7 @@ public class SimpleSaveService {
         int metalScrap = data.player.metalScrap > 0 ? data.player.metalScrap : data.player.gold;
         int titaniumCore = data.player.titaniumCore;
         int neurochip = data.player.neurochip;
-        
+
         cm.setCurrencyAmount(
             com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP,
             metalScrap);
@@ -300,10 +316,10 @@ public class SimpleSaveService {
           ts.setLevel_A(t.levelA);
           ts.setLevel_B(t.levelB);
         }
-        
+
         // Register the tower base
         entityService.register(tower);
-        
+
         // IMPORTANT: Register the tower's head entity if it has one
         var towerComp = tower.getComponent(TowerComponent.class);
         if (towerComp != null && towerComp.hasHead()) {
@@ -313,7 +329,7 @@ public class SimpleSaveService {
             logger.info("Registered head entity for {} tower", type);
           }
         }
-        
+
         logger.info("Successfully restored and registered {} tower at {}", type, t.pos);
       } else {
         logger.error("Failed to create tower of type: {}", type);
@@ -369,6 +385,23 @@ public class SimpleSaveService {
         } catch (Throwable ignored) {}
       }
     }
+
+    //restore game state
+    GameStateService gs = new GameStateService();
+    ServiceLocator.registerGameStateService(gs);
+
+    gs.setStars(data.stars);
+    gs.setSelectedHero(data.selectedHero);
+
+    for (GameStateService.HeroType type :GameStateService.HeroType.values()) {
+        if (!data.heroUnlocks.isEmpty()) {
+            gs.setHeroUnlocked(type, data.heroUnlocks.get(type));
+        }
+
+        gs.setSelectedSkin(type, data.selectedSkins.get(type));
+        gs.setSelectedWeaponSkin(type, data.selectedWeaponSkins.get(type));
+    }
+
   }
 
   private Entity createEnemy(String type, Entity player, List<Entity> waypoints) {
@@ -448,13 +481,19 @@ public class SimpleSaveService {
     public List<Tower> towers = new ArrayList<>();
     public List<Enemy> enemies = new ArrayList<>();
 
-    public static class Player { 
-      public Vector2 pos; 
-      public int hp; 
-      public int gold; 
-      public int metalScrap; 
-      public int titaniumCore; 
-      public int neurochip; 
+    public Map<GameStateService.HeroType, Boolean> heroUnlocks = new HashMap<>();
+    public GameStateService.HeroType selectedHero = GameStateService.HeroType.HERO;
+    public Map<GameStateService.HeroType, String> selectedWeaponSkins = new HashMap<>();
+    public Map<GameStateService.HeroType, String> selectedSkins = new HashMap<>();
+    public int stars = 0;
+
+    public static class Player {
+      public Vector2 pos;
+      public int hp;
+      public int gold;
+      public int metalScrap;
+      public int titaniumCore;
+      public int neurochip;
     }
     public static class Tower { public String type; public Vector2 pos; public int hp; public float cd; public int levelA; public int levelB; }
     public static class Enemy { public String type; public Vector2 pos; public int hp; }

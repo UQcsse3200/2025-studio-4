@@ -95,9 +95,18 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">HeroBookDeckComponent</span>
 <span class="extends-implements">extends <a href="DeckComponent.html" title="class in com.csse3200.game.components.deck">DeckComponent</a></span></div>
-<div class="block">A book deck for heroes.
- Each hero subclass (HeroConfig / EngineerConfig / SamuraiConfig) has different fields.
- This class builds the ordered stat map directly.</div>
+<div class="block">A specialized <a href="DeckComponent.html" title="class in com.csse3200.game.components.deck"><code>DeckComponent</code></a> for representing hero data in the in-game Book UI.
+ <p>
+ Each hero subclass (<a href="../../entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs"><code>HeroConfig</code></a>, <a href="../../entities/configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs"><code>EngineerConfig</code></a>, <a href="../../entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs"><code>SamuraiConfig</code></a>)
+ defines different fields and gameplay roles. This class constructs a deck entry
+ (<code>Map&lt;StatType, String&gt;</code>) for each hero type, containing ordered key-value pairs
+ such as health, damage, cooldown, textures, and a lore description.
+ </p>
+
+ <p>
+ The deck entries created here are displayed as individual hero "pages" inside the Heroes Book,
+ allowing players to view stats, images, and brief descriptions for each hero.
+ </p></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -133,15 +142,21 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck">HeroBookDeckComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.lang.String,com.csse3200.game.entities.configs.EngineerConfig)" class="member-name-link">from</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../entities/configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs">EngineerConfig</a>&nbsp;cfg)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a deck entry for the Engineer hero.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck">HeroBookDeckComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.lang.String,com.csse3200.game.entities.configs.HeroConfig)" class="member-name-link">from</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a>&nbsp;cfg)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a deck entry for the default Hero.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck">HeroBookDeckComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#from(java.lang.String,com.csse3200.game.entities.configs.SamuraiConfig)" class="member-name-link">from</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a deck entry for the Samurai hero.</div>
+</div>
 </div>
 </div>
 </div>
@@ -170,6 +185,18 @@ loadScripts(document, 'script');</script>
 <h3>from</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck">HeroBookDeckComponent</a></span>&nbsp;<span class="element-name">from</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs">HeroConfig</a>&nbsp;cfg)</span></div>
+<div class="block">Creates a deck entry for the default Hero.
+ <p>
+ The Hero is a ranged fighter who rotates to face the player's cursor and fires projectiles
+ in that direction. Each projectile damages enemies upon contact.
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - the hero's display name</dd>
+<dd><code>cfg</code> - the <a href="../../entities/configs/HeroConfig.html" title="class in com.csse3200.game.entities.configs"><code>HeroConfig</code></a> containing hero attributes (health, attack, textures, etc.)</dd>
+<dt>Returns:</dt>
+<dd>a <a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck"><code>HeroBookDeckComponent</code></a> containing ordered hero stats and description</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -177,6 +204,19 @@ loadScripts(document, 'script');</script>
 <h3>from</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck">HeroBookDeckComponent</a></span>&nbsp;<span class="element-name">from</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../entities/configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs">EngineerConfig</a>&nbsp;cfg)</span></div>
+<div class="block">Creates a deck entry for the Engineer hero.
+ <p>
+ The Engineer acts as a tactical builder who can deploy three types of support structures:
+ a wall to slow enemies, a 4-way turret that automatically fires in all directions,
+ and a currency tower that generates extra income.
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - the hero's display name</dd>
+<dd><code>cfg</code> - the <a href="../../entities/configs/EngineerConfig.html" title="class in com.csse3200.game.entities.configs"><code>EngineerConfig</code></a> containing engineer attributes and textures</dd>
+<dt>Returns:</dt>
+<dd>a <a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck"><code>HeroBookDeckComponent</code></a> containing ordered engineer stats and description</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -184,6 +224,18 @@ loadScripts(document, 'script');</script>
 <h3>from</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck">HeroBookDeckComponent</a></span>&nbsp;<span class="element-name">from</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs">SamuraiConfig</a>&nbsp;cfg)</span></div>
+<div class="block">Creates a deck entry for the Samurai hero.
+ <p>
+ The Samurai is a close-range melee fighter with three distinct attack moves:
+ jab (1), slash (2), and spin (3), providing fast and versatile combat options.
+ </p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - the hero's display name</dd>
+<dd><code>cfg</code> - the <a href="../../entities/configs/SamuraiConfig.html" title="class in com.csse3200.game.entities.configs"><code>SamuraiConfig</code></a> containing samurai attributes and textures</dd>
+<dt>Returns:</dt>
+<dd>a <a href="HeroBookDeckComponent.html" title="class in com.csse3200.game.components.deck"><code>HeroBookDeckComponent</code></a> containing ordered samurai stats and description</dd>
+</dl>
 </section>
 </li>
 </ul>

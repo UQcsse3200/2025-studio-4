@@ -37,7 +37,7 @@ public class GruntEnemyFactory {
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final String GRUNT_WALK_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Walk.mp3";
-    private static final String GRUNT_ATTACK_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Attack.mp3";
+    private static final String GRUNT_ATTACK_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Attack.wav";
     private static final String GRUNT_DEATH_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Death.mp3";
     private static final String GRUNT_AMBIENT_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(

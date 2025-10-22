@@ -113,16 +113,16 @@ public class ForestGameArea2 extends GameArea2 {
             "sounds/Enemy Sounds/tank/Tank_Random_Noise.mp3",
             "sounds/Enemy Sounds/grunt/Grunt_Death.mp3",
             "sounds/Enemy Sounds/grunt/Grunt_Walk.mp3",
-            "sounds/Enemy Sounds/grunt/Grunt_Attack.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Attack.wav",
             "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3",
             "sounds/Enemy Sounds/drone/Drone_Death.mp3",
             "sounds/Enemy Sounds/drone/Drone_Walk.mp3",
-            "sounds/Enemy Sounds/drone/Drone_Attack.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Attack.wav",
             "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3",
             "sounds/Enemy Sounds/boss/Boss_Death.wav",
             "sounds/Enemy Sounds/boss/Boss_Walk_1.wav",
             "sounds/Enemy Sounds/boss/Boss_Walk_2.wav",
-            "sounds/Enemy Sounds/boss/Boss_Attack.mp3",
+            "sounds/Enemy Sounds/boss/Boss_lazer.wav",
             "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3",
             "sounds/Enemy Sounds/boss/Boss Music.mp3",
             "sounds/Enemy Sounds/divider/Divider_Death.mp3",
@@ -190,25 +190,24 @@ public class ForestGameArea2 extends GameArea2 {
         initializeSpawnCallbacks();
 
         waves = new ArrayList<>();
-        waves.add(new Wave(1, 0, 0, 0, 0, 1, 0, 2.0f, waypointLists));
 
-        // // Wave 1: Basic introduction
-        // waves.add(new Wave(1, 6, 6, 0, 0, 0, 0, 2.0f, waypointLists));
+        // Wave 1: Basic introduction
+        waves.add(new Wave(1, 6, 6, 0, 0, 0, 0, 2.0f, waypointLists));
 
-        // // Wave 2: Introduce speeders
-        // waves.add(new Wave(2, 16, 6, 2, 0, 0, 3, 1.5f, waypointLists));
+        // Wave 2: Introduce speeders
+        waves.add(new Wave(2, 16, 6, 2, 0, 0, 3, 1.5f, waypointLists));
 
-        // // Wave 3: More tanks and speeders
-        // waves.add(new Wave(3, 6, 6, 10, 0, 0, 4, 1.0f, waypointLists));
+        // Wave 3: More tanks and speeders
+        waves.add(new Wave(3, 6, 6, 10, 0, 0, 4, 1.0f, waypointLists));
 
-        // // Wave 4: Dividers appear
-        // waves.add(new Wave(4, 10, 10, 6, 0, 2, 3, 0.75f, waypointLists));
+        // Wave 4: Dividers appear
+        waves.add(new Wave(4, 10, 10, 6, 0, 2, 3, 0.75f, waypointLists));
 
-        // // Wave 5: Final challenge
-        // waves.add(new Wave(5, 20, 20, 10, 1, 2, 5, 0.5f, waypointLists));
+        // Wave 5: Final challenge
+        waves.add(new Wave(5, 20, 20, 10, 1, 2, 5, 0.5f, waypointLists));
 
-        // // Wave 6: Ultimate test
-        // waves.add(new Wave(6, 30, 20, 16, 2, 4, 8, 0.5f, waypointLists));
+        // Wave 6: Ultimate test
+        waves.add(new Wave(6, 30, 20, 16, 2, 4, 8, 0.5f, waypointLists));
     }
 
     private void initializeSpawnCallbacks() {

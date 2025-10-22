@@ -37,7 +37,7 @@ public class DroneEnemyFactory {
     private static final String DEFAULT_NAME = "Drone Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
     private static final String DRONE_WALK_SOUND = "sounds/Enemy Sounds/drone/Drone_Walk.mp3";
-    private static final String DRONE_ATTACK_SOUND = "sounds/Enemy Sounds/drone/Drone_Attack.mp3";
+    private static final String DRONE_ATTACK_SOUND = "sounds/Enemy Sounds/drone/Drone_Attack.wav";
     private static final String DRONE_DEATH_SOUND = "sounds/Enemy Sounds/drone/Drone_Death.mp3";
     private static final String DRONE_AMBIENT_SOUND = "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(

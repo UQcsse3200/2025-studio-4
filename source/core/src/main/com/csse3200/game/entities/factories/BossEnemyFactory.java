@@ -37,11 +37,11 @@ public class BossEnemyFactory {
     private static final String DEFAULT_NAME = "Boss Enemy";
     private static final String BOSS_WALK_SOUND_1 = "sounds/Enemy Sounds/boss/Boss_Walk_1.wav";
     private static final String BOSS_WALK_SOUND_2 = "sounds/Enemy Sounds/boss/Boss_Walk_2.wav";
-    private static final String BOSS_ATTACK_SOUND = "sounds/Enemy Sounds/boss/Boss_Attack.mp3";
+    private static final String BOSS_ATTACK_SOUND = "sounds/Enemy Sounds/boss/Boss_lazer.wav";
     private static final String BOSS_DEATH_SOUND = "sounds/Enemy Sounds/boss/Boss_Death.wav";
-    private static final String BOSS_AMBIENT_SOUND = "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3";
+    //private static final String BOSS_AMBIENT_SOUND = "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3";
     private static final String BOSS_THEME = "sounds/Enemy Sounds/boss/Boss Music.mp3";
-private static final float BOSS_WALK_1_DURATION = 0.5f; // Duration before second walk sound plays
+    private static final float BOSS_WALK_1_DURATION = 0.5f; // Duration before second walk sound plays
     private static final float DEFAULT_CLICKRADIUS = 1.2f;
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 500,
@@ -95,7 +95,7 @@ private static final float BOSS_WALK_1_DURATION = 0.5f; // Duration before secon
             ServiceLocator.getResourceService().getAsset(BOSS_WALK_SOUND_1, Sound.class),
             ServiceLocator.getResourceService().getAsset(BOSS_ATTACK_SOUND, Sound.class),
             ServiceLocator.getResourceService().getAsset(BOSS_DEATH_SOUND, Sound.class),
-            ServiceLocator.getResourceService().getAsset(BOSS_AMBIENT_SOUND, Sound.class),
+            //ServiceLocator.getResourceService().getAsset(BOSS_AMBIENT_SOUND, Sound.class),
             ServiceLocator.getResourceService().getAsset(BOSS_THEME, Sound.class) // Boss music!
         );
 

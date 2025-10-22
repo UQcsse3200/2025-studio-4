@@ -106,7 +106,7 @@ public class PlasmaWeatherController {
       strikeCooldown -= delta;
       if (strikeCooldown <= 0f) {
         queueStrike();
-        strikeCooldown = MathUtils.random(2f, 4f);
+        strikeCooldown = MathUtils.random(4f, 5f);
       }
     }
     Iterator<PendingStrike> iterator = pending.iterator();
@@ -187,18 +187,11 @@ public class PlasmaWeatherController {
 
   /**
    * Chooses a target position for plasma strikes.
-   * Prioritizes waypoint locations, falls back to random terrain positions.
-   * 
+   * Targets are selected uniformly at random from the current terrain bounds.
+   *
    * @return target position for the strike, or null if no valid position found
    */
   private Vector2 chooseTarget() {
-    List<Entity> waypoints = mapEditor != null ? mapEditor.getWaypointList() : null;
-    if (waypoints != null && !waypoints.isEmpty()) {
-      Entity chosen = waypoints.get(MathUtils.random(waypoints.size() - 1));
-      if (chosen != null && chosen.getPosition() != null) {
-        return chosen.getPosition().cpy();
-      }
-    }
     if (terrain == null) {
       return null;
     }

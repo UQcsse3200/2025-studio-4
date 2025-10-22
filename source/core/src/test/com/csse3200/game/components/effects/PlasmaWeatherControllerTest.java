@@ -81,6 +81,7 @@ class PlasmaWeatherControllerTest {
     controller.update(0.1f);
 
     assertEquals(1, spawnedEntities.size());
+    Vector2 warningPosition = spawnedEntities.get(0).getPosition();
 
     List<?> pending = getPendingStrikes();
     assertFalse(pending.isEmpty());
@@ -114,7 +115,10 @@ class PlasmaWeatherControllerTest {
       strike.update();
     }
 
-    assertEquals(new Vector2(4f, 4f), impactPosition.get());
+    Vector2 impact = impactPosition.get();
+    assertNotNull(impact);
+    assertEquals(warningPosition.x, impact.x, 1e-6f);
+    assertEquals(warningPosition.y, impact.y, 1e-6f);
   }
 
   @Test
@@ -142,7 +146,7 @@ class PlasmaWeatherControllerTest {
     controller.update(0.1f);
 
     float cooldown = getFloatField(controller, "strikeCooldown");
-    assertTrue(cooldown >= 2f && cooldown <= 4f, "Cooldown should randomise between 2 and 4 seconds");
+    assertTrue(cooldown >= 4f && cooldown <= 5f, "Cooldown should randomise between 4 and 5 seconds");
   }
 
   @Test

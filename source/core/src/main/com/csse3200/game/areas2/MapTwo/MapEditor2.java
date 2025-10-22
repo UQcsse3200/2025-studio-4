@@ -67,7 +67,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             int regionH = Math.min(tileH, keypointTexture.getHeight());
             TextureRegion region = new TextureRegion(keypointTexture, 0, 0, regionW, regionH);
             keypointTile = new StaticTiledMapTile(region);
-            System.out.println("✅ path_keypoint.png tile initialized successfully");
+            System.out.println("✅?path_keypoint.png tile initialized successfully");
         } catch (Exception e) {
             System.out.println("⚠️ path_keypoint.png tile initialization failed: " + e.getMessage());
             keypointTile = null;
@@ -89,7 +89,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             int regionH = Math.min(tileH, snowTexture.getHeight());
             TextureRegion region = new TextureRegion(snowTexture, 0, 0, regionW, regionH);
             snowTile = new StaticTiledMapTile(region);
-            System.out.println("✅ snow.png tile initialized successfully");
+            System.out.println("✅?snow.png tile initialized successfully");
         } catch (Exception e) {
             System.out.println("⚠️ snow.png tile initialization failed: " + e.getMessage());
             snowTile = null;
@@ -111,7 +111,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             int regionH = Math.min(tileH, pathTexture.getHeight());
             TextureRegion region = new TextureRegion(pathTexture, 0, 0, regionW, regionH);
             pathTile = new StaticTiledMapTile(region);
-            System.out.println("✅ path.png tile initialized successfully");
+            System.out.println("✅?path.png tile initialized successfully");
         } catch (Exception e) {
             System.out.println("⚠️ path.png tile initialization failed: " + e.getMessage());
             pathTile = null;
@@ -143,7 +143,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
         TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);
         pathLayer.setOpacity(Math.max(0.0f, Math.min(1.0f, opacity)));
-        System.out.println("✅ Path layer opacity set to: " + opacity);
+        System.out.println("✅?Path layer opacity set to: " + opacity);
     }
 
     /** Automatically generate enemy paths自动生成敌人路径 */
@@ -162,6 +162,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(5, 3));
         keyWaypoints.add(new GridPoint2(5, 4));
         keyWaypoints.add(new GridPoint2(5, 5));
+        keyWaypoints.add(new GridPoint2(5, 6));
         keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
         keyWaypoints.add(new GridPoint2(7, 10));
         keyWaypoints.add(new GridPoint2(8, 10));
@@ -169,6 +170,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
+        keyWaypoints.add(new GridPoint2(14, 25));
+        keyWaypoints.add(new GridPoint2(13, 25));
         keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
         keyWaypoints.add(new GridPoint2(5, 38));    // End - extended past base to ensure enemies reach it
 
@@ -177,20 +180,40 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints2.add(new GridPoint2(33, 11));   // 新坐标4
         keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
+        keyWaypoints2.add(new GridPoint2(27, 27));
+        keyWaypoints2.add(new GridPoint2(26, 27));
+        keyWaypoints2.add(new GridPoint2(25, 27));
+        keyWaypoints2.add(new GridPoint2(24, 27));
+        keyWaypoints2.add(new GridPoint2(23, 27));
+        keyWaypoints2.add(new GridPoint2(22, 27));
+        keyWaypoints2.add(new GridPoint2(21, 27));
+        keyWaypoints2.add(new GridPoint2(20, 27));
+        keyWaypoints2.add(new GridPoint2(19, 27));
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
+        keyWaypoints2.add(new GridPoint2(14, 25));
+        keyWaypoints2.add(new GridPoint2(13, 25));
         keyWaypoints2.add(new GridPoint2(5, 25));    // Fourth waypoint
         keyWaypoints2.add(new GridPoint2(5, 38));    // End
 
-        Map<String, Float> speedModifiers = Map.of(
-            "5,2", 0.5f,
-            "5,3", 0.5f,
-            "5,4", 0.5f,
-            "5,5", 0.5f,
-            "7,10", 0.5f,
-            "8,10", 0.5f,
-            "9,10", 0.5f,
-            "10,10", 0.5f
+        Map<String, Float> speedModifiers = Map.ofEntries(
+            Map.entry("5,2", 0.5f),
+            Map.entry("5,3", 0.5f),
+            Map.entry("5,4", 0.5f),
+            Map.entry("5,5", 0.5f),
+            Map.entry("5,6", 0.5f),
+            Map.entry("13,25", 0.5f),
+            Map.entry("14,25", 0.5f),
+            Map.entry("15,25", 0.5f),
+            Map.entry("19,27", 0.5f),
+            Map.entry("20,27", 0.5f),
+            Map.entry("21,27", 0.5f),
+            Map.entry("22,27", 0.5f),
+            Map.entry("23,27", 0.5f),
+            Map.entry("24,27", 0.5f),
+            Map.entry("25,27", 0.5f),
+            Map.entry("26,27", 0.5f),
+            Map.entry("27,27", 0.5f)
         );
 
         // Mark key path points标记关键路径点
@@ -210,16 +233,23 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
 
         // Mark keyWaypoints2 points标记第二组关键路径点
         for (GridPoint2 wp : keyWaypoints2) {
+            String key = wp.x + "," + wp.y;
+            Float modifier = speedModifiers.get(key);
             markKeypoint(wp);
             Entity waypoint = new Entity();
-            waypoint.setPosition(wp.x/2, wp.y/2);
+            waypoint.setPosition(wp.x / 2f, wp.y / 2f);
+            if (modifier != null) {
+                waypoint.addComponent(new SpeedWaypointComponent(modifier));
+                slowZoneTiles.add(new GridPoint2(wp));
+            }
             waypointList2.add(waypoint);
         }
+
 
         // Connect waypoints with path tiles连接关键点之间的路径
         connectWaypointsWithPath();
         
-        // Connect keyWaypoints2 with path tiles连接第二组关键点之间的路径
+        // Connect keyWaypoints2 with path tiles连接第二组关键点之间的路径?
         connectWaypoints2WithPath();
         
         // 重新标记关键点，确保它们不被路径瓦片覆盖
@@ -281,8 +311,8 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         }
 
        // generatePlaceableAreas();
-        System.out.println("✅ Key path points generated, number=" + keyWaypoints.size());
-        System.out.println("✅ Snow coordinates number=" + snowCoords.size());
+        System.out.println("✅?Key path points generated, number=" + keyWaypoints.size());
+        System.out.println("✅?Snow coordinates number=" + snowCoords.size());
     }
 
     /** Mark key path points标记关键路径点 */
@@ -302,7 +332,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
     private void connectWaypointsWithPath() {
         if (keyWaypoints.size() < 2) return;
         
-        System.out.println("🛤️ Connecting waypoints with path tiles...");
+        System.out.println("🛤️Connecting waypoints with path tiles...");
         
         // 连接相邻的关键点
         for (int i = 0; i < keyWaypoints.size() - 1; i++) {
@@ -315,14 +345,14 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             generatePathBetweenPoints(start, end);
         }
         
-        System.out.println("✅ Path connection completed. Total path tiles: " + pathTiles.size());
+        System.out.println("✅Path connection completed. Total path tiles: " + pathTiles.size());
     }
 
     /** Connect keyWaypoints2 with path tiles and mark them as invalid for placement连接第二组关键点之间的路径并标记为不可放置 */
     private void connectWaypoints2WithPath() {
         if (keyWaypoints2.size() < 2) return;
         
-        System.out.println("🛤️ Connecting keyWaypoints2 with path tiles...");
+        System.out.println("🛤️Connecting keyWaypoints2 with path tiles...");
         
         // 连接相邻的关键点
         for (int i = 0; i < keyWaypoints2.size() - 1; i++) {
@@ -332,10 +362,11 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             System.out.println("🔗 Connecting keyWaypoints2 " + i + " (" + start.x + "," + start.y + ") to keyWaypoints2 " + (i+1) + " (" + end.x + "," + end.y + ")");
             
             // 生成两点之间的直线路径
+
             generatePathBetweenPoints(start, end);
         }
-        
-        System.out.println("✅ keyWaypoints2 Path connection completed. Total path tiles: " + pathTiles.size());
+
+        System.out.println("✅KeyWaypoints2 Path connection completed. Total path tiles: " + pathTiles.size());
     }
 
     /** Generate path tiles between two points生成两点之间的路径瓦片 */
@@ -379,7 +410,7 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         
         // 避免重复标记
         if (pathTiles.containsKey(key)) return;
-        
+
         // 检查是否是关键点，如果是关键点则跳过路径瓦片显示
         boolean isKeypoint = false;
         for (GridPoint2 wp : keyWaypoints) {
@@ -398,13 +429,13 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             }
         }
         
-        // 添加到路径瓦片记录
+        // 添加到路径瓦片记录?
         pathTiles.put(key, pos);
         
-        // 添加到不可放置区域
+        // 添加到不可放置区域?
         invalidTiles.put(key, pos);
         
-        // 在地图上显示路径瓦片（但不在关键点上显示）
+        // 在地图上显示路径瓦片（但不在关键点上显示)
         if (pathTile != null && !isKeypoint) {
             TiledMapTileLayer baseLayer = (TiledMapTileLayer) terrain.getMap().getLayers().get(0);
             TiledMapTileLayer pathLayer = getOrCreatePathLayer(baseLayer);

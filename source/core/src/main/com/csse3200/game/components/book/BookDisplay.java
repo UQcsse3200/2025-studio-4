@@ -178,7 +178,7 @@ public class BookDisplay extends UIComponent {
 
         int imagesPerRow = 4;
         float padLeftFactor = 0.16f;
-        if (decks.size() <= 8) {
+        if (decks.size() <= 6) {
             imagesPerRow = 2;
             padLeftFactor = 0.2f;
         } else if (decks.size() <= 15) {

@@ -24,8 +24,8 @@ import com.csse3200.game.services.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VictoryScreen implements Screen {
-    private static final Logger logger = LoggerFactory.getLogger(VictoryScreen.class);
+public class DefeatScreen implements Screen {
+    private static final Logger logger = LoggerFactory.getLogger(DefeatScreen.class);
     
     private final GdxGame game;
     private Stage stage;
@@ -34,12 +34,12 @@ public class VictoryScreen implements Screen {
     private Skin skin;
     private String currentMapId;
     
-    private enum VictoryStage {
+    private enum DefeatStage {
         SCROLLING_TEXT,
-        VICTORY_DISPLAY
+        DEFEAT_DISPLAY
     }
     
-    private VictoryStage currentStage = VictoryStage.SCROLLING_TEXT;
+    private DefeatStage currentStage = DefeatStage.SCROLLING_TEXT;
     
     private Label scrollLabel;
     private BitmapFont scrollFont;
@@ -55,22 +55,21 @@ public class VictoryScreen implements Screen {
     
     private Image backgroundImage;
     private TextButton mainMenuButton;
-    private TextButton nextMapButton;
-    private TextButton exitGameButton;
+    private TextButton restartButton;
     private Table mainTable;
     private Table buttonTable;
     
     private boolean buttonsShown = false;
     
-    public VictoryScreen(GdxGame game) {
+    public DefeatScreen(GdxGame game) {
         this(game, null);
     }
     
-    public VictoryScreen(GdxGame game, String mapId) {
+    public DefeatScreen(GdxGame game, String mapId) {
         this.game = game;
         this.currentMapId = mapId;
         initializeServices();
-        setupVictoryScreen();
+        setupDefeatScreen();
         submitCurrentScore();
     }
     
@@ -83,13 +82,13 @@ public class VictoryScreen implements Screen {
         }
     }
     
-    private void setupVictoryScreen() {
+    private void setupDefeatScreen() {
         stage = new Stage(new ScreenViewport());
         batch = new SpriteBatch();
         
         try {
             skin = new Skin(Gdx.files.internal("flat-earth/skin/flat-earth-ui.json"));
-            logger.info("Successfully loaded flat-earth skin for victory screen");
+            logger.info("Successfully loaded flat-earth skin for defeat screen");
         } catch (Exception e) {
             logger.warn("Could not load flat-earth skin, using default skin: " + e.getMessage());
             skin = new Skin();
@@ -120,7 +119,7 @@ public class VictoryScreen implements Screen {
         }
         
         String[] textures = {
-            "images/Game_Victory.png",
+            "images/Game_Over.png",
             "images/Main_Menu_Button_Background.png",
             "images/Main_Game_Button.png"
         };
@@ -129,35 +128,32 @@ public class VictoryScreen implements Screen {
             resourceService.loadTextures(textures);
             resourceService.loadAll();
         } catch (Exception e) {
-            logger.error("Failed to load victory screen assets", e);
+            logger.error("Failed to load defeat screen assets", e);
         }
     }
     
     private void createScrollingText() {
-        String mapName = getMapName();
         String scrollText = currentMapId == null ? 
-            // Map 1 Victory
-            "VICTORY: The Icebox has fallen silent.\n" +
-            "The snow settles over the shattered husks of machines.\n" +
-            "Your final spell still glows faintly, weaving warmth into the frostbitten air.\n\n" +
-            "The frozen plains begin to thaw.\n" +
-            "The first sunlight in years breaks through the clouds,\n" +
-            "reflecting on the fragments of metal and ice — a fragile peace born from chaos.\n\n" +
-            "The path to Ascent now lies open.\n" +
-            "The war has only just begun." :
-            // Map 2 Victory
-            "VICTORY: The city of Ascent lies in silence.\n" +
-            "The Machine Core collapses, its light fading into dust.\n" +
-            "You raise your hand — the last ember of human magic burning against the steel horizon.\n\n" +
-            "For the first time in centuries, the world breathes.\n\n" +
-            "The war is over… but the story of mankind begins anew.";
+            // Map 1 Defeat
+            "DEFEAT: The frost reclaims everything.\n" +
+            "Your magic fades beneath the endless blizzard.\n" +
+            "The machines rise again, their eyes burning like frozen stars.\n\n" +
+            "The light fades.\n\n" +
+            "The snow covers the ruins, burying both man and machine alike.\n" +
+            "In the silence, only the wind remembers your name." :
+            // Map 2 Defeat
+            "DEFEAT: The city falls into the void.\n" +
+            "Your last spell fades before the flood of machines.\n" +
+            "Cold light devours the sky.\n\n" +
+            "Humanity's flame flickers… and vanishes into the endless hum of circuits.\n\n" +
+            "Yet somewhere, deep beneath the ruins, a faint heartbeat still remains.";
         
         scrollFont = new BitmapFont();
         scrollFont.getData().setScale(1.6f);
         
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = scrollFont;
-        labelStyle.fontColor = Color.WHITE;
+        labelStyle.fontColor = Color.RED;
         
         scrollLabel = new Label(scrollText, labelStyle);
         scrollLabel.setAlignment(Align.center);
@@ -215,7 +211,7 @@ public class VictoryScreen implements Screen {
                 clickCount++;
                 if (clickCount >= 2) {
                     logger.info("Double click detected, skipping scrolling text");
-                    skipToVictoryDisplay();
+                    skipToDefeatDisplay();
                 }
             } else {
                 clickCount = 1;
@@ -232,29 +228,29 @@ public class VictoryScreen implements Screen {
         scrollLabel.addAction(Actions.sequence(
             Actions.delay(8f),  // Increased from 3s to 8s to let players read the ending text
             Actions.run(() -> {
-                logger.info("Transitioning to victory display after centered pause");
-                skipToVictoryDisplay();
+                logger.info("Transitioning to defeat display after centered pause");
+                skipToDefeatDisplay();
             })
         ));
     }
     
-    private void skipToVictoryDisplay() {
+    private void skipToDefeatDisplay() {
         if (scrollTextFinished) return;
         scrollTextFinished = true;
         if (scrollLabel != null) {
             scrollLabel.remove();
         }
-        currentStage = VictoryStage.VICTORY_DISPLAY;
-        createVictoryDisplay();
+        currentStage = DefeatStage.DEFEAT_DISPLAY;
+        createDefeatDisplay();
     }
     
-    private void createVictoryDisplay() {
+    private void createDefeatDisplay() {
         timeElapsed = 0f;
         
         ResourceService resourceService = ServiceLocator.getResourceService();
         if (resourceService != null) {
             backgroundImage = new Image(resourceService
-                .getAsset("images/Game_Victory.png", Texture.class));
+                .getAsset("images/Game_Over.png", Texture.class));
             backgroundImage.setFillParent(true);
             backgroundImage.addAction(Actions.alpha(0f));
             stage.addActor(backgroundImage);
@@ -273,6 +269,17 @@ public class VictoryScreen implements Screen {
     }
     
     private void createButtons() {
+        restartButton = new TextButton("Restart", createButtonStyle());
+        restartButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
+                logger.info("Restart button clicked");
+                // Restart the same map
+                game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, currentMapId);
+            }
+        });
+        restartButton.addAction(Actions.alpha(0f));
+        
         mainMenuButton = new TextButton("Main Menu", createButtonStyle());
         mainMenuButton.addListener(new ChangeListener() {
             @Override
@@ -283,33 +290,8 @@ public class VictoryScreen implements Screen {
         });
         mainMenuButton.addAction(Actions.alpha(0f));
         
-        if (currentMapId == null) {
-            nextMapButton = new TextButton("Next Map", createButtonStyle());
-            nextMapButton.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-                    logger.info("Next Map button clicked - transitioning to Map Two");
-                    game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, "MapTwo");
-                }
-            });
-            nextMapButton.addAction(Actions.alpha(0f));
-        }
-        
-        exitGameButton = new TextButton("Exit Game", createButtonStyle());
-        exitGameButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-                logger.info("Exit Game button clicked");
-                Gdx.app.exit();
-            }
-        });
-        exitGameButton.addAction(Actions.alpha(0f));
-        
+        buttonTable.add(restartButton).size(200f, 60f).pad(15f);
         buttonTable.add(mainMenuButton).size(200f, 60f).pad(15f);
-        if (currentMapId == null) {
-            buttonTable.add(nextMapButton).size(200f, 60f).pad(15f);
-        }
-        buttonTable.add(exitGameButton).size(200f, 60f).pad(15f);
     }
     
     private TextButton.TextButtonStyle createButtonStyle() {
@@ -342,7 +324,7 @@ public class VictoryScreen implements Screen {
     
     @Override
     public void show() {
-        logger.info("Showing victory screen");
+        logger.info("Showing defeat screen");
         Gdx.input.setInputProcessor(stage);
         submitCurrentScore();
     }
@@ -352,34 +334,22 @@ public class VictoryScreen implements Screen {
         timeElapsed += delta;
         ScreenUtils.clear(0, 0, 0, 1);
         
-        if (currentStage == VictoryStage.SCROLLING_TEXT) {
+        if (currentStage == DefeatStage.SCROLLING_TEXT) {
             updateScrollingText(delta);
-        } else if (currentStage == VictoryStage.VICTORY_DISPLAY) {
-            updateVictoryAnimation(delta);
+        } else if (currentStage == DefeatStage.DEFEAT_DISPLAY) {
+            updateDefeatAnimation(delta);
         }
         
         stage.act(delta);
         stage.draw();
     }
     
-    private void updateVictoryAnimation(float delta) {
+    private void updateDefeatAnimation(float delta) {
         if (timeElapsed >= 2.0f && !buttonsShown) {
+            restartButton.addAction(Actions.fadeIn(2.0f));
             mainMenuButton.addAction(Actions.fadeIn(2.0f));
-            if (nextMapButton != null) {
-                nextMapButton.addAction(Actions.fadeIn(2.0f));
-            }
-            exitGameButton.addAction(Actions.fadeIn(2.0f));
             buttonsShown = true;
         }
-    }
-    
-    private String getMapName() {
-        if (currentMapId == null) {
-            return "Forest Demo Sector";
-        } else if ("MapTwo".equalsIgnoreCase(currentMapId)) {
-            return "Map Two Sector";
-        }
-        return "Unknown Sector";
     }
     
     @Override
@@ -389,22 +359,22 @@ public class VictoryScreen implements Screen {
     
     @Override
     public void pause() {
-        logger.info("Victory screen paused");
+        logger.info("Defeat screen paused");
     }
     
     @Override
     public void resume() {
-        logger.info("Victory screen resumed");
+        logger.info("Defeat screen resumed");
     }
     
     @Override
     public void hide() {
-        logger.info("Victory screen hidden");
+        logger.info("Defeat screen hidden");
     }
     
     @Override
     public void dispose() {
-        logger.debug("Disposing victory screen");
+        logger.debug("Disposing defeat screen");
         if (stage != null) {
             stage.dispose();
         }
@@ -426,17 +396,17 @@ public class VictoryScreen implements Screen {
                 return;
             }
             
-            boolean submitted = sessionManager.submitScoreIfNotSubmitted(true);
+            boolean submitted = sessionManager.submitScoreIfNotSubmitted(false);
             
             if (submitted) {
-                logger.info("Successfully submitted victory score to leaderboard");
+                logger.info("Successfully submitted defeat score to leaderboard");
             } else {
                 logger.info("Score already submitted for this session, skipping duplicate submission");
             }
             
         } catch (Exception e) {
-            logger.error("Failed to submit victory score to leaderboard", e);
+            logger.error("Failed to submit defeat score to leaderboard", e);
         }
     }
-    
 }
+

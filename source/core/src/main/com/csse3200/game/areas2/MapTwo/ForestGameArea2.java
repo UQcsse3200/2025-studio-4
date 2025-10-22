@@ -653,7 +653,8 @@ public class ForestGameArea2 extends GameArea2 {
         }
         java.util.List<GridPoint2> manualTiles = java.util.Arrays.asList(
                 new GridPoint2(18, 27),
-                new GridPoint2(28, 27)
+                new GridPoint2(28, 27),
+                new GridPoint2(15, 14)
         );
         for (GridPoint2 tile : manualTiles) {
             String key = tile.x + "," + tile.y;

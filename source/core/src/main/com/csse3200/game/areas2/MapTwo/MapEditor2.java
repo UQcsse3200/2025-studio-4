@@ -164,9 +164,6 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(5, 5));
         keyWaypoints.add(new GridPoint2(5, 6));
         keyWaypoints.add(new GridPoint2(5, 10));     // First waypoint
-        keyWaypoints.add(new GridPoint2(7, 10));
-        keyWaypoints.add(new GridPoint2(8, 10));
-        keyWaypoints.add(new GridPoint2(9, 10));
         keyWaypoints.add(new GridPoint2(10, 10));    // Second waypoint
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
@@ -180,15 +177,10 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints2.add(new GridPoint2(33, 11));   // 新坐标4
         keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
-        keyWaypoints2.add(new GridPoint2(27, 27));
-        keyWaypoints2.add(new GridPoint2(26, 27));
-        keyWaypoints2.add(new GridPoint2(25, 27));
         keyWaypoints2.add(new GridPoint2(24, 27));
         keyWaypoints2.add(new GridPoint2(23, 27));
         keyWaypoints2.add(new GridPoint2(22, 27));
         keyWaypoints2.add(new GridPoint2(21, 27));
-        keyWaypoints2.add(new GridPoint2(20, 27));
-        keyWaypoints2.add(new GridPoint2(19, 27));
         keyWaypoints2.add(new GridPoint2(18, 27));   // 新坐标1
         keyWaypoints2.add(new GridPoint2(15, 25));   // Fifth waypoint
         keyWaypoints2.add(new GridPoint2(14, 25));
@@ -205,15 +197,10 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             Map.entry("13,25", 0.5f),
             Map.entry("14,25", 0.5f),
             Map.entry("15,25", 0.5f),
-            Map.entry("19,27", 0.5f),
-            Map.entry("20,27", 0.5f),
             Map.entry("21,27", 0.5f),
             Map.entry("22,27", 0.5f),
             Map.entry("23,27", 0.5f),
-            Map.entry("24,27", 0.5f),
-            Map.entry("25,27", 0.5f),
-            Map.entry("26,27", 0.5f),
-            Map.entry("27,27", 0.5f)
+            Map.entry("24,27", 0.5f)
         );
 
         // Mark key path points标记关键路径点

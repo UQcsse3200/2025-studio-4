@@ -1,59 +1,39 @@
 package com.csse3200.game.components.projectile;
 
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.utils.Array;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
-import com.csse3200.game.physics.components.PhysicsComponent;
-import com.csse3200.game.physics.components.HitboxComponent;
 import com.csse3200.game.physics.PhysicsLayer;
-import com.csse3200.game.rendering.TextureRenderComponent;
+import com.csse3200.game.physics.components.HitboxComponent;
+import com.csse3200.game.physics.components.PhysicsComponent;
+import com.csse3200.game.rendering.RotatingAnimationRenderComponent;
 import com.csse3200.game.services.ServiceLocator;
-import com.badlogic.gdx.math.MathUtils;
 
-/**
- * Periodically searches for the nearest active tower projectile within range and fires
- * an interceptor toward it. Interception and destruction are handled by
- * InterceptOnHitComponent on the interceptor via radius overlap checks.
- * <p>
- * Uses EntityService pooling with key "interceptor:&lt;spritePath&gt;" and
- * ProjectileComponent.activate()/deactivate() to reuse entities efficiently.
- */
-public class
-AntiProjectileShooterComponent extends Component {
+public class AntiProjectileShooterComponent extends Component {
     private final float range;
     private final float cooldown;
     private final float speed;
     private final float lifetime;
-    private final String spritePath;
-
+    private final String atlasPath;
+    private final String animationName;
     private float timer = 0f;
 
-    /**
-     * Create a shooter that launches interceptors on a cooldown toward hostile projectiles.
-     * @param range      maximum search radius in world units
-     * @param cooldown   seconds between interceptor launches
-     * @param speed      interceptor linear speed in world units per second
-     * @param lifetime   interceptor lifetime in seconds before auto-despawn
-     * @param spritePath texture path used for the interceptor
-     */
-    public AntiProjectileShooterComponent(float range, float cooldown, float speed, float lifetime, String spritePath) {
+    public AntiProjectileShooterComponent(float range, float cooldown, float speed,
+                                          float lifetime, String atlasPath,
+                                          String animationName) {
         this.range = range;
         this.cooldown = cooldown;
         this.speed = speed;
         this.lifetime = lifetime;
-        this.spritePath = spritePath;
-
-        // Add random offset up to 0.5 seconds to prevent all tanks firing simultaneously
-        this.timer = -MathUtils.random(0f, 0.5f);
+        this.atlasPath = atlasPath;
+        this.animationName = animationName;
     }
 
-    /**
-     * Advance the internal timer and, when off cooldown, acquire a target and fire
-     * an interceptor. No-ops if required services are unavailable.
-     */
     @Override
     public void update() {
         var time = ServiceLocator.getTimeSource();
@@ -66,21 +46,13 @@ AntiProjectileShooterComponent extends Component {
         timer += time.getDeltaTime();
         if (timer < cooldown) return;
 
-        // Only reset timer when we actually find a target and fire
         Entity target = findNearestTowerProjectile();
-        if (target == null) return;  // Keep timer running if no target found
+        if (target == null) return;
 
-        // Reset timer only when firing
         timer = 0f;
         fireInterceptorToward(target);
     }
 
-    /**
-     * Scan registered entities for the closest valid tower projectile in range.
-     * Only targets projectiles to the right of the tank (x >= tank.x) since turret faces right.
-     * Interceptor-tagged entities and inactive projectiles are ignored.
-     * @return nearest target or null if none found within range
-     */
     private Entity findNearestTowerProjectile() {
         EntityService es = ServiceLocator.getEntityService();
         if (es == null) return null;
@@ -91,12 +63,11 @@ AntiProjectileShooterComponent extends Component {
         for (int i = 0; i < all.size; i++) {
             Entity e = all.get(i);
             ProjectileComponent pc = e.getComponent(ProjectileComponent.class);
-            if (pc == null || pc.isInactive()) continue; // only live projectiles
-            if (e.getComponent(InterceptorTagComponent.class) != null) continue; // skip own interceptors
+            if (pc == null || pc.isInactive()) continue;
+            if (e.getComponent(InterceptorTagComponent.class) != null) continue;
 
-            // Only target projectiles to the right of the tank (turret faces right)
             Vector2 targetPos = e.getPosition();
-            if (targetPos.x < myPos.x) continue; // skip projectiles to the left
+            // Removed directional restriction - tanks can now shoot in any direction
 
             float d2 = targetPos.dst2(myPos);
             if (d2 <= bestD2) { bestD2 = d2; best = e; }
@@ -104,13 +75,7 @@ AntiProjectileShooterComponent extends Component {
         return best;
     }
 
-    /**
-     * Fire interceptor toward target. Creates a properly configured interceptor with
-     * Box2D physics components and pooling support for memory safety.
-     * @param target projectile entity to intercept
-     */
     private void fireInterceptorToward(Entity target) {
-        // Trigger attack animation on the tank
         entity.getEvents().trigger("attackStart");
 
         Vector2 tankCenter = entity.getPosition();
@@ -119,39 +84,48 @@ AntiProjectileShooterComponent extends Component {
         if (dir.isZero()) return;
         dir.nor();
 
-        // Calculate turret offset (turret barrel is on the right and upper portion of the tank)
         float turretOffsetX = 1f;
         float turretOffsetY = 0.7f;
+        Vector2 from = tankCenter.cpy().add(turretOffsetX, turretOffsetY);
 
-        Vector2 turretOffset = new Vector2(turretOffsetX, turretOffsetY);
-        Vector2 from = tankCenter.cpy().add(turretOffset);
-
-        // Create interceptor with proper Box2D components for safe disposal
         Entity interceptor = new Entity();
-        interceptor.addComponent(new TextureRenderComponent(spritePath));
-        interceptor.setScale(0.5f, 0.5f); // radius for collision overlap
 
-        // Add physics component with proper body type
+        TextureAtlas atlas = ServiceLocator.getResourceService().getAsset(atlasPath, TextureAtlas.class);
+        RotatingAnimationRenderComponent arc = new RotatingAnimationRenderComponent(atlas);
+        arc.addAnimation(animationName, 0.06f, com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP);
+        arc.startAnimation(animationName);
+
+        // Calculate the angle to rotate the fireball to face its direction of travel
+        // The spritesheet has fireballs facing southeast (~-45 degrees or 315 degrees)
+        float angleRad = (float) Math.atan2(dir.y, dir.x);
+        float angleDeg = (float) Math.toDegrees(angleRad);
+
+        // Set base rotation to 0 so our rotation is absolute, not relative to -90
+        arc.setBaseRotation(0f);
+        // Adjust for the southeast-facing sprite (southeast is -45 degrees, so we add 45 to compensate)
+        arc.setRotation(angleDeg + 45f);
+
+        interceptor.addComponent(arc);
+
+        interceptor.setScale(1.2f, 1.2f);
+
+
         PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);
         interceptor.addComponent(physics);
 
-        // Add hitbox component for proper collision detection
         HitboxComponent hitbox = new HitboxComponent();
         hitbox.setLayer(PhysicsLayer.PROJECTILE);
         hitbox.setSensor(true);
         interceptor.addComponent(hitbox);
 
-        // Add ProjectileComponent with pooling support
-        String poolKey = "interceptor:" + spritePath;
+        String poolKey = "interceptor:" + atlasPath + "#" + animationName;
         ProjectileComponent projectileComp = new ProjectileComponent(dir.x * speed, dir.y * speed, lifetime);
         projectileComp.setPoolKey(poolKey);
         interceptor.addComponent(projectileComp);
 
-        // Add interceptor-specific components
         interceptor.addComponent(new InterceptorTagComponent());
         interceptor.addComponent(new InterceptOnHitComponent());
 
-        // Set position and register
         interceptor.setPosition(from);
 
         EntityService es = ServiceLocator.getEntityService();

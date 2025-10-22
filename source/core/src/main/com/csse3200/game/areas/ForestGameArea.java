@@ -93,7 +93,7 @@ public class ForestGameArea extends GameArea {
 
     private static final String[] forestTextureAtlases = {
             "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas",
-            "images/TANK_NEW_ATLAS.atlas", "images/boss_basic_spritesheet.atlas"
+            "images/TANK_NEW_ATLAS.atlas", "images/boss_basic_spritesheet.atlas", "images/PINKTANK_4x4_new.atlas"
     };
 
     private static final String[] forestSounds = {

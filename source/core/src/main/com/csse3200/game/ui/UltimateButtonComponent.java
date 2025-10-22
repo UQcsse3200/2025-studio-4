@@ -21,21 +21,28 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * ULT 按钮（带成本+币种图标，支持倒计时）。
- * - createUltimateButton(hero) 兼容旧用法（不显示成本与图标）
- * - createUltimateButton(hero, cost, currency) 显示 "ULT (cost)" + 币种图标
- * 图标文件放在 assets/images/currency/*.png
+ * Ultimate button (shows cost + currency icon, supports cooldown).
+ *
+ * <ul>
+ *   <li>{@code createUltimateButton(hero)} — legacy usage (no cost/icon label)</li>
+ *   <li>{@code createUltimateButton(hero, cost, currency)} — displays {@code "ULT (cost)"} with a currency icon</li>
+ * </ul>
+ * <p>
+ * Currency icon images are expected under {@code assets/images/currency/*.png}.
  */
 public class UltimateButtonComponent extends Component {
 
-    /** 兼容旧的（不带成本/图标） */
+    /**
+     * Legacy variant (no cost/currency icon).
+     */
     public static TextButton createUltimateButton(Entity heroEntity) {
         Skin skin = new Skin();
         skin.add("default-font", SimpleUI.font(), BitmapFont.class);
         skin.add("default", SimpleUI.buttonStyle(), TextButton.TextButtonStyle.class);
         TextButton btn = new TextButton("ULT (?)", skin);
         btn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 heroEntity.getEvents().trigger("ultimate.request");
             }
         });
@@ -54,12 +61,14 @@ public class UltimateButtonComponent extends Component {
         return btn;
     }
 
-    /** 新：带成本与币种图标的按钮（推荐） */
+    /**
+     * New: button with cost and currency icon (recommended).
+     */
     public static ImageTextButton createUltimateButton(Entity heroEntity, int cost, CurrencyType currencyType) {
         Skin skin = new Skin();
         skin.add("default-font", SimpleUI.font(), BitmapFont.class);
 
-        // 继承你们的基础按钮样式
+        // Inherit your base button style
         TextButton.TextButtonStyle base = SimpleUI.buttonStyle();
         skin.add("base", base);
 
@@ -73,24 +82,25 @@ public class UltimateButtonComponent extends Component {
         style.overFontColor = base.overFontColor;
         style.downFontColor = base.downFontColor;
 
-        // 币种图标
+        // Currency icon
         style.imageUp = currencyIcon(currencyType);
 
         final String defaultText = buildDefaultText(cost);
         final ImageTextButton btn = new ImageTextButton(defaultText, style);
 
-        // 图标大小与间距可按需微调
+        // Adjust icon size and label spacing as needed
         btn.getImageCell().size(36f, 36f);
         btn.getLabelCell().padLeft(6f);
 
-        // 点击触发
+        // Click: request ultimate
         btn.addListener(new ClickListener() {
-            @Override public void clicked(InputEvent event, float x, float y) {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 heroEntity.getEvents().trigger("ultimate.request");
             }
         });
 
-        // 冷却状态
+        // Cooldown state
         heroEntity.getEvents().addListener("ultimate.state", (Boolean on) -> {
             boolean active = Boolean.TRUE.equals(on);
             btn.setDisabled(active);
@@ -104,7 +114,7 @@ public class UltimateButtonComponent extends Component {
             }
         });
 
-        // 冷却倒计时（只更新文字，图标不变）
+        // Cooldown countdown (update text only; icon unchanged)
         heroEntity.getEvents().addListener("ultimate.remaining", (Float sec) -> {
             if (sec == null) return;
             btn.setText(String.format("ULT %.1fs", Math.max(0f, sec)));
@@ -117,11 +127,18 @@ public class UltimateButtonComponent extends Component {
         return btn;
     }
 
+    /**
+     * Builds the default label text for the ULT button based on cost.
+     */
     private static String buildDefaultText(int cost) {
         return cost >= 0 ? "ULT (" + cost + ")" : "ULT (?)";
     }
 
-    /** 将不同币种映射为图标 Drawable（assets/images/currency/*.png） */
+    /**
+     * Maps a currency type to a {@link Drawable} icon.
+     * Attempts to fetch via {@link com.csse3200.game.services.ResourceService} if preloaded,
+     * otherwise falls back to loading directly from assets.
+     */
     private static Drawable currencyIcon(CurrencyType t) {
         String path = switch (t) {
             case METAL_SCRAP -> "images/currency/metal_scrap.png";
@@ -130,14 +147,14 @@ public class UltimateButtonComponent extends Component {
             default -> "images/currency/currency_unknown.png";
         };
 
-        // 先尝试资源服务（若你已预加载），否则直接从 assets 读取
+        // Prefer ResourceService (if already loaded), else read from assets
         var res = ServiceLocator.getResourceService();
         Texture tex = res != null ? res.getAsset(path, Texture.class) : null;
         if (tex == null) {
             try {
                 tex = new Texture(Gdx.files.internal(path));
             } catch (Exception e) {
-                // 兜底：占位方块，避免 NPE
+                // Fallback: simple placeholder to avoid NPEs
                 Pixmap pm = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
                 pm.setColor(Color.GRAY);
                 pm.fill();
@@ -148,6 +165,11 @@ public class UltimateButtonComponent extends Component {
         return new TextureRegionDrawable(new TextureRegion(tex));
     }
 
-    @Override public void create() {}
-    @Override public void dispose() {}
+    @Override
+    public void create() {
+    }
+
+    @Override
+    public void dispose() {
+    }
 }

@@ -170,7 +170,6 @@ public class EngineerSummonComponent extends Component {
             float prev = cd;
             cd = Math.max(0f, cd - dt);
 
-            // 以0.05s为步长节流广播，或从>0变为0时强制广播
             float quantPrev = (float)Math.floor(prev * 20f) / 20f;
             float quantNow  = (float)Math.floor(cd   * 20f) / 20f;
             if (quantNow != lastEmitCd || (prev > 0f && cd == 0f)) {

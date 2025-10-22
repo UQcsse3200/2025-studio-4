@@ -23,12 +23,10 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
     private Label cooldownLabel;
     private ProgressBar cooldownBar;
 
-    // 升级花费（替换父类的 costLabel）
     private Table costRow;
     private Label costTitleLabel, costNumLabel;
     private Image costIcon;
 
-    // 默认币种（避免空指针）
     private CurrencyComponent.CurrencyType defaultCurrency = CurrencyComponent.CurrencyType.METAL_SCRAP;
 
     public EngineerStatusPanelComponent(com.csse3200.game.entities.Entity hero, String heroName) {
@@ -47,11 +45,10 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
         super.create();
 
         if (costLabel != null) {
-            costLabel.remove(); // 移除父类已添加到 card 的纯文本行
+            costLabel.remove();
             costLabel = null;
         }
 
-        // 构建：Upgrade cost: [number] [icon]
         Skin skin = new Skin();
         skin.add("default", new Label.LabelStyle(SimpleUI.font(), textColor));
 
@@ -64,14 +61,12 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
         costRow = new Table();
         costRow.add(costTitleLabel).left();
         costRow.add(costNumLabel).left().padRight(6f);
-        costRow.add(costIcon).left().size(22f, 22f); // 图标显示大小，可调 22/28/32
+        costRow.add(costIcon).left().size(22f, 22f);
 
-        // 由于父类已经把 upgradeBtn/ultBtn 加进 card，这里把它们取出来再按顺序加入，保证 costRow 在前
         if (upgradeBtn != null) upgradeBtn.remove();
         if (ultBtn != null) ((Actor) ultBtn).remove();
 
         card.add(costRow).left().row();
-        // 恢复与父类一致的布局参数
         card.add(upgradeBtn)
                 .left()
                 .width(Value.percentWidth(0.45f, card))
@@ -79,7 +74,6 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 .row();
         card.add((Actor) ultBtn).left().row();
 
-        // 首次刷新（从组件读真实价格+币种）
         refreshUpgradeInfo();
     }
 
@@ -89,18 +83,17 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 com.csse3200.game.components.hero.engineer.EngineerUpgradeComponent.class);
 
 
-        if (engUp == null) { // 兜底：非工程师，走父类逻辑
+        if (engUp == null) {
             super.refreshUpgradeInfo();
             return;
         }
 
         int lvl   = engUp.getLevel();
         int maxLv = engUp.getMaxLevel();
-        int nextCost  = engUp.getNextCost(); // -1 表示无下一次（满级或异常）
+        int nextCost  = engUp.getNextCost();
 
         if (levelLabel != null) levelLabel.setText("Lv. " + lvl);
 
-        // 满级：显示 MAX LEVEL，隐藏数字与图标
         if (lvl >= maxLv || nextCost < 0) {
             if (costTitleLabel != null) {
                 costTitleLabel.setText("MAX LEVEL");
@@ -123,21 +116,16 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
             return;
         }
 
-        // 未满级：从组件读取真实的“下一次升级费用 + 币种”
         CurrencyComponent.CurrencyType nextType = defaultCurrency;
         try {
-            // 如果你已在 EngineerUpgradeComponent 实现了 getNextCurrencyType()，这里会生效；
-            // 否则保持默认币种。
             var method = engUp.getClass().getMethod("getNextCurrencyType");
             Object ret = method.invoke(engUp);
             if (ret instanceof CurrencyComponent.CurrencyType) {
                 nextType = (CurrencyComponent.CurrencyType) ret;
             }
         } catch (Throwable ignored) {
-            // 没有该方法就用默认币种
         }
 
-        // 更新 UI
         if (costTitleLabel != null) {
             costTitleLabel.setText("Upgrade cost: ");
             costTitleLabel.setColor(textColor);
@@ -217,7 +205,6 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
         });
     }
 
-    /** 根据币种返回图标 Drawable（assets/images/currency/*.png） */
     private Drawable currencyIconDrawable(CurrencyComponent.CurrencyType t) {
         String path;
         switch (t) {
@@ -229,10 +216,8 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
         Texture tex;
         try {
             tex = new Texture(Gdx.files.internal(path));
-            // 像素风清晰
             tex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         } catch (Exception e) {
-            // 兜底：占位色块，避免 NPE
             Pixmap pm = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
             pm.setColor(Color.GRAY);
             pm.fill();

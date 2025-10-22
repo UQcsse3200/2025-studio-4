@@ -19,7 +19,6 @@
   },
   "dinoTower": {
     "name": "Dino",
-    "locked": true,
     "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
     "base": {
       "level_A": 1,
@@ -183,7 +182,6 @@
   "villageshamanTower": {
     "name": "Village Shaman",
     "lore": "The Village Shaman Tower draws its strength from ancient spirits and forgotten rituals. Guided by wisdom older than time, its chants summon lightning and energy from the skies, striking down enemies with divine precision.",
-    "locked": true,
     "base": {
       "level_A": 1,
       "level_B": 1,

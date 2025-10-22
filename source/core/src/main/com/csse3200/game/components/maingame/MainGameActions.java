@@ -239,8 +239,6 @@ public class MainGameActions extends Component {
                 logger.error("Error during named save", ex);
                 entity.getEvents().trigger("showSaveError");
               }
-
-
             }
             @Override public void onCancelled() { 
               // Dialog cancelled, unpause

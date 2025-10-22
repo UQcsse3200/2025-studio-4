@@ -17,6 +17,21 @@ public class TowerStatsComponent extends Component {
     private float projectileLife = 1f;
     private String projectileTexture = "projectiles/bullet.png";
 
+    // NEW: Base stats that upgrades should set. Current stats are derived from these via multipliers.
+    private float baseDamage;
+    private float baseRange;
+    private float baseAttackCooldown;
+    private float baseProjectileSpeed;
+
+    // NEW: Cumulative permanent multipliers (from totems, etc.).
+    // For cooldown, we use a divisor (>=1 means faster; applied as baseCooldown / cooldownDivisor).
+    private float multDamage = 1f;
+    private float multRange = 1f;
+    private float multProjectileSpeed = 1f;
+    private float cooldownDivisor = 1f;
+
+    private static final float MIN_COOLDOWN = 0.001f;
+
     /**
      * Constructs a TowerStatsComponent with the given stats.
      */
@@ -24,10 +39,17 @@ public class TowerStatsComponent extends Component {
                                float projectileSpeed, float projectileLife,
                                String projectileTexture, int level_A, int level_B) {
         this.health = health;
-        this.damage = damage;
-        this.range = range;
-        this.attackCooldown = attackCooldown;
-        this.projectileSpeed = projectileSpeed;
+        // Initialize base stats and multipliers, then compute current stats
+        this.baseDamage = Math.max(0, damage);
+        this.baseRange = Math.max(0, range);
+        this.baseAttackCooldown = Math.max(0, attackCooldown);
+        this.baseProjectileSpeed = Math.max(0, projectileSpeed);
+        this.multDamage = 1f;
+        this.multRange = 1f;
+        this.multProjectileSpeed = 1f;
+        this.cooldownDivisor = 1f;
+        recomputeFromBaseMultipliers();
+
         this.projectileLife = projectileLife;
         this.projectileTexture = projectileTexture;
         this.level_A = level_A;
@@ -76,8 +98,10 @@ public class TowerStatsComponent extends Component {
         return damage;
     }
 
+    // CHANGED: Setters now set base stats and recompute current using permanent multipliers.
     public void setDamage(float damage) {
-        this.damage = Math.max(0, damage);
+        this.baseDamage = Math.max(0, damage);
+        this.damage = this.baseDamage * this.multDamage;
     }
 
     public float getRange() {
@@ -85,7 +109,8 @@ public class TowerStatsComponent extends Component {
     }
 
     public void setRange(float range) {
-        this.range = Math.max(0, range);
+        this.baseRange = Math.max(0, range);
+        this.range = this.baseRange * this.multRange;
     }
 
     public float getAttackCooldown() {
@@ -93,7 +118,8 @@ public class TowerStatsComponent extends Component {
     }
 
     public void setAttackCooldown(float cooldown) {
-        this.attackCooldown = Math.max(0, cooldown);
+        this.baseAttackCooldown = Math.max(0, cooldown);
+        this.attackCooldown = Math.max(MIN_COOLDOWN, this.baseAttackCooldown / Math.max(1f, this.cooldownDivisor));
     }
 
     public float getProjectileSpeed() {
@@ -101,7 +127,8 @@ public class TowerStatsComponent extends Component {
     }
 
     public void setProjectileSpeed(float speed) {
-        this.projectileSpeed = Math.max(0, speed);
+        this.baseProjectileSpeed = Math.max(0, speed);
+        this.projectileSpeed = this.baseProjectileSpeed * this.multProjectileSpeed;
     }
 
     public float getProjectileLife() {
@@ -140,5 +167,36 @@ public class TowerStatsComponent extends Component {
         return attackCooldown != 0f ? 1f / attackCooldown : 0f;
     }
 
+    // NEW: Apply permanent (stacking) multipliers to stats.
+    // dmgMul/rangeMul/projMul multiply those stats; cooldownDiv multiplies attack speed (divides cooldown).
+    public void applyPermanentBoostMultipliers(float dmgMul, float rangeMul, float projMul, float cooldownDiv) {
+        if (dmgMul > 0f) this.multDamage *= dmgMul;
+        if (rangeMul > 0f) this.multRange *= rangeMul;
+        if (projMul > 0f) this.multProjectileSpeed *= projMul;
+        if (cooldownDiv > 0f) this.cooldownDivisor *= cooldownDiv;
+        recomputeFromBaseMultipliers();
+    }
 
+    // NEW: Remove previously applied multipliers by dividing them back out, then recompute.
+    public void removePermanentBoostMultipliers(float dmgMul, float rangeMul, float projMul, float cooldownDiv) {
+        if (dmgMul > 0f) this.multDamage /= dmgMul;
+        if (rangeMul > 0f) this.multRange /= rangeMul;
+        if (projMul > 0f) this.multProjectileSpeed /= projMul;
+        if (cooldownDiv > 0f) this.cooldownDivisor /= cooldownDiv;
+        recomputeFromBaseMultipliers();
+    }
+
+    // NEW: Recompute current stats from base stats and cumulative multipliers.
+    public void recomputeFromBaseMultipliers() {
+        this.damage = Math.max(0f, this.baseDamage * this.multDamage);
+        this.range = Math.max(0f, this.baseRange * this.multRange);
+        this.projectileSpeed = Math.max(0f, this.baseProjectileSpeed * this.multProjectileSpeed);
+        this.attackCooldown = Math.max(MIN_COOLDOWN, this.baseAttackCooldown / Math.max(1f, this.cooldownDivisor));
+    }
+
+    // OPTIONAL: Expose base getters if needed elsewhere.
+    public float getBaseDamage() { return baseDamage; }
+    public float getBaseRange() { return baseRange; }
+    public float getBaseAttackCooldown() { return baseAttackCooldown; }
+    public float getBaseProjectileSpeed() { return baseProjectileSpeed; }
 }

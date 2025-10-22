@@ -319,9 +319,9 @@ public class TowerFactory {
                 .addComponent(new DeckComponent.TowerDeckComponent(
                         "raft", stats.damage, stats.range, stats.cooldown,
                         stats.projectileSpeed, stats.image))
-                .addComponent(new TextureRenderComponent("images/towers/floorlvl2.png"));
+                .addComponent(new TextureRenderComponent("images/towers/viking/boat.png"));
         // TEMPORARY: use bone tower atlas for now
-        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/viking/vikinglvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
+        com.badlogic.gdx.graphics.g2d.TextureAtlas cavemanAtlas = rs.getAsset("images/towers/viking/archerlvl1", com.badlogic.gdx.graphics.g2d.TextureAtlas.class);
 
         RotatingAnimationRenderComponent headAnim =
                 new RotatingAnimationRenderComponent(cavemanAtlas);
@@ -329,7 +329,6 @@ public class TowerFactory {
         headAnim.addAnimation("idle", 0.3f, Animation.PlayMode.LOOP);
         headAnim.addAnimation("fire", 0.08f, Animation.PlayMode.NORMAL);
         headAnim.startAnimation("idle");
-        headAnim.setBaseRotation(0f);
 
         base.getComponent(TowerComponent.class)
                 .withHead(head, headAnim, new com.badlogic.gdx.math.Vector2(0f, 0f), 0.01f);

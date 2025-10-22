@@ -59,7 +59,6 @@ public class MainGameScreen extends ScreenAdapter {
           "images/basement.png",
           "images/Background4.png",
           "images/Craft.png",
-          "images/re.gif",
           "images/main_game_background.png"
   };
 

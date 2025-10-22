@@ -29,7 +29,7 @@ public class BossEnemyFactory {
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
     private static final int DEFAULT_HEALTH = 300;
-    private static final int DEFAULT_DAMAGE = 20;
+    private static final int DEFAULT_DAMAGE = 50;
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.None;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.5f, 0.5f);

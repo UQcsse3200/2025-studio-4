@@ -33,8 +33,8 @@ public class SpeederEnemyFactory {
     // Default speeder configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 150;  // High health - hard to kill quickly
-    private static final int DEFAULT_DAMAGE = 45;   // TRIPLE damage to base (15 * 3)
+    private static final int DEFAULT_HEALTH = 100;  // High health - hard to kill quickly
+    private static final int DEFAULT_DAMAGE = 25;   // TRIPLE damage to base (15 * 3)
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Electricity;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.15f, 0.15f); // Starts VERY VERY slow - creeping

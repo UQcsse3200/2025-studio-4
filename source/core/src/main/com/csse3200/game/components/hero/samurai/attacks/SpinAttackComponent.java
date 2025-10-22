@@ -2,101 +2,195 @@ package com.csse3200.game.components.hero.samurai.attacks;
 
 import com.badlogic.gdx.math.Vector2;
 
+/**
+ * Spinning sword attack that emits multiple Sword Qi projectiles in batches while the hero rotates.
+ * <p>
+ * Key behaviors:
+ * <ul>
+ *   <li>Gated by global cooldown + a small per-skill debounce (mini cooldown) + a simple attack lock.</li>
+ *   <li>Rotates the sword pose over {@code duration}, optionally multiple full turns ({@code turns}).</li>
+ *   <li>Emits {@code qiSpinCount} projectiles spaced evenly by angle, batched over time via {@code emitInterval}.</li>
+ *   <li>Auto-extends {@code duration} if needed to finish all batched emissions.</li>
+ * </ul>
+ */
 public class SpinAttackComponent extends AbstractSwordAttackComponent {
-    private boolean active=false;
-    private float T=0f, duration=0.5f, extra=0.25f;
-    private float startDeg=0f, dir=+1f, turns=1f;
+    /**
+     * Whether the spin is currently running.
+     */
+    private boolean active = false;
+    /**
+     * Local timeline (seconds) from 0 → {@link #duration}.
+     */
+    private float T = 0f;
+    /**
+     * Total spin duration in seconds. May be auto-extended to finish emissions.
+     */
+    private float duration = 0.5f;
+    /**
+     * Extra outward radius during the spin (visual offset).
+     */
+    private float extra = 0.25f;
+    /**
+     * Starting facing angle (deg) captured at trigger time.
+     */
+    private float startDeg = 0f;
+    /**
+     * Spin direction: +1 = CCW, -1 = CW.
+     */
+    private float dir = +1f;
+    /**
+     * Number of full rotations to complete over {@code duration}.
+     */
+    private float turns = 1f;
 
-    private float miniCooldown=0.0f, miniTimer=0f;
+    // --- Debounce (mini cooldown) ---
+    /**
+     * Per-skill debounce time (seconds) to prevent rapid retriggering.
+     */
+    private float miniCooldown = 0.0f;
+    /**
+     * Remaining debounce time.
+     */
+    private float miniTimer = 0f;
 
-    // ====== 新增：分批发射相关 ======
-    /** 每发间隔（秒）——你要的约 0.3s */
+    // ===== Batched emission settings =====
+    /**
+     * Time gap between emissions (seconds). e.g., ~0.3s as requested.
+     */
     private float emitInterval = 0.30f;
-    /** 累积计时器 */
+    /**
+     * Accumulator used to schedule emissions.
+     */
     private float emitAccum = 0f;
-    /** 已发射数量 / 需发射总数 */
+    /**
+     * Number emitted so far / total to emit this spin.
+     */
     private int emitted = 0, emitTotal = 0;
-    /** 发射角步进 */
+    /**
+     * Angle step (deg) between consecutive emissions.
+     */
     private float spinStepDeg = 0f;
-    /** 防止掉帧导致一次补发太多（每帧最多补发几发） */
+    /**
+     * Drop-frame guard: max number of catch-up emissions allowed in a single frame.
+     */
     private int emitCatchUpMaxPerFrame = 1;
 
-    // 贴图/动画参数（保持你现用的资产）
+    // Sprite/animation parameters for the Sword Qi effect.
     private String qiPngPath = "images/samurai/slash_red_thick_Heavy_6x1_64.png";
     private int sheetCols = 6, sheetRows = 1, frameW = 64, frameH = 64;
     private float frameDur = 0.08f;
     private boolean transparent = true;
 
-    public SpinAttackComponent(com.csse3200.game.entities.Entity owner, float restRadius){
+    public SpinAttackComponent(com.csse3200.game.entities.Entity owner, float restRadius) {
         super(owner, restRadius);
     }
 
-    public SpinAttackComponent setParams(float duration,float extra){
-        if(duration>0)this.duration=duration;
-        if(extra>=0)this.extra=extra;
+    /**
+     * Configure spin timing and extra outward displacement.
+     */
+    public SpinAttackComponent setParams(float duration, float extra) {
+        if (duration > 0) this.duration = duration;
+        if (extra >= 0) this.extra = extra;
         return this;
     }
-    public SpinAttackComponent setTurns(float t){ this.turns=Math.max(0f,t); return this; }
-    public SpinAttackComponent setMiniCooldown(float s){ this.miniCooldown=Math.max(0f,s); return this; }
 
-    /** 可调：每发间隔（默认0.3s） */
-    public SpinAttackComponent setEmitInterval(float s){ this.emitInterval=Math.max(0f,s); return this; }
-    /** 可调：掉帧补发上限（默认1，想更快补齐可升到2~3） */
-    public SpinAttackComponent setEmitCatchUpMaxPerFrame(int n){ this.emitCatchUpMaxPerFrame=Math.max(1,n); return this; }
+    /**
+     * Set how many full turns to rotate during the spin.
+     */
+    public SpinAttackComponent setTurns(float t) {
+        this.turns = Math.max(0f, t);
+        return this;
+    }
 
-    @Override public boolean isActive(){ return active; }
+    /**
+     * Set a mini cooldown to debounce spin triggers.
+     */
+    public SpinAttackComponent setMiniCooldown(float s) {
+        this.miniCooldown = Math.max(0f, s);
+        return this;
+    }
 
-    @Override public boolean canTrigger() {
-        boolean cdOk = (cds==null) || cds.isReady("spin");
-        boolean notBusy = (lock==null) || !lock.isBusy();
-        boolean miniOk = miniTimer<=0f;
+    /**
+     * Configure emission interval between projectiles. Default 0.30s.
+     */
+    public SpinAttackComponent setEmitInterval(float s) {
+        this.emitInterval = Math.max(0f, s);
+        return this;
+    }
+
+    /**
+     * Limit how many catch-up emissions can happen in one frame. Default 1.
+     */
+    public SpinAttackComponent setEmitCatchUpMaxPerFrame(int n) {
+        this.emitCatchUpMaxPerFrame = Math.max(1, n);
+        return this;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
+    }
+
+    @Override
+    public boolean canTrigger() {
+        boolean cdOk = (cds == null) || cds.isReady("spin");
+        boolean notBusy = (lock == null) || !lock.isBusy();
+        boolean miniOk = miniTimer <= 0f;
         return !active && cdOk && notBusy && miniOk;
     }
 
-    @Override public void trigger(Vector2 ignored) {
+    @Override
+    public void trigger(Vector2 ignored) {
         if (!canTrigger()) return;
 
+        // Capture current facing and (re)initialise state.
         this.startDeg = facingDeg;
-        this.dir = +1f; // 如需顺/逆时针可通过 setDirectionCCW 调整
-        active=true; T=0f;
+        this.dir = +1f; // Use setDirectionCCW() to choose direction.
+        active = true;
+        T = 0f;
 
-        if (lock!=null) lock.tryAcquire("spin");
-        if (cds!=null) cds.trigger("spin");
+        if (lock != null) lock.tryAcquire("spin");
+        if (cds != null) cds.trigger("spin");
 
-        // 预计算：本次总发数与角步进
+        // Precompute the emission plan for this spin.
         emitTotal = Math.max(1, qiSpinCount);
         spinStepDeg = 360f / (float) emitTotal;
         emitted = 0;
         emitAccum = 0f;
 
-        // 若动画时长太短，不足以覆盖所有分批发射，自动延长到能发完为止（留点余量）
+        // Ensure duration is long enough to complete all emissions (add a small tail).
         float need = (emitTotal > 0) ? (emitInterval * (emitTotal - 1) + 0.05f) : 0f;
         if (duration < need) duration = need;
 
-        // 立刻发第一发，手感更好
+        // Fire the first projectile immediately for better feel.
         emitOne(emitted);
         emitted++;
     }
 
+    /**
+     * Set spin direction: CCW = true, CW = false.
+     */
     public SpinAttackComponent setDirectionCCW(boolean ccw) {
         this.dir = ccw ? +1f : -1f;
         return this;
     }
 
-    @Override public void update(float dt) {
-        if (miniTimer>0f) miniTimer -= dt;
+    @Override
+    public void update(float dt) {
+        // Update local debounce
+        if (miniTimer > 0f) miniTimer -= dt;
         if (!active) return;
 
         T += dt;
 
-        // 旋转姿态更新（与你原逻辑一致）
-        float a = Math.min(T/duration, 1f);
+        // Pose update: rotate over time while holding a slightly extended radius.
+        float a = Math.min(T / duration, 1f);
         float totalDeg = 360f * turns;
-        float workDeg = startDeg + dir*(a*totalDeg);
+        float workDeg = startDeg + dir * (a * totalDeg);
         float curRadius = restRadius + extra;
         setPose(workDeg, curRadius);
 
-        // === 分批发射 ===
+        // Batched emissions at fixed interval, with drop-frame catch-up cap.
         if (emitted < emitTotal) {
             emitAccum += dt;
             int firedThisFrame = 0;
@@ -108,42 +202,52 @@ public class SpinAttackComponent extends AbstractSwordAttackComponent {
             }
         }
 
-        // 结束条件：动画走完 且 全部子弹已发射
-        if (a>=1f && emitted >= emitTotal) {
-            active=false;
-            miniTimer=miniCooldown;
-            if (lock!=null) lock.release("spin");
+        // Finish when animation is done and all projectiles are emitted.
+        if (a >= 1f && emitted >= emitTotal) {
+            active = false;
+            miniTimer = miniCooldown;
+            if (lock != null) lock.release("spin");
         }
     }
 
-    @Override public void cancel() {
+    @Override
+    public void cancel() {
         if (active) {
-            active=false;
-            if (lock!=null) lock.release("spin");
+            active = false;
+            if (lock != null) lock.release("spin");
         }
     }
 
-    private float spinSpeed  = 9.0f;
-    private float spinLife   = 0.28f;
-    private int   spinDamage = 10;
-    private float spinDrawW  = 1.2f;
-    private float spinDrawH  = 1.2f;
+    // ---- Projectile tuning (speed, life, damage, visuals) ----
+    private float spinSpeed = 9.0f;
+    private float spinLife = 0.28f;
+    private int spinDamage = 10;
+    private float spinDrawW = 1.2f;
+    private float spinDrawH = 1.2f;
 
-    // 公开 setter，方便从外面平衡性调整或按等级升级
+    /**
+     * Configure projectile speed/life/damage for the spin.
+     */
     public SpinAttackComponent setSpinProjectile(float speed, float life, int damage) {
-        if (speed>0) this.spinSpeed = speed;
-        if (life>0)  this.spinLife  = life;
+        if (speed > 0) this.spinSpeed = speed;
+        if (life > 0) this.spinLife = life;
         this.spinDamage = Math.max(0, damage);
         return this;
     }
+
+    /**
+     * Configure visual draw size for the Sword Qi projectiles.
+     */
     public SpinAttackComponent setSpinDrawSize(float w, float h) {
-        if (w>0) this.spinDrawW = w;
-        if (h>0) this.spinDrawH = h;
+        if (w > 0) this.spinDrawW = w;
+        if (h > 0) this.spinDrawH = h;
         return this;
     }
 
-    /** 实际发射一发，按“起始角 + 步进 * 序号” */
-    private void emitOne(int idx){
+    /**
+     * Emit one projectile at angle = startDeg + step * index.
+     */
+    private void emitOne(int idx) {
         float ang = startDeg + idx * spinStepDeg;
         emitSwordQiAtAngle(
                 ang,

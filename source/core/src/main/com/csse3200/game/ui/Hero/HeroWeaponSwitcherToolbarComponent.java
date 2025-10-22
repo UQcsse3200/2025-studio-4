@@ -33,16 +33,16 @@ public class HeroWeaponSwitcherToolbarComponent extends Component {
     private static final float RIGHT_MARGIN_PCT = 0.0f;
 
     private final List<Texture> toDispose = new ArrayList<>();
-    private Table bar; // ✅ 保存工具条容器，方便动态修改
+    private Table bar; // Save toolbar container for dynamic modifications
     private ImageButton btnForm1, btnForm2, btnForm3;
     private boolean locked = false;
 
-    // 初始 L1 三图
+    // Initial L1 three icons
     private final String icon1, icon2, icon3;
-    // L2 只有一张，用来折叠后的单按钮
+    // L2 has only one image, used for the collapsed single button
     private final String l2SingleIcon;
 
-    // 折叠状态标记：升级后从三按钮 -> 单按钮
+    // Collapse flag: after upgrade, switch from three buttons -> single button
     private boolean collapsedToSingle = false;
 
     public HeroWeaponSwitcherToolbarComponent(Entity hero, String icon1, String icon2, String icon3, String l2SingleIcon) {
@@ -85,10 +85,10 @@ public class HeroWeaponSwitcherToolbarComponent extends Component {
                 .height(Value.percentHeight(BAR_HEIGHT_PCT, root));
         stage.addActor(root);
 
-        // 如果你的系统仍会发这个事件，就保持兼容
+        // Keep compatibility if your system still emits this event
         hero.getEvents().addListener("ui:weapon:locked", this::onLocked);
 
-        // 监听升级：到 L2 就折叠为单按钮
+        // Listen for upgrades: collapse to single button at L2
         hero.getEvents().addListener("hero.level", (Integer level) -> {
             if (level != null && level >= 2) onEnterLevel2();
         });
@@ -105,27 +105,27 @@ public class HeroWeaponSwitcherToolbarComponent extends Component {
             updateButtonIcon(btnForm1, l2SingleIcon);
         }
 
-        // ★ 把整条工具条变高：从 6% 提到 9~10%（自己微调）
-        float NEW_BAR_HEIGHT_PCT = 0.10f; // 0.10 = 占屏高的 10%
+        // Increase the toolbar height: from 6% to ~9–10% (tune as needed)
+        float NEW_BAR_HEIGHT_PCT = 0.10f; // 0.10 = 10% of screen height
         if (barCell != null) {
             barCell.height(Value.percentHeight(NEW_BAR_HEIGHT_PCT, root));
         }
 
-        // 清空并重加单按钮
+        // Clear and add the single button
         bar.clearChildren();
         bar.defaults().padRight(0f);
-        bar.pad(Value.percentHeight(0.004f, root)); // 轻微内边距，避免紧贴
+        bar.pad(Value.percentHeight(0.004f, root)); // Slight inner padding to avoid hugging edges
 
-        // 让内部 Image 等比缩放到按钮框内（像素风建议在创建/更新贴图时用 Nearest 过滤）
+        // Let the inner Image scale proportionally to fit the button (for pixel art, prefer Nearest filtering when creating/updating textures)
         btnForm1.getImage().setScaling(Scaling.fit);
 
-        // ★ 单按钮占满条高（略留 2% 余量防止背景描边被顶满）
-        float pct = 0.98f; // 0.98 更紧凑；想更大就 1.0f
+        // Single button fills the bar height (leave ~2% margin to avoid clipping the background stroke)
+        float pct = 0.98f; // 0.98 is tighter; use 1.0f for larger
         bar.add(btnForm1)
                 .size(Value.percentHeight(pct, bar), Value.percentHeight(pct, bar))
                 .center();
 
-        // 升级后单按钮仅展示（如需可点就注掉）
+        // After upgrade the single button is display-only (comment out if you want it clickable)
         btnForm1.setDisabled(true);
 
         root.invalidateHierarchy();
@@ -134,9 +134,9 @@ public class HeroWeaponSwitcherToolbarComponent extends Component {
 
     private void requestSwitch(int form) {
         if (locked) return;
-        // 升级后折叠为单按钮：默认不再允许切换（只展示）
+        // After collapsing to single button post-upgrade: by default no longer allows switching (display only)
         if (collapsedToSingle) {
-            return; // 什么都不做；若想仍可切换，请见 onEnterLevel2 的注释
+            return; // Do nothing; if you want switching, see the note in onEnterLevel2
         }
         hero.getEvents().trigger("ui:weapon:switch", form);
     }

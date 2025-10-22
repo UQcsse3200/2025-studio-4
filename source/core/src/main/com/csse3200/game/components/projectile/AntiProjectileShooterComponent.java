@@ -99,11 +99,23 @@ AntiProjectileShooterComponent extends Component {
      * @param target projectile entity to intercept
      */
     private void fireInterceptorToward(Entity target) {
-        Vector2 from = entity.getPosition();
+        // Trigger attack animation on the tank
+        entity.getEvents().trigger("attackStart");
+
+        Vector2 tankCenter = entity.getPosition();
         Vector2 to = target.getPosition();
-        Vector2 dir = to.cpy().sub(from);
+        Vector2 dir = to.cpy().sub(tankCenter);
         if (dir.isZero()) return;
         dir.nor();
+
+        // Calculate turret offset (turret barrel is on the right and upper portion of the tank)
+        // The tank sprite is roughly 1024x1024, scaled down in game
+        // Turret barrel appears to be about 0.4 units to the right and 0.35 units up from center
+        float turretOffsetX = 1f;
+        float turretOffsetY = 0.7f;
+
+        Vector2 turretOffset = new Vector2(turretOffsetX, turretOffsetY);
+        Vector2 from = tankCenter.cpy().add(turretOffset);
 
         final String poolKey = "interceptor:" + spritePath;
         EntityService es = ServiceLocator.getEntityService();

@@ -79,7 +79,7 @@ public class RotatingAnimationRenderComponent extends RenderComponent {
     public void startAnimation(String name) {
         Animation<TextureRegion> animation = animations.get(name);
         if (animation == null) {
-            logger.error("Attempted to play unknown animation {}. Add it first.", name);
+            //logger.error("Attempted to play unknown animation {}. Add it first.", name);
             return;
         }
         currentAnimation = animation;

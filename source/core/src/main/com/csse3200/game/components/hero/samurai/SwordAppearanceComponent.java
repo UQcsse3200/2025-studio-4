@@ -8,8 +8,14 @@ import com.csse3200.game.entities.configs.SamuraiConfig;
 import com.csse3200.game.rendering.RotatingTextureRenderComponent;
 import com.csse3200.game.rendering.TextureRenderComponent;
 
+/**
+ * Keeps the sword sprite in sync with the Samurai's level.
+ * Listens to the owner's upgrade events and swaps the sword texture accordingly.
+ */
 public class SwordAppearanceComponent extends Component {
-    private final Entity owner;          // 武士本体
+    /** Reference to the Samurai entity (owner of the sword). */
+    private final Entity owner;
+    /** Samurai configuration that provides per-level sword textures. */
     private final SamuraiConfig cfg;
 
     public SwordAppearanceComponent(Entity owner, SamuraiConfig cfg) {
@@ -19,29 +25,35 @@ public class SwordAppearanceComponent extends Component {
 
     @Override
     public void create() {
-        // 初始应用 1 级刀贴图
+        // Initial application could set level-1 texture if desired.
 
-        // 监听武士本体的升级事件
+        // Listen for Samurai upgrades and refresh the sword texture on level-up.
         if (owner != null) {
             owner.getEvents().addListener("upgraded",
                     (Integer level, CurrencyType t, Integer cost) -> applySwordTextureForLevel(level));
         }
     }
 
+    /** Applies the sword texture that corresponds to the given level. */
     private void applySwordTextureForLevel(int level) {
         String path = getSwordTextureForLevel(level);
         if (path == null || path.isBlank()) return;
 
-        // 优先支持旋转贴图组件（你的刀一般是这个）
+        // Prefer rotating render component (typical for the sword).
         RotatingTextureRenderComponent rot = entity.getComponent(RotatingTextureRenderComponent.class);
         if (rot != null) {
             float angle = rot.getRotation();
-            rot.setTexture(path);     // 直接替换贴图
-            rot.setRotation(angle);   // 保持当前旋转
+            rot.setTexture(path);     // swap texture
+            rot.setRotation(angle);   // preserve current rotation
             return;
         }
+
+        // Fallbacks (if ever needed) could be added here, e.g., TextureRenderComponent.
+        // TextureRenderComponent tr = entity.getComponent(TextureRenderComponent.class);
+        // if (tr != null) tr.setTexture(path);
     }
 
+    /** Resolve the proper sword texture path for a given level, with fallback to the base sword texture. */
     private String getSwordTextureForLevel(int level) {
         if (cfg.swordLevelTextures != null) {
             int idx = level - 1;
@@ -50,7 +62,7 @@ public class SwordAppearanceComponent extends Component {
                 if (s != null && !s.isBlank()) return s;
             }
         }
-        // 兜底：用初始刀贴图
+        // Fallback: use the initial/base sword texture
         return cfg.swordTexture;
     }
 }

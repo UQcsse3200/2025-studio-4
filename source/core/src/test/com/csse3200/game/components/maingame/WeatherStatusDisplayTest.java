@@ -146,7 +146,7 @@ class WeatherStatusDisplayTest {
     public com.badlogic.gdx.maps.tiled.TiledMap getMap() {
       return null;
     }
-    
+
     public List<GridPoint2> getPathTiles() {
       return java.util.Collections.emptyList();
     }

@@ -95,11 +95,6 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">EngineerStatusPanelComponent</span>
 <span class="extends-implements">extends <a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></span></div>
-<div class="block">工程师状态栏：
- - 在基类基础上增加两块：Summon Capacity（已放置/最大）+ Summon Cooldown（倒计时）
- - 监听事件：
-   - summonAliveChanged(alive, max)
-   - summon:cooldown(remaining, total)</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -143,7 +138,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bindExtraListeners()" class="member-name-link">bindExtraListeners</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类可覆写：绑定额外事件监听（容量/冷却等）。默认不绑定。</div>
+<div class="block">Subclasses may override: bind extra event listeners (e.g., capacity/cooldown).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)" class="member-name-link">buildExtraSections</a><wbr>(com.badlogic.gdx.scenes.scene2d.ui.Table&nbsp;card,
@@ -151,7 +146,7 @@ loadScripts(document, 'script');</script>
  float&nbsp;sw,
  float&nbsp;sh)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类可覆写：构建额外UI区域（容量/冷却等）。默认不添加。</div>
+<div class="block">Subclasses may override: build extra UI sections (e.g., capacity/cooldown).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
@@ -161,7 +156,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refreshUpgradeInfo()" class="member-name-link">refreshUpgradeInfo</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">根据当前等级刷新升级信息与按钮状态</div>
+<div class="block">Refresh upgrade info and button state based on the current level</div>
 </div>
 </div>
 </div>
@@ -219,7 +214,7 @@ loadScripts(document, 'script');</script>
 <h3>refreshUpgradeInfo</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refreshUpgradeInfo</span>()</div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="BaseHeroStatusPanelComponent.html#refreshUpgradeInfo()">BaseHeroStatusPanelComponent</a></code></span></div>
-<div class="block">根据当前等级刷新升级信息与按钮状态</div>
+<div class="block">Refresh upgrade info and button state based on the current level</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="BaseHeroStatusPanelComponent.html#refreshUpgradeInfo()">refreshUpgradeInfo</a></code>&nbsp;in class&nbsp;<code><a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></code></dd>
@@ -234,7 +229,7 @@ loadScripts(document, 'script');</script>
  float&nbsp;sw,
  float&nbsp;sh)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="BaseHeroStatusPanelComponent.html#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)">BaseHeroStatusPanelComponent</a></code></span></div>
-<div class="block">子类可覆写：构建额外UI区域（容量/冷却等）。默认不添加。</div>
+<div class="block">Subclasses may override: build extra UI sections (e.g., capacity/cooldown). Default: none.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="BaseHeroStatusPanelComponent.html#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)">buildExtraSections</a></code>&nbsp;in class&nbsp;<code><a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></code></dd>
@@ -246,7 +241,7 @@ loadScripts(document, 'script');</script>
 <h3>bindExtraListeners</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">bindExtraListeners</span>()</div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="BaseHeroStatusPanelComponent.html#bindExtraListeners()">BaseHeroStatusPanelComponent</a></code></span></div>
-<div class="block">子类可覆写：绑定额外事件监听（容量/冷却等）。默认不绑定。</div>
+<div class="block">Subclasses may override: bind extra event listeners (e.g., capacity/cooldown). Default: none.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="BaseHeroStatusPanelComponent.html#bindExtraListeners()">bindExtraListeners</a></code>&nbsp;in class&nbsp;<code><a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></code></dd>

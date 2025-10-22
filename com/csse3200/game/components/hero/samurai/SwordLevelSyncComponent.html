@@ -93,6 +93,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SwordLevelSyncComponent</span>
 <span class="extends-implements">extends <a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
+<div class="block">Syncs the sword's gameplay stats with the Samurai's level.
+ <p>
+ Listens to the owner's <b>"upgraded"</b> event and updates this entity's
+ <a href="../../CombatStatsComponent.html" title="class in com.csse3200.game.components"><code>CombatStatsComponent</code></a> (e.g., base attack) based on values provided in
+ <a href="../../../entities/configs/SamuraiConfig.html#swordDamageByLevel"><code>SamuraiConfig.swordDamageByLevel</code></a>. Applies level 1 on create.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

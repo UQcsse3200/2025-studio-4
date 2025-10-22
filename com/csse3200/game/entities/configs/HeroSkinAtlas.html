@@ -91,6 +91,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">HeroSkinAtlas</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Central mapping from (hero type, skin [, form]) to texture paths.
+ Contains helpers for body, sword, and bullet textures.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,20 +110,28 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#body(com.csse3200.game.services.GameStateService.HeroType,java.lang.String)" class="member-name-link">body</a><wbr>(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Resolve the base body texture for a given hero type and skin.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bodyForForm(com.csse3200.game.services.GameStateService.HeroType,java.lang.String,int)" class="member-name-link">bodyForForm</a><wbr>(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin,
  int&nbsp;form)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">NEW: Form-specific body textures for HERO.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#bullet(com.csse3200.game.services.GameStateService.HeroType,java.lang.String)" class="member-name-link">bullet</a><wbr>(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Resolve bullet texture for a given hero type and skin.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#sword(com.csse3200.game.services.GameStateService.HeroType,java.lang.String)" class="member-name-link">sword</a><wbr>(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">NEW: Samurai sword blade texture by skin (Samurai only).</div>
+</div>
 </div>
 </div>
 </div>
@@ -144,6 +154,7 @@ loadScripts(document, 'script');</script>
 <h3>body</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">body</span><wbr><span class="parameters">(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</span></div>
+<div class="block">Resolve the base body texture for a given hero type and skin.</div>
 </section>
 </li>
 <li>
@@ -151,6 +162,7 @@ loadScripts(document, 'script');</script>
 <h3>sword</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">sword</span><wbr><span class="parameters">(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</span></div>
+<div class="block">NEW: Samurai sword blade texture by skin (Samurai only).</div>
 </section>
 </li>
 <li>
@@ -159,6 +171,8 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">bodyForForm</span><wbr><span class="parameters">(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin,
  int&nbsp;form)</span></div>
+<div class="block">NEW: Form-specific body textures for HERO.
+ Other hero types use a single body texture (no forms).</div>
 </section>
 </li>
 <li>
@@ -166,6 +180,7 @@ loadScripts(document, 'script');</script>
 <h3>bullet</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">bullet</span><wbr><span class="parameters">(<a href="../../services/GameStateService.HeroType.html" title="enum class in com.csse3200.game.services">GameStateService.HeroType</a>&nbsp;t,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skin)</span></div>
+<div class="block">Resolve bullet texture for a given hero type and skin.</div>
 </section>
 </li>
 </ul>

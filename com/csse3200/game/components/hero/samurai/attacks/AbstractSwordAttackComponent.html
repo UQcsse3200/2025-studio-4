@@ -102,6 +102,15 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">AbstractSwordAttackComponent</span>
 <span class="extends-implements">extends <a href="../../../Component.html" title="class in com.csse3200.game.components">Component</a>
 implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.components.hero.samurai.attacks">ISamuraiAttack</a></span></div>
+<div class="block">Base class for Samurai sword attacks.
+ <p>
+ Responsibilities shared by concrete sword skills:
+ <ul>
+   <li>Pose calculation (pivot/center/origin) and visual rotation sync</li>
+   <li>Common projectile (Sword Qi) emission helpers</li>
+   <li>Damage management via per-skill damage table and runtime multiplier</li>
+   <li>Upgrade hooks to refresh damage when the hero levels up</li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -155,7 +164,9 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected float</code></div>
 <div class="col-second odd-row-color"><code><a href="#qiSpawnForward" class="member-name-link">qiSpawnForward</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Spawn offset in front of the owner; actual spawn uses (restRadius + qiSpawnForward).</div>
+</div>
 <div class="col-first even-row-color"><code>protected float</code></div>
 <div class="col-second even-row-color"><code><a href="#qiSpeed" class="member-name-link">qiSpeed</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -203,7 +214,9 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#autoCalibratePivotFromOwnerOrigin()" class="member-name-link">autoCalibratePivotFromOwnerOrigin</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Try to align pivot based on the owner's render origin (if available).</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -211,7 +224,9 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#currentDamage()" class="member-name-link">currentDamage</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Subclasses use this to obtain the current damage with multiplier applied.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#emitSwordQiAtAngle(float,java.lang.String,int,int,int,int,float,boolean)" class="member-name-link">emitSwordQiAtAngle</a><wbr>(float&nbsp;angleDeg,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sheetPath,
@@ -222,7 +237,7 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
  float&nbsp;frameDur,
  boolean&nbsp;loop)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类统一用它发射剑气，避免重复</div>
+<div class="block">Helper for subclasses: emit a Sword Qi projectile at a given angle.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#emitSwordQiAtAngle(float,java.lang.String,int,int,int,int,float,boolean,float,float,int,float,float)" class="member-name-link">emitSwordQiAtAngle</a><wbr>(float&nbsp;angleDeg,
@@ -238,11 +253,15 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
  int&nbsp;damage,
  float&nbsp;drawW,
  float&nbsp;drawH)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Overload: per-shot overrides for speed/life/damage/draw size.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getEntityCenter(com.csse3200.game.entities.Entity,com.badlogic.gdx.math.Vector2)" class="member-name-link">getEntityCenter</a><wbr>(<a href="../../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;e,
  com.badlogic.gdx.math.Vector2&nbsp;out)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the visual center of an entity; falls back to position + half scale when needed.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFacingDeg()" class="member-name-link">getFacingDeg</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -250,14 +269,18 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#pickByLevel(int%5B%5D,int,int)" class="member-name-link">pickByLevel</a><wbr>(int[]&nbsp;arr,
  int&nbsp;level,
  int&nbsp;fallback)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Utility: pick a value by level from an array.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCenterToHandle(float)" class="member-name-link">setCenterToHandle</a><wbr>(float&nbsp;d)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDamageTable(int%5B%5D,int)" class="member-name-link">setDamageTable</a><wbr>(int[]&nbsp;table,
  int&nbsp;defaultAtLv1)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Allow external injection of a per-skill damage table and a default for level 1.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPivotOffset(float,float)" class="member-name-link">setPivotOffset</a><wbr>(float&nbsp;ox,
  float&nbsp;oy)</code></div>
@@ -265,7 +288,9 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPose(float,float)" class="member-name-link">setPose</a><wbr>(float&nbsp;workAngleDeg,
  float&nbsp;curRadius)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Compute and apply sword pose (physics transform + visual rotation).</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSpriteForwardOffsetDeg(float)" class="member-name-link">setSpriteForwardOffsetDeg</a><wbr>(float&nbsp;deg)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -386,6 +411,7 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <section class="detail" id="qiSpawnForward">
 <h3>qiSpawnForward</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">qiSpawnForward</span></div>
+<div class="block">Spawn offset in front of the owner; actual spawn uses (restRadius + qiSpawnForward).</div>
 </section>
 </li>
 <li>
@@ -428,6 +454,7 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <h3>setDamageTable</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></span>&nbsp;<span class="element-name">setDamageTable</span><wbr><span class="parameters">(int[]&nbsp;table,
  int&nbsp;defaultAtLv1)</span></div>
+<div class="block">Allow external injection of a per-skill damage table and a default for level 1.</div>
 </section>
 </li>
 <li>
@@ -447,6 +474,7 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <section class="detail" id="currentDamage()">
 <h3>currentDamage</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">currentDamage</span>()</div>
+<div class="block">Subclasses use this to obtain the current damage with multiplier applied.</div>
 </section>
 </li>
 <li>
@@ -455,6 +483,8 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <div class="member-signature"><span class="modifiers">protected static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">pickByLevel</span><wbr><span class="parameters">(int[]&nbsp;arr,
  int&nbsp;level,
  int&nbsp;fallback)</span></div>
+<div class="block">Utility: pick a value by level from an array.
+ Out-of-range levels clamp to the last entry; falls back if the table is null/empty.</div>
 </section>
 </li>
 <li>
@@ -462,6 +492,8 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <h3>setPose</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setPose</span><wbr><span class="parameters">(float&nbsp;workAngleDeg,
  float&nbsp;curRadius)</span></div>
+<div class="block">Compute and apply sword pose (physics transform + visual rotation).
+ Also updates <code>facingDeg</code> so callers can query the current facing.</div>
 </section>
 </li>
 <li>
@@ -469,12 +501,14 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <h3>getEntityCenter</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">getEntityCenter</span><wbr><span class="parameters">(<a href="../../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;e,
  com.badlogic.gdx.math.Vector2&nbsp;out)</span></div>
+<div class="block">Get the visual center of an entity; falls back to position + half scale when needed.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="autoCalibratePivotFromOwnerOrigin()">
 <h3>autoCalibratePivotFromOwnerOrigin</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">autoCalibratePivotFromOwnerOrigin</span>()</div>
+<div class="block">Try to align pivot based on the owner's render origin (if available).</div>
 </section>
 </li>
 <li>
@@ -488,7 +522,8 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
  int&nbsp;frameH,
  float&nbsp;frameDur,
  boolean&nbsp;loop)</span></div>
-<div class="block">子类统一用它发射剑气，避免重复</div>
+<div class="block">Helper for subclasses: emit a Sword Qi projectile at a given angle.
+ Avoids duplication across concrete attack components.</div>
 </section>
 </li>
 <li>
@@ -507,6 +542,7 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
  int&nbsp;damage,
  float&nbsp;drawW,
  float&nbsp;drawH)</span></div>
+<div class="block">Overload: per-shot overrides for speed/life/damage/draw size.</div>
 </section>
 </li>
 <li>
@@ -535,6 +571,9 @@ implements <a href="ISamuraiAttack.html" title="interface in com.csse3200.game.c
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="ISamuraiAttack.html#getFacingDeg()">getFacingDeg</a></code>&nbsp;in interface&nbsp;<code><a href="ISamuraiAttack.html" title="interface in com.csse3200.game.components.hero.samurai.attacks">ISamuraiAttack</a></code></dd>
+<dt>Returns:</dt>
+<dd>the most recent facing direction in degrees,
+ used to align the character's visual facing with the attack.</dd>
 </dl>
 </section>
 </li>

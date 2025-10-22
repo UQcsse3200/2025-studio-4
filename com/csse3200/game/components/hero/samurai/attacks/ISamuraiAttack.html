@@ -91,6 +91,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">ISamuraiAttack</span></div>
+<div class="block">Contract for Samurai attack behaviors.
+ Implementations should manage their own lifecycle, cooldowns, locks, and facing.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -107,10 +109,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cancel()" class="member-name-link">cancel</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Interrupt/stop the attack due to being hit or switching actions.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#canTrigger()" class="member-name-link">canTrigger</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Check if the attack can be triggered now.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getFacingDeg()" class="member-name-link">getFacingDeg</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
@@ -119,10 +125,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#trigger(com.badlogic.gdx.math.Vector2)" class="member-name-link">trigger</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;targetOrNull)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Start the attack.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;dt)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Advance the attack state machine each frame.</div>
+</div>
 </div>
 </div>
 </div>
@@ -141,36 +151,52 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isActive()">
 <h3>isActive</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isActive</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the attack is currently active (in-progress).</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="canTrigger()">
 <h3>canTrigger</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">canTrigger</span>()</div>
+<div class="block">Check if the attack can be triggered now.
+ Should include checks for cooldown, lock/mutex, and any internal debouncing.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="trigger(com.badlogic.gdx.math.Vector2)">
 <h3>trigger</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">trigger</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;targetOrNull)</span></div>
+<div class="block">Start the attack.
+ For jab/sweep, <code>targetOrNull</code> is the aim/target point.
+ For spin/area attacks, <code>targetOrNull</code> may be <code>null</code>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="cancel()">
 <h3>cancel</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">cancel</span>()</div>
+<div class="block">Interrupt/stop the attack due to being hit or switching actions.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="update(float)">
 <h3>update</h3>
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(float&nbsp;dt)</span></div>
+<div class="block">Advance the attack state machine each frame.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getFacingDeg()">
 <h3>getFacingDeg</h3>
 <div class="member-signature"><span class="return-type">float</span>&nbsp;<span class="element-name">getFacingDeg</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the most recent facing direction in degrees,
+ used to align the character's visual facing with the attack.</dd>
+</dl>
 </section>
 </li>
 </ul>

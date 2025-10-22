@@ -97,10 +97,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">BaseHeroStatusPanelComponent</span>
 <span class="extends-implements">extends <a href="../../components/Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">英雄状态栏通用基类（百分比定位/尺寸版）：
- - 名字、HP、能量、伤害、等级、升级费用、ULT 按钮
- - 子类可覆写 buildExtraSections()/bindExtraListeners() 增加自定义区块
- - 面板自动放在：Hotbar 正下方 → 召唤工具条正下方</div>
+<div class="block">Generic base class for the hero status panel (percentage-based positioning/sizing):
+ - Includes: name, HP, energy, damage, level, upgrade cost, and ULT button
+ - Subclasses can override buildExtraSections()/bindExtraListeners() to add custom sections
+ - The panel is placed automatically: directly below the Hotbar → and below the summon toolbar</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -125,10 +125,22 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>protected static final float</code></div>
 <div class="col-second odd-row-color"><code><a href="#COMMON_PANEL_WIDTH_PCT" class="member-name-link">COMMON_PANEL_WIDTH_PCT</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">右侧这些面板的统一宽度（与你的 Hotbar 相同：0.195f）</div>
+<div class="block">Unified width for these right-side panels (same as your Hotbar: 0.195f)</div>
 </div>
+<div class="col-first even-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Image</code></div>
+<div class="col-second even-row-color"><code><a href="#costIcon" class="member-name-link">costIcon</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Label</code></div>
+<div class="col-second odd-row-color"><code><a href="#costLabel" class="member-name-link">costLabel</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Label</code></div>
-<div class="col-second even-row-color"><code><a href="#costLabel" class="member-name-link">costLabel</a></code></div>
+<div class="col-second even-row-color"><code><a href="#costNumLabel" class="member-name-link">costNumLabel</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Table</code></div>
+<div class="col-second odd-row-color"><code><a href="#costRow" class="member-name-link">costRow</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Label</code></div>
+<div class="col-second even-row-color"><code><a href="#costTitleLabel" class="member-name-link">costTitleLabel</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Label</code></div>
 <div class="col-second odd-row-color"><code><a href="#damageLabel" class="member-name-link">damageLabel</a></code></div>
@@ -139,7 +151,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>protected static final float</code></div>
 <div class="col-second odd-row-color"><code><a href="#GAP_BELOW_TOOLBAR_PCT" class="member-name-link">GAP_BELOW_TOOLBAR_PCT</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">工具条与状态栏之间的间距</div>
+<div class="block">Spacing between the toolbar and the status panel</div>
 </div>
 <div class="col-first even-row-color"><code>protected final <a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second even-row-color"><code><a href="#hero" class="member-name-link">hero</a></code></div>
@@ -150,12 +162,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>protected static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#HOTBAR_BOTTOM_PCT" class="member-name-link">HOTBAR_BOTTOM_PCT</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">Hotbar 底缘：垂直居中 → 0.5 + 高度的一半</div>
+<div class="block">Hotbar bottom edge: vertically centered → 0.5 + half of the Hotbar height</div>
 </div>
 <div class="col-first odd-row-color"><code>protected static final float</code></div>
 <div class="col-second odd-row-color"><code><a href="#HOTBAR_HEIGHT_PCT" class="member-name-link">HOTBAR_HEIGHT_PCT</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">Hotbar：高度占屏幕比例（你的最终版是 0.28f）</div>
+<div class="block">Hotbar: height as a fraction of screen height (your final value is 0.28f)</div>
 </div>
 <div class="col-first even-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Label</code></div>
 <div class="col-second even-row-color"><code><a href="#hpLabel" class="member-name-link">hpLabel</a></code></div>
@@ -169,12 +181,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>protected final float</code></div>
 <div class="col-second odd-row-color"><code><a href="#panelHeightPct" class="member-name-link">panelHeightPct</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">状态栏自身高度（可调）</div>
+<div class="block">The status panel's own height (adjustable)</div>
 </div>
 <div class="col-first even-row-color"><code>protected static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#RIGHT_MARGIN_PCT" class="member-name-link">RIGHT_MARGIN_PCT</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">与屏幕右边的外边距（与你的 Hotbar 一致：0f 贴边）</div>
+<div class="block">Right margin from the screen edge (same as your Hotbar: 0f, flush to the edge)</div>
 </div>
 <div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Table</code></div>
 <div class="col-second odd-row-color"><code><a href="#root" class="member-name-link">root</a></code></div>
@@ -188,9 +200,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>protected static final float</code></div>
 <div class="col-second even-row-color"><code><a href="#TOOLBAR_HEIGHT_PCT" class="member-name-link">TOOLBAR_HEIGHT_PCT</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">召唤工具条高度（你的最终版是 0.06f）</div>
+<div class="block">Summon toolbar height (your final value is 0.06f)</div>
 </div>
-<div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.TextButton</code></div>
+<div class="col-first odd-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.Button</code></div>
 <div class="col-second odd-row-color"><code><a href="#ultBtn" class="member-name-link">ultBtn</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected com.badlogic.gdx.scenes.scene2d.ui.TextButton</code></div>
@@ -234,12 +246,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bindExtraListeners()" class="member-name-link">bindExtraListeners</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类可覆写：绑定额外事件监听（容量/冷却等）。默认不绑定。</div>
+<div class="block">Subclasses may override: bind extra event listeners (e.g., capacity/cooldown).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildBarStyle()" class="member-name-link">buildBarStyle</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">通用进度条样式（暗灰背景 + 强调色填充）</div>
+<div class="block">Common progress bar style (dark gray background + accent-colored fill)</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)" class="member-name-link">buildExtraSections</a><wbr>(com.badlogic.gdx.scenes.scene2d.ui.Table&nbsp;card,
@@ -247,7 +259,7 @@ loadScripts(document, 'script');</script>
  float&nbsp;sw,
  float&nbsp;sh)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类可覆写：构建额外UI区域（容量/冷却等）。默认不添加。</div>
+<div class="block">Subclasses may override: build extra UI sections (e.g., capacity/cooldown).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
@@ -267,12 +279,12 @@ loadScripts(document, 'script');</script>
  int&nbsp;h,
  com.badlogic.gdx.graphics.Color&nbsp;c)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">生成纯色贴图（注意：此处未集中回收，若频繁创建可上资源管理器）</div>
+<div class="block">Generate a solid-color texture region (Note: not centrally disposed here—if created frequently, consider using a resource manager)</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refreshUpgradeInfo()" class="member-name-link">refreshUpgradeInfo</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">根据当前等级刷新升级信息与按钮状态</div>
+<div class="block">Refresh upgrade info and button state based on the current level</div>
 </div>
 </div>
 </div>
@@ -328,7 +340,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="HOTBAR_HEIGHT_PCT">
 <h3>HOTBAR_HEIGHT_PCT</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">HOTBAR_HEIGHT_PCT</span></div>
-<div class="block">Hotbar：高度占屏幕比例（你的最终版是 0.28f）</div>
+<div class="block">Hotbar: height as a fraction of screen height (your final value is 0.28f)</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -343,7 +355,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="HOTBAR_BOTTOM_PCT">
 <h3>HOTBAR_BOTTOM_PCT</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">HOTBAR_BOTTOM_PCT</span></div>
-<div class="block">Hotbar 底缘：垂直居中 → 0.5 + 高度的一半</div>
+<div class="block">Hotbar bottom edge: vertically centered → 0.5 + half of the Hotbar height</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -358,7 +370,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="TOOLBAR_HEIGHT_PCT">
 <h3>TOOLBAR_HEIGHT_PCT</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">TOOLBAR_HEIGHT_PCT</span></div>
-<div class="block">召唤工具条高度（你的最终版是 0.06f）</div>
+<div class="block">Summon toolbar height (your final value is 0.06f)</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -373,7 +385,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="GAP_BELOW_TOOLBAR_PCT">
 <h3>GAP_BELOW_TOOLBAR_PCT</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">GAP_BELOW_TOOLBAR_PCT</span></div>
-<div class="block">工具条与状态栏之间的间距</div>
+<div class="block">Spacing between the toolbar and the status panel</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -388,7 +400,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="COMMON_PANEL_WIDTH_PCT">
 <h3>COMMON_PANEL_WIDTH_PCT</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">COMMON_PANEL_WIDTH_PCT</span></div>
-<div class="block">右侧这些面板的统一宽度（与你的 Hotbar 相同：0.195f）</div>
+<div class="block">Unified width for these right-side panels (same as your Hotbar: 0.195f)</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -403,14 +415,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="panelHeightPct">
 <h3>panelHeightPct</h3>
 <div class="member-signature"><span class="modifiers">protected final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">panelHeightPct</span></div>
-<div class="block">状态栏自身高度（可调）</div>
+<div class="block">The status panel's own height (adjustable)</div>
 </section>
 </li>
 <li>
 <section class="detail" id="RIGHT_MARGIN_PCT">
 <h3>RIGHT_MARGIN_PCT</h3>
 <div class="member-signature"><span class="modifiers">protected static final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">RIGHT_MARGIN_PCT</span></div>
-<div class="block">与屏幕右边的外边距（与你的 Hotbar 一致：0f 贴边）</div>
+<div class="block">Right margin from the screen edge (same as your Hotbar: 0f, flush to the edge)</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd>
@@ -419,6 +431,30 @@ loadScripts(document, 'script');</script>
 </ul>
 </dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="costRow">
+<h3>costRow</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Table</span>&nbsp;<span class="element-name">costRow</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="costTitleLabel">
+<h3>costTitleLabel</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Label</span>&nbsp;<span class="element-name">costTitleLabel</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="costNumLabel">
+<h3>costNumLabel</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Label</span>&nbsp;<span class="element-name">costNumLabel</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="costIcon">
+<h3>costIcon</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Image</span>&nbsp;<span class="element-name">costIcon</span></div>
 </section>
 </li>
 <li>
@@ -478,7 +514,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="ultBtn">
 <h3>ultBtn</h3>
-<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.TextButton</span>&nbsp;<span class="element-name">ultBtn</span></div>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.Button</span>&nbsp;<span class="element-name">ultBtn</span></div>
 </section>
 </li>
 <li>
@@ -546,28 +582,28 @@ loadScripts(document, 'script');</script>
  com.badlogic.gdx.scenes.scene2d.ui.Skin&nbsp;skin,
  float&nbsp;sw,
  float&nbsp;sh)</span></div>
-<div class="block">子类可覆写：构建额外UI区域（容量/冷却等）。默认不添加。</div>
+<div class="block">Subclasses may override: build extra UI sections (e.g., capacity/cooldown). Default: none.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="bindExtraListeners()">
 <h3>bindExtraListeners</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">bindExtraListeners</span>()</div>
-<div class="block">子类可覆写：绑定额外事件监听（容量/冷却等）。默认不绑定。</div>
+<div class="block">Subclasses may override: bind extra event listeners (e.g., capacity/cooldown). Default: none.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="buildBarStyle()">
 <h3>buildBarStyle</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle</span>&nbsp;<span class="element-name">buildBarStyle</span>()</div>
-<div class="block">通用进度条样式（暗灰背景 + 强调色填充）</div>
+<div class="block">Common progress bar style (dark gray background + accent-colored fill)</div>
 </section>
 </li>
 <li>
 <section class="detail" id="refreshUpgradeInfo()">
 <h3>refreshUpgradeInfo</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refreshUpgradeInfo</span>()</div>
-<div class="block">根据当前等级刷新升级信息与按钮状态</div>
+<div class="block">Refresh upgrade info and button state based on the current level</div>
 </section>
 </li>
 <li>
@@ -582,7 +618,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">protected static</span>&nbsp;<span class="return-type">com.badlogic.gdx.graphics.g2d.TextureRegion</span>&nbsp;<span class="element-name">makeSolid</span><wbr><span class="parameters">(int&nbsp;w,
  int&nbsp;h,
  com.badlogic.gdx.graphics.Color&nbsp;c)</span></div>
-<div class="block">生成纯色贴图（注意：此处未集中回收，若频繁创建可上资源管理器）</div>
+<div class="block">Generate a solid-color texture region (Note: not centrally disposed here—if created frequently, consider using a resource manager)</div>
 </section>
 </li>
 </ul>

@@ -93,64 +93,58 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">英雄状态栏通用基类（百分比定位/尺寸版）：
- - 名字、HP、能量、伤害、等级、升级费用、ULT 按钮
- - 子类可覆写 buildExtraSections()/bindExtraListeners() 增加自定义区块
- - 面板自动放在：Hotbar 正下方 → 召唤工具条正下方</div>
+<div class="block">Generic base class for the hero status panel (percentage-based positioning/sizing):
+ - Includes: name, HP, energy, damage, level, upgrade cost, and ULT button
+ - Subclasses can override buildExtraSections()/bindExtraListeners() to add custom sections
+ - The panel is placed automatically: directly below the Hotbar → and below the summon toolbar</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="DefaultHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">DefaultHeroStatusPanelComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">普通英雄状态栏（用于 Hero1/2/3 等）
- - 在基础信息下方新增：Weapon Switch Cooldown 条
- - 会在英雄升级锁定后，自动变为灰色“Locked”状态</div>
+<div class="block">Default hero status panel (for Hero1/2/3, etc.)
+ - Adds a “Weapon Switch Cooldown” bar below the basic info
+ - Automatically turns into gray “Locked” state after the hero is upgrade-locked</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="EngineerStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">EngineerStatusPanelComponent</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">工程师状态栏：
- - 在基类基础上增加两块：Summon Capacity（已放置/最大）+ Summon Cooldown（倒计时）
- - 监听事件：
-   - summonAliveChanged(alive, max)
-   - summon:cooldown(remaining, total)</div>
-</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="EngineerSummonToolbarComponent.html" title="class in com.csse3200.game.ui.Hero">EngineerSummonToolbarComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">工程师召唤工具条（安全版：零 tint / 零透明度改动 / 防批处理串色）</div>
+<div class="block">Engineer summon toolbar (safe version: zero tint / zero alpha changes / prevents batch color bleed)</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroHintDialog.html" title="class in com.csse3200.game.ui.Hero">HeroHintDialog</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">一次性提示窗口：只显示武器切换提示与关闭按钮。</div>
+<div class="block">One-time hint window: shows only the weapon-switch hint and a close button.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroStatsDialog.html" title="class in com.csse3200.game.ui.Hero">HeroStatsDialog</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">英雄数值窗口：显示等级、生命、攻击，并支持升级。</div>
+<div class="block">Hero stats window: displays level, health, attack, and supports upgrading.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="HeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">HeroStatusPanelComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">左侧黄色栏里的“英雄状态卡片”：
- - 显示：名字、HP、能量、伤害、等级、升级费用、ULT按钮
- - 召唤系统UI：召唤容量（已放置/最大）+ 进度条；冷却倒计时 + 进度条
+<div class="block">“Hero status card” inside the left yellow panel:
+ - Shows: name, HP, energy, damage, level, upgrade cost, ULT button
+ - Summon system UI: summon capacity (placed/max) + progress bar; cooldown countdown + progress bar
 
- 监听的事件：
+ Listened events:
  - hero.hp(Integer cur, Integer max)
  - hero.energy(Integer cur, Integer max)
  - hero.damage(Integer dmg)
  - hero.level(Integer lv)
- - summonAliveChanged(Integer alive, Integer max)     // 来自 EngineerSummonComponent
- - summon:cooldown(Float remaining, Float total)      // 来自 EngineerSummonComponent
+ - summonAliveChanged(Integer alive, Integer max)     // From EngineerSummonComponent
+ - summon:cooldown(Float remaining, Float total)      // From EngineerSummonComponent
  - upgraded(...) / upgradeFailed(...)</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="HeroWeaponSwitcherToolbarComponent.html" title="class in com.csse3200.game.ui.Hero">HeroWeaponSwitcherToolbarComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="SamuraiAttackToolbarComponent.html" title="class in com.csse3200.game.ui.Hero">SamuraiAttackToolbarComponent</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">武士攻击工具条（百分比定位版）
- - 固定在屏幕右侧，位于 Hotbar 正下
- - 三个按钮：居合斩(1) / 横扫斩(2) / 旋风斩(3)
- - 点击触发 hero 事件 "ui:samurai:attack" -&gt; "jab"/"sweep"/"spin"</div>
+<div class="block">Samurai attack toolbar (percentage-based positioning)
+ - Fixed to the right side of the screen, directly below the Hotbar
+ - Three buttons: Iai Slash (1) / Sweeping Slash (2) / Whirlwind Slash (3)
+ - Click to fire hero event "ui:samurai:attack" -&gt; "jab"/"sweep"/"spin"</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SamuraiStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">SamuraiStatusPanelComponent</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">武士状态栏（无召唤区），监听并显示三种剑技的冷却：jab/sweep/spin。</div>
+<div class="block">Samurai status panel (no summon section).</div>
 </div>
 </div>
 </div>

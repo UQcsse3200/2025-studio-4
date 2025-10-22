@@ -99,27 +99,23 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SkillCooldowns.html" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">多技能独立冷却组件：
- - setTotal(skill, total) 配置每个技能的总CD
- - trigger(skill)         让该技能进入冷却（立即广播一次）
- - isReady(skill)         是否就绪
- - update()               每帧递减并按步长节流广播
-
- 事件（由本组件触发）：
-  - "skill:cooldown"  (SkillCooldownInfo payload)
-  - "skill:ready"     (String skill)</div>
+<div class="block">Multi-skill independent cooldown manager.</div>
 </div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="SkillCooldowns.SkillCooldownInfo.html" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns.SkillCooldownInfo</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">
-<div class="block">事件负载：单参数传递，避免多参数 trigger 重载不匹配</div>
+<div class="block">Event payload: single object to avoid overloaded trigger signatures.</div>
 </div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SwordAppearanceComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordAppearanceComponent</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">Keeps the sword sprite in sync with the Samurai's level.</div>
+</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="SwordLevelSyncComponent.html" title="class in com.csse3200.game.components.hero.samurai">SwordLevelSyncComponent</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">Syncs the sword's gameplay stats with the Samurai's level.</div>
+</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="SwordQiAnimatorPng.html" title="class in com.csse3200.game.components.hero.samurai">SwordQiAnimatorPng</a></div>
 <div class="col-last odd-row-color class-summary class-summary-tab2">
-<div class="block">使用 PNG sprite sheet 的“赛博武士剑气”动画封装。</div>
+<div class="block">Wrapper for the Samurai “Sword Qi” animation using a PNG sprite sheet.</div>
 </div>
 </div>
 </div>

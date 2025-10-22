@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public static class </span><span class="element-name type-name-label">SkillCooldowns.SkillCooldownInfo</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">事件负载：单参数传递，避免多参数 trigger 重载不匹配</div>
+<div class="block">Event payload: single object to avoid overloaded trigger signatures.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -110,7 +110,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>final float</code></div>
 <div class="col-second even-row-color"><code><a href="#progress01" class="member-name-link">progress01</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">0..1 where 1.0 means ready.</div>
+</div>
 <div class="col-first odd-row-color"><code>final float</code></div>
 <div class="col-second odd-row-color"><code><a href="#remain" class="member-name-link">remain</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
@@ -179,6 +181,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="progress01">
 <h3>progress01</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">progress01</span></div>
+<div class="block">0..1 where 1.0 means ready.</div>
 </section>
 </li>
 </ul>

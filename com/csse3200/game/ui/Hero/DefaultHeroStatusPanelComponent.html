@@ -95,9 +95,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DefaultHeroStatusPanelComponent</span>
 <span class="extends-implements">extends <a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></span></div>
-<div class="block">普通英雄状态栏（用于 Hero1/2/3 等）
- - 在基础信息下方新增：Weapon Switch Cooldown 条
- - 会在英雄升级锁定后，自动变为灰色“Locked”状态</div>
+<div class="block">Default hero status panel (for Hero1/2/3, etc.)
+ - Adds a “Weapon Switch Cooldown” bar below the basic info
+ - Automatically turns into gray “Locked” state after the hero is upgrade-locked</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -107,7 +107,7 @@ loadScripts(document, 'script');</script>
 <h2>Field Summary</h2>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.ui.Hero.BaseHeroStatusPanelComponent">Fields inherited from class&nbsp;com.csse3200.game.ui.Hero.<a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></h3>
-<code><a href="BaseHeroStatusPanelComponent.html#accentColor">accentColor</a>, <a href="BaseHeroStatusPanelComponent.html#bgColor">bgColor</a>, <a href="BaseHeroStatusPanelComponent.html#card">card</a>, <a href="BaseHeroStatusPanelComponent.html#COMMON_PANEL_WIDTH_PCT">COMMON_PANEL_WIDTH_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#costLabel">costLabel</a>, <a href="BaseHeroStatusPanelComponent.html#damageLabel">damageLabel</a>, <a href="BaseHeroStatusPanelComponent.html#energyLabel">energyLabel</a>, <a href="BaseHeroStatusPanelComponent.html#GAP_BELOW_TOOLBAR_PCT">GAP_BELOW_TOOLBAR_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#hero">hero</a>, <a href="BaseHeroStatusPanelComponent.html#heroName">heroName</a>, <a href="BaseHeroStatusPanelComponent.html#HOTBAR_BOTTOM_PCT">HOTBAR_BOTTOM_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#HOTBAR_HEIGHT_PCT">HOTBAR_HEIGHT_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#hpLabel">hpLabel</a>, <a href="BaseHeroStatusPanelComponent.html#levelLabel">levelLabel</a>, <a href="BaseHeroStatusPanelComponent.html#nameLabel">nameLabel</a>, <a href="BaseHeroStatusPanelComponent.html#panelHeightPct">panelHeightPct</a>, <a href="BaseHeroStatusPanelComponent.html#RIGHT_MARGIN_PCT">RIGHT_MARGIN_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#root">root</a>, <a href="BaseHeroStatusPanelComponent.html#stage">stage</a>, <a href="BaseHeroStatusPanelComponent.html#textColor">textColor</a>, <a href="BaseHeroStatusPanelComponent.html#TOOLBAR_HEIGHT_PCT">TOOLBAR_HEIGHT_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#ultBtn">ultBtn</a>, <a href="BaseHeroStatusPanelComponent.html#upgradeBtn">upgradeBtn</a></code></div>
+<code><a href="BaseHeroStatusPanelComponent.html#accentColor">accentColor</a>, <a href="BaseHeroStatusPanelComponent.html#bgColor">bgColor</a>, <a href="BaseHeroStatusPanelComponent.html#card">card</a>, <a href="BaseHeroStatusPanelComponent.html#COMMON_PANEL_WIDTH_PCT">COMMON_PANEL_WIDTH_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#costIcon">costIcon</a>, <a href="BaseHeroStatusPanelComponent.html#costLabel">costLabel</a>, <a href="BaseHeroStatusPanelComponent.html#costNumLabel">costNumLabel</a>, <a href="BaseHeroStatusPanelComponent.html#costRow">costRow</a>, <a href="BaseHeroStatusPanelComponent.html#costTitleLabel">costTitleLabel</a>, <a href="BaseHeroStatusPanelComponent.html#damageLabel">damageLabel</a>, <a href="BaseHeroStatusPanelComponent.html#energyLabel">energyLabel</a>, <a href="BaseHeroStatusPanelComponent.html#GAP_BELOW_TOOLBAR_PCT">GAP_BELOW_TOOLBAR_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#hero">hero</a>, <a href="BaseHeroStatusPanelComponent.html#heroName">heroName</a>, <a href="BaseHeroStatusPanelComponent.html#HOTBAR_BOTTOM_PCT">HOTBAR_BOTTOM_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#HOTBAR_HEIGHT_PCT">HOTBAR_HEIGHT_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#hpLabel">hpLabel</a>, <a href="BaseHeroStatusPanelComponent.html#levelLabel">levelLabel</a>, <a href="BaseHeroStatusPanelComponent.html#nameLabel">nameLabel</a>, <a href="BaseHeroStatusPanelComponent.html#panelHeightPct">panelHeightPct</a>, <a href="BaseHeroStatusPanelComponent.html#RIGHT_MARGIN_PCT">RIGHT_MARGIN_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#root">root</a>, <a href="BaseHeroStatusPanelComponent.html#stage">stage</a>, <a href="BaseHeroStatusPanelComponent.html#textColor">textColor</a>, <a href="BaseHeroStatusPanelComponent.html#TOOLBAR_HEIGHT_PCT">TOOLBAR_HEIGHT_PCT</a>, <a href="BaseHeroStatusPanelComponent.html#ultBtn">ultBtn</a>, <a href="BaseHeroStatusPanelComponent.html#upgradeBtn">upgradeBtn</a></code></div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.csse3200.game.components.Component">Fields inherited from class&nbsp;com.csse3200.game.components.<a href="../../components/Component.html" title="class in com.csse3200.game.components">Component</a></h3>
 <code><a href="../../components/Component.html#enabled">enabled</a>, <a href="../../components/Component.html#entity">entity</a>, <a href="../../components/Component.html#prio">prio</a></code></div>
@@ -141,7 +141,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#bindExtraListeners()" class="member-name-link">bindExtraListeners</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类可覆写：绑定额外事件监听（容量/冷却等）。默认不绑定。</div>
+<div class="block">Subclasses may override: bind extra event listeners (e.g., capacity/cooldown).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)" class="member-name-link">buildExtraSections</a><wbr>(com.badlogic.gdx.scenes.scene2d.ui.Table&nbsp;card,
@@ -149,7 +149,7 @@ loadScripts(document, 'script');</script>
  float&nbsp;sw,
  float&nbsp;sh)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">子类可覆写：构建额外UI区域（容量/冷却等）。默认不添加。</div>
+<div class="block">Subclasses may override: build extra UI sections (e.g., capacity/cooldown).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
@@ -202,7 +202,7 @@ loadScripts(document, 'script');</script>
  float&nbsp;sw,
  float&nbsp;sh)</span></div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="BaseHeroStatusPanelComponent.html#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)">BaseHeroStatusPanelComponent</a></code></span></div>
-<div class="block">子类可覆写：构建额外UI区域（容量/冷却等）。默认不添加。</div>
+<div class="block">Subclasses may override: build extra UI sections (e.g., capacity/cooldown). Default: none.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="BaseHeroStatusPanelComponent.html#buildExtraSections(com.badlogic.gdx.scenes.scene2d.ui.Table,com.badlogic.gdx.scenes.scene2d.ui.Skin,float,float)">buildExtraSections</a></code>&nbsp;in class&nbsp;<code><a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></code></dd>
@@ -214,7 +214,7 @@ loadScripts(document, 'script');</script>
 <h3>bindExtraListeners</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">bindExtraListeners</span>()</div>
 <div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="BaseHeroStatusPanelComponent.html#bindExtraListeners()">BaseHeroStatusPanelComponent</a></code></span></div>
-<div class="block">子类可覆写：绑定额外事件监听（容量/冷却等）。默认不绑定。</div>
+<div class="block">Subclasses may override: bind extra event listeners (e.g., capacity/cooldown). Default: none.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="BaseHeroStatusPanelComponent.html#bindExtraListeners()">bindExtraListeners</a></code>&nbsp;in class&nbsp;<code><a href="BaseHeroStatusPanelComponent.html" title="class in com.csse3200.game.ui.Hero">BaseHeroStatusPanelComponent</a></code></dd>

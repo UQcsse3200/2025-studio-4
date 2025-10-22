@@ -99,6 +99,15 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JabAttackComponent</span>
 <span class="extends-implements">extends <a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></span></div>
+<div class="block">Quick single-thrust sword attack (“Jab”).
+ <p>
+ Features:
+ <ul>
+   <li>Short animation that eases out from a resting radius and returns.</li>
+   <li>Respects global skill cooldowns and a small per-skill debounce (mini cooldown).</li>
+   <li>Uses <a href="AbstractSwordAttackComponent.html#emitSwordQiAtAngle(float,java.lang.String,int,int,int,int,float,boolean)"><code>AbstractSwordAttackComponent.emitSwordQiAtAngle(float, java.lang.String, int, int, int, int, float, boolean)</code></a> to spawn a short-lived slash projectile.</li>
+   <li>Cooperates with <a href="AttackLockComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks"><code>AttackLockComponent</code></a> to avoid overlapping actions.</li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -141,26 +150,38 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cancel()" class="member-name-link">cancel</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Interrupt/stop the attack due to being hit or switching actions.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canTrigger()" class="member-name-link">canTrigger</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Check if the attack can be triggered now.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive()" class="member-name-link">isActive</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JabAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">JabAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMiniCooldown(float)" class="member-name-link">setMiniCooldown</a><wbr>(float&nbsp;s)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set a small per-skill cooldown to avoid spamming.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JabAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">JabAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setParams(float,float)" class="member-name-link">setParams</a><wbr>(float&nbsp;duration,
  float&nbsp;extra)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Configure motion timing and extra outward displacement.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#trigger(com.badlogic.gdx.math.Vector2)" class="member-name-link">trigger</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;target)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Start the attack.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;dt)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Advance the attack state machine each frame.</div>
+</div>
 </div>
 </div>
 </div>
@@ -204,42 +225,59 @@ loadScripts(document, 'script');</script>
 <h3>setParams</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="JabAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">JabAttackComponent</a></span>&nbsp;<span class="element-name">setParams</span><wbr><span class="parameters">(float&nbsp;duration,
  float&nbsp;extra)</span></div>
+<div class="block">Configure motion timing and extra outward displacement.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setMiniCooldown(float)">
 <h3>setMiniCooldown</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="JabAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">JabAttackComponent</a></span>&nbsp;<span class="element-name">setMiniCooldown</span><wbr><span class="parameters">(float&nbsp;s)</span></div>
+<div class="block">Set a small per-skill cooldown to avoid spamming.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="isActive()">
 <h3>isActive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isActive</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the attack is currently active (in-progress).</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="canTrigger()">
 <h3>canTrigger</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canTrigger</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#canTrigger()">ISamuraiAttack</a></code></span></div>
+<div class="block">Check if the attack can be triggered now.
+ Should include checks for cooldown, lock/mutex, and any internal debouncing.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="trigger(com.badlogic.gdx.math.Vector2)">
 <h3>trigger</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">trigger</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;target)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#trigger(com.badlogic.gdx.math.Vector2)">ISamuraiAttack</a></code></span></div>
+<div class="block">Start the attack.
+ For jab/sweep, <code>targetOrNull</code> is the aim/target point.
+ For spin/area attacks, <code>targetOrNull</code> may be <code>null</code>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="update(float)">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(float&nbsp;dt)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#update(float)">ISamuraiAttack</a></code></span></div>
+<div class="block">Advance the attack state machine each frame.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="cancel()">
 <h3>cancel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">cancel</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#cancel()">ISamuraiAttack</a></code></span></div>
+<div class="block">Interrupt/stop the attack due to being hit or switching actions.</div>
 </section>
 </li>
 </ul>

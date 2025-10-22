@@ -93,15 +93,20 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SkillCooldowns</span>
 <span class="extends-implements">extends <a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">多技能独立冷却组件：
- - setTotal(skill, total) 配置每个技能的总CD
- - trigger(skill)         让该技能进入冷却（立即广播一次）
- - isReady(skill)         是否就绪
- - update()               每帧递减并按步长节流广播
+<div class="block">Multi-skill independent cooldown manager.
+ Usage:
+ <ul>
+   <li><a href="#setTotal(java.lang.String,float)"><code>setTotal(String, float)</code></a> — configure a skill's total cooldown duration</li>
+   <li><a href="#trigger(java.lang.String)"><code>trigger(String)</code></a> — start cooldown for the given skill (emits an update immediately)</li>
+   <li><a href="#isReady(java.lang.String)"><code>isReady(String)</code></a> — query readiness</li>
+   <li><a href="#update()"><code>update()</code></a> — tick down each frame and emit throttled updates</li>
+ </ul>
 
- 事件（由本组件触发）：
-  - "skill:cooldown"  (SkillCooldownInfo payload)
-  - "skill:ready"     (String skill)</div>
+ Events emitted by this component:
+ <ul>
+   <li><b>"skill:cooldown"</b> — payload: <a href="SkillCooldowns.SkillCooldownInfo.html" title="class in com.csse3200.game.components.hero.samurai"><code>SkillCooldowns.SkillCooldownInfo</code></a></li>
+   <li><b>"skill:ready"</b> — payload: <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> skill name</li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -117,7 +122,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>static class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="SkillCooldowns.SkillCooldownInfo.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns.SkillCooldownInfo</a></code></div>
 <div class="col-last even-row-color">
-<div class="block">事件负载：单参数传递，避免多参数 trigger 重载不匹配</div>
+<div class="block">Event payload: single object to avoid overloaded trigger signatures.</div>
 </div>
 </div>
 </section>
@@ -158,39 +163,37 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getProgress01(java.lang.String)" class="member-name-link">getProgress01</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">查询 0~1 进度（1 表示就绪）</div>
+<div class="block">Query normalized progress in [0..1], where 1 means ready.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getRemain(java.lang.String)" class="member-name-link">getRemain</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">查询剩余秒数</div>
+<div class="block">Query remaining seconds for a skill.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isReady(java.lang.String)" class="member-name-link">isReady</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">技能是否就绪（冷却完成）</div>
-</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reduce(java.lang.String,float)" class="member-name-link">reduce</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill,
  float&nbsp;deltaSec)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">可选：缩短冷却（如击杀回能）</div>
+<div class="block">Optional: shorten a cooldown (e.g., on-kill refund).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reset(java.lang.String)" class="member-name-link">reset</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">可选：重置（立即就绪）</div>
+<div class="block">Optional: reset a cooldown to ready immediately.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SkillCooldowns.html" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTotal(java.lang.String,float)" class="member-name-link">setTotal</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill,
  float&nbsp;totalSec)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">配置技能总冷却（不会立刻触发冷却）</div>
+<div class="block">Configure a skill's total cooldown (does not start the cooldown).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#trigger(java.lang.String)" class="member-name-link">trigger</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">进入冷却（从 total 开始倒计时），并立即广播一次</div>
+<div class="block">Start cooldown from the configured total and emit an immediate update.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
@@ -236,21 +239,25 @@ loadScripts(document, 'script');</script>
 <h3>setTotal</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SkillCooldowns.html" title="class in com.csse3200.game.components.hero.samurai">SkillCooldowns</a></span>&nbsp;<span class="element-name">setTotal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill,
  float&nbsp;totalSec)</span></div>
-<div class="block">配置技能总冷却（不会立刻触发冷却）</div>
+<div class="block">Configure a skill's total cooldown (does not start the cooldown).</div>
 </section>
 </li>
 <li>
 <section class="detail" id="isReady(java.lang.String)">
 <h3>isReady</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isReady</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</span></div>
-<div class="block">技能是否就绪（冷却完成）</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if the skill is ready (cooldown finished).</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="trigger(java.lang.String)">
 <h3>trigger</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">trigger</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</span></div>
-<div class="block">进入冷却（从 total 开始倒计时），并立即广播一次</div>
+<div class="block">Start cooldown from the configured total and emit an immediate update.
+ If the skill was unseen, it is created with total=0 (i.e., instantly ready next time).</div>
 </section>
 </li>
 <li>
@@ -258,28 +265,29 @@ loadScripts(document, 'script');</script>
 <h3>reduce</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reduce</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill,
  float&nbsp;deltaSec)</span></div>
-<div class="block">可选：缩短冷却（如击杀回能）</div>
+<div class="block">Optional: shorten a cooldown (e.g., on-kill refund).
+ Emits an update immediately and fires "skill:ready" if it reaches zero.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="reset(java.lang.String)">
 <h3>reset</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">reset</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</span></div>
-<div class="block">可选：重置（立即就绪）</div>
+<div class="block">Optional: reset a cooldown to ready immediately.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getRemain(java.lang.String)">
 <h3>getRemain</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getRemain</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</span></div>
-<div class="block">查询剩余秒数</div>
+<div class="block">Query remaining seconds for a skill.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getProgress01(java.lang.String)">
 <h3>getProgress01</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getProgress01</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;skill)</span></div>
-<div class="block">查询 0~1 进度（1 表示就绪）</div>
+<div class="block">Query normalized progress in [0..1], where 1 means ready.</div>
 </section>
 </li>
 <li>

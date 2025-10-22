@@ -91,8 +91,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">SwordQiFactory</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">专用于创建“赛博武士剑气（PNG sprite sheet 动画）”的投射物实体。
- 不添加任何静态贴图渲染组件。</div>
+<div class="block">Factory dedicated to creating the “Cyber Samurai Sword Qi” projectile (PNG sprite sheet animation).
+ Does NOT add any static sprite rendering component.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -163,18 +163,18 @@ loadScripts(document, 'script');</script>
  boolean&nbsp;loop)</span></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>spawn</code> - 出生点（世界坐标）</dd>
-<dd><code>vx</code> - ,vy        初速度</dd>
-<dd><code>life</code> - 存活时长（秒）</dd>
-<dd><code>damage</code> - 伤害</dd>
-<dd><code>drawW</code> - ,drawH  渲染尺寸（世界单位，对应 entity.setScale）</dd>
-<dd><code>pngPath</code> - PNG 精灵图路径（assets 相对路径）</dd>
-<dd><code>cols</code> - ,rows    切帧网格（列/行）</dd>
-<dd><code>frameW</code> - ,frameH 每帧像素尺寸</dd>
-<dd><code>frameDur</code> - 每帧时长（秒）</dd>
-<dd><code>angleDeg</code> - 世界朝向（0=向右，90=向上）</dd>
-<dd><code>baseRotation</code> - 素材基准朝向（素材朝上=90f，朝右=0f）</dd>
-<dd><code>loop</code> - 是否循环播放动画</dd>
+<dd><code>spawn</code> - spawn position (world coordinates)</dd>
+<dd><code>vx</code> - ,vy         initial velocity</dd>
+<dd><code>life</code> - lifetime (seconds)</dd>
+<dd><code>damage</code> - damage amount</dd>
+<dd><code>drawW</code> - ,drawH   render size (world units, corresponds to entity.setScale)</dd>
+<dd><code>pngPath</code> - PNG sprite sheet path (relative to assets)</dd>
+<dd><code>cols</code> - ,rows     grid slicing (columns/rows)</dd>
+<dd><code>frameW</code> - ,frameH per-frame pixel size</dd>
+<dd><code>frameDur</code> - per-frame duration (seconds)</dd>
+<dd><code>angleDeg</code> - world facing (0=right, 90=up)</dd>
+<dd><code>baseRotation</code> - asset’s base facing (asset facing up=90f, facing right=0f)</dd>
+<dd><code>loop</code> - whether the animation loops</dd>
 </dl>
 </section>
 </li>

@@ -93,11 +93,19 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">HeroUpgradeComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Hero upgrade component:
- - Triggered by pressing Enter / Numpad Enter, or via an event.
+<div class="block">Hero upgrade component.
+ <p>
+ Features:
+ - Can be triggered via keyboard (Enter / Numpad Enter) or the "requestUpgrade" event.
  - Deducts cost from the player's wallet.
- - Increases the hero's stats when upgraded.
- - Notifies UI and other systems via events.</div>
+ - Applies stat growth to the hero on upgrade, with a level cap.
+ - Emits events so UI/other systems can react.
+ <p>
+ Events emitted:
+ - "upgradeFailed" (String reason)
+ - "upgraded"      (Integer newLevel, CurrencyType currencyType, Integer cost)
+ - "hero.level"    (Integer level)
+ - "hero.damage"   (Integer baseAttack or equivalent)</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -137,7 +145,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="HeroUpgradeComponent.html" title="class in com.csse3200.game.components.hero">HeroUpgradeComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#attachPlayer(com.csse3200.game.entities.Entity)" class="member-name-link">attachPlayer</a><wbr>(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Optionally inject player entity (recommended during spawnHeroAt).</div>
+<div class="block">Inject the player entity (recommended during hero spawn).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
@@ -150,12 +158,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPlayer()" class="member-name-link">getPlayer</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns player entity reference (optional, if needed).</div>
+<div class="block">Optional: player accessor if needed elsewhere.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getWallet()" class="member-name-link">getWallet</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns wallet component (used by other systems such as ultimate).</div>
+<div class="block">Wallet accessor (e.g., for an ultimate that needs currency).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLevel(int)" class="member-name-link">setLevel</a><wbr>(int&nbsp;newLevel)</code></div>
@@ -214,8 +222,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="attachPlayer(com.csse3200.game.entities.Entity)">
 <h3>attachPlayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="HeroUpgradeComponent.html" title="class in com.csse3200.game.components.hero">HeroUpgradeComponent</a></span>&nbsp;<span class="element-name">attachPlayer</span><wbr><span class="parameters">(<a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
-<div class="block">Optionally inject player entity (recommended during spawnHeroAt).
- Reduces lookup overhead and avoids ambiguity.</div>
+<div class="block">Inject the player entity (recommended during hero spawn).
+ Avoids repeated lookups and ambiguity.</div>
 </section>
 </li>
 <li>
@@ -284,14 +292,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getWallet()">
 <h3>getWallet</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../currencysystem/CurrencyManagerComponent.html" title="class in com.csse3200.game.components.currencysystem">CurrencyManagerComponent</a></span>&nbsp;<span class="element-name">getWallet</span>()</div>
-<div class="block">Returns wallet component (used by other systems such as ultimate).</div>
+<div class="block">Wallet accessor (e.g., for an ultimate that needs currency).</div>
 </section>
 </li>
 <li>
 <section class="detail" id="getPlayer()">
 <h3>getPlayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">getPlayer</span>()</div>
-<div class="block">Returns player entity reference (optional, if needed).</div>
+<div class="block">Optional: player accessor if needed elsewhere.</div>
 </section>
 </li>
 </ul>

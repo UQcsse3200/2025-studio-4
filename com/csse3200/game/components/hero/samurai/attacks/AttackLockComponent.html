@@ -93,6 +93,17 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AttackLockComponent</span>
 <span class="extends-implements">extends <a href="../../../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
+<div class="block">Simple mutex-style lock to prevent overlapping Samurai attack actions.
+ <p>
+ Usage:
+ <pre>
+   if (lock.tryAcquire("dash-slash")) {
+       // perform the attack...
+       lock.release("dash-slash");
+   }
+ </pre>
+ Only one holder can own the lock at a time. The holder's name is tracked for
+ easier debugging and optional safe release.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -137,10 +148,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#release(java.lang.String)" class="member-name-link">release</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Release the lock.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#tryAcquire(java.lang.String)" class="member-name-link">tryAcquire</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempt to acquire the lock.</div>
+</div>
 </div>
 </div>
 </div>
@@ -179,24 +194,47 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="tryAcquire(java.lang.String)">
 <h3>tryAcquire</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">tryAcquire</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="block">Attempt to acquire the lock.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - holder identifier (recommended: the attack/skill name)</dd>
+<dt>Returns:</dt>
+<dd>true if acquired; false if already held by someone else</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="release(java.lang.String)">
 <h3>release</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">release</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<div class="block">Release the lock.
+ <p>
+ If <code>name</code> matches the current holder or is <code>null</code>, the lock is released.
+ Passing <code>null</code> acts as a force-release (use with care).</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - holder attempting to release; <code>null</code> to force release</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="isBusy()">
 <h3>isBusy</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isBusy</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the lock is currently held</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="holder()">
 <h3>holder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">holder</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the current holder's identifier, or empty string if free</dd>
+</dl>
 </section>
 </li>
 </ul>

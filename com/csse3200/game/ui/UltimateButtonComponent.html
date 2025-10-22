@@ -93,10 +93,14 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">UltimateButtonComponent</span>
 <span class="extends-implements">extends <a href="../components/Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Ultimate button utility: provides static method to create ULT button for embedding in other UI.
- - Clicking the button or pressing the Q key triggers the "ultimate.request" event.
- - During ultimate, the button is disabled (greyed out).
- - When there is not enough currency, logs a failure message.</div>
+<div class="block">Ultimate button (shows cost + currency icon, supports cooldown).
+
+ <ul>
+   <li><code>createUltimateButton(hero)</code> — legacy usage (no cost/icon label)</li>
+   <li><code>createUltimateButton(hero, cost, currency)</code> — displays <code>"ULT (cost)"</code> with a currency icon</li>
+ </ul>
+ <p>
+ Currency icon images are expected under <code>assets/images/currency/*.png</code>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -141,11 +145,18 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.TextButton</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createUltimateButton(com.csse3200.game.entities.Entity)" class="member-name-link">createUltimateButton</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;heroEntity)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Creates a ULT button that can be embedded in other UI components.</div>
+<div class="block">Legacy variant (no cost/currency icon).</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createUltimateButton(com.csse3200.game.entities.Entity,int,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)" class="member-name-link">createUltimateButton</a><wbr>(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;heroEntity,
+ int&nbsp;cost,
+ <a href="../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">New: button with cost and currency icon (recommended).</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Called when the component is disposed.</div>
 </div>
 </div>
@@ -186,14 +197,16 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="createUltimateButton(com.csse3200.game.entities.Entity)">
 <h3>createUltimateButton</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.TextButton</span>&nbsp;<span class="element-name">createUltimateButton</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;heroEntity)</span></div>
-<div class="block">Creates a ULT button that can be embedded in other UI components.
- The button will listen to the hero entity's events and update accordingly.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>heroEntity</code> - The hero entity that owns the ultimate ability</dd>
-<dt>Returns:</dt>
-<dd>A configured TextButton ready to be added to any UI</dd>
-</dl>
+<div class="block">Legacy variant (no cost/currency icon).</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createUltimateButton(com.csse3200.game.entities.Entity,int,com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType)">
+<h3>createUltimateButton</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton</span>&nbsp;<span class="element-name">createUltimateButton</span><wbr><span class="parameters">(<a href="../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;heroEntity,
+ int&nbsp;cost,
+ <a href="../components/currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currencyType)</span></div>
+<div class="block">New: button with cost and currency icon (recommended).</div>
 </section>
 </li>
 <li>

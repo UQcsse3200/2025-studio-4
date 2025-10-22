@@ -99,6 +99,15 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SpinAttackComponent</span>
 <span class="extends-implements">extends <a href="AbstractSwordAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">AbstractSwordAttackComponent</a></span></div>
+<div class="block">Spinning sword attack that emits multiple Sword Qi projectiles in batches while the hero rotates.
+ <p>
+ Key behaviors:
+ <ul>
+   <li>Gated by global cooldown + a small per-skill debounce (mini cooldown) + a simple attack lock.</li>
+   <li>Rotates the sword pose over <code>duration</code>, optionally multiple full turns (<code>turns</code>).</li>
+   <li>Emits <code>qiSpinCount</code> projectiles spaced evenly by angle, batched over time via <code>emitInterval</code>.</li>
+   <li>Auto-extends <code>duration</code> if needed to finish all batched emissions.</li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -141,51 +150,71 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cancel()" class="member-name-link">cancel</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Interrupt/stop the attack due to being hit or switching actions.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#canTrigger()" class="member-name-link">canTrigger</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Check if the attack can be triggered now.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isActive()" class="member-name-link">isActive</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDirectionCCW(boolean)" class="member-name-link">setDirectionCCW</a><wbr>(boolean&nbsp;ccw)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set spin direction: CCW = true, CW = false.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEmitCatchUpMaxPerFrame(int)" class="member-name-link">setEmitCatchUpMaxPerFrame</a><wbr>(int&nbsp;n)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">可调：掉帧补发上限（默认1，想更快补齐可升到2~3）</div>
+<div class="block">Limit how many catch-up emissions can happen in one frame.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setEmitInterval(float)" class="member-name-link">setEmitInterval</a><wbr>(float&nbsp;s)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">可调：每发间隔（默认0.3s）</div>
+<div class="block">Configure emission interval between projectiles.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setMiniCooldown(float)" class="member-name-link">setMiniCooldown</a><wbr>(float&nbsp;s)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set a mini cooldown to debounce spin triggers.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setParams(float,float)" class="member-name-link">setParams</a><wbr>(float&nbsp;duration,
  float&nbsp;extra)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Configure spin timing and extra outward displacement.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSpinDrawSize(float,float)" class="member-name-link">setSpinDrawSize</a><wbr>(float&nbsp;w,
  float&nbsp;h)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Configure visual draw size for the Sword Qi projectiles.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSpinProjectile(float,float,int)" class="member-name-link">setSpinProjectile</a><wbr>(float&nbsp;speed,
  float&nbsp;life,
  int&nbsp;damage)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Configure projectile speed/life/damage for the spin.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTurns(float)" class="member-name-link">setTurns</a><wbr>(float&nbsp;t)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Set how many full turns to rotate during the spin.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#trigger(com.badlogic.gdx.math.Vector2)" class="member-name-link">trigger</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;ignored)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Start the attack.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;dt)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Advance the attack state machine each frame.</div>
+</div>
 </div>
 </div>
 </div>
@@ -229,68 +258,87 @@ loadScripts(document, 'script');</script>
 <h3>setParams</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setParams</span><wbr><span class="parameters">(float&nbsp;duration,
  float&nbsp;extra)</span></div>
+<div class="block">Configure spin timing and extra outward displacement.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setTurns(float)">
 <h3>setTurns</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setTurns</span><wbr><span class="parameters">(float&nbsp;t)</span></div>
+<div class="block">Set how many full turns to rotate during the spin.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setMiniCooldown(float)">
 <h3>setMiniCooldown</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setMiniCooldown</span><wbr><span class="parameters">(float&nbsp;s)</span></div>
+<div class="block">Set a mini cooldown to debounce spin triggers.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setEmitInterval(float)">
 <h3>setEmitInterval</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setEmitInterval</span><wbr><span class="parameters">(float&nbsp;s)</span></div>
-<div class="block">可调：每发间隔（默认0.3s）</div>
+<div class="block">Configure emission interval between projectiles. Default 0.30s.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setEmitCatchUpMaxPerFrame(int)">
 <h3>setEmitCatchUpMaxPerFrame</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setEmitCatchUpMaxPerFrame</span><wbr><span class="parameters">(int&nbsp;n)</span></div>
-<div class="block">可调：掉帧补发上限（默认1，想更快补齐可升到2~3）</div>
+<div class="block">Limit how many catch-up emissions can happen in one frame. Default 1.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="isActive()">
 <h3>isActive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isActive</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>whether the attack is currently active (in-progress).</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="canTrigger()">
 <h3>canTrigger</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">canTrigger</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#canTrigger()">ISamuraiAttack</a></code></span></div>
+<div class="block">Check if the attack can be triggered now.
+ Should include checks for cooldown, lock/mutex, and any internal debouncing.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="trigger(com.badlogic.gdx.math.Vector2)">
 <h3>trigger</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">trigger</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;ignored)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#trigger(com.badlogic.gdx.math.Vector2)">ISamuraiAttack</a></code></span></div>
+<div class="block">Start the attack.
+ For jab/sweep, <code>targetOrNull</code> is the aim/target point.
+ For spin/area attacks, <code>targetOrNull</code> may be <code>null</code>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setDirectionCCW(boolean)">
 <h3>setDirectionCCW</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setDirectionCCW</span><wbr><span class="parameters">(boolean&nbsp;ccw)</span></div>
+<div class="block">Set spin direction: CCW = true, CW = false.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="update(float)">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(float&nbsp;dt)</span></div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#update(float)">ISamuraiAttack</a></code></span></div>
+<div class="block">Advance the attack state machine each frame.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="cancel()">
 <h3>cancel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">cancel</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="ISamuraiAttack.html#cancel()">ISamuraiAttack</a></code></span></div>
+<div class="block">Interrupt/stop the attack due to being hit or switching actions.</div>
 </section>
 </li>
 <li>
@@ -299,6 +347,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setSpinProjectile</span><wbr><span class="parameters">(float&nbsp;speed,
  float&nbsp;life,
  int&nbsp;damage)</span></div>
+<div class="block">Configure projectile speed/life/damage for the spin.</div>
 </section>
 </li>
 <li>
@@ -306,6 +355,7 @@ loadScripts(document, 'script');</script>
 <h3>setSpinDrawSize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="SpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai.attacks">SpinAttackComponent</a></span>&nbsp;<span class="element-name">setSpinDrawSize</span><wbr><span class="parameters">(float&nbsp;w,
  float&nbsp;h)</span></div>
+<div class="block">Configure visual draw size for the Sword Qi projectiles.</div>
 </section>
 </li>
 </ul>

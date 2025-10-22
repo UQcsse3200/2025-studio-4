@@ -93,6 +93,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SamuraiSwordController</span>
 <span class="extends-implements">extends <a href="../../../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
+<div class="block">Orchestrates Samurai sword attacks (jab / sweep / spin).
+ Delegates per-frame updates and exposes trigger helpers with simple gating.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -133,19 +135,27 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFacingDeg()" class="member-name-link">getFacingDeg</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Get the current facing in degrees.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAttacking()" class="member-name-link">isAttacking</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerJab(com.badlogic.gdx.math.Vector2)" class="member-name-link">triggerJab</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;target)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempt to start a Jab toward <code>target</code>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerSpin(boolean)" class="member-name-link">triggerSpin</a><wbr>(boolean&nbsp;ccw)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempt to start a Spin attack.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#triggerSweep(com.badlogic.gdx.math.Vector2)" class="member-name-link">triggerSweep</a><wbr>(com.badlogic.gdx.math.Vector2&nbsp;target)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Attempt to start a Sweep toward <code>target</code>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -204,30 +214,44 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="triggerJab(com.badlogic.gdx.math.Vector2)">
 <h3>triggerJab</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">triggerJab</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;target)</span></div>
+<div class="block">Attempt to start a Jab toward <code>target</code>. Returns true if triggered.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="triggerSweep(com.badlogic.gdx.math.Vector2)">
 <h3>triggerSweep</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">triggerSweep</span><wbr><span class="parameters">(com.badlogic.gdx.math.Vector2&nbsp;target)</span></div>
+<div class="block">Attempt to start a Sweep toward <code>target</code>. Returns true if triggered.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="triggerSpin(boolean)">
 <h3>triggerSpin</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">triggerSpin</span><wbr><span class="parameters">(boolean&nbsp;ccw)</span></div>
+<div class="block">Attempt to start a Spin attack.
+ The <code>ccw</code> flag sets spin direction via the public setter if available.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if triggered.</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getFacingDeg()">
 <h3>getFacingDeg</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getFacingDeg</span>()</div>
+<div class="block">Get the current facing in degrees.
+ Prefers the active attack; if none active, falls back to jab's last facing.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="isAttacking()">
 <h3>isAttacking</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAttacking</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if any sword attack is currently active.</dd>
+</dl>
 </section>
 </li>
 </ul>

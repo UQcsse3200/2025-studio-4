@@ -93,10 +93,10 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">EngineerUpgradeComponent</span>
 <span class="extends-implements">extends <a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">专属工程师的升级组件：
- - 支持独立价格曲线、货币类型、等级上限（默认更贵）
- - 触发：Enter/小键盘Enter 或 外部事件("requestUpgrade", playerEntity)
- - 成功会广播("upgraded", level, currencyType, cost) 和 UI 刷新事件</div>
+<div class="block">Engineer-only upgrade component:
+ - Supports its own price curve, currency type, and max level (defaults to pricier settings)
+ - Triggers via: Enter/Numpad Enter or external event ("requestUpgrade", playerEntity)
+ - On success broadcasts ("upgraded", level, currencyType, cost) and UI refresh events</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -136,7 +136,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="EngineerUpgradeComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerUpgradeComponent</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#attachPlayer(com.csse3200.game.entities.Entity)" class="member-name-link">attachPlayer</a><wbr>(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">可选注入：玩家引用（推荐在 spawn 时 attach，减少全局查找）</div>
+<div class="block">Optional injection: player reference (recommended to attach at spawn to reduce global lookups)</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
@@ -152,7 +152,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMaxLevel()" class="member-name-link">getMaxLevel</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">获取最大等级 = 可升级次数 + 1</div>
+<div class="block">Get max level = number of upgrades + 1</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNextCost()" class="member-name-link">getNextCost</a>()</code></div>
@@ -173,7 +173,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUpgradeCosts(com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType,int...)" class="member-name-link">setUpgradeCosts</a><wbr>(<a href="../../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currency,
  int...&nbsp;costs)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">—— 可选注入：价格曲线与货币 ——</div>
+<div class="block">—— Optional injection: price curve and currency ——</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="EngineerUpgradeComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerUpgradeComponent</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setUpgradeSfxVolume(float)" class="member-name-link">setUpgradeSfxVolume</a><wbr>(float&nbsp;vol)</code></div>
@@ -222,14 +222,14 @@ loadScripts(document, 'script');</script>
 <h3>setUpgradeCosts</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="EngineerUpgradeComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerUpgradeComponent</a></span>&nbsp;<span class="element-name">setUpgradeCosts</span><wbr><span class="parameters">(<a href="../../currencysystem/CurrencyComponent.CurrencyType.html" title="enum class in com.csse3200.game.components.currencysystem">CurrencyComponent.CurrencyType</a>&nbsp;currency,
  int...&nbsp;costs)</span></div>
-<div class="block">—— 可选注入：价格曲线与货币 ——</div>
+<div class="block">—— Optional injection: price curve and currency ——</div>
 </section>
 </li>
 <li>
 <section class="detail" id="attachPlayer(com.csse3200.game.entities.Entity)">
 <h3>attachPlayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="EngineerUpgradeComponent.html" title="class in com.csse3200.game.components.hero.engineer">EngineerUpgradeComponent</a></span>&nbsp;<span class="element-name">attachPlayer</span><wbr><span class="parameters">(<a href="../../../entities/Entity.html" title="class in com.csse3200.game.entities">Entity</a>&nbsp;player)</span></div>
-<div class="block">可选注入：玩家引用（推荐在 spawn 时 attach，减少全局查找）</div>
+<div class="block">Optional injection: player reference (recommended to attach at spawn to reduce global lookups)</div>
 </section>
 </li>
 <li>
@@ -254,7 +254,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMaxLevel()">
 <h3>getMaxLevel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getMaxLevel</span>()</div>
-<div class="block">获取最大等级 = 可升级次数 + 1</div>
+<div class="block">Get max level = number of upgrades + 1</div>
 </section>
 </li>
 <li>

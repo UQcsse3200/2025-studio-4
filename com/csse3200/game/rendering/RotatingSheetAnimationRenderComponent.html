@@ -100,8 +100,9 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RotatingSheetAnimationRenderComponent</span>
 <span class="extends-implements">extends <a href="RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a>
 implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
-<div class="block">使用 PNG sprite sheet（非 .atlas），按网格切帧的“可旋转”帧动画渲染组件。
- - 支持：旋转、缩放、原点、播完事件（animationFinished）、前景层/自定义 zIndex。</div>
+<div class="block">Render component for frame animations cut from a PNG sprite sheet (not .atlas),
+ supporting grid slicing with rotation, scaling, custom origin, a completion event
+ (<code>animationFinished</code>), and layer/z-index control.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -153,7 +154,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
  com.badlogic.gdx.graphics.g2d.Animation.PlayMode&nbsp;playMode,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;animName)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">从 PNG 网格切帧构造组件。（内部自行 new Texture）</div>
+<div class="block">Build from a grid-sliced PNG sheet.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLayer()" class="member-name-link">getLayer</a>()</code></div>
@@ -168,7 +169,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAutoRemoveOnFinish(boolean)" class="member-name-link">setAutoRemoveOnFinish</a><wbr>(boolean&nbsp;v)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">NORMAL 模式播完后自动移除本组件（停止绘制）。</div>
+<div class="block">In NORMAL mode, automatically stop updating after the animation completes.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBaseRotation(float)" class="member-name-link">setBaseRotation</a><wbr>(float&nbsp;deg)</code></div>
@@ -176,13 +177,13 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLayer(int)" class="member-name-link">setLayer</a><wbr>(int&nbsp;layer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">设置渲染层：RenderService 会按层分桶渲染。</div>
+<div class="block">Assign render layer; the RenderService buckets by layer.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOrigin(float,float)" class="member-name-link">setOrigin</a><wbr>(float&nbsp;ox,
  float&nbsp;oy)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">原点（相对 entity.scale 的大小单位）。传负值=中心。</div>
+<div class="block">Origin relative to entity scale; negative values use the frame center.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setRotation(float)" class="member-name-link">setRotation</a><wbr>(float&nbsp;deg)</code></div>
@@ -194,7 +195,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setZIndexOverride(java.lang.Float)" class="member-name-link">setZIndexOverride</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Float.html" title="class or interface in java.lang" class="external-link">Float</a>&nbsp;z)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">强制覆盖 zIndex（不跟随 -pos.y）。</div>
+<div class="block">Force a fixed zIndex (disables the default -pos.y behavior).</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#start()" class="member-name-link">start</a>()</code></div>
@@ -233,7 +234,18 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
  float&nbsp;frameDur,
  com.badlogic.gdx.graphics.g2d.Animation.PlayMode&nbsp;playMode,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;animName)</span></div>
-<div class="block">从 PNG 网格切帧构造组件。（内部自行 new Texture）</div>
+<div class="block">Build from a grid-sliced PNG sheet. This constructor loads the Texture internally.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>pngPath</code> - path to the PNG sprite sheet</dd>
+<dd><code>cols</code> - number of columns</dd>
+<dd><code>rows</code> - number of rows</dd>
+<dd><code>frameW</code> - frame width in pixels</dd>
+<dd><code>frameH</code> - frame height in pixels</dd>
+<dd><code>frameDur</code> - duration of each frame in seconds</dd>
+<dd><code>playMode</code> - libGDX <code>Animation.PlayMode</code></dd>
+<dd><code>animName</code> - logical animation name for events/logging</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -266,28 +278,28 @@ implements <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base
 <h3>setOrigin</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOrigin</span><wbr><span class="parameters">(float&nbsp;ox,
  float&nbsp;oy)</span></div>
-<div class="block">原点（相对 entity.scale 的大小单位）。传负值=中心。</div>
+<div class="block">Origin relative to entity scale; negative values use the frame center.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setAutoRemoveOnFinish(boolean)">
 <h3>setAutoRemoveOnFinish</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setAutoRemoveOnFinish</span><wbr><span class="parameters">(boolean&nbsp;v)</span></div>
-<div class="block">NORMAL 模式播完后自动移除本组件（停止绘制）。</div>
+<div class="block">In NORMAL mode, automatically stop updating after the animation completes.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setLayer(int)">
 <h3>setLayer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setLayer</span><wbr><span class="parameters">(int&nbsp;layer)</span></div>
-<div class="block">设置渲染层：RenderService 会按层分桶渲染。</div>
+<div class="block">Assign render layer; the RenderService buckets by layer.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="setZIndexOverride(java.lang.Float)">
 <h3>setZIndexOverride</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setZIndexOverride</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Float.html" title="class or interface in java.lang" class="external-link">Float</a>&nbsp;z)</span></div>
-<div class="block">强制覆盖 zIndex（不跟随 -pos.y）。</div>
+<div class="block">Force a fixed zIndex (disables the default -pos.y behavior).</div>
 </section>
 </li>
 <li>

@@ -91,7 +91,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">SwordQiAnimatorPng</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">使用 PNG sprite sheet 的“赛博武士剑气”动画封装。</div>
+<div class="block">Wrapper for the Samurai “Sword Qi” animation using a PNG sprite sheet.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -117,7 +117,9 @@ loadScripts(document, 'script');</script>
  float&nbsp;angleDeg,
  float&nbsp;baseRotation,
  boolean&nbsp;loop)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Apply a rotating sheet animation to an entity.</div>
+</div>
 </div>
 </div>
 </div>
@@ -148,18 +150,19 @@ loadScripts(document, 'script');</script>
  float&nbsp;angleDeg,
  float&nbsp;baseRotation,
  boolean&nbsp;loop)</span></div>
+<div class="block">Apply a rotating sheet animation to an entity.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>entity</code> - 目标实体</dd>
-<dd><code>pngPath</code> - PNG 路径，例如 "images/samurai/slash_sheet_6x1_64.png"</dd>
-<dd><code>cols</code> - 列数（例如 6）</dd>
-<dd><code>rows</code> - 行数（例如 1）</dd>
-<dd><code>frameW</code> - 每帧宽（像素）</dd>
-<dd><code>frameH</code> - 每帧高（像素）</dd>
-<dd><code>frameDur</code> - 每帧时长（秒）</dd>
-<dd><code>angleDeg</code> - 世界朝向角（0°向右，90°向上）</dd>
-<dd><code>baseRotation</code> - 素材基准朝向：素材默认向上=90f，默认向右=0f</dd>
-<dd><code>loop</code> - 是否循环（true=LOOP，false=Play once）</dd>
+<dd><code>entity</code> - target entity</dd>
+<dd><code>pngPath</code> - PNG sprite sheet path (e.g., "images/samurai/slash_sheet_6x1_64.png")</dd>
+<dd><code>cols</code> - number of columns (e.g., 6)</dd>
+<dd><code>rows</code> - number of rows (e.g., 1)</dd>
+<dd><code>frameW</code> - frame width in pixels</dd>
+<dd><code>frameH</code> - frame height in pixels</dd>
+<dd><code>frameDur</code> - duration per frame in seconds</dd>
+<dd><code>angleDeg</code> - world-facing angle (0° = right, 90° = up)</dd>
+<dd><code>baseRotation</code> - source-art facing baseline (e.g., art facing up = 90f, right = 0f)</dd>
+<dd><code>loop</code> - true = loop; false = play once</dd>
 </dl>
 </section>
 </li>

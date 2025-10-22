@@ -4,7 +4,6 @@ import com.csse3200.game.components.HealthBarComponent;
 import com.badlogic.gdx.Gdx;
 import com.csse3200.game.components.hero.HeroUpgradeComponent;
 import com.csse3200.game.components.hero.engineer.SummonPlacementComponent;
-import com.csse3200.game.components.maingame.TowerUpgradeMenu;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.services.SelectedHeroService;
 import com.csse3200.game.ui.Hero.DefaultHeroStatusPanelComponent;
@@ -80,6 +79,9 @@ public class ForestGameArea extends GameArea {
     private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
 
+    private Entity waveTrackerUI;
+    private int TOTAL_WAVES;
+
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea currentGameArea;
@@ -109,7 +111,33 @@ public class ForestGameArea extends GameArea {
             "sounds/explosion_2s.ogg",
             "sounds/place_soft_click.ogg",
             "sounds/place_metal_clunk.ogg",
-            "sounds/place_energy_drop.ogg"
+            "sounds/place_energy_drop.ogg",
+            "sounds/Enemy Sounds/tank/Tank_Death.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Walk.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Attack.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Random_Noise.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Death.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Walk.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Attack.wav",
+            "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Death.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Walk.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Attack.wav",
+            "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3",
+            "sounds/Enemy Sounds/boss/Boss_Death.wav",
+            "sounds/Enemy Sounds/boss/Boss_Walk_1.wav",
+            "sounds/Enemy Sounds/boss/Boss_Walk_2.wav",
+            "sounds/Enemy Sounds/boss/Boss_lazer.wav",
+            "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3",
+            "sounds/Enemy Sounds/boss/Boss Music.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Death.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Walk.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Attack.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Random_Noise.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Death.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Walk.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Attack.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Random_Noise.mp3"
     };
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
@@ -173,20 +201,27 @@ public class ForestGameArea extends GameArea {
 
         waves = new ArrayList<>();
 
-        // Wave 1: Basic enemies
-        waves.add(new Wave(1, 5, 1, 0, 0, 0, 0, 3.0f, waypointLists));
+        waves.add(new Wave(1, 5, 3, 0, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 2: Introduce speeders
-        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2, 2.0f, waypointLists));
+        waves.add(new Wave(2, 0, 10, 0, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 3: More variety
-        waves.add(new Wave(3, 10, 5, 2, 0, 0, 3, 2.0f, waypointLists));
+        waves.add(new Wave(3, 8, 0, 5, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 4: Dividers appear
-        waves.add(new Wave(4, 8, 6, 3, 0, 1, 2, 1.5f, waypointLists));
+        waves.add(new Wave(4, 0, 5, 3, 0, 1, 0, 2.0f, waypointLists));
 
-        // Wave 5: Final wave with boss
-        waves.add(new Wave(5, 10, 8, 4, 1, 1, 4, 1.2f, waypointLists));
+        waves.add(new Wave(5, 5, 0, 0, 0, 1, 2, 2.0f, waypointLists));
+
+        waves.add(new Wave(6, 15, 5, 0, 0, 0, 0, 2.0f, waypointLists));
+
+        waves.add(new Wave(7, 5, 5, 5, 0, 2, 2, 1.0f, waypointLists));
+
+        waves.add(new Wave(8, 3, 2, 5, 0, 5, 3, 1.0f, waypointLists));
+
+        waves.add(new Wave(9, 5, 5, 5, 0, 0, 0, 1.0f, waypointLists));
+
+        waves.add(new Wave(10, 20, 15, 10, 2, 5, 5, 1.0f, waypointLists));
+
+        TOTAL_WAVES = waves.size();
     }
 
     private void initializeSpawnCallbacks() {
@@ -211,6 +246,27 @@ public class ForestGameArea extends GameArea {
         timeRemainingWhenPaused = 0f;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
+        
+        // Notify UI that wave has started
+        if (MainGameScreen.ui != null) {
+            MainGameScreen.ui.getEvents().trigger("waveStarted");
+        }
+
+        // Trigger boss wave message when starting wave 5
+        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
+            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
+            if (display != null) {
+                display.triggerBossWaveMessage();
+            }
+        }
+
+        // Trigger boss wave message when starting wave 5
+        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
+            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
+            if (display != null) {
+                display.triggerBossWaveMessage();
+            }
+        }
     }
 
     /**
@@ -242,7 +298,6 @@ public class ForestGameArea extends GameArea {
      * Called when all enemies in the current wave have been defeated.
      */
     public void onWaveDefeated() {
-        logger.info("Wave {} defeated!", currentWaveIndex + 1);
 
         // Safety check: if waves not initialized (e.g., loaded from save), don't process wave progression
         if (waves == null) {
@@ -253,26 +308,28 @@ public class ForestGameArea extends GameArea {
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory!
-            logger.info("All waves completed! Victory!");
+            
+            // Notify UI that all waves are complete (permanently disable button)
             if (MainGameScreen.ui != null) {
+                MainGameScreen.ui.getEvents().trigger("allWavesComplete");
+                
                 MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
                 if (winComponent != null) {
                     winComponent.addActors();
                 }
             }
         } else {
-            // Start next wave after delay
+            // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
-            // Get current time scale, but don't divide by zero
-            float timeScale = ServiceLocator.getTimeSource().getTimeScale();
-            float adjustedDelay = timeScale > 0 ? 3.0f / timeScale : 3.0f;
-            
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, adjustedDelay);
+
+            // if (waveTrackerUI != null) {
+            //     waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+            // }
+
+            // Notify UI that current wave is complete (re-enable button)
+            if (MainGameScreen.ui != null) {
+                MainGameScreen.ui.getEvents().trigger("waveComplete");
+            }
         }
     }
 
@@ -430,6 +487,8 @@ public class ForestGameArea extends GameArea {
      */
     @Override
     public void create() {
+        resetEnemyCounters();
+
         // 停止主菜单音乐
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().stopMusic();
@@ -562,8 +621,9 @@ public class ForestGameArea extends GameArea {
             createHeroPlacementUI();
             // 如果已有玩家（从存档加载），直接播放音乐
             playMusic();
+            // Spawn wave tracker immediately if loading from save
+            spawnWaveTracker();
         }
-
     }
 
     private void spawnTerrain() {
@@ -757,13 +817,28 @@ public class ForestGameArea extends GameArea {
     }
 
     public void startWaves() {
-        initializeWaves();
+        // Only initialize waves once at the very beginning
+        if (waves == null) {
+            initializeWaves();
+        }
+
+        // Update wave tracker to show current wave
+        if (waveTrackerUI != null) {
+            waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+        }
+        
+        // Check if all waves are already complete
+        if (currentWaveIndex >= waves.size()) {
+            logger.info("All waves already completed!");
+            return;
+        }
+        
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 startEnemyWave();
             }
-        }, 2.0f); // Start wave after 2 seconds
+        }, 2.0f);
     }
 
     /**
@@ -1085,17 +1160,27 @@ public class ForestGameArea extends GameArea {
                         () -> {
                             // 对话结束后显示防御塔列表和播放背景音乐
                             showTowerUI();
+
+                            // Spawn wave tracker after dialogue completes
+                            if (waves == null) {
+                                initializeWaves();
+                            }
+
+                            spawnWaveTracker();
                             createHeroPlacementUI();
                             playMusic();
-
-                            if (MainGameScreen.ui != null) {
-                                MainGameScreen.ui.getEvents().trigger("startWave");
-                            } else {
-                                startWaves();
-                            }
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+
+    /**
+     * Spawn the wave tracker UI
+     */
+    private void spawnWaveTracker() {
+        waveTrackerUI = new Entity();
+        waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
+        spawnEntity(waveTrackerUI);
     }
 
     /**
@@ -1159,11 +1244,18 @@ public class ForestGameArea extends GameArea {
         resourceService.unloadAssets(forestMusic);
     }
 
+    public static void resetEnemyCounters() {
+        NUM_ENEMIES_TOTAL = 0;
+        NUM_ENEMIES_DEFEATED = 0;
+        logger.info("Enemy counters reset to 0");
+    }
+
     public static void cleanupAllWaves() {
         if (currentGameArea != null) {
             currentGameArea.forceStopWave();
             currentGameArea = null;
         }
+        resetEnemyCounters();
         logger.info("Wave cleanup completed");
     }
 
@@ -1184,6 +1276,7 @@ public class ForestGameArea extends GameArea {
                 enemySpawnQueue.clear();
                 enemySpawnQueue = null;
             }
+            resetEnemyCounters();
             logger.info("Wave spawning force stopped");
         } catch (Exception e) {
             logger.error("Error during force stop: {}", e.getMessage());
@@ -1213,5 +1306,7 @@ public class ForestGameArea extends GameArea {
             //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
+
+        resetEnemyCounters();
     }
 }

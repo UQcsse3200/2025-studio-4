@@ -131,7 +131,7 @@ public class DialogueConfig {
             new IntroDialogueComponent.DialogueEntry(
                 "Ha... Ha-ha-ha! Man!\n I missed this feeling, chaos, heat, and the pulse of war.\nGuess even death couldn't keep me away forever.", 
                 "images/map2talker.png", 
-                "sounds/map/man.mp3",   
+                "sounds/haha.mp3",   
                 "left",
                 "images/talker.png",
                 "MAMBA",

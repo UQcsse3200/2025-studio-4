@@ -58,18 +58,6 @@ public class MainMenuDisplay extends UIComponent {
     ImageButton storyBtn = createImageButton("images/story.png", "Story"); // Using same image for story
     ImageButton rankingBtn = createImageButton("images/rank.png", "Ranking");
 
-    Image starImage = new Image(
-            ServiceLocator.getResourceService().getAsset(
-                    "images/star.png",
-                    Texture.class
-            )
-    );
-    Label starsLabel = new Label(
-            Integer.toString(ServiceLocator.getGameStateService().getStars()),
-            skin,
-            "large"
-    );
-
     float buttonWidth = 200f;
     float buttonHeight = 50f;
     float imageButtonSize = 64f;
@@ -141,13 +129,6 @@ public class MainMenuDisplay extends UIComponent {
     });
 
     table.add().expandY().row();
-
-    HorizontalGroup starGroup = new HorizontalGroup();
-    starGroup.space(5);
-    starGroup.addActor(starImage);
-    starGroup.addActor(starsLabel);
-    table.add(starGroup);
-    table.row();
 
     table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
     table.row();

@@ -233,6 +233,16 @@ class PlasmaWeatherControllerTest {
 
     @Override
     public void setPathLayerOpacity(float opacity) {}
+
+    @Override
+    public java.util.List<GridPoint2> getPathTiles() {
+      return java.util.Collections.emptyList();
+    }
+
+    @Override
+    public boolean isPath(int x, int y) {
+      return false;
+    }
   }
 
   private static class StubTerrainComponent implements ITerrainComponent {
@@ -294,5 +304,15 @@ class PlasmaWeatherControllerTest {
 
     @Override
     public void setPathLayerOpacity(float opacity) {}
+    // ✅ 新增接口的桩实现
+    @Override
+    public java.util.List<GridPoint2> getPathTiles() {
+      return java.util.Collections.emptyList();
+    }
+
+    @Override
+    public boolean isPath(int x, int y) {
+      return false;
+    }
   }
 }

@@ -11,6 +11,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
+import com.csse3200.game.components.book.MainBookDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -58,7 +59,6 @@ public class MainGameScreen extends ScreenAdapter {
           "images/basement.png",
           "images/Background4.png",
           "images/Craft.png",
-          "images/re.gif",
           "images/main_game_background.png"
   };
 

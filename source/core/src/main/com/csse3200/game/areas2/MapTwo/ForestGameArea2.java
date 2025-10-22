@@ -103,8 +103,14 @@ public class ForestGameArea2 extends GameArea2 {
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            "sounds/Impact4.ogg",
+            "sounds/Explosion_sfx3.ogg",
+            "sounds/sci-fi-effect-about-danger-alarm-sound.mp3",
+            "sounds/explosion-in-the-cave.mp3"
     };
+    private static final String PLASMA_WARNING_SOUND = "sounds/sci-fi-effect-about-danger-alarm-sound.mp3";
+    private static final String PLASMA_IMPACT_SOUND = "sounds/explosion-in-the-cave.mp3";
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
@@ -1197,10 +1203,14 @@ public class ForestGameArea2 extends GameArea2 {
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
 
-        while (!resourceService.loadForMillis(10)) {
-            logger.info("Loading... {}%", resourceService.getProgress());
-        }
+    while (!resourceService.loadForMillis(10)) {
+      logger.info("Loading... {}%", resourceService.getProgress());
     }
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().registerSound("plasma_warning", PLASMA_WARNING_SOUND);
+      ServiceLocator.getAudioService().registerSound("plasma_impact", PLASMA_IMPACT_SOUND);
+    }
+  }
 
     private void unloadAssets() {
         logger.debug("Unloading assets");

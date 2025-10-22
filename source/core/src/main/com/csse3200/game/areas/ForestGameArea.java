@@ -110,8 +110,14 @@ public class ForestGameArea extends GameArea {
             "sounds/explosion_2s.ogg",
             "sounds/place_soft_click.ogg",
             "sounds/place_metal_clunk.ogg",
-            "sounds/place_energy_drop.ogg"
+            "sounds/place_energy_drop.ogg",
+            "sounds/Impact4.ogg",
+            "sounds/Explosion_sfx3.ogg",
+            "sounds/sci-fi-effect-about-danger-alarm-sound.mp3",
+            "sounds/explosion-in-the-cave.mp3"
     };
+    private static final String PLASMA_WARNING_SOUND = "sounds/sci-fi-effect-about-danger-alarm-sound.mp3";
+    private static final String PLASMA_IMPACT_SOUND = "sounds/explosion-in-the-cave.mp3";
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
@@ -1245,9 +1251,13 @@ public class ForestGameArea extends GameArea {
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
 
-        while (!resourceService.loadForMillis(10)) {
-            logger.info("Loading... {}%", resourceService.getProgress());
-        }
+    while (!resourceService.loadForMillis(10)) {
+      logger.info("Loading... {}%", resourceService.getProgress());
+    }
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().registerSound("plasma_warning", PLASMA_WARNING_SOUND);
+      ServiceLocator.getAudioService().registerSound("plasma_impact", PLASMA_IMPACT_SOUND);
+    }
 //        try {
 //            com.badlogic.gdx.audio.Sound s =
 //                    resourceService.getAsset("sounds/Explosion_sfx.ogg", com.badlogic.gdx.audio.Sound.class);

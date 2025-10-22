@@ -54,6 +54,9 @@ public class PlasmaImpactComponent extends RenderComponent {
     super.create();
     ensureTexture();
     elapsed = 0f;
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().playSound("plasma_impact", 1f);
+    }
   }
 
   @Override

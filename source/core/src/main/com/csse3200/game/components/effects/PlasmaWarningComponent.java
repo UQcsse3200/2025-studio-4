@@ -47,6 +47,9 @@ public class PlasmaWarningComponent extends RenderComponent {
     super.create();
     ensureTexture();
     elapsed = 0f;
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().playSound("plasma_warning", 1f);
+    }
   }
 
   @Override

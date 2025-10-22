@@ -129,9 +129,9 @@ public class MainGameExitDisplay extends UIComponent {
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
-    table.add(speedButton).size(buttonWidth, buttonHeight).padTop(5f).padRight(10f);
+    table.add(speedButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
     table.add(startWaveButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
 

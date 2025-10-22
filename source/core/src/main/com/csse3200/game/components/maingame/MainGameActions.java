@@ -230,6 +230,8 @@ public class MainGameActions extends Component {
                 if (success) {
                   logger.info("Saved as '{}' successfully", name);
                   entity.getEvents().trigger("showSaveSuccess");
+
+                    entity.getEvents().trigger("resume"); //unpause after save
                 } else {
                   entity.getEvents().trigger("showSaveError");
                 }
@@ -239,7 +241,8 @@ public class MainGameActions extends Component {
               }
             }
             @Override public void onCancelled() { 
-              // Dialog cancelled, no action needed
+              // Dialog cancelled, unpause
+                entity.getEvents().trigger("resume");
             }
           }
       );

@@ -26,6 +26,7 @@ public class GameStateService {
     private int stars;
     private Map<HeroType, Boolean> heroUnlocks;
     private HeroType selectedHero = HeroType.HERO;
+    private String currentMapId;  // NEW: Track which map is currently active
     private final java.util.List<java.util.function.BiConsumer<HeroType, String>> skinChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
     private final java.util.List<java.util.function.Consumer<HeroType>> selectedHeroChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
@@ -48,7 +49,6 @@ public class GameStateService {
     private final Map<HeroType, String[]> availableSkins = new HashMap<>();
 
     public GameStateService() {
-        // should load from save file later
         logger.info("Loading GameStateService");
         stars = 0;
         heroUnlocks = new HashMap<>();
@@ -227,6 +227,16 @@ public class GameStateService {
     }
 
     /**
+     * Marks the given hero as locked or unlocked based on input
+     *
+     * @param hero hero to unlock
+     * @param unlocked true if it should be unlocked, false otherwise
+     */
+    public void setHeroUnlocked(HeroType hero, boolean unlocked) {
+        heroUnlocks.put(hero, unlocked);
+    }
+
+    /**
      * Sets the current selected hero
      *
      * @param type the HeroType of the selected hero
@@ -311,5 +321,22 @@ public class GameStateService {
     public AutoCloseable onSelectedHeroChanged(java.util.function.Consumer<HeroType> l) {
         selectedHeroChangedListeners.add(l);
         return () -> selectedHeroChangedListeners.remove(l);
+    }
+
+    /**
+     * Sets the current map ID
+     * @param mapId the map identifier (e.g., "MapTwo" for level 2, null for level 1)
+     */
+    public void setCurrentMapId(String mapId) {
+        this.currentMapId = mapId;
+        logger.info("Current map set to: {}", mapId == null ? "Map 1 (default)" : mapId);
+    }
+
+    /**
+     * Gets the current map ID
+     * @return the current map identifier, or null for default map (Map 1)
+     */
+    public String getCurrentMapId() {
+        return currentMapId;
     }
 }

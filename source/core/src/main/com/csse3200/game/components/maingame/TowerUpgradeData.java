@@ -106,10 +106,10 @@ public class TowerUpgradeData {
 
 
         Map<Integer, UpgradeStats> raftA = new HashMap<>();
-        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 300, "images/towers/viking/vikinglvl2"));
-        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 350, "images/towers/viking/vikinglvl3"));
-        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 400, "images/towers/viking/vikinglvl4"));
-        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 450, "images/towers/viking/vikinglvl4"));
+        raftA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 300, "images/towers/viking/archerlvl2"));
+        raftA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 350, "images/towers/viking/archerlvl3"));
+        raftA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 400, "images/towers/viking/archerlvl4"));
+        raftA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 450, "images/towers/viking/archerlvl4"));
         pathA.put("raft", raftA);
 
         Map<Integer, UpgradeStats> frozenA = new HashMap<>();
@@ -121,10 +121,10 @@ public class TowerUpgradeData {
         pathA.put("frozenmamoothskull", frozenA);
 
         Map<Integer, UpgradeStats> boulderA = new HashMap<>();
-        boulderA.put(2, new UpgradeStats(7, 3.5f, 1.0f, 2.0f, 600, "images/towers/catapault/catapaultlvl2"));
-        boulderA.put(3, new UpgradeStats(10, 4.0f, 1.0f, 2.0f, 750, "images/towers/catapault/catapaultlvl3"));
-        boulderA.put(4, new UpgradeStats(14, 4.5f, 1.0f, 2.0f, 900, "images/towers/catapault/catapaultlvl4"));
-        boulderA.put(5, new UpgradeStats(20, 5.0f, 1.0f, 2.0f, 1100, "images/towers/catapault/catapaultlvl4"));
+        boulderA.put(2, new UpgradeStats(7, 6.5f, 1.0f, 2.0f, 600, "images/towers/catapault/catapaultlvl2"));
+        boulderA.put(3, new UpgradeStats(10, 7f, 1.0f, 2.0f, 750, "images/towers/catapault/catapaultlvl3"));
+        boulderA.put(4, new UpgradeStats(14, 7.5f, 1.0f, 2.0f, 900, "images/towers/catapault/catapaultlvl4"));
+        boulderA.put(5, new UpgradeStats(20, 8f, 1.0f, 2.0f, 1100, "images/towers/catapault/catapaultlvl4"));
         pathA.put("bouldercatapult", boulderA);
 
         // Village Shaman tower (same as bone for now)
@@ -195,10 +195,10 @@ public class TowerUpgradeData {
         pathB.put("supercavemen", superCavemenB);
 
         Map<Integer, UpgradeStats> raftB = new HashMap<>();
-        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 300, "images/towers/viking/vikinglvl2"));
-        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 400, "images/towers/viking/vikinglvl2"));
-        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 500, "images/towers/viking/vikinglvl3"));
-        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 600, "images/towers/viking/vikinglvl4"));
+        raftB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 300, "images/towers/viking/archerlvl2"));
+        raftB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 400, "images/towers/viking/archerlvl2"));
+        raftB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 500, "images/towers/viking/archerlvl3"));
+        raftB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 600, "images/towers/viking/archerlvl4"));
         pathB.put("raft", raftB);
 
         Map<Integer, UpgradeStats> frozenB = new HashMap<>();
@@ -210,10 +210,10 @@ public class TowerUpgradeData {
         pathB.put("frozenmamoothskull", frozenB);
 
         Map<Integer, UpgradeStats> boulderB = new HashMap<>();
-        boulderB.put(2, new UpgradeStats(10, 3.0f, 0.9f, 5f, 650, "images/towers/catapault/catapaultlvl2"));
-        boulderB.put(3, new UpgradeStats(10, 3.0f, 0.8f, 6f, 800, "images/towers/catapault/catapaultlvl3"));
-        boulderB.put(4, new UpgradeStats(10, 3.0f, 0.7f, 7f, 1000, "images/towers/catapault/catapaultlvl4"));
-        boulderB.put(5, new UpgradeStats(10, 3.0f, 0.6f, 8f, 1250, "images/towers/catapault/catapaultlvl4"));
+        boulderB.put(2, new UpgradeStats(4, 3.0f, 0.9f, 5f, 650, "images/towers/catapault/catapaultlvl2"));
+        boulderB.put(3, new UpgradeStats(4, 3.0f, 0.8f, 6f, 800, "images/towers/catapault/catapaultlvl3"));
+        boulderB.put(4, new UpgradeStats(4, 3.0f, 0.7f, 7f, 1000, "images/towers/catapault/catapaultlvl4"));
+        boulderB.put(5, new UpgradeStats(4, 3.0f, 0.6f, 8f, 1250, "images/towers/catapault/catapaultlvl4"));
         pathB.put("bouldercatapult", boulderB);
 
         Map<Integer, UpgradeStats> shamanB = new HashMap<>();

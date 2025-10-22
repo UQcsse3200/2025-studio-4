@@ -180,6 +180,20 @@ public class HeroUpgradeComponent extends Component {
     public int getLevel() {
         return level;
     }
+    
+    /**
+     * Sets the hero level directly (used when restoring from save).
+     * Also applies stat growth and triggers UI updates.
+     * @param newLevel the level to set
+     */
+    public void setLevel(int newLevel) {
+        if (newLevel < 1) newLevel = 1;
+        if (newLevel > maxLevel) newLevel = maxLevel;
+        this.level = newLevel;
+        applyStatGrowth(newLevel);
+        broadcastSnapshot();
+        Gdx.app.log("HeroUpgrade", "Hero level set to " + newLevel);
+    }
 
     /** Returns wallet component (used by other systems such as ultimate). */
     public CurrencyManagerComponent getWallet() {

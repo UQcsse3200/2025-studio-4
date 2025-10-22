@@ -91,7 +91,7 @@ public class DialogueConfig {
     public static List<IntroDialogueComponent.DialogueEntry> getMap2Dialogue() {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
-                "1111111111111111", 
+                "Ha... Ha-ha-ha! Man, I missed this feeling, chaos, heat, and the pulse of war.\nGuess even death couldn't keep me away forever.", 
                 "images/map2talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
@@ -100,7 +100,7 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "2222222222222222", 
+                "Enjoy it while you can, MAMBA. The city's heart is close, and it's crawling with AI patrols.\nThis is where we end it.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/man.mp3",
                 "right",
@@ -109,7 +109,7 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "3333333333333333", 
+                "(grinning, blue light flickering in his eyes) You think you can end it?\nThe network never sleeps, Commander... but I like your spirit.", 
                 "images/map2talker.png", 
                 "sounds/map/say.mp3",
                 "left",
@@ -118,7 +118,7 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "4444444444444444", 
+                "Then let's finish what we started.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/out.mp3",
                 "right",

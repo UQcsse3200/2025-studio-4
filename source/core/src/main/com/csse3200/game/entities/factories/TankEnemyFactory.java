@@ -91,7 +91,8 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-                .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(10f, 3f, 7f, 1.5f, "images/tank_projectile_atlas.atlas", "fire"))
+            .addComponent(new clickable(clickRadius))
+            .addComponent(new AntiProjectileShooterComponent(7f, 3.5f, 7f, 1.5f, "images/tank_projectile_atlas.atlas", "fire"))
             .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
             .addComponent(new EnemySoundComponent(
                 ServiceLocator.getResourceService().getAsset(TANK_WALK_SOUND, Sound.class),

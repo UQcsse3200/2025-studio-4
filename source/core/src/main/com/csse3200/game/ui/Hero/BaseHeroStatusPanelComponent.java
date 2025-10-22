@@ -10,13 +10,17 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.SimpleUI;
 import com.csse3200.game.ui.UltimateButtonComponent;
+import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType;
+
 
 /**
  * Generic base class for the hero status panel (percentage-based positioning/sizing):
@@ -52,14 +56,21 @@ public class BaseHeroStatusPanelComponent extends Component {
     /** Right margin from the screen edge (same as your Hotbar: 0f, flush to the edge) */
     protected static final float RIGHT_MARGIN_PCT = 0.0f;
 
-    // Stage and containers
+
+    // 新增：把“升级花费”拆成一行：标题 + 数字 + 图标
+    protected Table costRow;
+    protected Label costTitleLabel, costNumLabel;
+    protected Image costIcon;
+
+    // 舞台与容器
     protected Stage stage;
     protected Table root;
     protected Table card;
 
     // Shared widgets
     protected Label nameLabel, hpLabel, energyLabel, levelLabel, costLabel, damageLabel;
-    protected TextButton ultBtn, upgradeBtn;
+    protected Button ultBtn;              // 接收 ImageTextButton
+    protected TextButton upgradeBtn;
 
     public BaseHeroStatusPanelComponent(Entity hero,
                                         String heroName,
@@ -104,9 +115,24 @@ public class BaseHeroStatusPanelComponent extends Component {
         // Text and buttons
         nameLabel   = new Label(heroName, skin);
         levelLabel  = new Label("Lv. 1", skin);
-        costLabel   = new Label("Upgrade cost: 400", skin);
+        // ==== 升级花费行：Upgrade cost: [400] [icon] ==== //
+        costTitleLabel = new Label("Upgrade cost: ", skin);
+        costNumLabel   = new Label("400", skin);
 
-        ultBtn = UltimateButtonComponent.createUltimateButton(hero);
+// 默认先用 METAL_SCRAP 的图标；稍后在 refreshUpgradeInfo() 里根据真实币种再改
+        costIcon = new Image(currencyIconDrawable(CurrencyType.METAL_SCRAP));
+        costIcon.setScaling(Scaling.stretch);
+        costIcon.setColor(1f, 1f, 1f, 1f);        // 可按需灰化
+// 行容器
+        costRow = new Table(skin);
+        costRow.add(costTitleLabel).left();
+        costRow.add(costNumLabel).left().padRight(6f);
+        costRow.add(costIcon).size(22f, 22f).left();  // ← 图标大小：改这里（比如 22/28/32）
+
+
+        var ultBtn = UltimateButtonComponent.createUltimateButton(hero, 200, CurrencyType.METAL_SCRAP);
+        this.ultBtn = ultBtn; // 建议把字段类型改为 Button 或 ImageTextButton
+        card.add(ultBtn).left().row();
 
         TextButton.TextButtonStyle upStyle = SimpleUI.primaryButton();
         upStyle.font = SimpleUI.font();
@@ -127,8 +153,9 @@ public class BaseHeroStatusPanelComponent extends Component {
         buildExtraSections(card, skin,
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Upgrade / ULT
-        card.add(costLabel).left().row();
+
+        // 升级/ULT
+        card.add(costRow).left().row();
         card.add(upgradeBtn)
                 .left()
                 .width(Value.percentWidth(0.45f, card))              // Upgrade button width = 45% of the card width
@@ -192,17 +219,16 @@ public class BaseHeroStatusPanelComponent extends Component {
 
     /** Refresh upgrade info and button state based on the current level */
     protected void refreshUpgradeInfo() {
-        com.csse3200.game.components.hero.HeroUpgradeComponent up =
-                hero.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class);
-
+        var up = hero.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class);
         int lvl = (up != null) ? up.getLevel() : 1;
-        int next = lvl + 1;
 
-        // ★ Max hero level is 2 → only one upgrade
+
+        // ★ 满级：隐藏数字+图标，只显示“MAX LEVEL”
         if (lvl >= 2) {
-            costLabel.setText("MAX LEVEL");
-            costLabel.setColor(accentColor.cpy().lerp(Color.GRAY, 0.4f));
-
+            costTitleLabel.setText("MAX LEVEL");
+            costTitleLabel.setColor(accentColor.cpy().lerp(Color.GRAY, 0.4f));
+            costNumLabel.setText("");
+            costIcon.setVisible(false);      // 隐藏图标
             upgradeBtn.setDisabled(true);
             upgradeBtn.setText("Maxed");
             upgradeBtn.getStyle().fontColor = Color.GRAY;
@@ -211,7 +237,22 @@ public class BaseHeroStatusPanelComponent extends Component {
             return;
         }
 
+        // ☆ 未满级：显示下一次升级所需的“数字+图标”
+        // —— 下面两行请替换为你项目里实际拿“成本与币种”的方法 ——
+        int nextCost = 400;                         // 例：从 up.peekNextCost()
+        CurrencyType nextType = CurrencyType.METAL_SCRAP;  // 例：从 up.peekNextCurrencyType()
+
+        // 更新 UI
+        costTitleLabel.setText("Upgrade cost: ");
+        costTitleLabel.setColor(textColor);
+
+        costNumLabel.setText(String.valueOf(nextCost));
+        costNumLabel.setColor(textColor);
+
+        costIcon.setDrawable(currencyIconDrawable(nextType));
+        costIcon.setVisible(true);
     }
+
 
 
     protected Entity findPlayer() {
@@ -232,4 +273,30 @@ public class BaseHeroStatusPanelComponent extends Component {
         pm.dispose();
         return new TextureRegion(tex);
     }
+
+    /** 根据币种返回图标 Drawable（assets/images/currency/*.png） */
+    private Drawable currencyIconDrawable(CurrencyType t) {
+        String path;
+        switch (t) {
+            case METAL_SCRAP:   path = "images/currency/metal_scrap.png"; break;
+            case TITANIUM_CORE: path = "images/currency/titanium_core.png"; break;
+            case NEUROCHIP:     path = "images/currency/neurochip.png"; break;
+            default:            path = "images/currency/currency_unknown.png"; break;
+        }
+        Texture tex;
+        try {
+            tex = new Texture(Gdx.files.internal(path));
+            // 像素风更清晰
+            tex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        } catch (Exception e) {
+            // 兜底：占位色块
+            Pixmap pm = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
+            pm.setColor(Color.GRAY);
+            pm.fill();
+            tex = new Texture(pm);
+            pm.dispose();
+        }
+        return new TextureRegionDrawable(new TextureRegion(tex));
+    }
+
 }

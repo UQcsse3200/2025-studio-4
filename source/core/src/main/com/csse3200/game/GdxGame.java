@@ -175,17 +175,13 @@ public class GdxGame extends Game {
     MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, UPGRADES, HERO_BOOK
   }
 
-  /**
-   * 设置带有指定背景的开场动画
-   * @param backgroundIndex 背景索引 (0-4)
-   */
   public void setOpeningCutsceneWithBackground(int backgroundIndex) {
-    logger.info("Setting opening cutscene with background index: {}", backgroundIndex);
+    logger.info("Setting opening cutscene");
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
     }
-    setScreen(OpeningCutsceneScreen.withBackground(this, backgroundIndex));
+    setScreen(new OpeningCutsceneScreen(this));
   }
 
   /**

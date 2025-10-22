@@ -15,16 +15,31 @@ import com.csse3200.game.services.ServiceLocator;
  * to keep the effect lightweight without extra art assets.
  */
 public class SlowZoneVisualComponent extends RenderComponent {
+  /** Cached texture region for all slow zone effects */
   private static TextureRegion cachedRegion;
 
+  /** Size of the tile this effect represents */
   private final float tileSize;
+  /** Color tint to apply to the effect */
   private final Color tint;
+  /** Time elapsed for animation calculations */
   private float elapsed = 0f;
 
+  /**
+   * Creates a slow zone visual effect with default white tint.
+   * 
+   * @param tileSize size of the tile in world units
+   */
   public SlowZoneVisualComponent(float tileSize) {
     this(tileSize, new Color(1.0f, 1.0f, 1.0f, 1f));
   }
 
+  /**
+   * Creates a slow zone visual effect with custom tint.
+   * 
+   * @param tileSize size of the tile in world units
+   * @param tint color tint to apply to the effect
+   */
   public SlowZoneVisualComponent(float tileSize, Color tint) {
     this.tileSize = tileSize;
     this.tint = new Color(tint);
@@ -70,6 +85,10 @@ public class SlowZoneVisualComponent extends RenderComponent {
     batch.setColor(previous);
   }
 
+  /**
+   * Ensures the slow zone texture is created and cached.
+   * Creates a complex radial pattern with ripple effects procedurally.
+   */
   private static void ensureRegion() {
     if (cachedRegion != null) {
       return;

@@ -13,15 +13,43 @@ import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 import java.util.function.Consumer;
 
+/**
+ * Renders a plasma bolt falling from the sky to strike a target position.
+ * 
+ * <p>This component creates a visual effect of a plasma bolt descending from a specified height
+ * to a target position. The bolt falls at a configurable speed and triggers an impact callback
+ * when it reaches the ground.</p>
+ * 
+ * <p>The plasma bolt is procedurally generated as a bright blue circular texture with
+ * transparency based on height. The effect automatically disposes itself upon impact.</p>
+ * 
+ * @author Team1
+ * @since sprint 4
+ */
 public class PlasmaStrikeComponent extends RenderComponent {
+  /** Shared texture for all plasma strikes */
   private static TextureRegion strikeTexture;
+  /** Target position where the bolt will strike */
   private final Vector2 target = new Vector2();
+  /** Initial height from which the bolt starts falling */
   private final float startHeight;
+  /** Speed at which the bolt falls (units per second) */
   private final float fallSpeed;
+  /** Callback function triggered when the bolt impacts */
   private final Consumer<Vector2> impactListener;
+  /** Current height of the falling bolt */
   private float currentHeight;
+  /** Whether disposal has been scheduled */
   private boolean disposeScheduled;
 
+  /**
+   * Creates a plasma strike component.
+   * 
+   * @param target target position for the strike
+   * @param startHeight initial height from which to start falling
+   * @param fallSpeed speed of descent in units per second
+   * @param impactListener callback triggered when impact occurs
+   */
   public PlasmaStrikeComponent(Vector2 target, float startHeight, float fallSpeed, Consumer<Vector2> impactListener) {
     this.target.set(target);
     this.startHeight = startHeight;
@@ -29,6 +57,10 @@ public class PlasmaStrikeComponent extends RenderComponent {
     this.impactListener = impactListener;
   }
 
+  /**
+   * Ensures the plasma strike texture is created and cached.
+   * Creates a bright blue circular texture procedurally.
+   */
   private static void ensureTexture() {
     if (strikeTexture != null) {
       return;
@@ -89,6 +121,10 @@ public class PlasmaStrikeComponent extends RenderComponent {
     batch.setColor(previous);
   }
 
+  /**
+   * Schedules the entity for disposal after impact.
+   * Uses postRunnable to ensure safe disposal.
+   */
   private void scheduleDispose() {
     if (disposeScheduled) {
       return;

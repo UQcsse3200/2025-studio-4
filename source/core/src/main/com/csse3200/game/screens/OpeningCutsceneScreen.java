@@ -281,6 +281,15 @@ public class OpeningCutsceneScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        
+        if (scrollLabel != null) {
+            scrollLabel.setWidth(width * 0.7f);
+            scrollLabel.setX((width - scrollLabel.getWidth()) / 2f);
+        }
+        
+        if (skipLabel != null) {
+            skipLabel.setPosition(width / 2f - skipLabel.getWidth() / 2f, 20f);
+        }
     }
     
     @Override

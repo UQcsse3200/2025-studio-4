@@ -68,7 +68,8 @@ public class TowerHotbarDisplay extends UIComponent {
         TOWER_COSTS.put("totem", createCostMap(0, 150, 0));
         TOWER_COSTS.put("bank", createCostMap(0, 200, 0));
         TOWER_COSTS.put("raft", createCostMap(0, 250, 0));
-        TOWER_COSTS.put("frozenmamoothskull", createCostMap(0, 300, 0));
+        // Change: ungray Frozen Mammoth Skull at 500 Titanium Core
+        TOWER_COSTS.put("frozenmamoothskull", createCostMap(0, 500, 0));
         TOWER_COSTS.put("bouldercatapult", createCostMap(0, 500, 0));
         TOWER_COSTS.put("villageshaman", createCostMap(0, 0, 500));
         TOWER_COSTS.put("supercavemen", createCostMap(0, 0, 1000));
@@ -461,4 +462,3 @@ public class TowerHotbarDisplay extends UIComponent {
         return tex;
     }
 }
-

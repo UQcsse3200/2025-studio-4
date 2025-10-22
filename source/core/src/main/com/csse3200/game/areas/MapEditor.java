@@ -206,14 +206,11 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(0, 10));    // Start
         keyWaypoints.add(new GridPoint2(5, 10));    // First turn
         keyWaypoints.add(new GridPoint2(5, 6));     // Up turn completed
-        keyWaypoints.add(new GridPoint2(9, 6));
         keyWaypoints.add(new GridPoint2(10, 6));
         keyWaypoints.add(new GridPoint2(11, 6));
         keyWaypoints.add(new GridPoint2(12, 6));
         keyWaypoints.add(new GridPoint2(12, 7));
-        keyWaypoints.add(new GridPoint2(12, 8));    // Walk to the right completed
         keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
-        keyWaypoints.add(new GridPoint2(20, 12));
         keyWaypoints.add(new GridPoint2(21, 12));
         keyWaypoints.add(new GridPoint2(22, 12));
         keyWaypoints.add(new GridPoint2(23, 12));
@@ -222,13 +219,10 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
         keyWaypoints.add(new GridPoint2(32, 6));    // End - extended past base to ensure enemies reach it
         Map<String, Float> speedModifiers = Map.ofEntries(
-            Map.entry("9,6", 0.5f),
             Map.entry("10,6", 0.5f),
             Map.entry("11,6", 0.5f),
             Map.entry("12,6", 0.5f),
             Map.entry("12,7", 0.5f),
-            Map.entry("12,8", 0.5f),
-            Map.entry("20,12", 0.5f),
             Map.entry("21,12", 0.5f),
             Map.entry("22,12", 0.5f),
             Map.entry("23,12", 0.5f),

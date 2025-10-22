@@ -32,7 +32,7 @@ public class DamagePopupComponent extends Component {
             Renderer.getCurrentRenderer().getCamera().getCamera().project(screen);
         }
 
-        // 如果是伤害（正数）显示红色，如果是回复（负数）显示绿色并加上+号
+        // Display damage values in red; display healing values in green and prefix them with a plus sign (+).
         boolean isDamage = amount > 0;
         String displayText = isDamage ? String.valueOf(amount) : "+" + Math.abs(amount);
         Color textColor = isDamage ? Color.RED : Color.GREEN;

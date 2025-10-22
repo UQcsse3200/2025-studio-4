@@ -67,6 +67,14 @@ public class TowerUpgradeMenu extends UIComponent {
     private Container<Table> container;       // store container so we can adjust width
     private Cell<Container<Table>> containerCell;        // store cell used to set width/height
 
+    // NEW: Stats panel UI
+    private Table statsTable;
+    private Label statsTitleLabel;
+    private Label damageValueLabel;
+    private Label cooldownValueLabel;
+    private Label projSpeedValueLabel;
+    private Label rangeValueLabel;
+
     private static final CurrencyType UPGRADE_CURRENCY = CurrencyType.METAL_SCRAP;
     private static final Color GREYED_OUT_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.6f);
     private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f);
@@ -258,9 +266,46 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         });
 
-        // Combine sections into a single row: Path A | Path B | Sell (Sell on the right)
+        // NEW: Stats panel (left side)
+        statsTable = new Table(skin);
+        statsTable.defaults().pad(3).left();
+        statsTitleLabel = new Label("Stats", skin);
+        statsTitleLabel.setColor(Color.WHITE);
+
+        Label dmgLabel = new Label("Damage:", skin);
+        dmgLabel.setColor(Color.WHITE);
+        damageValueLabel = new Label("-", skin);
+        damageValueLabel.setColor(Color.WHITE);
+
+        Label cdLabel = new Label("Cooldown:", skin);
+        cdLabel.setColor(Color.WHITE);
+        cooldownValueLabel = new Label("-", skin);
+        cooldownValueLabel.setColor(Color.WHITE);
+
+        Label psLabel = new Label("Proj Speed:", skin);
+        psLabel.setColor(Color.WHITE);
+        projSpeedValueLabel = new Label("-", skin);
+        projSpeedValueLabel.setColor(Color.WHITE);
+
+        Label rngLabel = new Label("Range:", skin);
+        rngLabel.setColor(Color.WHITE);
+        rangeValueLabel = new Label("-", skin);
+        rangeValueLabel.setColor(Color.WHITE);
+
+        statsTable.add(statsTitleLabel).colspan(2).left().row();
+        statsTable.add(dmgLabel).left();
+        statsTable.add(damageValueLabel).left().row();
+        statsTable.add(cdLabel).left();
+        statsTable.add(cooldownValueLabel).left().row();
+        statsTable.add(psLabel).left();
+        statsTable.add(projSpeedValueLabel).left().row();
+        statsTable.add(rngLabel).left();
+        statsTable.add(rangeValueLabel).left().row();
+
+        // Combine sections into a single row: Stats | Path A | Path B | Sell
         Table content = new Table(skin);
         content.defaults().pad(10).top();
+        content.add(statsTable).padRight(20).top();       // NEW: stats column
         content.add(pathATable).padRight(20).top();
         content.add(pathBTable).padRight(20).top();
         content.add(sellTable).top();
@@ -278,13 +323,12 @@ public class TowerUpgradeMenu extends UIComponent {
 
         container.pad(8);
         rootTable.clearChildren();
-        // store the cell so we can change width dynamically later
         containerCell = rootTable.add(container)
                 .width(desiredWidth)
                 .height(desiredHeight)
                 .center()
                 .bottom()
-                .padBottom(0f); // was 12f, now 0
+                .padBottom(0f);
 
         stage.addActor(rootTable);
 
@@ -656,6 +700,11 @@ public class TowerUpgradeMenu extends UIComponent {
         if (pathALevelLabel != null) pathALevelLabel.setColor(Color.WHITE);
         if (pathBLevelLabel != null) pathBLevelLabel.setColor(Color.WHITE);
         if (sellRefundLabel != null) sellRefundLabel.setColor(Color.WHITE);
+        if (statsTitleLabel != null) statsTitleLabel.setColor(Color.WHITE);
+        if (damageValueLabel != null) damageValueLabel.setColor(Color.WHITE);
+        if (cooldownValueLabel != null) cooldownValueLabel.setColor(Color.WHITE);
+        if (projSpeedValueLabel != null) projSpeedValueLabel.setColor(Color.WHITE);
+        if (rangeValueLabel != null) rangeValueLabel.setColor(Color.WHITE);
 
         if (selectedTower == null || currentTowerType == null) {
             if (sellRefundLabel != null) sellRefundLabel.setText("");
@@ -663,6 +712,11 @@ public class TowerUpgradeMenu extends UIComponent {
             // Reset titles to defaults when nothing selected
             if (pathATitleLabel != null) pathATitleLabel.setText("Damage & Range");
             if (pathBTitleLabel != null) pathBTitleLabel.setText("Cooldown & Speed");
+            // NEW: clear stats values
+            if (damageValueLabel != null) damageValueLabel.setText("-");
+            if (cooldownValueLabel != null) cooldownValueLabel.setText("-");
+            if (projSpeedValueLabel != null) projSpeedValueLabel.setText("-");
+            if (rangeValueLabel != null) rangeValueLabel.setText("-");
             // When nothing selected ensure container returns to a default min width
             if (containerCell != null) {
                 float screenW = Gdx.graphics.getWidth();
@@ -699,8 +753,19 @@ public class TowerUpgradeMenu extends UIComponent {
             pathBButton.setDisabled(true);
             if (sellRefundLabel != null) sellRefundLabel.setText("");
             if (sellRefundIcon != null) sellRefundIcon.setDrawable(null);
+            // NEW: clear stats values
+            if (damageValueLabel != null) damageValueLabel.setText("-");
+            if (cooldownValueLabel != null) cooldownValueLabel.setText("-");
+            if (projSpeedValueLabel != null) projSpeedValueLabel.setText("-");
+            if (rangeValueLabel != null) rangeValueLabel.setText("-");
             return;
         }
+
+        // --- NEW: Update stats panel values from TowerStatsComponent ---
+        if (damageValueLabel != null) damageValueLabel.setText(fmt1(stats.getDamage()));
+        if (cooldownValueLabel != null) cooldownValueLabel.setText(fmt1(stats.getAttackCooldown()) + "s");
+        if (projSpeedValueLabel != null) projSpeedValueLabel.setText(fmt1(stats.getProjectileSpeed()));
+        if (rangeValueLabel != null) rangeValueLabel.setText(fmt1(stats.getRange()));
 
         // --- Compute and display refund amount in the Sell row (icon + amount) ---
         TowerComponent towerComp = selectedTower.getComponent(TowerComponent.class);
@@ -846,7 +911,7 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         }
 
-        // --- Dynamic width calculation to ensure consistent padding between content and bar edge ---
+        // --- Dynamic width calculation including Stats section ---
         // Section padding on each side of content (keeps the gap consistent across towers)
         final float sectionPadding = 12f;
         final float iconSize = 24f;
@@ -876,23 +941,39 @@ public class TowerUpgradeMenu extends UIComponent {
         float sellRefundWidth = iconSize + iconPadRight + tmpSellRefundLabel.getPrefWidth();
         float sectionSellWidth = Math.max(sellTitleWidth, Math.max(sellButtonContentWidth, sellRefundWidth)) + 2f * sectionPadding;
 
-        // Inter-column spacing mirrors how content was constructed: padRight(20) between A-B and B-Sell
-        final float interColumnSpacing = 20f + 20f; // A->B + B->Sell
-        // Container padding (we set container.pad(8) in create)
+        // NEW: measure stats section width (max between title and any "label + value" row)
+        float statsTitleWidth = statsTitleLabel != null ? statsTitleLabel.getPrefWidth() : 0f;
+        // create temporary labels to safely measure current pref widths
+        Label tmpDmgL = new Label("Damage:", skin); tmpDmgL.setColor(Color.WHITE);
+        Label tmpCdL = new Label("Cooldown:", skin); tmpCdL.setColor(Color.WHITE);
+        Label tmpPsL = new Label("Proj Speed:", skin); tmpPsL.setColor(Color.WHITE);
+        Label tmpRngL = new Label("Range:", skin); tmpRngL.setColor(Color.WHITE);
+        Label tmpDmgV = new Label(damageValueLabel != null ? damageValueLabel.getText().toString() : "-", skin); tmpDmgV.setColor(Color.WHITE);
+        Label tmpCdV = new Label(cooldownValueLabel != null ? cooldownValueLabel.getText().toString() : "-", skin); tmpCdV.setColor(Color.WHITE);
+        Label tmpPsV = new Label(projSpeedValueLabel != null ? projSpeedValueLabel.getText().toString() : "-", skin); tmpPsV.setColor(Color.WHITE);
+        Label tmpRngV = new Label(rangeValueLabel != null ? rangeValueLabel.getText().toString() : "-", skin); tmpRngV.setColor(Color.WHITE);
+        float statsRowMax = Math.max(
+                Math.max(tmpDmgL.getPrefWidth() + 8f + tmpDmgV.getPrefWidth(),
+                         tmpCdL.getPrefWidth() + 8f + tmpCdV.getPrefWidth()),
+                Math.max(tmpPsL.getPrefWidth() + 8f + tmpPsV.getPrefWidth(),
+                         tmpRngL.getPrefWidth() + 8f + tmpRngV.getPrefWidth())
+        );
+        float sectionStatsWidth = Math.max(statsTitleWidth, statsRowMax) + 2f * sectionPadding;
+
+        // There are 3 gaps between 4 sections (Stats|A|B|Sell), each created via padRight(20)
+        final float interColumnSpacing = 20f + 20f + 20f;
+
         final float containerPad = 8f;
-        float totalWidth = containerPad * 2f + sectionAWidth + sectionBWidth + sectionSellWidth + interColumnSpacing;
+        float totalWidth = containerPad * 2f + sectionStatsWidth + sectionAWidth + sectionBWidth + sectionSellWidth + interColumnSpacing;
 
         // Enforce the same minimum width behaviour as before
         float screenW = Gdx.graphics.getWidth();
         float minWidth = Math.max(480f, Math.min(screenW * 0.45f, 700f));
         if (totalWidth < minWidth) totalWidth = minWidth;
 
-        // Apply to container cell so the whole bar resizes
         if (containerCell != null) {
-            // preserve previous desired height; query current preferred/actual height if needed
             float currHeight = containerCell.getPrefHeight();
             containerCell.width(totalWidth);
-            // keep height as before (use pref height set earlier)
             containerCell.height(currHeight > 0 ? currHeight : Math.min(Gdx.graphics.getHeight() * 0.18f, 170f));
             rootTable.invalidateHierarchy();
         }
@@ -1161,6 +1242,11 @@ public class TowerUpgradeMenu extends UIComponent {
             }
         }
         return false;
+    }
+
+    // NEW: simple formatter to 1 decimal place
+    private static String fmt1(float v) {
+        return String.format(java.util.Locale.US, "%.1f", v);
     }
 }
 

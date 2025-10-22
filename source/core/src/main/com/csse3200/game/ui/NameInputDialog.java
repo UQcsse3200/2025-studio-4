@@ -84,13 +84,31 @@ public class NameInputDialog extends Dialog {
         
         // Layout the dialog
         Table contentTable = getContentTable();
-        contentTable.pad(Theme.PAD);
-        contentTable.setBackground(SimpleUI.solid(Theme.WINDOW_BG));
+        // Add extra top padding to move all content down
+        contentTable.pad(Theme.PAD * 3, Theme.PAD, Theme.PAD, Theme.PAD);
         
-        // Title - using segoe_ui font with black color for emphasis
+        // Use custom background image with scaling
+        try {
+            Texture bgTexture = ServiceLocator.getResourceService()
+                .getAsset("images/name system background.png", Texture.class);
+            TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
+            
+            // Set min size to allow the background to scale properly to fit the dialog
+            // This will make the image scale down if it's larger than the dialog
+            drawable.setMinWidth(0);
+            drawable.setMinHeight(0);
+            
+            contentTable.setBackground(drawable);
+        } catch (Exception e) {
+            // Fallback to default background if image fails to load
+            logger.warn("Failed to load name system background, using default", e);
+            contentTable.setBackground(SimpleUI.solid(Theme.WINDOW_BG));
+        }
+        
+        // Title - using segoe_ui font with black color for emphasis, centered
         Label.LabelStyle titleStyle = new Label.LabelStyle(getSkin().getFont("segoe_ui"), Color.BLACK);
         Label titleLabel = new Label("Create Your Character", titleStyle);
-        contentTable.add(titleLabel).colspan(2).padBottom(Theme.PAD);
+        contentTable.add(titleLabel).colspan(2).center().padBottom(Theme.PAD);
         contentTable.row();
         
         // Name input field - using segoe_ui font

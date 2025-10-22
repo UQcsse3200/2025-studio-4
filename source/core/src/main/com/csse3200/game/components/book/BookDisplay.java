@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ServiceLocator;
@@ -237,9 +239,9 @@ public class BookDisplay extends UIComponent {
             borderedButton.setBackground(new TextureRegionDrawable(
                     new TextureRegion(createBorderTexture(borderColor, 2))
             ));
-            borderedButton.add(button).size(buttonSize, buttonSize).pad(2);
+            borderedButton.add(button).size(buttonSize, buttonSize).pad(6);
 
-            table.add(borderedButton).padRight(stageWidth * 0.08f / imagesPerRow);
+            table.add(borderedButton).top().padRight(stageWidth * 0.08f / imagesPerRow);
         }
 
         stage.addActor(titleTable);
@@ -324,6 +326,8 @@ public class BookDisplay extends UIComponent {
         Texture tex = ServiceLocator.getResourceService()
                 .getAsset(stats.get(DeckComponent.StatType.TEXTURE_PATH), Texture.class);
         Image rightImage = new Image(new TextureRegionDrawable(new TextureRegion(tex)));
+        rightImage.setScaling(Scaling.stretch);
+        rightImage.setAlign(Align.center);
 
         float imageW = stageWidth * 0.15f;
         float imageH = stageHeight * 0.25f;
@@ -339,7 +343,9 @@ public class BookDisplay extends UIComponent {
 
         // Add the image inside the bordered table with a small padding so it doesn't overlap the border
         float pad = borderThicknessPx; // Scale this using stageWidth/stageHeight if needed
-        borderedImage.add(rightImage).size(imageW - pad * 2, imageH - pad * 2).center();
+        borderedImage.setBackground(borderDrawable);
+        borderedImage.add(rightImage).expand().fill().pad(pad);
+
         rightTable.add(borderedImage).size(imageW, imageH).center();
         rightTable.row().padTop(stageHeight * 0.01f);
 

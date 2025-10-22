@@ -3,6 +3,9 @@ package com.csse3200.game.components.towers;
 import com.csse3200.game.components.Component;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
+import com.badlogic.gdx.math.Vector2;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -29,13 +32,22 @@ public class StatsBoostComponent extends Component {
         TEST_ENTITIES = entities;
     }
 
+    private Task rescanTask; // periodic rescan so newly placed towers get boosts quickly
+
     /**
      * Initializes the component.
      */
     @Override
     public void create() {
         super.create();
-        // nothing special on create
+        // Only schedule periodic rescans during normal gameplay (not in unit tests)
+        if (TEST_ENTITIES == null) {
+            rescanTask = Timer.schedule(new Task() {
+                @Override public void run() {
+                    rescanAndApply();
+                }
+            }, 0f, 0.1f);
+        }
     }
 
     /**
@@ -43,6 +55,12 @@ public class StatsBoostComponent extends Component {
      */
     @Override
     public void update() {
+        // Keep frame-based rescan as well (cheap + immediate on active frames)
+        rescanAndApply();
+    }
+
+    // Extracted scan logic so both update() and Timer can reuse it
+    private void rescanAndApply() {
         if (entity == null) return;
 
         TowerStatsComponent myStats = entity.getComponent(TowerStatsComponent.class);
@@ -50,23 +68,23 @@ public class StatsBoostComponent extends Component {
 
         float range = myStats.getRange();
 
-        // Compute booster using level_B (1.05, 1.10, ...), clamp to a sensible cap
         int levelB = Math.max(1, myStats.getLevel_B());
         float booster = 1.05f + 0.05f * (levelB - 1);
         if (booster > 1.25f) booster = 1.25f;
 
-        var es = ServiceLocator.getEntityService();
-        // Use ServiceLocator when present; otherwise fall back to test hook if set.
+        // Prefer test-provided entities during tests; otherwise use ServiceLocator
         Iterable<Entity> iterable = null;
-        if (es != null) {
-            try {
-                iterable = es.getEntitiesCopy();
-            } catch (Exception ignored) {}
-        }
-        if (iterable == null) {
-            if (TEST_ENTITIES == null) return;
+        if (TEST_ENTITIES != null) {
             iterable = TEST_ENTITIES;
+        } else {
+            var es = ServiceLocator.getEntityService();
+            if (es != null) {
+                try {
+                    iterable = es.getEntitiesCopy();
+                } catch (Exception ignored) {}
+            }
         }
+        if (iterable == null) return;
 
         // Apply/top-up to towers currently within range
         for (Entity other : iterable) {
@@ -77,46 +95,53 @@ public class StatsBoostComponent extends Component {
             if (towerComp == null || tStats == null) continue;
             if ("totem".equalsIgnoreCase(towerComp.getType())) continue;
 
-            if (other.getCenterPosition() == null || entity.getCenterPosition() == null) continue;
-            float d = other.getCenterPosition().dst(entity.getCenterPosition());
+            // Fallback to getPosition() if center unavailable (helps in tests)
+            Vector2 myPos = entity.getCenterPosition() != null ? entity.getCenterPosition() : entity.getPosition();
+            Vector2 otherPos = other.getCenterPosition() != null ? other.getCenterPosition() : other.getPosition();
+            if (myPos == null || otherPos == null) continue;
+
+            float d = otherPos.dst(myPos);
             if (d > range) continue;
 
             Float applied = appliedBoosterPerTarget.get(other);
             if (applied == null) {
-                // First time in range: apply multipliers
                 tStats.applyPermanentBoostMultipliers(booster, booster, booster, booster);
                 appliedBoosterPerTarget.put(other, booster);
             } else if (Math.abs(booster - applied) > 1e-6f) {
-                // Totem level changed: top-up by ratio
                 float ratio = booster / applied;
                 tStats.applyPermanentBoostMultipliers(ratio, ratio, ratio, ratio);
                 appliedBoosterPerTarget.put(other, booster);
             }
         }
 
-        // Revert boosts for targets no longer in range or now invalid
+        // Revert boosts for targets no longer valid or out of range
         Iterator<Map.Entry<Entity, Float>> it = appliedBoosterPerTarget.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<Entity, Float> e = it.next();
             Entity target = e.getKey();
             float applied = e.getValue();
 
+            // If target is gone or inactive, revert this totem's contribution and forget it
             if (target == null || !target.isActive()) {
-                // Target gone; just drop tracking
+                TowerStatsComponent ts = (target != null) ? target.getComponent(TowerStatsComponent.class) : null;
+                if (ts != null) {
+                    ts.removePermanentBoostMultipliers(applied, applied, applied, applied);
+                }
                 it.remove();
                 continue;
             }
-            if (target.getCenterPosition() == null || entity.getCenterPosition() == null) {
-                // Unable to validate; revert to be safe
+
+            Vector2 myPos = entity.getCenterPosition() != null ? entity.getCenterPosition() : entity.getPosition();
+            Vector2 targetPos = target.getCenterPosition() != null ? target.getCenterPosition() : target.getPosition();
+            if (myPos == null || targetPos == null) {
                 TowerStatsComponent ts = target.getComponent(TowerStatsComponent.class);
                 if (ts != null) ts.removePermanentBoostMultipliers(applied, applied, applied, applied);
                 it.remove();
                 continue;
             }
 
-            float dist = target.getCenterPosition().dst(entity.getCenterPosition());
+            float dist = targetPos.dst(myPos);
             if (dist > range) {
-                // Out of range now: revert this totem's contribution
                 TowerStatsComponent ts = target.getComponent(TowerStatsComponent.class);
                 if (ts != null) ts.removePermanentBoostMultipliers(applied, applied, applied, applied);
                 it.remove();
@@ -142,11 +167,16 @@ public class StatsBoostComponent extends Component {
      */
     @Override
     public void dispose() {
-        // When this totem is sold/destroyed, revert its effects on all tracked towers
+        // Stop periodic rescan
+        if (rescanTask != null) {
+            rescanTask.cancel();
+            rescanTask = null;
+        }
+        // Revert this totem's effects on all tracked towers
         for (Map.Entry<Entity, Float> e : appliedBoosterPerTarget.entrySet()) {
             Entity target = e.getKey();
             float applied = e.getValue();
-            if (target == null || !target.isActive()) continue;
+            if (target == null) continue;
             TowerStatsComponent ts = target.getComponent(TowerStatsComponent.class);
             if (ts != null) {
                 ts.removePermanentBoostMultipliers(applied, applied, applied, applied);
@@ -156,3 +186,4 @@ public class StatsBoostComponent extends Component {
         super.dispose();
     }
 }
+

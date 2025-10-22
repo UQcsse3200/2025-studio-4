@@ -91,8 +91,20 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DialogueAudioManager</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">对话音频管理器
- 负责预加载、播放和停止对话音频</div>
+<div class="block">Manages dialogue audio playback, preloading, and volume control.
+ 
+ <p>This class handles the loading and playback of dialogue sounds during
+ conversation sequences. It provides volume management with a configurable
+ multiplier to make dialogue more audible, and includes methods for
+ preloading sounds, playing audio, and controlling playback state.</p>
+ 
+ <p>The manager integrates with the game's ResourceService for sound loading
+ and UserSettings for volume configuration, ensuring consistent audio
+ behavior across the application.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,58 +135,58 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispose()" class="member-name-link">dispose</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">清理资源</div>
+<div class="block">Cleans up resources and stops any playing sounds.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getVolumeMultiplier()" class="member-name-link">getVolumeMultiplier</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">获取当前对话音量倍数</div>
+<div class="block">Gets the current dialogue volume multiplier.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPlaying()" class="member-name-link">isPlaying</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">检查是否有音频正在播放</div>
+<div class="block">Checks if a dialogue sound is currently playing.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pauseCurrentSound()" class="member-name-link">pauseCurrentSound</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">暂停当前播放的音频</div>
+<div class="block">Pauses the currently playing dialogue sound.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#playSound(java.lang.String)" class="member-name-link">playSound</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;soundPath)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">播放对话音频</div>
+<div class="block">Plays dialogue audio using user's volume settings with volume multiplier.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#playSound(java.lang.String,float)" class="member-name-link">playSound</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;soundPath,
  float&nbsp;volume)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">播放对话音频（可指定音量）</div>
+<div class="block">Plays dialogue audio with a specified volume level.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#preloadSounds(java.util.List)" class="member-name-link">preloadSounds</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="IntroDialogueComponent.DialogueEntry.html" title="class in com.csse3200.game.components.maingame">IntroDialogueComponent.DialogueEntry</a>&gt;&nbsp;entries)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">预加载对话条目中的所有音频</div>
+<div class="block">Preloads all audio files from the given dialogue entries.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resumeCurrentSound()" class="member-name-link">resumeCurrentSound</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">恢复当前暂停的音频</div>
+<div class="block">Resumes the currently paused dialogue sound.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setVolume(float)" class="member-name-link">setVolume</a><wbr>(float&nbsp;volume)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">设置当前播放音频的音量</div>
+<div class="block">Sets the volume of the currently playing audio.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#setVolumeMultiplier(float)" class="member-name-link">setVolumeMultiplier</a><wbr>(float&nbsp;multiplier)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">设置对话音量倍数</div>
+<div class="block">Sets the dialogue volume multiplier for all dialogue sounds.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#stopCurrentSound()" class="member-name-link">stopCurrentSound</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">停止当前播放的音频</div>
+<div class="block">Stops the currently playing dialogue sound.</div>
 </div>
 </div>
 </div>
@@ -211,10 +223,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="preloadSounds(java.util.List)">
 <h3>preloadSounds</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">preloadSounds</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="IntroDialogueComponent.DialogueEntry.html" title="class in com.csse3200.game.components.maingame">IntroDialogueComponent.DialogueEntry</a>&gt;&nbsp;entries)</span></div>
-<div class="block">预加载对话条目中的所有音频</div>
+<div class="block">Preloads all audio files from the given dialogue entries.
+ 
+ <p>Extracts unique sound paths from the dialogue entries and loads them
+ through the ResourceService. This ensures smooth playback without
+ loading delays during dialogue sequences.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>entries</code> - 对话条目列表</dd>
+<dd><code>entries</code> - list of dialogue entries containing sound paths</dd>
 </dl>
 </section>
 </li>
@@ -222,10 +238,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="playSound(java.lang.String)">
 <h3>playSound</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">playSound</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;soundPath)</span></div>
-<div class="block">播放对话音频</div>
+<div class="block">Plays dialogue audio using user's volume settings with volume multiplier.
+ 
+ <p>Loads the sound from ResourceService and plays it at a volume calculated
+ from the user's sound settings multiplied by the dialogue volume multiplier.
+ This ensures dialogue is audible even when general sound volume is low.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>soundPath</code> - 音频文件路径</dd>
+<dd><code>soundPath</code> - path to the audio file to play</dd>
 </dl>
 </section>
 </li>
@@ -234,11 +254,15 @@ loadScripts(document, 'script');</script>
 <h3>playSound</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">playSound</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;soundPath,
  float&nbsp;volume)</span></div>
-<div class="block">播放对话音频（可指定音量）</div>
+<div class="block">Plays dialogue audio with a specified volume level.
+ 
+ <p>Similar to the parameterless playSound method, but allows direct
+ volume control. The specified volume is still multiplied by the
+ dialogue volume multiplier for consistency.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>soundPath</code> - 音频文件路径</dd>
-<dd><code>volume</code> - 音量（0.0 到 1.0）</dd>
+<dd><code>soundPath</code> - path to the audio file to play</dd>
+<dd><code>volume</code> - volume level (0.0 to 1.0)</dd>
 </dl>
 </section>
 </li>
@@ -246,31 +270,40 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="stopCurrentSound()">
 <h3>stopCurrentSound</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">stopCurrentSound</span>()</div>
-<div class="block">停止当前播放的音频</div>
+<div class="block">Stops the currently playing dialogue sound.
+ 
+ <p>If a sound is currently playing, this method stops it and clears
+ the current sound references. Safe to call even if no sound is playing.</p></div>
 </section>
 </li>
 <li>
 <section class="detail" id="pauseCurrentSound()">
 <h3>pauseCurrentSound</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">pauseCurrentSound</span>()</div>
-<div class="block">暂停当前播放的音频</div>
+<div class="block">Pauses the currently playing dialogue sound.
+ 
+ <p>Pauses playback without stopping the sound, allowing it to be
+ resumed later. Safe to call even if no sound is playing.</p></div>
 </section>
 </li>
 <li>
 <section class="detail" id="resumeCurrentSound()">
 <h3>resumeCurrentSound</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">resumeCurrentSound</span>()</div>
-<div class="block">恢复当前暂停的音频</div>
+<div class="block">Resumes the currently paused dialogue sound.
+ 
+ <p>Resumes playback of a previously paused sound. Safe to call even
+ if no sound is paused or playing.</p></div>
 </section>
 </li>
 <li>
 <section class="detail" id="isPlaying()">
 <h3>isPlaying</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isPlaying</span>()</div>
-<div class="block">检查是否有音频正在播放</div>
+<div class="block">Checks if a dialogue sound is currently playing.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true 如果有音频正在播放</dd>
+<dd>true if a sound is currently playing, false otherwise</dd>
 </dl>
 </section>
 </li>
@@ -278,10 +311,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setVolume(float)">
 <h3>setVolume</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVolume</span><wbr><span class="parameters">(float&nbsp;volume)</span></div>
-<div class="block">设置当前播放音频的音量</div>
+<div class="block">Sets the volume of the currently playing audio.
+ 
+ <p>Adjusts the volume of the currently playing sound in real-time.
+ The volume is clamped to the valid range [0.0, 1.0].</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>volume</code> - 音量（0.0 到 1.0）</dd>
+<dd><code>volume</code> - volume level (0.0 to 1.0)</dd>
 </dl>
 </section>
 </li>
@@ -289,10 +325,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="setVolumeMultiplier(float)">
 <h3>setVolumeMultiplier</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setVolumeMultiplier</span><wbr><span class="parameters">(float&nbsp;multiplier)</span></div>
-<div class="block">设置对话音量倍数</div>
+<div class="block">Sets the dialogue volume multiplier for all dialogue sounds.
+ 
+ <p>This multiplier is applied to all dialogue sounds to make them
+ more audible relative to other game sounds. The value is clamped
+ to a reasonable range to prevent audio distortion.</p></div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>multiplier</code> - 音量倍数（建议范围：0.5 - 3.0）</dd>
+<dd><code>multiplier</code> - volume multiplier (recommended range: 0.5 - 3.0)</dd>
 </dl>
 </section>
 </li>
@@ -300,10 +340,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getVolumeMultiplier()">
 <h3>getVolumeMultiplier</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getVolumeMultiplier</span>()</div>
-<div class="block">获取当前对话音量倍数</div>
+<div class="block">Gets the current dialogue volume multiplier.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>当前音量倍数</dd>
+<dd>the current volume multiplier value</dd>
 </dl>
 </section>
 </li>
@@ -311,7 +351,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="dispose()">
 <h3>dispose</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispose</span>()</div>
-<div class="block">清理资源</div>
+<div class="block">Cleans up resources and stops any playing sounds.
+ 
+ <p>Stops the current sound and clears all references. Should be called
+ when the dialogue audio manager is no longer needed to prevent
+ resource leaks.</p></div>
 </section>
 </li>
 </ul>

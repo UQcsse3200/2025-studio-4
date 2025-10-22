@@ -91,8 +91,20 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">DialogueConfig</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">对话框配置类
- 统一管理不同地图的对话内容配置</div>
+<div class="block">Configuration class for dialogue content across different game maps.
+ 
+ <p>This class provides centralized management of dialogue scripts for different
+ game areas. It handles player customization by dynamically retrieving player
+ names and avatar paths from services, with fallback defaults when services
+ are unavailable.</p>
+ 
+ <p>The dialogue entries include text content, speaker avatars, audio files,
+ positioning, background images, and speaker names. Each map has its own
+ unique dialogue sequence that reflects the story progression.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,12 +135,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="IntroDialogueComponent.DialogueEntry.html" title="class in com.csse3200.game.components.maingame">IntroDialogueComponent.DialogueEntry</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getMap1Dialogue()" class="member-name-link">getMap1Dialogue</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">获取地图1的对话脚本</div>
+<div class="block">Gets the dialogue script for Map 1 (Icebox).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="IntroDialogueComponent.DialogueEntry.html" title="class in com.csse3200.game.components.maingame">IntroDialogueComponent.DialogueEntry</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getMap2Dialogue()" class="member-name-link">getMap2Dialogue</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">获取地图2的对话脚本</div>
+<div class="block">Gets the dialogue script for Map 2 (Ascent).</div>
 </div>
 </div>
 </div>
@@ -165,10 +177,17 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMap1Dialogue()">
 <h3>getMap1Dialogue</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="IntroDialogueComponent.DialogueEntry.html" title="class in com.csse3200.game.components.maingame">IntroDialogueComponent.DialogueEntry</a>&gt;</span>&nbsp;<span class="element-name">getMap1Dialogue</span>()</div>
-<div class="block">获取地图1的对话脚本</div>
+<div class="block">Gets the dialogue script for Map 1 (Icebox).
+ 
+ <p>Returns a sequence of dialogue entries that tell the story of awakening
+ in the frozen wasteland. The dialogue features MAMBA, a resurrected character,
+ and the player character discussing the AI threat and the need to fight back.</p>
+ 
+ <p>The dialogue includes dynamic player customization through avatar and name
+ retrieval, with appropriate audio files and positioning for each speaker.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>对话条目列表</dd>
+<dd>list of dialogue entries for Map 1</dd>
 </dl>
 </section>
 </li>
@@ -176,10 +195,18 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getMap2Dialogue()">
 <h3>getMap2Dialogue</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="IntroDialogueComponent.DialogueEntry.html" title="class in com.csse3200.game.components.maingame">IntroDialogueComponent.DialogueEntry</a>&gt;</span>&nbsp;<span class="element-name">getMap2Dialogue</span>()</div>
-<div class="block">获取地图2的对话脚本</div>
+<div class="block">Gets the dialogue script for Map 2 (Ascent).
+ 
+ <p>Returns a sequence of dialogue entries that continue the story in the
+ AI-controlled city. The dialogue features MAMBA expressing excitement
+ about returning to battle, and the player character discussing the final
+ confrontation with the AI network.</p>
+ 
+ <p>The dialogue maintains the same customization features as Map 1,
+ with dynamic player avatar and name integration.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>对话条目列表</dd>
+<dd>list of dialogue entries for Map 2</dd>
 </dl>
 </section>
 </li>

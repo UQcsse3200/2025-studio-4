@@ -95,6 +95,10 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
 <div class="block">Component that handles visual damage effects for the homebase.
  Changes the texture and color when the homebase takes damage to provide visual feedback.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>Sprint 3</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -150,17 +154,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDamageEffectDuration()" class="member-name-link">getDamageEffectDuration</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">获取受击效果持续时间</div>
+<div class="block">Get damage effect duration</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasDamagedTexture()" class="member-name-link">hasDamagedTexture</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">检查是否有受击贴图可用</div>
+<div class="block">Check if damaged texture is available</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isShowingDamageEffect()" class="member-name-link">isShowingDamageEffect</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">检查是否正在显示受击效果</div>
+<div class="block">Check if damage effect is currently being displayed</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
@@ -230,10 +234,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="hasDamagedTexture()">
 <h3>hasDamagedTexture</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasDamagedTexture</span>()</div>
-<div class="block">检查是否有受击贴图可用</div>
+<div class="block">Check if damaged texture is available</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true如果有受击贴图，false如果只有颜色效果</dd>
+<dd>true if damaged texture exists, false if only color effect is used</dd>
 </dl>
 </section>
 </li>
@@ -241,10 +245,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getDamageEffectDuration()">
 <h3>getDamageEffectDuration</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getDamageEffectDuration</span>()</div>
-<div class="block">获取受击效果持续时间</div>
+<div class="block">Get damage effect duration</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>持续时间（秒）</dd>
+<dd>duration in seconds</dd>
 </dl>
 </section>
 </li>
@@ -252,10 +256,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isShowingDamageEffect()">
 <h3>isShowingDamageEffect</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isShowingDamageEffect</span>()</div>
-<div class="block">检查是否正在显示受击效果</div>
+<div class="block">Check if damage effect is currently being displayed</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true如果正在显示受击效果，false否则</dd>
+<dd>true if damage effect is being shown, false otherwise</dd>
 </dl>
 </section>
 </li>

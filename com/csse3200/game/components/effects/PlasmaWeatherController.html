@@ -91,6 +91,18 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PlasmaWeatherController</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">Controls plasma weather effects in the game world.
+ 
+ <p>This controller manages alternating weather states between sunny and plasma storm conditions.
+ During plasma storms, it generates warning markers and plasma strikes that can impact the terrain
+ and entities. The weather cycles automatically with random durations to create dynamic gameplay.</p>
+ 
+ <p>The plasma strikes target random positions on the map, prioritizing waypoint locations
+ when available. Each strike follows a sequence: warning marker → plasma bolt → impact effect.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -106,7 +118,9 @@ loadScripts(document, 'script');</script>
  <a href="../../areas/IMapEditor.html" title="interface in com.csse3200.game.areas">IMapEditor</a>&nbsp;mapEditor,
  <a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a>&nbsp;terrain,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;impactListener)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new plasma weather controller.</div>
+</div>
 </div>
 </section>
 </li>
@@ -123,13 +137,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrentWeatherLabel()" class="member-name-link">getCurrentWeatherLabel</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the current weather state as a display label.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isPlasmaActive()" class="member-name-link">isPlasmaActive</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Checks if plasma storm weather is currently active.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update(float)" class="member-name-link">update</a><wbr>(float&nbsp;delta)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Updates the weather controller state.</div>
+</div>
 </div>
 </div>
 </div>
@@ -154,6 +174,14 @@ loadScripts(document, 'script');</script>
  <a href="../../areas/IMapEditor.html" title="interface in com.csse3200.game.areas">IMapEditor</a>&nbsp;mapEditor,
  <a href="../../areas/terrain/ITerrainComponent.html" title="interface in com.csse3200.game.areas.terrain">ITerrainComponent</a>&nbsp;terrain,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;impactListener)</span></div>
+<div class="block">Creates a new plasma weather controller.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>spawner</code> - function to spawn entities at positions</dd>
+<dd><code>mapEditor</code> - map editor for waypoint access</dd>
+<dd><code>terrain</code> - terrain component for map bounds</dd>
+<dd><code>impactListener</code> - callback for plasma impact events</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -168,18 +196,36 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update(float)">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span><wbr><span class="parameters">(float&nbsp;delta)</span></div>
+<div class="block">Updates the weather controller state.
+ 
+ <p>This method should be called every frame to update weather transitions,
+ manage pending strikes, and spawn new plasma effects during storms.</p></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>delta</code> - time elapsed since last update in seconds</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getCurrentWeatherLabel()">
 <h3>getCurrentWeatherLabel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getCurrentWeatherLabel</span>()</div>
+<div class="block">Gets the current weather state as a display label.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>human-readable weather description</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="isPlasmaActive()">
 <h3>isPlasmaActive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isPlasmaActive</span>()</div>
+<div class="block">Checks if plasma storm weather is currently active.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if plasma storm is active, false if sunny</dd>
+</dl>
 </section>
 </li>
 </ul>

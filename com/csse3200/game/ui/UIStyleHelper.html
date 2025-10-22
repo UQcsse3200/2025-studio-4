@@ -122,7 +122,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#continueButtonStyle()" class="member-name-link">continueButtonStyle</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">创建使用continue.png作为贴图的按钮样式</div>
+<div class="block">Creates a button style using continue.png texture.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#mainGameMenuButtonStyle()" class="member-name-link">mainGameMenuButtonStyle</a>()</code></div>
@@ -131,11 +131,13 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#orangeButtonStyle()" class="member-name-link">orangeButtonStyle</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates an orange-themed button style for main menu buttons.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#skipButtonStyle()" class="member-name-link">skipButtonStyle</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">创建使用skip.png作为贴图的按钮样式</div>
+<div class="block">Creates a button style using skip.png texture.</div>
 </div>
 </div>
 </div>
@@ -172,16 +174,29 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="orangeButtonStyle()">
 <h3>orangeButtonStyle</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</span>&nbsp;<span class="element-name">orangeButtonStyle</span>()</div>
+<div class="block">Creates an orange-themed button style for main menu buttons.
+ 
+ <p>This method creates a button style using the main menu button background
+ texture with NinePatch scaling. It includes different visual states for
+ normal, pressed, and hover interactions.</p></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>TextButton.TextButtonStyle with orange theme and NinePatch background</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="continueButtonStyle()">
 <h3>continueButtonStyle</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</span>&nbsp;<span class="element-name">continueButtonStyle</span>()</div>
-<div class="block">创建使用continue.png作为贴图的按钮样式</div>
+<div class="block">Creates a button style using continue.png texture.
+ 
+ <p>This method creates a button style specifically for continue buttons,
+ using the continue.png texture with responsive font sizing based on
+ screen resolution.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>continue按钮样式</dd>
+<dd>TextButton.TextButtonStyle for continue buttons</dd>
 </dl>
 </section>
 </li>
@@ -189,10 +204,14 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="skipButtonStyle()">
 <h3>skipButtonStyle</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle</span>&nbsp;<span class="element-name">skipButtonStyle</span>()</div>
-<div class="block">创建使用skip.png作为贴图的按钮样式</div>
+<div class="block">Creates a button style using skip.png texture.
+ 
+ <p>This method creates a button style specifically for skip buttons,
+ using the skip.png texture with responsive font sizing based on
+ screen resolution.</p></div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>skip按钮样式</dd>
+<dd>TextButton.TextButtonStyle for skip buttons</dd>
 </dl>
 </section>
 </li>

@@ -99,6 +99,17 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PlasmaImpactComponent</span>
 <span class="extends-implements">extends <a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
+<div class="block">Renders a visual impact effect when plasma strikes hit the ground.
+ 
+ <p>This component creates a bright, expanding circular effect that fades out over time.
+ The impact effect is procedurally generated as a radial gradient texture and automatically
+ disposes itself when the animation completes.</p>
+ 
+ <p>The effect plays a sound on creation and scales/fades the visual effect over the duration.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -120,7 +131,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float)" class="member-name-link">PlasmaImpactComponent</a><wbr>(float&nbsp;duration)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a plasma impact effect with the specified duration.</div>
+</div>
 </div>
 </section>
 </li>
@@ -177,6 +190,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(float)">
 <h3>PlasmaImpactComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">PlasmaImpactComponent</span><wbr><span class="parameters">(float&nbsp;duration)</span></div>
+<div class="block">Creates a plasma impact effect with the specified duration.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>duration</code> - duration of the effect in seconds</dd>
+</dl>
 </section>
 </li>
 </ul>

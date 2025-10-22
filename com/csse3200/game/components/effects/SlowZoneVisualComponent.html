@@ -102,6 +102,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Renders a subtle animated overlay to represent a slow-zone tile (e.g., swamp, ice).
  The component procedurally generates a soft radial texture and pulsates its alpha/scale
  to keep the effect lightweight without extra art assets.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>Sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,10 +127,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float)" class="member-name-link">SlowZoneVisualComponent</a><wbr>(float&nbsp;tileSize)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a slow zone visual effect with default white tint.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(float,com.badlogic.gdx.graphics.Color)" class="member-name-link">SlowZoneVisualComponent</a><wbr>(float&nbsp;tileSize,
  com.badlogic.gdx.graphics.Color&nbsp;tint)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a slow zone visual effect with custom tint.</div>
+</div>
 </div>
 </section>
 </li>
@@ -183,6 +191,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(float)">
 <h3>SlowZoneVisualComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SlowZoneVisualComponent</span><wbr><span class="parameters">(float&nbsp;tileSize)</span></div>
+<div class="block">Creates a slow zone visual effect with default white tint.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>tileSize</code> - size of the tile in world units</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -190,6 +203,12 @@ loadScripts(document, 'script');</script>
 <h3>SlowZoneVisualComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">SlowZoneVisualComponent</span><wbr><span class="parameters">(float&nbsp;tileSize,
  com.badlogic.gdx.graphics.Color&nbsp;tint)</span></div>
+<div class="block">Creates a slow zone visual effect with custom tint.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>tileSize</code> - size of the tile in world units</dd>
+<dd><code>tint</code> - color tint to apply to the effect</dd>
+</dl>
 </section>
 </li>
 </ul>

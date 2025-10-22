@@ -99,6 +99,18 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PlasmaStrikeComponent</span>
 <span class="extends-implements">extends <a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
+<div class="block">Renders a plasma bolt falling from the sky to strike a target position.
+ 
+ <p>This component creates a visual effect of a plasma bolt descending from a specified height
+ to a target position. The bolt falls at a configurable speed and triggers an impact callback
+ when it reaches the ground.</p>
+ 
+ <p>The plasma bolt is procedurally generated as a bright blue circular texture with
+ transparency based on height. The effect automatically disposes itself upon impact.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,7 +135,9 @@ loadScripts(document, 'script');</script>
  float&nbsp;startHeight,
  float&nbsp;fallSpeed,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;impactListener)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a plasma strike component.</div>
+</div>
 </div>
 </section>
 </li>
@@ -183,6 +197,14 @@ loadScripts(document, 'script');</script>
  float&nbsp;startHeight,
  float&nbsp;fallSpeed,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;com.badlogic.gdx.math.Vector2&gt;&nbsp;impactListener)</span></div>
+<div class="block">Creates a plasma strike component.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>target</code> - target position for the strike</dd>
+<dd><code>startHeight</code> - initial height from which to start falling</dd>
+<dd><code>fallSpeed</code> - speed of descent in units per second</dd>
+<dd><code>impactListener</code> - callback triggered when impact occurs</dd>
+</dl>
 </section>
 </li>
 </ul>

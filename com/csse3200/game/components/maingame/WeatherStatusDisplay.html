@@ -101,6 +101,19 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">WeatherStatusDisplay</span>
 <span class="extends-implements">extends <a href="../../ui/UIComponent.html" title="class in com.csse3200.game.ui">UIComponent</a></span></div>
+<div class="block">Displays the current weather status in the game UI.
+
+ <p>This component creates a centred UI toast that shows the current weather condition
+ (Sunny or Plasma Storm). It continuously updates to reflect changes in the weather
+ state from the <a href="../effects/PlasmaWeatherController.html" title="class in com.csse3200.game.components.effects"><code>PlasmaWeatherController</code></a>.</p>
+
+ <p>The display uses a brilliant white label with scaled font to ensure visibility
+ against various background elements. The toast animates in, stays visible for a short
+ duration, and fades out automatically.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -125,7 +138,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(com.csse3200.game.components.effects.PlasmaWeatherController)" class="member-name-link">WeatherStatusDisplay</a><wbr>(<a href="../effects/PlasmaWeatherController.html" title="class in com.csse3200.game.components.effects">PlasmaWeatherController</a>&nbsp;controller)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a weather status display component.</div>
+</div>
 </div>
 </section>
 </li>
@@ -196,6 +211,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(com.csse3200.game.components.effects.PlasmaWeatherController)">
 <h3>WeatherStatusDisplay</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">WeatherStatusDisplay</span><wbr><span class="parameters">(<a href="../effects/PlasmaWeatherController.html" title="class in com.csse3200.game.components.effects">PlasmaWeatherController</a>&nbsp;controller)</span></div>
+<div class="block">Creates a weather status display component.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>controller</code> - the plasma weather controller to monitor</dd>
+</dl>
 </section>
 </li>
 </ul>

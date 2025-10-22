@@ -93,8 +93,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">HomebaseHealingEffectComponent</span>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">基地回血特效组件
- 当基地回血时显示绿色闪烁特效和回血动画</div>
+<div class="block">Home base healing effect component.
+ Displays a green pulsating effect and optional healing animation when the base regenerates.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>Sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -117,7 +121,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">HomebaseHealingEffectComponent</a>()</code></div>
 <div class="col-last even-row-color">
-<div class="block">创建基地回血特效组件</div>
+<div class="block">Creates the home base healing effect component.</div>
 </div>
 </div>
 </section>
@@ -146,17 +150,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getHealingEffectDuration()" class="member-name-link">getHealingEffectDuration</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">获取回血特效持续时间</div>
+<div class="block">Get the healing effect duration.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isShowingHealingEffect()" class="member-name-link">isShowingHealingEffect</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">检查是否正在显示回血特效</div>
+<div class="block">Check whether the healing effect is active.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Handles the healing animation timing for Team1's Sprint 4 feature work.</div>
 </div>
 </div>
 </div>
@@ -182,7 +186,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;()">
 <h3>HomebaseHealingEffectComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">HomebaseHealingEffectComponent</span>()</div>
-<div class="block">创建基地回血特效组件</div>
+<div class="block">Creates the home base healing effect component.</div>
 </section>
 </li>
 </ul>
@@ -210,12 +214,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Handles the healing animation timing for Team1's Sprint 4 feature work.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if the time source is not registered</dd>
 </dl>
 </section>
 </li>
@@ -223,10 +227,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isShowingHealingEffect()">
 <h3>isShowingHealingEffect</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isShowingHealingEffect</span>()</div>
-<div class="block">检查是否正在显示回血特效</div>
+<div class="block">Check whether the healing effect is active.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true如果正在显示回血特效，false否则</dd>
+<dd>true if the healing effect is showing, false otherwise</dd>
 </dl>
 </section>
 </li>
@@ -234,10 +238,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getHealingEffectDuration()">
 <h3>getHealingEffectDuration</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getHealingEffectDuration</span>()</div>
-<div class="block">获取回血特效持续时间</div>
+<div class="block">Get the healing effect duration.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>持续时间（秒）</dd>
+<dd>duration in seconds</dd>
 </dl>
 </section>
 </li>

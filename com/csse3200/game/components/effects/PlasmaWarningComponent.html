@@ -99,6 +99,18 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">PlasmaWarningComponent</span>
 <span class="extends-implements">extends <a href="../../rendering/RenderComponent.html" title="class in com.csse3200.game.rendering">RenderComponent</a></span></div>
+<div class="block">Renders a warning marker indicating where a plasma strike will occur.
+ 
+ <p>This component displays a pulsing warning marker at the target location
+ before a plasma strike hits. The marker consists of a vertical lightning bolt
+ design that pulses in size to draw attention.</p>
+ 
+ <p>The warning plays a sound on creation and automatically disposes itself
+ when the warning period expires.</p></div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -121,7 +133,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float,float)" class="member-name-link">PlasmaWarningComponent</a><wbr>(float&nbsp;duration,
  float&nbsp;size)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a plasma warning component.</div>
+</div>
 </div>
 </section>
 </li>
@@ -179,6 +193,12 @@ loadScripts(document, 'script');</script>
 <h3>PlasmaWarningComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">PlasmaWarningComponent</span><wbr><span class="parameters">(float&nbsp;duration,
  float&nbsp;size)</span></div>
+<div class="block">Creates a plasma warning component.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>duration</code> - duration of the warning in seconds</dd>
+<dd><code>size</code> - base size of the warning marker</dd>
+</dl>
 </section>
 </li>
 </ul>

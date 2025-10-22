@@ -93,8 +93,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">HomebaseRegenerationComponent</span>
 <span class="extends-implements">extends <a href="Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Homebase生命回复组件
- 当homebase在5秒内没有受到伤害时，每4秒回复5点生命值，并在周围显示回复数字</div>
+<div class="block">Homebase regeneration component.
+ Regenerates 5 HP every 4 seconds after 4 seconds without damage.</div>
+<dl class="notes">
+<dt>Since:</dt>
+<dd>Sprint 4</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -134,27 +138,27 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#create()" class="member-name-link">create</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called when the entity is created and registered.</div>
+<div class="block">Initializes the component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTimeSinceLastDamage()" class="member-name-link">getTimeSinceLastDamage</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">获取距离上次受伤的时间（秒）</div>
+<div class="block">Get time since last damage (in seconds)</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTimeUntilNextRegen()" class="member-name-link">getTimeUntilNextRegen</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">获取距离下次回复的剩余时间（秒）</div>
+<div class="block">Get time until next regeneration (in seconds)</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isRegenerating()" class="member-name-link">isRegenerating</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">获取当前是否处于回复状态</div>
+<div class="block">Get whether currently regenerating</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
+<div class="block">Updates regeneration logic every frame.</div>
 </div>
 </div>
 </div>
@@ -194,9 +198,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="create()">
 <h3>create</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">create</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="Component.html#create()">Component</a></code></span></div>
-<div class="block">Called when the entity is created and registered. Initial logic such as calls to GetComponent
- should be made here, not in the constructor which is called before an entity is finished.</div>
+<div class="block">Initializes the component.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#create()">create</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -207,9 +209,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="Component.html#update()">Component</a></code></span></div>
-<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
- component is disabled.</div>
+<div class="block">Updates regeneration logic every frame.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>
@@ -220,10 +220,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="isRegenerating()">
 <h3>isRegenerating</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isRegenerating</span>()</div>
-<div class="block">获取当前是否处于回复状态</div>
+<div class="block">Get whether currently regenerating</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>true如果正在回复，false否则</dd>
+<dd>true if regenerating, false otherwise</dd>
 </dl>
 </section>
 </li>
@@ -231,10 +231,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getTimeSinceLastDamage()">
 <h3>getTimeSinceLastDamage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getTimeSinceLastDamage</span>()</div>
-<div class="block">获取距离上次受伤的时间（秒）</div>
+<div class="block">Get time since last damage (in seconds)</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>距离上次受伤的秒数</dd>
+<dd>Seconds since last damage</dd>
 </dl>
 </section>
 </li>
@@ -242,10 +242,10 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getTimeUntilNextRegen()">
 <h3>getTimeUntilNextRegen</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">float</span>&nbsp;<span class="element-name">getTimeUntilNextRegen</span>()</div>
-<div class="block">获取距离下次回复的剩余时间（秒）</div>
+<div class="block">Get time until next regeneration (in seconds)</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>距离下次回复的秒数，如果不在回复状态则返回-1</dd>
+<dd>Seconds until next regeneration, returns -1 if not regenerating</dd>
 </dl>
 </section>
 </li>

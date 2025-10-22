@@ -50,10 +50,8 @@ public interface IMapEditor {
      */
     void setPathLayerOpacity(float opacity);
 
-    /** ✅ 新增：判断某个格子是否为“普通路径格” */
     boolean isPath(int x, int y);
 
-    /** ✅ 新增：只返回由 createPathTile(...) 写入的“普通路径格”坐标 */
     List<GridPoint2> getPathTiles();
 
 }

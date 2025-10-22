@@ -18,14 +18,24 @@ import static com.csse3200.game.ui.UIComponent.skin;
  */
 public class UIStyleHelper {
 
+    /** Path to the main menu button background texture */
     private static final String BUTTON_PATH = "images/Main_Menu_Button_Background.png";
 
+    /**
+     * Creates an orange-themed button style for main menu buttons.
+     * 
+     * <p>This method creates a button style using the main menu button background
+     * texture with NinePatch scaling. It includes different visual states for
+     * normal, pressed, and hover interactions.</p>
+     * 
+     * @return TextButton.TextButtonStyle with orange theme and NinePatch background
+     */
     public static TextButton.TextButtonStyle orangeButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
 
         Texture buttonTexture = ServiceLocator.getResourceService().getAsset(BUTTON_PATH, Texture.class);
         if (buttonTexture == null) {
-            buttonTexture = new Texture(BUTTON_PATH); // fallback if not preloaded
+            buttonTexture = new Texture(BUTTON_PATH); // Fallback if not preloaded
         }
 
         TextureRegion region = new TextureRegion(buttonTexture);
@@ -51,8 +61,13 @@ public class UIStyleHelper {
     }
 
     /**
-     * 创建使用continue.png作为贴图的按钮样式
-     * @return continue按钮样式
+     * Creates a button style using continue.png texture.
+     * 
+     * <p>This method creates a button style specifically for continue buttons,
+     * using the continue.png texture with responsive font sizing based on
+     * screen resolution.</p>
+     * 
+     * @return TextButton.TextButtonStyle for continue buttons
      */
     public static TextButton.TextButtonStyle continueButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
@@ -60,7 +75,7 @@ public class UIStyleHelper {
         String continueButtonPath = "images/continue.png";
         Texture buttonTexture = ServiceLocator.getResourceService().getAsset(continueButtonPath, Texture.class);
         if (buttonTexture == null) {
-            buttonTexture = new Texture(continueButtonPath); // fallback if not preloaded
+            buttonTexture = new Texture(continueButtonPath); // Fallback if not preloaded
         }
 
         TextureRegion region = new TextureRegion(buttonTexture);
@@ -76,7 +91,7 @@ public class UIStyleHelper {
         style.down = new NinePatchDrawable(pressed);
         style.over = new NinePatchDrawable(hover);
 
-        // 根据屏幕尺寸选择不同大小的字体
+        // Select font size based on screen dimensions
         style.font = getFontForScreenSize();
 
         style.fontColor = Color.WHITE;
@@ -87,8 +102,13 @@ public class UIStyleHelper {
     }
 
     /**
-     * 创建使用skip.png作为贴图的按钮样式
-     * @return skip按钮样式
+     * Creates a button style using skip.png texture.
+     * 
+     * <p>This method creates a button style specifically for skip buttons,
+     * using the skip.png texture with responsive font sizing based on
+     * screen resolution.</p>
+     * 
+     * @return TextButton.TextButtonStyle for skip buttons
      */
     public static TextButton.TextButtonStyle skipButtonStyle() {
         TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
@@ -96,7 +116,7 @@ public class UIStyleHelper {
         String skipButtonPath = "images/skip.png";
         Texture buttonTexture = ServiceLocator.getResourceService().getAsset(skipButtonPath, Texture.class);
         if (buttonTexture == null) {
-            buttonTexture = new Texture(skipButtonPath); // fallback if not preloaded
+            buttonTexture = new Texture(skipButtonPath); // Fallback if not preloaded
         }
 
         TextureRegion region = new TextureRegion(buttonTexture);
@@ -112,7 +132,7 @@ public class UIStyleHelper {
         style.down = new NinePatchDrawable(pressed);
         style.over = new NinePatchDrawable(hover);
 
-        // 根据屏幕尺寸选择不同大小的字体
+        // Select font size based on screen dimensions
         style.font = getFontForScreenSize();
 
         style.fontColor = Color.WHITE;
@@ -123,24 +143,30 @@ public class UIStyleHelper {
     }
 
     /**
-     * 根据屏幕尺寸选择合适大小的字体文件
-     * @return 适合当前屏幕尺寸的字体
+     * Selects an appropriate font size based on screen dimensions.
+     * 
+     * <p>This method analyzes the current screen resolution and selects
+     * the most suitable font size for optimal readability. It supports
+     * high-resolution displays (2K/4K), standard resolution (1080p),
+     * and lower resolution screens (720p and below).</p>
+     * 
+     * @return BitmapFont appropriate for the current screen size
      */
     private static com.badlogic.gdx.graphics.g2d.BitmapFont getFontForScreenSize() {
         try {
             float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
             float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
 
-            // 根据屏幕分辨率选择字体大小
+            // Select font size based on screen resolution
             String fontPath;
             if (screenWidth >= 2560 || screenHeight >= 1440) {
-                // 高分辨率屏幕 (2K/4K)
+                // High resolution screens (2K/4K)
                 fontPath = "flat-earth/skin/fonts/arial_black_32.fnt";
             } else if (screenWidth >= 1920 || screenHeight >= 1080) {
-                // 标准分辨率屏幕 (1080p)
+                // Standard resolution screens (1080p)
                 fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
             } else {
-                // 低分辨率屏幕 (720p及以下)
+                // Low resolution screens (720p and below)
                 fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
             }
 
@@ -151,7 +177,7 @@ public class UIStyleHelper {
 
             return font;
         } catch (Exception e) {
-            // 如果加载失败，使用默认字体
+            // If loading fails, use default font
             return skin.getFont("segoe_ui");
         }
     }

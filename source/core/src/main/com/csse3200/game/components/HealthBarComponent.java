@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.csse3200.game.components.PlayerCombatStatsComponent;
 import com.csse3200.game.rendering.RenderComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,22 +13,23 @@ import org.slf4j.LoggerFactory;
 /**
  * Component that renders a health bar above an entity.
  * The health bar shows current health as a percentage of max health.
+ * @author Team1 
  */
 public class HealthBarComponent extends RenderComponent {
     private static final Logger logger = LoggerFactory.getLogger(HealthBarComponent.class);
     
-    // 默认血条尺寸
+    // Default health bar dimensions
     private static final float DEFAULT_WIDTH = 1.5f;
     private static final float DEFAULT_HEIGHT = 0.15f;
     private static final float DEFAULT_OFFSET_Y = 0.8f;
     
-    // 血条颜色
-    private static final Color HEALTH_BAR_BACKGROUND = new Color(0.3f, 0.3f, 0.3f, 0.8f); // 深灰色背景
-    private static final Color HEALTH_BAR_FULL = new Color(0.2f, 0.8f, 0.2f, 0.9f); // 绿色（满血）
-    private static final Color HEALTH_BAR_MEDIUM = new Color(1.0f, 0.8f, 0.0f, 0.9f); // 黄色（中等血量）
-    private static final Color HEALTH_BAR_LOW = new Color(0.8f, 0.2f, 0.2f, 0.9f); // 红色（低血量）
+    // Health bar colors
+    private static final Color HEALTH_BAR_BACKGROUND = new Color(0.3f, 0.3f, 0.3f, 0.8f); // Dark gray background
+    private static final Color HEALTH_BAR_FULL = new Color(0.2f, 0.8f, 0.2f, 0.9f); // Green (full health)
+    private static final Color HEALTH_BAR_MEDIUM = new Color(1.0f, 0.8f, 0.0f, 0.9f); // Yellow (medium health)
+    private static final Color HEALTH_BAR_LOW = new Color(0.8f, 0.2f, 0.2f, 0.9f); // Red (low health)
     
-    // 可配置的血条尺寸
+    // Configurable health bar dimensions
     private float width;
     private float height;
     private float offsetY;
@@ -54,31 +54,31 @@ public class HealthBarComponent extends RenderComponent {
     public void create() {
         super.create();
         
-        // 初始化 ShapeRenderer
+        // Initialize ShapeRenderer
         shapeRenderer = new ShapeRenderer();
         
-        // 获取战斗统计组件
+        // Get combat stats component
         combatStats = entity.getComponent(PlayerCombatStatsComponent.class);
         if (combatStats == null) {
             logger.error("HealthBarComponent requires PlayerCombatStatsComponent");
             return;
         }
         
-        // 获取初始血量
+        // Get initial health value
         currentHealth = combatStats.getHealth();
-        maxHealth = currentHealth; // 假设初始血量为最大血量
+        maxHealth = currentHealth; // Assume initial health is max health
         
-        // 设置血条组件的最大血量
+        // Set max health for health bar component
         setMaxHealth(maxHealth);
         
-        // 监听血量变化事件
+        // Listen for health change events
         entity.getEvents().addListener("updateHealth", this::onHealthUpdate);
         
         logger.debug("HealthBarComponent created for entity with max health: {}", maxHealth);
     }
     
     /**
-     * 当血量更新时调用
+     * Called when health is updated
      */
     private void onHealthUpdate(int newHealth) {
         currentHealth = newHealth;
@@ -86,21 +86,21 @@ public class HealthBarComponent extends RenderComponent {
     }
     
     /**
-     * 设置血条是否可见
+     * Set whether the health bar is visible
      */
     public void setVisible(boolean visible) {
         this.isVisible = visible;
     }
     
     /**
-     * 获取血条是否可见
+     * Get whether the health bar is visible
      */
     public boolean isVisible() {
         return isVisible;
     }
     
     /**
-     * 设置最大血量（用于初始化）
+     * Set maximum health (for initialization)
      */
     public void setMaxHealth(int maxHealth) {
         this.maxHealth = maxHealth;
@@ -113,54 +113,54 @@ public class HealthBarComponent extends RenderComponent {
             return;
         }
         
-        // 计算血量百分比
+        // Calculate health percentage
         float healthPercentage = Math.max(0f, Math.min(1f, (float) currentHealth / maxHealth));
         
-        // 获取实体位置
+        // Get entity position
         Vector2 entityPos = entity.getCenterPosition();
         if (entityPos == null) {
             return;
         }
         
-        // 计算血条位置（在实体上方）
+        // Calculate health bar position (above entity)
         float barX = entityPos.x - width / 2f;
         float barY = entityPos.y + offsetY;
         
-        // 保存当前渲染状态
+        // Save current render state
         batch.end();
         
-        // 启用混合以支持透明度
+        // Enable blending for transparency support
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         
         shapeRenderer.setProjectionMatrix(batch.getProjectionMatrix());
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         
-        // 绘制血条背景
+        // Draw health bar background
         shapeRenderer.setColor(HEALTH_BAR_BACKGROUND);
         shapeRenderer.rect(barX, barY, width, height);
         
-        // 绘制血量条
+        // Draw health bar
         Color healthColor = getHealthColor(healthPercentage);
         shapeRenderer.setColor(healthColor);
         shapeRenderer.rect(barX, barY, width * healthPercentage, height);
         
         shapeRenderer.end();
         
-        // 恢复渲染状态
+        // Restore render state
         batch.begin();
     }
     
     /**
-     * 根据血量百分比获取血条颜色
+     * Get health bar color based on health percentage
      */
     private Color getHealthColor(float percentage) {
         if (percentage > 0.6f) {
-            return HEALTH_BAR_FULL; // 绿色
+            return HEALTH_BAR_FULL; // Green
         } else if (percentage > 0.3f) {
-            return HEALTH_BAR_MEDIUM; // 黄色
+            return HEALTH_BAR_MEDIUM; // Yellow
         } else {
-            return HEALTH_BAR_LOW; // 红色
+            return HEALTH_BAR_LOW; // Red
         }
     }
     

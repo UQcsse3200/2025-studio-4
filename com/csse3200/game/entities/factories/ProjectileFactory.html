@@ -125,12 +125,13 @@ loadScripts(document, 'script');</script>
 <div class="block">Create a bullet with default damage.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBullet(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,float,int)" class="member-name-link">createBullet</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texture,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#createBullet(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,float,int,boolean)" class="member-name-link">createBullet</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texture,
  com.badlogic.gdx.math.Vector2&nbsp;startPos,
  float&nbsp;vx,
  float&nbsp;vy,
  float&nbsp;life,
- int&nbsp;damage)</code></div>
+ int&nbsp;damage,
+ boolean&nbsp;destroyOnHit)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Create a bullet with custom damage.</div>
 </div>
@@ -173,14 +174,15 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="createBullet(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,float,int)">
+<section class="detail" id="createBullet(java.lang.String,com.badlogic.gdx.math.Vector2,float,float,float,int,boolean)">
 <h3>createBullet</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../Entity.html" title="class in com.csse3200.game.entities">Entity</a></span>&nbsp;<span class="element-name">createBullet</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;texture,
  com.badlogic.gdx.math.Vector2&nbsp;startPos,
  float&nbsp;vx,
  float&nbsp;vy,
  float&nbsp;life,
- int&nbsp;damage)</span></div>
+ int&nbsp;damage,
+ boolean&nbsp;destroyOnHit)</span></div>
 <div class="block">Create a bullet with custom damage.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

@@ -11,6 +11,7 @@ import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.areas.terrain.TerrainFactory;
 import com.csse3200.game.areas2.MapTwo.ForestGameArea2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
+import com.csse3200.game.components.book.MainBookDisplay;
 import com.csse3200.game.components.maingame.MainGameActions;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.EntityService;
@@ -56,7 +57,8 @@ public class MainGameScreen extends ScreenAdapter {
           "images/homebase1.png",
           "images/homebase2.png",
           "images/basement.png",
-          "images/re.gif",
+          "images/Background4.png",
+          "images/Craft.png",
           "images/main_game_background.png"
   };
 
@@ -125,12 +127,16 @@ public class MainGameScreen extends ScreenAdapter {
 
     // Handle save loading first
     boolean hasExistingPlayer = false;
+    String loadedMapId = null;
     if (isContinue && startupArg != null) {
       logger.info("Loading specific save file: {}", startupArg);
       boolean success = simpleSave.loadToPending(startupArg);
       if (success) {
         logger.info("Save file loaded successfully");
         hasExistingPlayer = true;
+        // Get the map ID from the loaded save
+        loadedMapId = simpleSave.getPendingMapId();
+        logger.info("Loaded save has mapId: {}", loadedMapId == null ? "Map 1 (default)" : loadedMapId);
       } else {
         logger.warn("Failed to load save file, starting new game");
       }
@@ -139,6 +145,8 @@ public class MainGameScreen extends ScreenAdapter {
       boolean success = simpleSave.loadToPending();
       if (success) {
         hasExistingPlayer = true;
+        loadedMapId = simpleSave.getPendingMapId();
+        logger.info("Loaded default save has mapId: {}", loadedMapId == null ? "Map 1 (default)" : loadedMapId);
       }
     } else if (!isContinue) {
       logger.info("Creating new player for new game");
@@ -146,7 +154,7 @@ public class MainGameScreen extends ScreenAdapter {
 
     // Create game area after loading save (or for new game)
     // NEW: Support different game areas based on mapId
-    Object gameArea = createGameAreaBasedOnMap();
+    Object gameArea = createGameAreaBasedOnMap(loadedMapId);
     
     // Pass information about existing player to game area (both types support this method)
     if (gameArea instanceof ForestGameArea) {
@@ -346,18 +354,40 @@ public class MainGameScreen extends ScreenAdapter {
   }
 
   /**
-   * Create the appropriate game area based on the selected mapId.
+   * Create the appropriate game area based on the selected or loaded mapId.
    * Returns ForestGameArea2 for "MapTwo", otherwise ForestGameArea.
+   * @param loadedMapId The map ID from a loaded save file, or null if new game
    */
-  private Object createGameAreaBasedOnMap() {
+  private Object createGameAreaBasedOnMap(String loadedMapId) {
+    // Determine which map to use
+    String mapToUse = loadedMapId; // If loading a save, use the saved mapId
+    if (mapToUse == null && !isContinue) {
+      // For new games, use startupArg (selected map)
+      mapToUse = startupArg;
+    }
+    
     // Check if MapTwo is selected
-    if (startupArg != null && "MapTwo".equalsIgnoreCase(startupArg)) {
+    if ("MapTwo".equalsIgnoreCase(mapToUse)) {
       logger.info("Creating ForestGameArea2 for MapTwo");
       TerrainFactory2 terrainFactory2 = new TerrainFactory2(renderer.getCamera());
+      
+      // Set the current map ID in GameStateService
+      var gameStateService = ServiceLocator.getGameStateService();
+      if (gameStateService != null) {
+        gameStateService.setCurrentMapId("MapTwo");
+      }
+      
       return new ForestGameArea2(terrainFactory2);
     } else {
-      logger.info("Creating default ForestGameArea");
+      logger.info("Creating default ForestGameArea (Map 1)");
       TerrainFactory terrainFactory = new TerrainFactory(renderer.getCamera());
+      
+      // Set the current map ID in GameStateService (null = default map)
+      var gameStateService = ServiceLocator.getGameStateService();
+      if (gameStateService != null) {
+        gameStateService.setCurrentMapId(null);
+      }
+      
       return new ForestGameArea(terrainFactory);
     }
   }

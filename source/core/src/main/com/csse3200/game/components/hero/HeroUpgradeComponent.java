@@ -9,83 +9,109 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.services.ServiceLocator;
 import com.badlogic.gdx.audio.Sound;
+
 import java.util.Map;
 
 /**
- * Hero upgrade component:
- * - Triggered by pressing Enter / Numpad Enter, or via an event.
+ * Hero upgrade component.
+ * <p>
+ * Features:
+ * - Can be triggered via keyboard (Enter / Numpad Enter) or the "requestUpgrade" event.
  * - Deducts cost from the player's wallet.
- * - Increases the hero's stats when upgraded.
- * - Notifies UI and other systems via events.
+ * - Applies stat growth to the hero on upgrade, with a level cap.
+ * - Emits events so UI/other systems can react.
+ * <p>
+ * Events emitted:
+ * - "upgradeFailed" (String reason)
+ * - "upgraded"      (Integer newLevel, CurrencyType currencyType, Integer cost)
+ * - "hero.level"    (Integer level)
+ * - "hero.damage"   (Integer baseAttack or equivalent)
  */
 public class HeroUpgradeComponent extends Component {
-    /** Current level and maximum level cap */
+    /**
+     * Current level and maximum level cap.
+     */
     private int level = 1;
     private final int maxLevel = 2;
+
+    /**
+     * SFX keys/volumes for upgrade and level-2 shooting.
+     */
     private String upgradeSfxKey = "sounds/hero_upgrade.ogg";
     private float upgradeSfxVolume = 1.0f;
-    /** Currency type and cost formula */
-    private final CurrencyType costType = CurrencyType.METAL_SCRAP;
     private String shootSfxLevel2 = "sounds/hero_lv2_shot.ogg";
     private float shootSfxVolume = 1.0f;
-    /** Cached references to player entity and wallet to avoid repeated global searches */
+
+    /**
+     * Currency config and cost formula.
+     */
+    private final CurrencyType costType = CurrencyType.METAL_SCRAP;
+
+    /**
+     * Cached refs to the player and their wallet.
+     */
     private Entity player;
     private CurrencyManagerComponent wallet;
 
     /**
-     * Optionally inject player entity (recommended during spawnHeroAt).
-     * Reduces lookup overhead and avoids ambiguity.
+     * Inject the player entity (recommended during hero spawn).
+     * Avoids repeated lookups and ambiguity.
      */
     public HeroUpgradeComponent attachPlayer(Entity player) {
         this.player = player;
         this.wallet = (player != null) ? player.getComponent(CurrencyManagerComponent.class) : null;
         return this;
     }
+
     public HeroUpgradeComponent setUpgradeSfxVolume(float vol) {
         this.upgradeSfxVolume = Math.max(0f, Math.min(1f, vol));
         return this;
     }
+
     public HeroUpgradeComponent setLv2ShootSfx(String key) {
         if (key != null && !key.isBlank()) this.shootSfxLevel2 = key;
         return this;
     }
+
     public HeroUpgradeComponent setShootSfxVolume(float vol) {
         this.shootSfxVolume = Math.max(0f, Math.min(1f, vol));
         return this;
     }
 
-    /** Upgrade cost formula (can be customized) */
+    /**
+     * Upgrade cost formula (customize as needed).
+     */
     private int getCostForLevel(int nextLevel) {
         return nextLevel * 200;
     }
 
     @Override
     public void create() {
-        // Allow upgrades via external event (e.g., UI button or script)
+        // Allow external systems (e.g., UI) to request an upgrade.
         entity.getEvents().addListener("requestUpgrade", (Entity p) -> {
             if (p != null && p != this.player) attachPlayer(p);
             tryUpgrade();
         });
 
+        // Send initial snapshot to sync UI.
         broadcastSnapshot();
     }
 
+    /**
+     * Emit a one-off snapshot of current level/damage for UI binding.
+     */
     private void broadcastSnapshot() {
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
-            // grade
             entity.getEvents().trigger("hero.level", level);
-            // Damage (change according to your field: baseAttack / totalAttack)
             entity.getEvents().trigger("hero.damage", stats.getBaseAttack());
         }
-        //
-        //Energy/rage can also be broadcast once if there is a corresponding component (for example)
-        // entity.getEvents().trigger("hero.energy", curEnergy, maxEnergy);
+        // Example: you could also broadcast energy/rage here if applicable.
     }
 
     @Override
     public void update() {
-        // Trigger upgrade when Enter or Numpad Enter is pressed
+        // Keyboard trigger (Enter / Numpad Enter).
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) ||
                 Gdx.input.isKeyJustPressed(Input.Keys.NUMPAD_ENTER)) {
             tryUpgrade();
@@ -93,11 +119,10 @@ public class HeroUpgradeComponent extends Component {
     }
 
     /**
-     * Attempts to upgrade hero:
-     * - Verifies level cap.
-     * - Validates player and wallet references.
-     * - Deducts upgrade cost from wallet.
-     * - Applies stat growth and triggers events.
+     * Attempt to upgrade the hero:
+     * - Check cap, player/wallet availability, and cost.
+     * - Spend currency and apply stat growth.
+     * - Emit events/SFX.
      */
     private void tryUpgrade() {
         if (level >= maxLevel) {
@@ -107,7 +132,7 @@ public class HeroUpgradeComponent extends Component {
         }
 
         if (player == null || wallet == null) {
-            // Fallback: try to find player again
+            // Fallback lookup if not injected.
             if (player == null) player = findPlayerEntity();
             wallet = (player != null) ? player.getComponent(CurrencyManagerComponent.class) : null;
 
@@ -132,10 +157,12 @@ public class HeroUpgradeComponent extends Component {
         Gdx.app.log("HeroUpgrade", "success: level=" + level + ", cost=" + cost);
         entity.getEvents().trigger("upgraded", level, costType, cost);
         playUpgradeSfx();
+
         if (level >= 2) {
             applyLv2ShootSfx();
         }
-        // ✅ 广播新数值，供UI刷新
+
+        // Broadcast new numbers for UI refresh.
         entity.getEvents().trigger("hero.level", level);
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
@@ -143,29 +170,29 @@ public class HeroUpgradeComponent extends Component {
         }
     }
 
-    /** Applies stat growth when hero levels up (customizable). */
-    /** Applies stat growth when hero levels up (customizable). */
+    /**
+     * Apply stat growth when leveling up (customize as needed).
+     */
     private void applyStatGrowth(int newLevel) {
-        // ① 固定基础攻击为 12（无论之前是多少）
+        // (1) Fix base attack to 12 regardless of previous value.
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
             stats.setBaseAttack(12);
-            // 如果不想改生命，这里就不再 +20 了；若仍想顺带加血，可自行加：
+            // If you'd like to also increase health, do it here.
             // stats.setHealth(stats.getHealth() + 20);
         }
 
-        // ② 固定攻速为 1 秒 1 发（即冷却 = 1.0f 秒）
-        //    这里假设你的射击逻辑在 HeroTurretAttackComponent 里
+        // (2) Fix attack rate to 1 shot/second (cooldown = 1.0s).
+        //     Assumes your shooting logic lives in HeroTurretAttackComponent.
         HeroTurretAttackComponent atk = entity.getComponent(HeroTurretAttackComponent.class);
         if (atk != null) {
-            atk.setCooldown(1.0f); // 冷却秒数：每 1.0s 可射一发
+            atk.setCooldown(1.0f); // seconds per shot
         }
     }
 
-
     /**
      * Fallback player lookup:
-     * Finds the first entity with both PlayerActions and a CurrencyManagerComponent.
+     * Finds the first entity with PlayerActions and a CurrencyManagerComponent.
      */
     private Entity findPlayerEntity() {
         for (Entity e : ServiceLocator.getEntityService().getEntities()) {
@@ -180,16 +207,38 @@ public class HeroUpgradeComponent extends Component {
     public int getLevel() {
         return level;
     }
+    
+    /**
+     * Sets the hero level directly (used when restoring from save).
+     * Also applies stat growth and triggers UI updates.
+     * @param newLevel the level to set
+     */
+    public void setLevel(int newLevel) {
+        if (newLevel < 1) newLevel = 1;
+        if (newLevel > maxLevel) newLevel = maxLevel;
+        this.level = newLevel;
+        applyStatGrowth(newLevel);
+        broadcastSnapshot();
+        Gdx.app.log("HeroUpgrade", "Hero level set to " + newLevel);
+    }
 
-    /** Returns wallet component (used by other systems such as ultimate). */
+    /**
+     * Wallet accessor (e.g., for an ultimate that needs currency).
+     */
     public CurrencyManagerComponent getWallet() {
         return wallet;
     }
 
-    /** Returns player entity reference (optional, if needed). */
+    /**
+     * Optional: player accessor if needed elsewhere.
+     */
     public Entity getPlayer() {
         return player;
     }
+
+    /**
+     * Play the upgrade SFX with ResourceService first, then with a file fallback.
+     */
     private void playUpgradeSfx() {
         if (upgradeSfxKey == null || upgradeSfxKey.isBlank()) return;
         float vol = Math.max(0f, Math.min(1f, upgradeSfxVolume));
@@ -197,7 +246,10 @@ public class HeroUpgradeComponent extends Component {
             var rs = ServiceLocator.getResourceService();
             if (rs != null) {
                 Sound s = null;
-                try { s = rs.getAsset(upgradeSfxKey, Sound.class); } catch (Throwable ignored) {}
+                try {
+                    s = rs.getAsset(upgradeSfxKey, Sound.class);
+                } catch (Throwable ignored) {
+                }
                 if (s != null) {
                     long id = s.play(vol);
                     Gdx.app.log("HeroUpgradeSFX", "Played via ResourceService: " + upgradeSfxKey + " id=" + id);
@@ -209,7 +261,7 @@ public class HeroUpgradeComponent extends Component {
                 Gdx.app.error("HeroUpgradeSFX", "ResourceService is null");
             }
 
-            // 回退播放（可选）
+            // Fallback playback using Gdx.files/Gdx.audio.
             if (!Gdx.files.internal(upgradeSfxKey).exists()) {
                 Gdx.app.error("HeroUpgradeSFX", "File NOT FOUND: " + upgradeSfxKey);
                 return;
@@ -225,7 +277,10 @@ public class HeroUpgradeComponent extends Component {
             Gdx.app.error("HeroUpgradeSFX", "Play failed: " + upgradeSfxKey, t);
         }
     }
-    /** Lv2 统一射击音效写入攻击组件 */
+
+    /**
+     * On level 2, set a unified shooting SFX on the attack component.
+     */
     private void applyLv2ShootSfx() {
         if (shootSfxLevel2 == null || shootSfxLevel2.isBlank()) return;
         HeroTurretAttackComponent atk = entity.getComponent(HeroTurretAttackComponent.class);
@@ -234,5 +289,5 @@ public class HeroUpgradeComponent extends Component {
             Gdx.app.log("HeroUpgrade", "Lv2 shoot sfx -> " + shootSfxLevel2);
         }
     }
-
 }
+

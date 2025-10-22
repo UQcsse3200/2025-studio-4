@@ -1,6 +1,7 @@
 package com.csse3200.game.entities.factories;
 
 import com.badlogic.gdx.math.Vector2;
+import com.csse3200.game.components.towers.PiercingDamageComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.physics.components.PhysicsComponent;
 import com.csse3200.game.physics.components.HitboxComponent;
@@ -46,7 +47,7 @@ public final class ProjectileFactory {
      */
     public static Entity createBullet(String texture, Vector2 startPos, float vx, float vy, float life) {
         int defaultDamage = 25;
-        return createBullet(texture, startPos, vx, vy, life, defaultDamage);
+        return createBullet(texture, startPos, vx, vy, life, defaultDamage, true);
     }
 
     /**
@@ -62,7 +63,7 @@ public final class ProjectileFactory {
      */
     public static Entity createBullet(
             String texture, Vector2 startPos,
-            float vx, float vy, float life, int damage
+            float vx, float vy, float life, int damage, boolean destroyOnHit
     ) {
         // Defensive: sanitize spawn position to avoid NaN/infinite values reaching Box2D
         if (startPos == null) {
@@ -93,9 +94,15 @@ public final class ProjectileFactory {
                         1, damage,
                         DamageTypeConfig.None,
                         DamageTypeConfig.None
-                ))
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 0f))
-                .addComponent(new DestroyOnHitComponent(PhysicsLayer.NPC));
+                ));
+
+        if (destroyOnHit) {
+            bullet.addComponent(new DestroyOnHitComponent(PhysicsLayer.NPC));
+            bullet.addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 0f));
+        }
+        else {
+            bullet.addComponent(new PiercingDamageComponent(PhysicsLayer.NPC));
+        }
 
         bullet.setPosition(startPos);
 
@@ -116,7 +123,6 @@ public final class ProjectileFactory {
 
         return bullet;
     }
-
 
 
     private static boolean isFinite(float v) {

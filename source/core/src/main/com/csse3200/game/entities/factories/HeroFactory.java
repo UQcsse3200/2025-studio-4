@@ -19,6 +19,7 @@ import com.csse3200.game.rendering.TextureRenderComponent;
 import com.csse3200.game.services.ResourceService;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.components.hero.engineer.EngineerSummonComponent;
+
 import java.util.LinkedHashSet;
 
 import com.csse3200.game.components.hero.HeroUltimateComponent;
@@ -39,8 +40,8 @@ public final class HeroFactory {
     }
 
     public static void loadAssets(ResourceService rs, BaseEntityConfig... configs) {
-        LinkedHashSet<String> textures  = new LinkedHashSet<>();
-        LinkedHashSet<String> soundKeys = new LinkedHashSet<>(); // ★ 声音键集合（方法内局部变量）
+        LinkedHashSet<String> textures = new LinkedHashSet<>();
+        LinkedHashSet<String> soundKeys = new LinkedHashSet<>();
 
         for (BaseEntityConfig base : configs) {
             if (base == null) continue;
@@ -52,7 +53,6 @@ public final class HeroFactory {
                 }
                 if (cfg.bulletTexture != null && !cfg.bulletTexture.isBlank()) textures.add(cfg.bulletTexture);
 
-                // ★ 收集每个形态配置里的射击音效键
                 if (cfg.shootSfx != null && !cfg.shootSfx.isBlank()) {
                     soundKeys.add(cfg.shootSfx);
                 }
@@ -66,18 +66,17 @@ public final class HeroFactory {
                     for (String s : sc.levelTextures) if (s != null && !s.isBlank()) textures.add(s);
                 }
                 if (sc.swordTexture != null && !sc.swordTexture.isBlank()) textures.add(sc.swordTexture);
-                // Samurai 如以后也要远程音效，可以在配置里加 shootSfx 字段后同样收集
+
             }
         }
 
         if (!textures.isEmpty()) {
             rs.loadTextures(textures.toArray(new String[0]));
         }
-        if (!soundKeys.isEmpty()) { // ★ 别忘了把声音也加载
+        if (!soundKeys.isEmpty()) {
             rs.loadSounds(soundKeys.toArray(new String[0]));
         }
     }
-
 
 
     /**
@@ -171,10 +170,9 @@ public final class HeroFactory {
         );
         tex.setColor(new Color(1f, 1f, 1f, Math.max(0f, Math.min(alpha, 1f))));
         e.addComponent(tex);
-        // 不加任何 Physics/Collider/Hitbox/攻击/升级组件，避免警告和性能开销
+
         return e;
     }
-
 
 
     // === HeroFactory.createEngineerHero(...) ===
@@ -215,8 +213,8 @@ public final class HeroFactory {
                         new Vector2(cfg.summonSpeed, cfg.summonSpeed)
                 ));
 
-                // === Optional: Engineer’s ranged turret attack ===
-                // Handles rotating aim and shooting bullets toward cursor direction
+        // === Optional: Engineer’s ranged turret attack ===
+        // Handles rotating aim and shooting bullets toward cursor direction
         HeroTurretAttackComponent atc = new HeroTurretAttackComponent(
                 cfg.attackCooldown,
                 cfg.bulletSpeed,
@@ -227,8 +225,8 @@ public final class HeroFactory {
         atc.setShootSfxKey(
                 (cfg.shootSfx != null && !cfg.shootSfx.isBlank())
                         ? cfg.shootSfx
-                        : "sounds/Explosion_sfx.ogg"     // 兜底
-        ).setShootSfxVolume(0.9f);              // 可选：音量 0~1
+                        : "sounds/Explosion_sfx.ogg"
+        ).setShootSfxVolume(0.9f);
 
         hero.addComponent(atc)
 
@@ -270,45 +268,34 @@ public final class HeroFactory {
         var resistance = DamageTypeConfig.None;
         var weakness = DamageTypeConfig.None;
 
-        // 只创建一个身体渲染组件，避免重复
         RotatingTextureRenderComponent body = new RotatingTextureRenderComponent(cfg.heroTexture);
 
         Entity hero = new Entity()
-                // === 基础物理/碰撞（沿用你原来的设置）===
+
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent().setSensor(true))
                 //.addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
 
-                // === 渲染 ===
                 .addComponent(body)
 
-                // === 角色数值 ===
                 .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
 
-                // === 武士剑系统（内部：纯剑 + AttackLock + Jab/Sweep/Spin + Controller）===
                 .addComponent(
                         new SamuraiSpinAttackComponent(
-                                cfg.swordRadius,   // 视觉/物理上的剑柄半径
-                                cfg.swordTexture,  // 剑贴图
+                                cfg.swordRadius,
+                                cfg.swordTexture,
                                 cfg,
                                 camera
                         )
-                                // 贴图默认朝向：你的 PNG 默认朝右 => 0°
                                 .setSpriteForwardOffsetDeg(0f)
-                                // 贴图中心到“手柄”的偏移（通常为负值，拉近握柄）
                                 .setCenterToHandle(-0.25f)
-                                // 三招手感（与此前参数一致）
-                                .setJabParams(0.18f, 0.8f,  0.00f)  // duration, extra, 内部最小间隔（非主CD）
+                                .setJabParams(0.18f, 0.8f, 0.00f)  // duration, extra, 内部最小间隔（非主CD）
                                 .setSweepParams(0.22f, 0.35f, 0.00f) // duration, extra, 内部最小间隔
                 )
-
-                // === 升级/大招（你原来就有）===
                 .addComponent(new HeroUpgradeComponent())
                 .addComponent(new HeroUltimateComponent());
 
         hero.setScale(1f, 1f);
-
-        // 把身体贴图的旋转原点设置到中心（以便朝向/旋转看起来自然）
         try {
             body.getClass().getMethod("setOriginToCenter").invoke(body);
         } catch (Throwable ignore) {
@@ -317,16 +304,12 @@ public final class HeroFactory {
                 float h = (float) body.getClass().getMethod("getTextureHeight").invoke(body);
                 body.getClass().getMethod("setOrigin", float.class, float.class).invoke(body, w / 2f, h / 2f);
             } catch (Throwable ignore2) {
-                // 如果渲染组件不支持设置原点，也没关系；剑组件内部会用 pivotOffset 做细调
+
             }
         }
 
-        // 如果需要，后续还可以通过事件或额外 setter 调整 spin 的方向/圈数：
-        // hero.getComponent(SamuraiSpinAttackComponent.class) ... （当前已设置为默认 CCW=true, turns=1 在内部）
-
         return hero;
     }
-
 
 
 }

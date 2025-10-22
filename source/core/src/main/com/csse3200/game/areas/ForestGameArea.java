@@ -244,6 +244,12 @@ public class ForestGameArea extends GameArea {
     public void onWaveDefeated() {
         logger.info("Wave {} defeated!", currentWaveIndex + 1);
 
+        // Safety check: if waves not initialized (e.g., loaded from save), don't process wave progression
+        if (waves == null) {
+            logger.warn("Waves not initialized - skipping wave progression");
+            return;
+        }
+
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory!
@@ -833,17 +839,15 @@ public class ForestGameArea extends GameArea {
     }
 
     private void applySkinToHeroForms(String skinKey, HeroConfig c1, HeroConfig2 c2, HeroConfig3 c3) {
-        // 形态1
+
         c1.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 1);
         if (c1.levelTextures != null && c1.levelTextures.length > 0) c1.levelTextures[0] = c1.heroTexture;
         else c1.levelTextures = new String[]{ c1.heroTexture };
 
-        // 形态2
         c2.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 2);
         if (c2.levelTextures != null && c2.levelTextures.length > 0) c2.levelTextures[0] = c2.heroTexture;
         else c2.levelTextures = new String[]{ c2.heroTexture };
 
-        // 形态3
         c3.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 3);
         if (c3.levelTextures != null && c3.levelTextures.length > 0) c3.levelTextures[0] = c3.heroTexture;
         else c3.levelTextures = new String[]{ c3.heroTexture };
@@ -852,7 +856,6 @@ public class ForestGameArea extends GameArea {
     private void applySkinToEngineer(String skinKey, EngineerConfig cfg) {
         cfg.heroTexture   = HeroSkinAtlas.body(GameStateService.HeroType.ENGINEER, skinKey);
         cfg.bulletTexture = HeroSkinAtlas.bullet(GameStateService.HeroType.ENGINEER, skinKey);
-        // ★ 关键：避免 HeroAppearanceComponent 把皮肤“打回默认”
         if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
             cfg.levelTextures[0] = cfg.heroTexture;
         } else {
@@ -862,7 +865,6 @@ public class ForestGameArea extends GameArea {
 
 
     private void spawnHeroAt(GridPoint2 cell) {
-        // 1️⃣ 加载配置（或直接手动创建，如你示例）
         HeroConfig heroCfg = new HeroConfig();
         heroCfg.heroTexture = "images/hero/Heroshoot.png";
         heroCfg.bulletTexture = "images/hero/Bullet.png";
@@ -878,7 +880,6 @@ public class ForestGameArea extends GameArea {
         heroCfg3.bulletTexture = "images/hero3/Bullet.png";
         heroCfg3.shootSfx = "sounds/Explosion_sfx3.ogg";
         heroCfg3.shootSfxVolume = 1.0f;
-        // 2️⃣ 加载贴图资源（不放 create() 全局加载）
         ResourceService rs = ServiceLocator.getResourceService();
         java.util.ArrayList<String> sfx = new java.util.ArrayList<>();
         if (heroCfg.shootSfx  != null && !heroCfg.shootSfx.isBlank())  sfx.add(heroCfg.shootSfx);
@@ -899,16 +900,13 @@ public class ForestGameArea extends GameArea {
             logger.info("Loading hero assets... {}%", rs.getProgress());
         }
 
-        // 3️⃣ 创建英雄实体
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity hero = HeroFactory.createHero(heroCfg, cam);
 
-        // 4️⃣ 挂上 OneShotFormSwitchComponent（带三套 cfg）
         hero.addComponent(new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(
                 heroCfg, heroCfg2, heroCfg3
         ));
 
-        // 5️⃣ 其他组件照旧
         var up = hero.getComponent(HeroUpgradeComponent.class);
         if (up != null) up.attachPlayer(player);
 
@@ -922,48 +920,37 @@ public class ForestGameArea extends GameArea {
         Entity heroWeaponBar = new Entity()
                 .addComponent(new com.csse3200.game.ui.Hero.HeroWeaponSwitcherToolbarComponent(
                         hero,
-                        /* 建议使用独立图标（小尺寸方图） */
                         "images/hero/gun1.png",
                         "images/hero2/gun2.png",
                         "images/hero3/gun3.png",
-                        // 也可以暂时用 heroCfg.heroTexture 等
                         "images/hero/Final_gun.png"
                 ));
         spawnEntity(heroWeaponBar);
 
         spawnEntityAt(hero, cell, true, true);
 
-        // 6️⃣ 一次性提示窗口
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(hero).showOnceOn(stage);
-            heroHintShown = true;
-        }
 
     }
 
 
     private void spawnEngineerAt(GridPoint2 cell) {
-        // 1) 只读取工程师配置
+
         EngineerConfig engCfg = FileLoader.readClass(EngineerConfig.class, "configs/engineer.json");
         if (engCfg == null) {
             logger.warn("Failed to load configs/engineer.json, using default EngineerConfig.");
             engCfg = new EngineerConfig();
         }
 
-        // ★ 2) 取当前选中的工程师皮肤，并覆盖到 Config
         String skin = ServiceLocator.getGameStateService()
                 .getSelectedSkin(GameStateService.HeroType.ENGINEER);
         applySkinToEngineer(skin, engCfg);
 
-        // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
         ResourceService rs = ServiceLocator.getResourceService();
-        HeroFactory.loadAssets(rs, engCfg);  // 只传工程师
+        HeroFactory.loadAssets(rs, engCfg);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading engineer assets... {}%", rs.getProgress());
         }
 
-        // 3) 创建工程师实体（注意方法名：你现在实现的是 createEngineerHero）
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity engineer = HeroFactory.createEngineerHero(engCfg, cam);
 
@@ -974,7 +961,6 @@ public class ForestGameArea extends GameArea {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 工程师 UI：状态栏 + 工具条（点击图标放置三类召唤）
         Entity heroStatusUI = new Entity()
                 .addComponent(new EngineerStatusPanelComponent(engineer, "Engineer"));
         spawnEntity(heroStatusUI);
@@ -983,22 +969,14 @@ public class ForestGameArea extends GameArea {
                 .addComponent(new com.csse3200.game.ui.Hero.EngineerSummonToolbarComponent(engineer));
         spawnEntity(engineerToolbarUI);
 
-        // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
 
-        // 6) 一次性提示
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(engineer).showOnceOn(stage);
-            heroHintShown = true;
-        }
     }
 
     private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
-        // 本体随 BODY 皮肤
+
         cfg.heroTexture = HeroSkinAtlas.body(GameStateService.HeroType.SAMURAI, skinKey);
 
-        // 刀：独立读取 WEAPON 皮肤
         String swordSkin = ServiceLocator.getGameStateService()
                 .getSelectedWeaponSkin(GameStateService.HeroType.SAMURAI);
         String sword = HeroSkinAtlas.sword(GameStateService.HeroType.SAMURAI, swordSkin);
@@ -1006,7 +984,6 @@ public class ForestGameArea extends GameArea {
             cfg.swordTexture = sword;
         }
 
-        // 防止外观被 levelTextures 还原
         if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
             cfg.levelTextures[0] = cfg.heroTexture;
         } else {
@@ -1015,7 +992,6 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnSamuraiAt(GridPoint2 cell) {
-        // 1) 读 samurai 配置
         SamuraiConfig samCfg = FileLoader.readClass(SamuraiConfig.class, "configs/samurai.json");
         if (samCfg == null) {
             logger.warn("Failed to load configs/samurai.json, using default SamuraiConfig.");
@@ -1023,10 +999,9 @@ public class ForestGameArea extends GameArea {
         }
 
         String samSkin = ServiceLocator.getGameStateService()
-                .getSelectedSkin(GameStateService.HeroType.SAMURAI); // 自己已有的方法/字段
+                .getSelectedSkin(GameStateService.HeroType.SAMURAI);
         applySkinToSamurai(samSkin, samCfg);
 
-        // 2) 预加载 samurai 资源（主体 + 刀）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, samCfg);
         rs.loadTextures(new String[]{
@@ -1036,11 +1011,9 @@ public class ForestGameArea extends GameArea {
             logger.info("Loading samurai assets... {}%", rs.getProgress());
         }
 
-        // 3) 创建 samurai 英雄（你之前实现的 createSamuraiHero）
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity samurai = HeroFactory.createSamuraiHero(samCfg, cam);
 
-        // 4) 附加钱包/升级等（和其他英雄保持一致）
         if (samurai.getComponent(CurrencyManagerComponent.class) == null) {
             samurai.addComponent(new CurrencyManagerComponent());
         }
@@ -1050,25 +1023,16 @@ public class ForestGameArea extends GameArea {
         }
         samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 5) 创建状态栏UI
         Entity heroStatusUI = new Entity()
                 .addComponent(new SamuraiStatusPanelComponent(samurai, "Samurai"));
         spawnEntity(heroStatusUI);
 
-        // 5.5) ★ 新增：创建“武士攻击工具条”UI（带 1/2/3 提示）
         Entity samuraiAttackUI = new Entity()
                 .addComponent(new com.csse3200.game.ui.Hero.SamuraiAttackToolbarComponent(samurai));
         spawnEntity(samuraiAttackUI);
-
-        // 6) 放置
+        
         spawnEntityAt(samurai, cell, true, true);
 
-        // 7) 一次性提示
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
-            heroHintShown = true;
-        }
     }
 
     private void createHeroPlacementUI() {

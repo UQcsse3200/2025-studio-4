@@ -45,26 +45,23 @@ public class MainGameExitDisplay extends UIComponent {
 
     // Create custom button style
     TextButtonStyle customButtonStyle = UIStyleHelper.mainGameMenuButtonStyle();
-    TextButton saveBtn = new TextButton("Save", customButtonStyle);
+    // Note: Save button removed - now in pause menu
     TextButton mainMenuBtn = new TextButton("Exit", customButtonStyle);
     TextButton rankingBtn = new TextButton("Ranking", customButtonStyle);
     speedButton = new TextButton("Speed: 1x", customButtonStyle);
     TextButton startWaveButton = new TextButton("Start Wave", customButtonStyle);
+    TextButton bookBtn = new TextButton("Book", customButtonStyle);
 
     // Set button size
     float buttonWidth = 140f;
     float buttonHeight = 40f;
-    
-    saveBtn.addListener(
-      new ChangeListener() {
-        @Override
-        public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Save button clicked");
-          entity.getEvents().trigger("save");
-        }
-      });
 
-    
+    mainMenuBtn.getLabel().setColor(Color.WHITE);
+    rankingBtn.getLabel().setColor(Color.WHITE);
+    speedButton.getLabel().setColor(Color.WHITE);
+    startWaveButton.getLabel().setColor(Color.WHITE);
+    bookBtn.getLabel().setColor(Color.WHITE);
+
     mainMenuBtn.addListener(
       new ChangeListener() {
         @Override
@@ -109,11 +106,20 @@ public class MainGameExitDisplay extends UIComponent {
         }
     });
 
-    table.add(saveBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
-    table.row();
+    bookBtn.addListener( new ChangeListener() {
+        @Override
+        public void changed(ChangeEvent changeEvent, Actor actor) {
+            logger.debug("Book button clicked");
+            entity.getEvents().trigger("showBook");
+        }
+    });
+
+    // Save button removed - now in pause menu
     table.add(mainMenuBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
     table.add(rankingBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
+    table.row();
+    table.add(bookBtn).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();
     table.add(speedButton).size(buttonWidth, buttonHeight).padTop(10f).padRight(10f);
     table.row();

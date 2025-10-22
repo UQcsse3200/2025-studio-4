@@ -9,95 +9,185 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Service that handles persistent state within the game runtime
- * Stores persistent data such as stars, unlocks, selected hero, and level progress
+ * Central runtime game state holder.
+ * <p>
+ * Persists session-scoped data such as:
+ * <ul>
+ *   <li>Star currency</li>
+ *   <li>Hero unlock flags</li>
+ *   <li>Currently selected hero</li>
+ *   <li>Per-hero appearance (body skin and — where applicable — weapon skin)</li>
+ *   <li>Current map identifier</li>
+ * </ul>
+ * <p>
+ * This service is not responsible for saving to disk; it only keeps state while the game runs.
  */
 public class GameStateService {
     private static final Logger logger = LoggerFactory.getLogger(GameStateService.class);
 
+    /**
+     * All playable hero archetypes available in the game.
+     */
     public enum HeroType {
         HERO,
         ENGINEER,
         SAMURAI
     }
-    public enum SkinSlot { BODY, WEAPON /*, SLASH */ }
 
+    /**
+     * Skin slots supported by the appearance system.
+     * BODY applies to all heroes; WEAPON is for heroes with separate weapon skins (e.g., SAMURAI).
+     */
+    public enum SkinSlot {BODY, WEAPON /*, SLASH*/}
+
+    /**
+     * Player/base entity used to evaluate win rewards.
+     */
     private Entity base;
-    private int stars;
-    private Map<HeroType, Boolean> heroUnlocks;
-    private HeroType selectedHero = HeroType.HERO;
-    private final java.util.List<java.util.function.BiConsumer<HeroType, String>> skinChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
-    private final java.util.List<java.util.function.Consumer<HeroType>> selectedHeroChangedListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
-    // ===== 新增：武器皮肤 =====
-    /** 仅对需要“武器独立皮肤”的英雄建表；目前只做 SAMURAI */
+    /**
+     * Current amount of star currency.
+     */
+    private int stars;
+
+    /**
+     * Unlock flags per hero type.
+     */
+    private Map<HeroType, Boolean> heroUnlocks;
+
+    /**
+     * Currently selected hero in menus / for spawning.
+     */
+    private HeroType selectedHero = HeroType.HERO;
+
+    /**
+     * Identifier of the currently active map (null implies default map, e.g., Map 1).
+     */
+    private String currentMapId;
+
+    // --- Appearance events (BODY skins) ---
+    /**
+     * Listeners notified when a hero's BODY skin changes: (hero, skinKey).
+     */
+    private final java.util.List<java.util.function.BiConsumer<HeroType, String>> skinChangedListeners =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /**
+     * Listeners notified when the selected hero changes: (hero).
+     */
+    private final java.util.List<java.util.function.Consumer<HeroType>> selectedHeroChangedListeners =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    // --- Weapon skin system (per-hero; currently only SAMURAI supports weapon skins) ---
+    /**
+     * Current WEAPON skin per hero (only populated for heroes that support weapon skins).
+     */
     private final Map<HeroType, String> selectedWeaponSkins = new HashMap<>();
+
+    /**
+     * Allowed WEAPON skins per hero.
+     */
     private final Map<HeroType, String[]> availableWeaponSkins = new HashMap<>();
+
+    /**
+     * Listeners notified when a hero's WEAPON skin changes: (hero, weaponSkinKey).
+     */
     private final java.util.List<java.util.function.BiConsumer<HeroType, String>> weaponSkinChangedListeners =
             new java.util.concurrent.CopyOnWriteArrayList<>();
 
-    // ====== 新增：皮肤状态 ======
+    // --- BODY skin system ---
     /**
-     * 每个英雄当前选择的皮肤 key（如 "default", "crimson", ...）
+     * Current BODY skin per hero (e.g., "default", "purple", ...).
      */
     private final Map<HeroType, String> selectedSkins = new HashMap<>();
 
     /**
-     * 每个英雄可用皮肤列表（如需换成从 JSON 读取，也能很方便替换）
+     * Allowed BODY skins per hero.
      */
     private final Map<HeroType, String[]> availableSkins = new HashMap<>();
 
+    /**
+     * Constructs the runtime game state with default values.
+     * <ul>
+     *   <li>Starts with 10 stars.</li>
+     *   <li>HERO unlocked; ENGINEER and SAMURAI locked by default.</li>
+     *   <li>Default available skins registered per hero.</li>
+     *   <li>SAMURAI has separate weapon skin support.</li>
+     * </ul>
+     */
     public GameStateService() {
-        // should load from save file later
         logger.info("Loading GameStateService");
+
         stars = 0;
         heroUnlocks = new HashMap<>();
-
         heroUnlocks.put(HeroType.HERO, true);
         heroUnlocks.put(HeroType.ENGINEER, false);
         heroUnlocks.put(HeroType.SAMURAI, false);
 
+        // BODY skins
         availableSkins.put(HeroType.HERO, new String[]{"default", "purple", "neo"});
         availableSkins.put(HeroType.ENGINEER, new String[]{"default", "khaki", "steel"});
         availableSkins.put(HeroType.SAMURAI, new String[]{"default", "purple", "azure"});
 
+        // WEAPON skins (only SAMURAI for now)
         availableWeaponSkins.put(HeroType.SAMURAI, new String[]{"default", "crimson", "azure"});
         selectedWeaponSkins.put(HeroType.SAMURAI, "default");
 
-        // 默认全部使用 "default"
+        // Initialize BODY skins to "default"
         for (HeroType ht : HeroType.values()) {
             selectedSkins.put(ht, "default");
         }
     }
 
-    // 可用武器皮肤列表
+    // -------------------------------
+    // Weapon skin API (per-hero)
+    // -------------------------------
+
+    /**
+     * Returns the available WEAPON skins for the given hero.
+     * If the hero does not define a list, returns a single-item array {"default"}.
+     */
     public String[] getAvailableWeaponSkins(HeroType hero) {
         String[] arr = availableWeaponSkins.get(hero);
         return (arr != null && arr.length > 0) ? arr : new String[]{"default"};
     }
 
-    // 获取/设置当前武器皮肤
+    /**
+     * Returns the currently selected WEAPON skin for the given hero.
+     * If not set, returns "default".
+     */
     public String getSelectedWeaponSkin(HeroType hero) {
         return selectedWeaponSkins.getOrDefault(hero, "default");
     }
 
+    /**
+     * Sets the WEAPON skin for the given hero, validating against the allowed list if present.
+     * Notifies weapon skin listeners on success.
+     *
+     * @param hero    target hero
+     * @param skinKey weapon skin key to apply (e.g., "default", "crimson")
+     */
     public void setSelectedWeaponSkin(HeroType hero, String skinKey) {
         if (hero == null || skinKey == null || skinKey.isBlank()) return;
+
         String[] allow = availableWeaponSkins.get(hero);
         if (allow != null) {
             boolean ok = false;
-            for (String s : allow)
+            for (String s : allow) {
                 if (s.equals(skinKey)) {
                     ok = true;
                     break;
                 }
+            }
             if (!ok) {
                 logger.warn("Weapon skin '{}' is not in available list for {}. Ignored.", skinKey, hero);
                 return;
             }
         }
+
         selectedWeaponSkins.put(hero, skinKey);
         logger.info("Set WEAPON skin for {} -> {}", hero, skinKey);
+
         for (var l : weaponSkinChangedListeners) {
             try {
                 l.accept(hero, skinKey);
@@ -106,54 +196,59 @@ public class GameStateService {
         }
     }
 
+    /**
+     * Subscribes to WEAPON skin changes.
+     * The returned {@link AutoCloseable} removes the subscription on close/dispose.
+     */
+    public AutoCloseable onWeaponSkinChanged(java.util.function.BiConsumer<HeroType, String> l) {
+        weaponSkinChangedListeners.add(l);
+        return () -> weaponSkinChangedListeners.remove(l);
+    }
 
-        /** 订阅：武器皮肤变化 */
-        public AutoCloseable onWeaponSkinChanged (java.util.function.BiConsumer < HeroType, String > l){
-            weaponSkinChangedListeners.add(l);
-            return () -> weaponSkinChangedListeners.remove(l);
-        }
+    // -------------------------------
+    // Base / stars
+    // -------------------------------
 
     /**
-     * Sets the current Base entity to track health
+     * Sets the current base (player base) entity.
+     * This is used to compute end-of-level star rewards based on remaining HP.
      *
-     * @param player the base of our current map
+     * @param player the base entity of the current map
      */
     public void setBase(Entity player) {
         this.base = player;
     }
 
     /**
-     * Gets the current number of stars
-     *
-     * @return current number of stars
+     * Returns the current star balance.
      */
     public int getStars() {
         return stars;
     }
 
     /**
-     * Sets the current number of stars to the given number
+     * Overwrites the current star balance.
      *
-     * @param newStars new number of stars
+     * @param newStars new star amount
      */
     public void setStars(int newStars) {
         stars = newStars;
     }
 
     /**
-     * Increments the current number of stars by the given number
+     * Adjusts stars by the given delta (positive or negative).
      *
-     * @param increment the number of stars to increment by
+     * @param increment amount to add (can be negative if you want to subtract)
      */
     public void updateStars(int increment) {
         stars += increment;
     }
 
     /**
-     * Attempts to spend the given number of stars.
+     * Attempts to spend the given amount of stars.
      *
-     * @param amount number of stars to spend
-     * @return true if the stars were successfully spent, false if not enough stars
+     * @param amount stars to spend (must be non-negative)
+     * @return {@code true} if the spend succeeded; {@code false} if insufficient funds or invalid amount
      */
     public boolean spendStars(int amount) {
         if (amount < 0) {
@@ -171,8 +266,9 @@ public class GameStateService {
     }
 
     /**
-     * Rewards stars at the end of a stage based on the player's remaining health.
-     * Uses the player/base entity that was set in GameStateService.
+     * Rewards stars at the end of a stage based on the base's remaining health.
+     * <p>
+     * Requires {@link #setBase(Entity)} to have been called earlier.
      */
     public void rewardStarsOnWin() {
         if (base == null) {
@@ -189,10 +285,15 @@ public class GameStateService {
     }
 
     /**
-     * Rewards stars based on remaining health percentage.
-     * 80–100% -> 3★, 50–79% -> 2★, 1–49% -> 1★, 0% -> 0★
+     * Rewards stars based on remaining health percentage:
+     * <pre>
+     *   80–100% -> 3 stars
+     *   50–79%  -> 2 stars
+     *   1–49%   -> 1 star
+     *   0%      -> 0 star
+     * </pre>
      *
-     * @param healthPercent a value from 0.0 (dead) to 1.0 (full health)
+     * @param healthPercent value in [0, 1]; out-of-range inputs are clamped
      */
     public void rewardStarsByHealth(double healthPercent) {
         if (healthPercent < 0) healthPercent = 0;
@@ -208,75 +309,100 @@ public class GameStateService {
                 starsAwarded, Math.round(healthPercent * 100), getStars());
     }
 
+    // -------------------------------
+    // Hero unlocks / selection
+    // -------------------------------
+
     /**
-     * Gets the current unlock flags for the heroes
-     *
-     * @return map of the current hero unlocks
+     * Returns the current unlock flags for all heroes.
      */
     public Map<HeroType, Boolean> getHeroUnlocks() {
         return heroUnlocks;
     }
 
     /**
-     * Marks the given hero as unlocked
-     *
-     * @param hero hero to unlock
+     * Marks a hero as unlocked.
      */
     public void setHeroUnlocked(HeroType hero) {
         heroUnlocks.put(hero, true);
     }
 
     /**
-     * Sets the current selected hero
+     * Sets a hero's unlock state.
      *
-     * @param type the HeroType of the selected hero
+     * @param hero     the hero
+     * @param unlocked {@code true} to unlock, {@code false} to lock
+     */
+    public void setHeroUnlocked(HeroType hero, boolean unlocked) {
+        heroUnlocks.put(hero, unlocked);
+    }
+
+    /**
+     * Sets the currently selected hero and notifies subscribers.
+     *
+     * @param type hero to select
      */
     public void setSelectedHero(HeroType type) {
         if (type == null) return;
         selectedHero = type;
         logger.info("Set hero to {}", type);
 
-        // ★ 通知所有监听者
         for (var l : selectedHeroChangedListeners) {
-            try { l.accept(selectedHero); } catch (Exception ignore) {}
+            try {
+                l.accept(selectedHero);
+            } catch (Exception ignore) {
+            }
         }
     }
 
     /**
-     * Gets the current selected hero
-     *
-     * @return the HeroType of the selected hero
+     * Returns the currently selected hero.
      */
     public HeroType getSelectedHero() {
         return selectedHero;
     }
 
+    /**
+     * Subscribes to selected-hero change events.
+     */
+    public AutoCloseable onSelectedHeroChanged(java.util.function.Consumer<HeroType> l) {
+        selectedHeroChangedListeners.add(l);
+        return () -> selectedHeroChangedListeners.remove(l);
+    }
 
-    // ====== 新增：皮肤 API ======
+    // -------------------------------
+    // BODY skin API (per-hero)
+    // -------------------------------
 
     /**
-     * 返回某个英雄的可用皮肤列表
+     * Returns the available BODY skins for the given hero.
+     * If none registered, returns {"default"}.
      */
     public String[] getAvailableSkins(HeroType hero) {
         String[] arr = availableSkins.get(hero);
         return (arr != null && arr.length > 0) ? arr : new String[]{"default"};
-        // 如果想保护不可变性，可返回 Arrays.copyOf(arr, arr.length)
+        // To enforce immutability, consider returning a copy.
+        // return Arrays.copyOf(arr, arr.length);
     }
 
     /**
-     * 获取某个英雄当前选择的皮肤 key（默认 "default"）
+     * Returns the currently selected BODY skin for the given hero.
+     * Defaults to "default" if none is set.
      */
     public String getSelectedSkin(HeroType hero) {
         return selectedSkins.getOrDefault(hero, "default");
     }
 
     /**
-     * 设置某个英雄当前皮肤（UI 下拉调用这里）
-     * 可在这里做合法性校验（是否在 availableSkins 里）
+     * Sets the BODY skin for the given hero, validating against the allowed list if present.
+     * Notifies skin change listeners on success.
+     *
+     * @param hero    target hero
+     * @param skinKey body skin key to apply (e.g., "default", "purple")
      */
     public void setSelectedSkin(HeroType hero, String skinKey) {
         if (hero == null || skinKey == null || skinKey.isBlank()) return;
-        // 合法性（如需严格校验）：
+
         String[] allow = availableSkins.get(hero);
         if (allow != null) {
             boolean ok = false;
@@ -291,25 +417,44 @@ public class GameStateService {
                 return;
             }
         }
+
         selectedSkins.put(hero, skinKey);
-        logger.info("Set skin for {} -> {}", hero, skinKey);
+        logger.info("Set BODY skin for {} -> {}", hero, skinKey);
 
-        // ★ 通知所有监听者
         for (var l : skinChangedListeners) {
-            try { l.accept(hero, skinKey); } catch (Exception ignore) {}
+            try {
+                l.accept(hero, skinKey);
+            } catch (Exception ignore) {
+            }
         }
-
     }
 
-    /** 订阅：皮肤变化（返回一个 AutoCloseable，方便在 dispose() 里注销） */
+    /**
+     * Subscribes to BODY skin changes.
+     */
     public AutoCloseable onSkinChanged(java.util.function.BiConsumer<HeroType, String> l) {
         skinChangedListeners.add(l);
         return () -> skinChangedListeners.remove(l);
     }
 
-    /** 订阅：选中英雄变化 */
-    public AutoCloseable onSelectedHeroChanged(java.util.function.Consumer<HeroType> l) {
-        selectedHeroChangedListeners.add(l);
-        return () -> selectedHeroChangedListeners.remove(l);
+    // -------------------------------
+    // Map tracking
+    // -------------------------------
+
+    /**
+     * Sets the identifier of the current map.
+     * Example: "MapTwo" for level 2; {@code null} can represent the default map (level 1).
+     */
+    public void setCurrentMapId(String mapId) {
+        this.currentMapId = mapId;
+        logger.info("Current map set to: {}", mapId == null ? "Map 1 (default)" : mapId);
+    }
+
+    /**
+     * Returns the current map identifier, or {@code null} for the default map.
+     */
+    public String getCurrentMapId() {
+        return currentMapId;
     }
 }
+

@@ -1,16 +1,19 @@
 package com.csse3200.game.ui.Hero;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Scaling;
+import com.csse3200.game.components.currencysystem.CurrencyComponent;
 import com.csse3200.game.ui.Hero.BaseHeroStatusPanelComponent;
+import com.csse3200.game.ui.SimpleUI;
 
-/**
- * Engineer status panel:
- * - Adds two sections on top of the base class: Summon Capacity (placed/max) + Summon Cooldown (countdown)
- * - Listens to events:
- *   - summonAliveChanged(alive, max)
- *   - summon:cooldown(remaining, total)
- */
 public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
     // Capacity
     private Label aliveLabel;
@@ -19,6 +22,12 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
     // Cooldown
     private Label cooldownLabel;
     private ProgressBar cooldownBar;
+
+    private Table costRow;
+    private Label costTitleLabel, costNumLabel;
+    private Image costIcon;
+
+    private CurrencyComponent.CurrencyType defaultCurrency = CurrencyComponent.CurrencyType.METAL_SCRAP;
 
     public EngineerStatusPanelComponent(com.csse3200.game.entities.Entity hero, String heroName) {
         super(
@@ -30,36 +39,71 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 0.32f                                  // Panel height slightly taller
         );
     }
+
     @Override
     public void create() {
         super.create();
-        // Replace the hardcoded “200” from the base class with a placeholder
+
         if (costLabel != null) {
-            costLabel.setText("Upgrade cost: —");
+            costLabel.remove();
+            costLabel = null;
         }
-        // Immediately refresh once using the engineer component’s actual price
+
+        Skin skin = new Skin();
+        skin.add("default", new Label.LabelStyle(SimpleUI.font(), textColor));
+
+        costTitleLabel = new Label("Upgrade cost: ", skin);
+        costNumLabel   = new Label("—", skin);
+
+        costIcon = new Image(currencyIconDrawable(defaultCurrency));
+        costIcon.setScaling(Scaling.stretch);
+
+        costRow = new Table();
+        costRow.add(costTitleLabel).left();
+        costRow.add(costNumLabel).left().padRight(6f);
+        costRow.add(costIcon).left().size(22f, 22f);
+
+        if (upgradeBtn != null) upgradeBtn.remove();
+        if (ultBtn != null) ((Actor) ultBtn).remove();
+
+        card.add(costRow).left().row();
+        card.add(upgradeBtn)
+                .left()
+                .width(Value.percentWidth(0.45f, card))
+                .padTop(Value.percentHeight(0.02f, card))
+                .row();
+        card.add((Actor) ultBtn).left().row();
+
         refreshUpgradeInfo();
     }
+
     @Override
     protected void refreshUpgradeInfo() {
         var engUp = hero.getComponent(
                 com.csse3200.game.components.hero.engineer.EngineerUpgradeComponent.class);
 
-        if (engUp == null) { // Fallback: if not an engineer, use base-class logic
+
+        if (engUp == null) {
             super.refreshUpgradeInfo();
             return;
         }
 
         int lvl   = engUp.getLevel();
         int maxLv = engUp.getMaxLevel();
-        int cost  = engUp.getNextCost(); // -1 means no next upgrade (max level or error)
+        int nextCost  = engUp.getNextCost();
 
         if (levelLabel != null) levelLabel.setText("Lv. " + lvl);
 
-        if (lvl >= maxLv || cost < 0) {
-            if (costLabel != null) {
-                costLabel.setText("MAX LEVEL");
-                costLabel.setColor(accentColor.cpy().lerp(Color.GRAY, 0.4f));
+        if (lvl >= maxLv || nextCost < 0) {
+            if (costTitleLabel != null) {
+                costTitleLabel.setText("MAX LEVEL");
+                costTitleLabel.setColor(accentColor.cpy().lerp(Color.GRAY, 0.4f));
+            }
+            if (costNumLabel != null) {
+                costNumLabel.setText("");
+            }
+            if (costIcon != null) {
+                costIcon.setVisible(false);
             }
             if (upgradeBtn != null) {
                 upgradeBtn.setDisabled(true);
@@ -72,11 +116,29 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
             return;
         }
 
-        // Show only the numeric price
-        if (costLabel != null) {
-            costLabel.setText("Upgrade cost: " + cost);
-            costLabel.setColor(textColor);
+        CurrencyComponent.CurrencyType nextType = defaultCurrency;
+        try {
+            var method = engUp.getClass().getMethod("getNextCurrencyType");
+            Object ret = method.invoke(engUp);
+            if (ret instanceof CurrencyComponent.CurrencyType) {
+                nextType = (CurrencyComponent.CurrencyType) ret;
+            }
+        } catch (Throwable ignored) {
         }
+
+        if (costTitleLabel != null) {
+            costTitleLabel.setText("Upgrade cost: ");
+            costTitleLabel.setColor(textColor);
+        }
+        if (costNumLabel != null) {
+            costNumLabel.setText(String.valueOf(nextCost));
+            costNumLabel.setColor(textColor);
+        }
+        if (costIcon != null) {
+            costIcon.setDrawable(currencyIconDrawable(nextType));
+            costIcon.setVisible(nextCost > 0);
+        }
+
         if (upgradeBtn != null) {
             upgradeBtn.setDisabled(false);
             upgradeBtn.setText("Upgrade");
@@ -86,7 +148,6 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
             st.downFontColor = Color.BLACK;
         }
     }
-
 
     @Override
     protected void buildExtraSections(Table card, Skin skin, float sw, float sh) {
@@ -142,5 +203,27 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
                 cooldownLabel.setColor(accentColor.cpy().lerp(textColor, 0.5f));
             }
         });
+    }
+
+    private Drawable currencyIconDrawable(CurrencyComponent.CurrencyType t) {
+        String path;
+        switch (t) {
+            case METAL_SCRAP:   path = "images/currency/metal_scrap.png"; break;
+            case TITANIUM_CORE: path = "images/currency/titanium_core.png"; break;
+            case NEUROCHIP:     path = "images/currency/neurochip.png"; break;
+            default:            path = "images/currency/currency_unknown.png"; break;
+        }
+        Texture tex;
+        try {
+            tex = new Texture(Gdx.files.internal(path));
+            tex.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+        } catch (Exception e) {
+            Pixmap pm = new Pixmap(16, 16, Pixmap.Format.RGBA8888);
+            pm.setColor(Color.GRAY);
+            pm.fill();
+            tex = new Texture(pm);
+            pm.dispose();
+        }
+        return new TextureRegionDrawable(new com.badlogic.gdx.graphics.g2d.TextureRegion(tex));
     }
 }

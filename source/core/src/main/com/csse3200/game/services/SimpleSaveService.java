@@ -131,6 +131,9 @@ public class SimpleSaveService {
 
   private SaveData collect() {
     SaveData data = new SaveData();
+    
+    // Store the current map ID
+    data.mapId = getCurrentMapId();
 
     // player
     Entity player = findPlayer();
@@ -430,6 +433,26 @@ public class SimpleSaveService {
     return null;
   }
 
+  /**
+   * Determine the current map ID from the game state.
+   * Checks if we're on Map 1 (ForestGameArea) or Map 2 (ForestGameArea2).
+   */
+  private String getCurrentMapId() {
+    try {
+      // Check ServiceLocator for GameStateService which might track the current map
+      var gameStateService = ServiceLocator.getGameStateService();
+      if (gameStateService != null && gameStateService.getCurrentMapId() != null) {
+        return gameStateService.getCurrentMapId();
+      }
+    } catch (Exception e) {
+      logger.warn("Could not get mapId from GameStateService", e);
+    }
+    
+    // Fallback: assume Map 1 (ForestGameArea) by default
+    // This will be overridden when GameStateService is properly set
+    return null;  // null means Map 1 (default ForestGameArea)
+  }
+
   private Vector2 validPos(Vector2 p) {
     if (p == null) return new Vector2(7.5f, 7.5f);
     float x = Math.max(0f, Math.min(15f, p.x));
@@ -442,8 +465,17 @@ public class SimpleSaveService {
     return name.replaceAll("[^a-zA-Z0-9 _-]", "_");
   }
 
+  /**
+   * Get the mapId from the pending save data (if any).
+   * @return The mapId from the loaded save, or null if no save is pending.
+   */
+  public String getPendingMapId() {
+    return pending != null ? pending.mapId : null;
+  }
+
   // --- DTO ---
   public static class SaveData {
+    public String mapId;  // NEW: Store which map this save is for
     public Player player;
     public List<Tower> towers = new ArrayList<>();
     public List<Enemy> enemies = new ArrayList<>();

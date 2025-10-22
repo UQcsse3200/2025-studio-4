@@ -297,6 +297,12 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             }
         }
 
+        for (int x = 30; x <= 39; x++) {
+            for (int y = 6; y <= 17; y++) {
+                addSnow(x, y);
+            }
+        }
+
        // generatePlaceableAreas();
         System.out.println("✅?Key path points generated, number=" + keyWaypoints.size());
         System.out.println("✅?Snow coordinates number=" + snowCoords.size());

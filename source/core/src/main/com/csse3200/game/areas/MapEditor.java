@@ -311,8 +311,6 @@ public class MapEditor extends InputAdapter implements IMapEditor {
             }
         }
 
-
-
         // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());
         System.out.println("✅ Key path points number=" + keyWaypoints.size());

@@ -25,6 +25,7 @@ import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2.TerrainType;
 import com.csse3200.game.components.Component;
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.effects.BlizzardVortexComponent;
 import com.csse3200.game.components.effects.PlasmaImpactComponent;
 import com.csse3200.game.components.effects.PlasmaStrikeComponent;
 import com.csse3200.game.components.effects.PlasmaWarningComponent;
@@ -720,6 +721,26 @@ public class ForestGameArea2 extends GameArea2 {
             Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
             spawnEntityAt(effect, tile, false, false);
         }
+
+        spawnBlizzardVortex(new GridPoint2(26, 4), new GridPoint2(37, 15));
+    }
+
+    private void spawnBlizzardVortex(GridPoint2 minTile, GridPoint2 maxTile) {
+        if (terrain == null) {
+            return;
+        }
+
+        float tileSize = terrain.getTileSize();
+        float width = (maxTile.x - minTile.x + 1) * tileSize;
+        float height = (maxTile.y - minTile.y + 1) * tileSize;
+
+        Vector2 bottomLeft = terrain.tileToWorldPosition(minTile.x, minTile.y);
+        Vector2 centre = new Vector2(bottomLeft.x + width / 2f, bottomLeft.y + height / 2f);
+
+        Entity vortex = new Entity();
+        vortex.setPosition(centre.x, centre.y);
+        vortex.addComponent(new BlizzardVortexComponent(width, height));
+        spawnEntity(vortex);
     }
 
     private void handlePlasmaImpact(Vector2 position) {

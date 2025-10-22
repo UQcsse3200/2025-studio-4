@@ -191,23 +191,27 @@ public class ForestGameArea2 extends GameArea2 {
 
         waves = new ArrayList<>();
 
-        // Wave 1: Basic introduction
-        waves.add(new Wave(1, 6, 6, 0, 0, 0, 0, 2.0f, waypointLists));
+        waves.add(new Wave(1, 10, 10, 0, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 2: Introduce speeders
-        waves.add(new Wave(2, 16, 6, 2, 0, 0, 3, 1.5f, waypointLists));
+        waves.add(new Wave(2, 0, 20, 10, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 3: More tanks and speeders
-        waves.add(new Wave(3, 6, 6, 10, 0, 0, 4, 1.0f, waypointLists));
+        waves.add(new Wave(3, 16, 10, 10, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 4: Dividers appear
-        waves.add(new Wave(4, 10, 10, 6, 0, 2, 3, 0.75f, waypointLists));
+        waves.add(new Wave(4, 10, 8, 4, 0, 2, 0, 2.0f, waypointLists));
 
-        // Wave 5: Final challenge
-        waves.add(new Wave(5, 20, 20, 10, 1, 2, 5, 0.5f, waypointLists));
+        waves.add(new Wave(5, 8, 6, 6, 0, 2, 4, 2.0f, waypointLists));
 
-        // Wave 6: Ultimate test
-        waves.add(new Wave(6, 30, 20, 16, 2, 4, 8, 0.5f, waypointLists));
+        waves.add(new Wave(6, 16, 10, 10, 0, 0, 0, 2.0f, waypointLists));
+
+        waves.add(new Wave(7, 20, 16, 10, 0, 2, 2, 1.0f, waypointLists));
+
+        waves.add(new Wave(8, 16, 8, 10, 0, 8, 8, 1.0f, waypointLists));
+
+        waves.add(new Wave(9, 26, 20, 20, 0, 6, 6, 1.0f, waypointLists));
+
+        waves.add(new Wave(10, 36, 28, 24, 6, 10, 10, 1.0f, waypointLists));
+
+        waves.add(new Wave(10, 40, 36, 30, 10, 20, 20, 1.0f, waypointLists));
 
         TOTAL_WAVES = waves.size();
     }

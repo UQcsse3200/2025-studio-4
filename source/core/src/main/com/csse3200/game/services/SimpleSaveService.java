@@ -178,6 +178,36 @@ public class SimpleSaveService {
         }
         data.towers.add(t);
       }
+      
+      // NEW: Save hero entities
+      if (e.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class) != null) {
+        SaveData.Hero h = new SaveData.Hero();
+        h.pos = e.getPosition();
+        
+        // Determine hero type based on components
+        var formSwitch = e.getComponent(com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent.class);
+        if (formSwitch != null) {
+          h.type = "hero";  // Main hero with form switching
+        } else {
+          // Try to identify hero type (engineer, samurai, etc.)
+          var customization = e.getComponent(com.csse3200.game.components.hero.HeroCustomizationComponent.class);
+          h.type = "hero";  // Default to hero if can't determine
+        }
+        
+        var combat = e.getComponent(com.csse3200.game.components.CombatStatsComponent.class);
+        if (combat != null) {
+          h.hp = combat.getHealth();
+          h.baseAttack = combat.getBaseAttack();
+        }
+        
+        var upgrade = e.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class);
+        if (upgrade != null) {
+          h.level = upgrade.getLevel();
+        }
+        
+        data.heroes.add(h);
+        logger.info("Saved hero at {} with level {}", h.pos, h.level);
+      }
 
       // enemy snapshot
       if (e.getComponent(com.csse3200.game.components.enemy.EnemyTypeComponent.class) != null) {
@@ -320,6 +350,57 @@ public class SimpleSaveService {
         logger.info("Successfully restored and registered {} tower at {}", type, t.pos);
       } else {
         logger.error("Failed to create tower of type: {}", type);
+      }
+    }
+    
+    // NEW: Restore heroes
+    for (SaveData.Hero h : data.heroes) {
+      logger.info("Restoring hero at {} with level {}", h.pos, h.level);
+      try {
+        // Load hero configs
+        com.csse3200.game.entities.configs.HeroConfig heroCfg =
+            com.csse3200.game.files.FileLoader.readClass(
+                com.csse3200.game.entities.configs.HeroConfig.class, "configs/hero.json");
+        com.csse3200.game.entities.configs.HeroConfig2 heroCfg2 =
+            com.csse3200.game.files.FileLoader.readClass(
+                com.csse3200.game.entities.configs.HeroConfig2.class, "configs/hero2.json");
+        com.csse3200.game.entities.configs.HeroConfig3 heroCfg3 =
+            com.csse3200.game.files.FileLoader.readClass(
+                com.csse3200.game.entities.configs.HeroConfig3.class, "configs/hero3.json");
+        
+        // Create hero entity
+        var cam = com.csse3200.game.rendering.Renderer.getCurrentRenderer().getCamera().getCamera();
+        Entity hero = com.csse3200.game.entities.factories.HeroFactory.createHero(heroCfg, cam);
+        
+        // Add form switch component
+        hero.addComponent(new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(
+            heroCfg, heroCfg2, heroCfg3));
+        
+        // Attach player and other components
+        var up = hero.getComponent(com.csse3200.game.components.hero.HeroUpgradeComponent.class);
+        if (up != null && player != null) {
+          up.attachPlayer(player);
+          // Restore level directly
+          if (h.level > 1) {
+            up.setLevel(h.level);
+          }
+        }
+        
+        hero.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
+        
+        // Set position and stats
+        hero.setPosition(h.pos);
+        var combat = hero.getComponent(com.csse3200.game.components.CombatStatsComponent.class);
+        if (combat != null) {
+          combat.setHealth(h.hp);
+          combat.setBaseAttack(h.baseAttack);
+        }
+        
+        // Register hero
+        entityService.register(hero);
+        logger.info("Successfully restored hero at {} with level {}", h.pos, h.level);
+      } catch (Exception e) {
+        logger.error("Failed to restore hero at {}: {}", h.pos, e.getMessage());
       }
     }
 
@@ -478,6 +559,7 @@ public class SimpleSaveService {
     public String mapId;  // NEW: Store which map this save is for
     public Player player;
     public List<Tower> towers = new ArrayList<>();
+    public List<Hero> heroes = new ArrayList<>();  // NEW: Store hero entities
     public List<Enemy> enemies = new ArrayList<>();
 
     public static class Player { 
@@ -489,6 +571,7 @@ public class SimpleSaveService {
       public int neurochip; 
     }
     public static class Tower { public String type; public Vector2 pos; public int hp; public float cd; public int levelA; public int levelB; }
+    public static class Hero { public String type; public Vector2 pos; public int hp; public int level; public int baseAttack; }  // NEW: Hero data
     public static class Enemy { public String type; public Vector2 pos; public int hp; }
   }
 }

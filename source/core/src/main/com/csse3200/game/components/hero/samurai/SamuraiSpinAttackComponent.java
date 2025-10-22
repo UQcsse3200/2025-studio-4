@@ -12,7 +12,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.SamuraiConfig;
 import com.csse3200.game.services.ServiceLocator;
 
-// ✅ 新增：引入你刚拆分出来的攻击组件与控制器
+// Attack modules & controller (decoupled from the sword factory)
 import com.csse3200.game.components.hero.samurai.attacks.AttackLockComponent;
 import com.csse3200.game.components.hero.samurai.attacks.JabAttackComponent;
 import com.csse3200.game.components.hero.samurai.attacks.SweepAttackComponent;
@@ -20,41 +20,46 @@ import com.csse3200.game.components.hero.samurai.attacks.SpinAttackComponent;
 import com.csse3200.game.components.hero.samurai.attacks.SamuraiSwordController;
 
 /**
- * 负责：生成“剑”实体 + 安装三种攻击组件 + 处理输入并转发给控制器。
- * 注意：SwordFactory.createSword(...) 需要只创建“视觉+物理”的剑，
- * 不要再往里挂旧的 SwordJabPhysicsComponent。
+ * Responsibilities:
+ * - Spawn the "sword" entity (visual + physics only)
+ * - Attach three attack components (jab / sweep / spin) to the sword
+ * - Handle input and forward it to the controller
+ * <p>
+ * Notes:
+ * - SwordFactory.createSword(...) MUST create ONLY the visual + physics sword.
+ * Do NOT attach legacy components such as SwordJabPhysicsComponent inside the factory.
  */
 public class SamuraiSpinAttackComponent extends Component {
     private final float restRadius;
     private final String swordTexture;
     private final Camera camera;
     private final SamuraiConfig cfg;
+
     // === SFX keys & volumes ===
-    private String jabSfxKey   = "sounds/katana_stab_2s.ogg";   // 刺
-    private String sweepSfxKey = "sounds/katana_slash_2s.ogg";  // 劈砍
-    private String spinSfxKey  = "sounds/katana_spin_2s.ogg";   // 旋转
+    private String jabSfxKey = "sounds/katana_stab_2s.ogg";   // jab
+    private String sweepSfxKey = "sounds/katana_slash_2s.ogg";  // sweep
+    private String spinSfxKey = "sounds/katana_spin_2s.ogg";   // spin
 
     private float jabSfxVol = 1.0f;
     private float sweepSfxVol = 1.0f;
     private float spinSfxVol = 1.0f;
 
-    // 限频，避免短时间内重复播放重叠
+    // SFX rate-limit to avoid overlapping spam
     private float sfxMinInterval = 0.06f;
     private float jabSfxCd = 0f, sweepSfxCd = 0f, spinSfxCd = 0f;
 
-
-    // 视觉/手感参数
+    // Visual/feel parameters
     private float spriteForwardOffsetDeg = 0f;
     private float centerToHandle = -1.0f;
 
-    // jab / sweep 默认参数（可继续从外部 set）
+    // Default jab/sweep params (can be overridden via setters)
     private float jabDuration = 0.18f, jabExtra = 0.8f, jabCooldown = 0f;
     private float sweepDuration = 0.22f, sweepExtra = 0.35f, sweepCooldown = 0f;
 
-    // 组件引用
-    private Entity sword;                 // 剑实体（承载物理 + 渲染 + 攻击组件）
-    private SamuraiSwordController ctrl;  // 控制器
-    private InputAdapter adapter;         // 输入适配器
+    // Component references
+    private Entity sword;                 // Sword entity (physics + rendering + attack components)
+    private SamuraiSwordController ctrl;  // Controller
+    private InputAdapter adapter;         // Keyboard adapter
 
     public SamuraiSpinAttackComponent(float restRadius, String swordTexture, SamuraiConfig cfg, Camera camera) {
         this.restRadius = restRadius;
@@ -63,14 +68,23 @@ public class SamuraiSpinAttackComponent extends Component {
         this.camera = camera;
     }
 
-    public SamuraiSpinAttackComponent setSpriteForwardOffsetDeg(float deg) { this.spriteForwardOffsetDeg = deg; return this; }
-    public SamuraiSpinAttackComponent setCenterToHandle(float d) { this.centerToHandle = d; return this; }
+    public SamuraiSpinAttackComponent setSpriteForwardOffsetDeg(float deg) {
+        this.spriteForwardOffsetDeg = deg;
+        return this;
+    }
+
+    public SamuraiSpinAttackComponent setCenterToHandle(float d) {
+        this.centerToHandle = d;
+        return this;
+    }
+
     public SamuraiSpinAttackComponent setJabParams(float duration, float extra, float cooldown) {
         if (duration > 0f) this.jabDuration = duration;
         if (extra > 0f) this.jabExtra = extra;
         this.jabCooldown = Math.max(0f, cooldown);
         return this;
     }
+
     public SamuraiSpinAttackComponent setSweepParams(float duration, float extra, float cooldown) {
         if (duration > 0f) this.sweepDuration = duration;
         if (extra >= 0f) this.sweepExtra = extra;
@@ -78,27 +92,26 @@ public class SamuraiSpinAttackComponent extends Component {
         return this;
     }
 
-
-
     @Override
     public void create() {
         super.create();
 
-        // 1) 仅创建“纯可视+物理”的剑实体（⚠️ 工厂里请不要再挂旧的 SwordJabPhysicsComponent）
+        // 1) Create the sword entity with visual + physics only.
+        //    WARNING: Do NOT attach legacy SwordJabPhysicsComponent in the factory.
         sword = com.csse3200.game.entities.factories.SwordFactory.createSword(
                 this.entity, cfg, swordTexture, restRadius, /*initialFacing*/0f
         );
 
-        // 2) 在剑实体上安装“互斥锁 + 三种攻击 + 控制器”
+        // 2) Attach "mutex lock + three attacks + controller" onto the sword
         var lock = new AttackLockComponent();
 
-        var jab = new JabAttackComponent(this.entity /*owner=武士本体*/, restRadius)
+        var jab = new JabAttackComponent(this.entity /* owner = samurai entity */, restRadius)
                 .setParams(jabDuration, jabExtra)
                 .setMiniCooldown(jabCooldown)
                 .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                 .setCenterToHandle(centerToHandle)
                 .setPivotOffset(0f, 0f)
-                // ✨ 注入：Jab 的“按等级伤害表” + 1级默认值兜底
+                // Inject jab damage table with reasonable fallback to swordDamageByLevel
                 .setDamageTable(
                         (cfg.jabDamageByLevel != null && cfg.jabDamageByLevel.length > 0)
                                 ? cfg.jabDamageByLevel : cfg.swordDamageByLevel,
@@ -115,7 +128,7 @@ public class SamuraiSpinAttackComponent extends Component {
                 .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                 .setCenterToHandle(centerToHandle)
                 .setPivotOffset(0f, 0f)
-                // ✨ 注入：Sweep 的伤害表
+                // Inject sweep damage table with fallback
                 .setDamageTable(
                         (cfg.sweepDamageByLevel != null && cfg.sweepDamageByLevel.length > 0)
                                 ? cfg.sweepDamageByLevel : cfg.swordDamageByLevel,
@@ -132,7 +145,7 @@ public class SamuraiSpinAttackComponent extends Component {
                 .setSpriteForwardOffsetDeg(spriteForwardOffsetDeg)
                 .setCenterToHandle(centerToHandle)
                 .setPivotOffset(0f, 0f)
-                // ✨ 注入：Spin 的伤害表
+                // Inject spin damage table with fallback
                 .setDamageTable(
                         (cfg.spinDamageByLevel != null && cfg.spinDamageByLevel.length > 0)
                                 ? cfg.spinDamageByLevel : cfg.swordDamageByLevel,
@@ -142,26 +155,26 @@ public class SamuraiSpinAttackComponent extends Component {
                                 ? cfg.swordDamageByLevel[0] : 10)
                 );
 
-
         ctrl = new SamuraiSwordController(jab, sweep, spin);
 
+        // UI → attack trigger bridge
         this.entity.getEvents().addListener("ui:samurai:attack", (String type) -> {
             if (ctrl == null || camera == null) return;
 
-            // 复用你键盘里同样的“鼠标世界坐标”逻辑
+            // Reuse world-mouse conversion logic (same as keyboard handler)
             com.badlogic.gdx.math.Vector3 tmp = new com.badlogic.gdx.math.Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
             camera.unproject(tmp);
             com.badlogic.gdx.math.Vector2 mouseWorld = new com.badlogic.gdx.math.Vector2(tmp.x, tmp.y);
 
             boolean ok = false;
             switch (type) {
-                case "jab"   -> ok = triggerJabWithSfx(mouseWorld);
+                case "jab" -> ok = triggerJabWithSfx(mouseWorld);
                 case "sweep" -> ok = triggerSweepWithSfx(mouseWorld);
-                case "spin"  -> ok = triggerSpinWithSfx(true); // 逆时针
+                case "spin" -> ok = triggerSpinWithSfx(true); // CCW
             }
 
             if (!ok) {
-                // 如果触发失败（冷却/锁），你可以在这里给 UI 回发提示或冷却时间
+                // Optional: notify UI about cooldown/lock
                 this.entity.getEvents().trigger("ui:toast", "Cannot use now");
             }
         });
@@ -172,10 +185,11 @@ public class SamuraiSpinAttackComponent extends Component {
                 .addComponent(spin)
                 .addComponent(ctrl);
 
-        // 3) 注册实体（放到 EntityService）
+        // 3) Register spawned entity into the EntityService
         var es = ServiceLocator.getEntityService();
         if (es != null) Gdx.app.postRunnable(() -> es.register(sword));
 
+        // 4) Position the sword at rest (right-facing) around the hero
         Gdx.app.postRunnable(() -> {
             if (sword == null) return;
 
@@ -183,7 +197,7 @@ public class SamuraiSpinAttackComponent extends Component {
             var rend = sword.getComponent(com.csse3200.game.rendering.RotatingTextureRenderComponent.class);
             if (phys == null || phys.getBody() == null) return;
 
-            // 取英雄中心
+            // Get hero center
             com.badlogic.gdx.math.Vector2 heroCenter =
                     (entity != null && entity.getCenterPosition() != null)
                             ? new com.badlogic.gdx.math.Vector2(entity.getCenterPosition())
@@ -192,50 +206,62 @@ public class SamuraiSpinAttackComponent extends Component {
                             entity.getScale() != null ? entity.getScale().y * 0.5f : 0.5f
                     );
 
-            float facingDeg = 0f;                      // 初始朝向：向右
-            float rad = (float)Math.toRadians(facingDeg);
-            float dx = (float)Math.cos(rad), dy = (float)Math.sin(rad);
+            float facingDeg = 0f; // initial facing: right
+            float rad = (float) Math.toRadians(facingDeg);
+            float dx = (float) Math.cos(rad), dy = (float) Math.sin(rad);
 
-            float restRadius = this.restRadius;        // 你构造传入的半径
-            float centerToHandle = -0.25f;             // 和你之前一致（可用字段）
+            float restRadius = this.restRadius;
+            float centerToHandle = -0.25f; // matches previous setup (can be turned into a field)
 
-            // 剑柄位置 = 英雄中心 + 半径 * 朝向
+            // Handle position = heroCenter + radius * facing
             float handleX = heroCenter.x + restRadius * dx;
             float handleY = heroCenter.y + restRadius * dy;
 
-            // 贴图中心 = 剑柄 - centerToHandle * 朝向
+            // Sprite center = handle - centerToHandle * facing
             float centerX = handleX - centerToHandle * dx;
             float centerY = handleY - centerToHandle * dy;
 
-            phys.getBody().setTransform(centerX, centerY, (float)Math.toRadians(facingDeg + spriteForwardOffsetDeg));
+            phys.getBody().setTransform(centerX, centerY, (float) Math.toRadians(facingDeg + spriteForwardOffsetDeg));
 
-            // 可选：把贴图的可视角度也对齐（避免看起来歪）
+            // Optionally sync visible rotation (to avoid looking skewed)
             if (rend != null) {
                 float vis = ((facingDeg + spriteForwardOffsetDeg) % 360f + 360f) % 360f;
                 rend.setRotation(vis);
-                // 如果你的渲染组件支持，建议把原点设为居中
-                try { rend.getClass().getMethod("setOriginToCenter").invoke(rend); } catch (Throwable ignored) {}
+                // If supported, set origin to texture center
+                try {
+                    rend.getClass().getMethod("setOriginToCenter").invoke(rend);
+                } catch (Throwable ignored) {
+                }
             }
         });
 
-        // 4) 绑定输入：把键盘 1/2/3 转发给控制器
+        // 5) Keyboard binding: map 1/2/3 to jab/sweep/spin and forward to controller
         adapter = new InputAdapter() {
             private final Vector3 tmp = new Vector3();
             private final Vector2 mouseWorld = new Vector2();
-            @Override public boolean keyDown(int keycode) {
+
+            @Override
+            public boolean keyDown(int keycode) {
                 if (sword == null || camera == null || ctrl == null) return false;
 
                 tmp.set(Gdx.input.getX(), Gdx.input.getY(), 0f);
                 camera.unproject(tmp);
                 mouseWorld.set(tmp.x, tmp.y);
 
-                if (keycode == Input.Keys.NUM_1) { return triggerJabWithSfx(mouseWorld); }
-                if (keycode == Input.Keys.NUM_2) { return triggerSweepWithSfx(mouseWorld); }
-                if (keycode == Input.Keys.NUM_3) { return triggerSpinWithSfx(true); } // true=CCW
+                if (keycode == Input.Keys.NUM_1) {
+                    return triggerJabWithSfx(mouseWorld);
+                }
+                if (keycode == Input.Keys.NUM_2) {
+                    return triggerSweepWithSfx(mouseWorld);
+                }
+                if (keycode == Input.Keys.NUM_3) {
+                    return triggerSpinWithSfx(true);
+                } // true = CCW
                 return false;
             }
         };
 
+        // Join current input chain via InputMultiplexer
         var cur = Gdx.input.getInputProcessor();
         if (cur instanceof InputMultiplexer mux) mux.addProcessor(0, adapter);
         else {
@@ -246,40 +272,48 @@ public class SamuraiSpinAttackComponent extends Component {
         }
     }
 
-    // 更新每帧的 SFX 冷却（如果你本组件有 update，可放 update；没有就靠限频足够）
+    // Tick SFX cooldowns per frame (if you add update(), call this from update; otherwise the per-call limiter is enough)
     private void tickSfxCooldowns(float dt) {
-        if (jabSfxCd > 0f)   jabSfxCd   -= dt;
+        if (jabSfxCd > 0f) jabSfxCd -= dt;
         if (sweepSfxCd > 0f) sweepSfxCd -= dt;
-        if (spinSfxCd > 0f)  spinSfxCd  -= dt;
+        if (spinSfxCd > 0f) spinSfxCd -= dt;
     }
 
-    // 包装触发 + 成功后播音
+    // Wrapper: trigger + play SFX on success
     private boolean triggerJabWithSfx(Vector2 mouseWorld) {
         boolean ok = (ctrl != null) && ctrl.triggerJab(mouseWorld);
-        if (ok) playSfxOnce(jabSfxKey, jabSfxVol, /*cd*/false, /*which*/"jab");
+        if (ok) playSfxOnce(jabSfxKey, jabSfxVol, /*useCooldown*/false, /*which*/"jab");
         return ok;
     }
+
     private boolean triggerSweepWithSfx(Vector2 mouseWorld) {
         boolean ok = (ctrl != null) && ctrl.triggerSweep(mouseWorld);
         if (ok) playSfxOnce(sweepSfxKey, sweepSfxVol, false, "sweep");
         return ok;
     }
+
     private boolean triggerSpinWithSfx(boolean ccw) {
         boolean ok = (ctrl != null) && ctrl.triggerSpin(ccw);
         if (ok) playSfxOnce(spinSfxKey, spinSfxVol, false, "spin");
         return ok;
     }
 
-    // 通用播放（带 ResourceService 优先，newSound 回退 + 限频）
-// which: "jab"/"sweep"/"spin"
+    /**
+     * Generic SFX play with ResourceService-first, newSound fallback, and optional rate limiting.
+     *
+     * @param key         asset path
+     * @param vol         volume [0,1]
+     * @param useCooldown whether to enforce short anti-spam cooldown
+     * @param which       "jab" / "sweep" / "spin"
+     */
     private void playSfxOnce(String key, float vol, boolean useCooldown, String which) {
         if (key == null || key.isBlank()) return;
 
-        // 限频
+        // Anti-spam limiter
         if (useCooldown) {
-            if ("jab".equals(which) && jabSfxCd > 0f)   return;
+            if ("jab".equals(which) && jabSfxCd > 0f) return;
             if ("sweep".equals(which) && sweepSfxCd > 0f) return;
-            if ("spin".equals(which) && spinSfxCd > 0f)  return;
+            if ("spin".equals(which) && spinSfxCd > 0f) return;
         }
 
         float v = Math.max(0f, Math.min(1f, vol));
@@ -287,7 +321,10 @@ public class SamuraiSpinAttackComponent extends Component {
             var rs = ServiceLocator.getResourceService();
             com.badlogic.gdx.audio.Sound s = null;
             if (rs != null) {
-                try { s = rs.getAsset(key, com.badlogic.gdx.audio.Sound.class); } catch (Throwable ignored) {}
+                try {
+                    s = rs.getAsset(key, com.badlogic.gdx.audio.Sound.class);
+                } catch (Throwable ignored) {
+                }
             }
             if (s != null) {
                 s.play(v);
@@ -297,23 +334,22 @@ public class SamuraiSpinAttackComponent extends Component {
                 s2.play(v);
             }
         } catch (Throwable t) {
-            // 忽略或记日志都行
+            // ignore or log if needed
         }
 
-        // 设置限频冷却
+        // Set short cooldown if enabled
         if (useCooldown) {
-            if ("jab".equals(which))      jabSfxCd = sfxMinInterval;
+            if ("jab".equals(which)) jabSfxCd = sfxMinInterval;
             else if ("sweep".equals(which)) sweepSfxCd = sfxMinInterval;
-            else if ("spin".equals(which))  spinSfxCd = sfxMinInterval;
+            else if ("spin".equals(which)) spinSfxCd = sfxMinInterval;
         }
     }
-
 
     @Override
     public void dispose() {
         super.dispose();
 
-        // 从输入多路复用器移除 adapter，避免泄漏
+        // Remove input adapter from the multiplexer to avoid leaks
         var cur = Gdx.input.getInputProcessor();
         if (adapter != null && cur instanceof InputMultiplexer mux) {
             mux.removeProcessor(adapter);
@@ -326,5 +362,6 @@ public class SamuraiSpinAttackComponent extends Component {
         }
     }
 }
+
 
 

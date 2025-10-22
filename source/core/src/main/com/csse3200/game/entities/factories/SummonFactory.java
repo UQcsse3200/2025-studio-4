@@ -121,9 +121,9 @@ public final class SummonFactory {
         // 先创建组件
         TurretAttackComponent tac = new TurretAttackComponent(
                 fireDirection.nor(), attackCooldown, 10f, 1.2f, "images/engineer/Turret_Bullet.png"
-        ).setShootSfxKey("sounds/turret_shoot.ogg")  // ★ 音效路径（放你项目的 assets）
-                .setShootSfxVolume(0.9f)                    // 可调
-                .setShootSfxMinInterval(0.05f);             // 可调
+        ).setShootSfxKey("sounds/turret_shoot.ogg")
+                .setShootSfxVolume(0.9f)
+                .setShootSfxMinInterval(0.05f);
 
         turret.addComponent(tac);
 
@@ -199,8 +199,6 @@ public final class SummonFactory {
         Entity ghost = new Entity()
                 .addComponent(new TextureRenderComponent(texturePath));
 
-        // 如果引擎支持透明度/染色，可以半透明显示（按你们的组件API改）
-        // ghost.getComponent(TextureRenderComponent.class).setOpacity(0.5f);
 
         ghost.setScale(scale, scale);
         return ghost;

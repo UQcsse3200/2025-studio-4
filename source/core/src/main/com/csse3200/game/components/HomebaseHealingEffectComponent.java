@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Home base healing effect component.
  * Displays a green pulsating effect and optional healing animation when the base regenerates.
- * Team1 Sprint 4.
+ * @author Team1 
+ * @since Sprint 4
  */
 public class HomebaseHealingEffectComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(HomebaseHealingEffectComponent.class);
@@ -87,6 +88,8 @@ public class HomebaseHealingEffectComponent extends Component {
     
     /**
      * Triggered when health updates.
+     *
+     * @param newHealth latest hit point total for the home base
      */
     private void onHealthUpdate(int newHealth) {
         // Check if health increased (indicating healing)
@@ -101,6 +104,9 @@ public class HomebaseHealingEffectComponent extends Component {
     
     /**
      * Triggered when damage numbers are shown (negative values mean healing).
+     *
+     * @param amount   damage dealt or healing received (negative for healing)
+     * @param position world coordinates where the floating text is displayed
      */
     private void onDamageShow(int amount, Vector2 position) {
         // Negative amounts represent healing
@@ -111,6 +117,8 @@ public class HomebaseHealingEffectComponent extends Component {
     
     /**
      * Display the healing effect.
+     *
+     * @param healAmount positive amount representing the health restored
      */
     private void showHealingEffect(int healAmount) {
         if (isShowingHealingEffect) {
@@ -160,9 +168,12 @@ public class HomebaseHealingEffectComponent extends Component {
         }
     }
     
-    /**
+        /**
      * Handles the healing animation timing for Team1's Sprint 4 feature work.
+     *
+     * @throws NullPointerException if the time source is not registered
      */
+    
     @Override
     public void update() {
         super.update();
@@ -173,12 +184,12 @@ public class HomebaseHealingEffectComponent extends Component {
             // Add pulsating effect by modulating the colour intensity over time
             if (textureComponent != null) {
                 float progress = healingEffectTimer / HEALING_EFFECT_DURATION;
-                float alpha = 0.5f + 0.5f * (float)Math.sin(progress * Math.PI * 4); // 脉冲效果
+                float alpha = 0.5f + 0.5f * (float)Math.sin(progress * Math.PI * 4); 
                 Color pulseColor = new Color(
                     0.3f + alpha * 0.3f,  // R: 0.3 - 0.6
-                    1f,                     // G: 1.0 (保持绿色)
+                    1f,                     // G: 1.0 
                     0.3f + alpha * 0.3f,  // B: 0.3 - 0.6
-                    1f                      // A: 1.0 (完全不透明)
+                    1f                      // A: 1.0 
                 );
                 textureComponent.setColor(pulseColor);
             }
@@ -306,7 +317,11 @@ class HealingVideoOverlay extends RenderComponent {
             }
         }
     }
-
+    /**
+     * Draws the current healing video frame above the home base sprite.
+     *
+     * @param batch sprite batch used by the renderer
+     */
     @Override
     protected void draw(SpriteBatch batch) {
         if (!active) return;
@@ -326,13 +341,17 @@ class HealingVideoOverlay extends RenderComponent {
             } else if (frameObj instanceof Texture tex) {
                 batch.draw(tex, pos.x, pos.y, w, h);
             } else {
-                // 未知类型，跳过绘制
+                // Unknown type, skip rendering
             }
         } catch (Exception e) {
             logger.debug("Video frame render failed: {}", e.getMessage());
         }
     }
-
+    /**
+     * Provides a slight offset so the overlay renders above the base.
+     *
+     * @return z-index adjustment for the overlay
+     */
     @Override
     public float getZIndex() {
         // Slightly raise the Z order so the overlay sits above the base sprite

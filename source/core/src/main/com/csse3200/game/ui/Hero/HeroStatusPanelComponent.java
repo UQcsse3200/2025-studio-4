@@ -21,17 +21,17 @@ import com.csse3200.game.ui.SimpleUI;
 import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
- * 左侧黄色栏里的“英雄状态卡片”：
- * - 显示：名字、HP、能量、伤害、等级、升级费用、ULT按钮
- * - 召唤系统UI：召唤容量（已放置/最大）+ 进度条；冷却倒计时 + 进度条
+ * “Hero status card” inside the left yellow panel:
+ * - Shows: name, HP, energy, damage, level, upgrade cost, ULT button
+ * - Summon system UI: summon capacity (placed/max) + progress bar; cooldown countdown + progress bar
  *
- * 监听的事件：
+ * Listened events:
  * - hero.hp(Integer cur, Integer max)
  * - hero.energy(Integer cur, Integer max)
  * - hero.damage(Integer dmg)
  * - hero.level(Integer lv)
- * - summonAliveChanged(Integer alive, Integer max)     // 来自 EngineerSummonComponent
- * - summon:cooldown(Float remaining, Float total)      // 来自 EngineerSummonComponent
+ * - summonAliveChanged(Integer alive, Integer max)     // From EngineerSummonComponent
+ * - summon:cooldown(Float remaining, Float total)      // From EngineerSummonComponent
  * - upgraded(...) / upgradeFailed(...)
  */
 public class HeroStatusPanelComponent extends Component {
@@ -42,17 +42,17 @@ public class HeroStatusPanelComponent extends Component {
     private Table root;
     private Table card;
 
-    // 基本属性
+    // Basic attributes
     private Label nameLabel, hpLabel, energyLabel, levelLabel, costLabel, damageLabel;
     private TextButton ultBtn, upgradeBtn;
 
-    // 召唤容量
+    // Summon capacity
     private Label aliveLabel;
     private ProgressBar aliveBar;
     private int lastAlive = 0;
     private int lastMax = 0;
 
-    // 冷却
+    // Cooldown
     private Label cooldownLabel;
     private ProgressBar cooldownBar;
 
@@ -69,12 +69,12 @@ public class HeroStatusPanelComponent extends Component {
     public void create() {
         stage = ServiceLocator.getRenderService().getStage();
 
-        // 统一皮肤/样式
+        // Unified skin/styles
         Skin skin = new Skin();
         Label.LabelStyle ls = new Label.LabelStyle(SimpleUI.font(), Color.WHITE);
         skin.add("default", ls);
 
-        // 暗色卡片背景
+        // Dark card background
         TextureRegionDrawable darkBg = new TextureRegionDrawable(
                 makeSolid(4, 4, new Color(0.15f, 0.15f, 0.18f, 0.9f))
         );
@@ -87,12 +87,12 @@ public class HeroStatusPanelComponent extends Component {
         float GAP      = sh * 0.012f;
 
         float PANEL_W  = HOTBAR_W;
-        float PANEL_H  = sh * 0.26f; // 稍微加高一点给容量+冷却两块区域
+        float PANEL_H  = sh * 0.26f; // Slightly taller to leave space for capacity + cooldown sections
 
         root = new Table();
         root.setFillParent(true);
         root.top().right();
-        // 放在 Hotbar 正下方
+        // Place directly below the Hotbar
         root.padTop(sh * 0.5f + HOTBAR_H * 0.5f + GAP).padRight(0f);
 
         card = new Table(skin);
@@ -100,7 +100,7 @@ public class HeroStatusPanelComponent extends Component {
         card.pad(sw * 0.008f);
         card.defaults().left().padBottom(sh * 0.006f);
 
-        // ===== 基本文本与按钮 =====
+        // ===== Basic text and buttons =====
         nameLabel   = new Label(heroName, skin);
         hpLabel     = new Label("HP: 100/100", skin);
         energyLabel = new Label("Energy: 50/50", skin);
@@ -121,42 +121,42 @@ public class HeroStatusPanelComponent extends Component {
         info.add(nameLabel).left().row();
         info.add(levelLabel).left();
 
-        // ===== 通用进度条样式（暗灰背景 + 主题黄前景） =====
+        // ===== Common progress bar style (dark gray background + theme yellow fill) =====
         ProgressBar.ProgressBarStyle barStyle = new ProgressBar.ProgressBarStyle();
         barStyle.background = new TextureRegionDrawable(makeSolid(8, 8, new Color(0.10f, 0.10f, 0.12f, 1f)));
         TextureRegionDrawable yellowFill = new TextureRegionDrawable(makeSolid(8, 8, new Color(0.98f, 0.80f, 0.10f, 1f)));
         barStyle.knobBefore = yellowFill;
         barStyle.knob = new TextureRegionDrawable(makeSolid(1, 8, new Color(1f, 1f, 1f, 0f)));
 
-        // ===== 召唤容量（已放置 / 最大） =====
+        // ===== Summon capacity (placed / max) =====
         aliveBar = new ProgressBar(0f, 1f, 0.01f, false, barStyle);
         aliveBar.setAnimateDuration(0.08f);
         aliveBar.setValue(0f);
-        aliveLabel = new Label("Summons: 0 / -", skin); // 等待事件填充最大值
+        aliveLabel = new Label("Summons: 0 / -", skin); // Wait for events to fill in the max value
 
-        // ===== 冷却倒计时 =====
+        // ===== Cooldown countdown =====
         cooldownBar = new ProgressBar(0f, 1f, 0.01f, false, barStyle);
         cooldownBar.setAnimateDuration(0.08f);
-        cooldownBar.setValue(1f); // 初始视为就绪
+        cooldownBar.setValue(1f); // Initially treat as ready
         cooldownLabel = new Label("Summon ready", skin);
 
-        // ===== 组装布局 =====
+        // ===== Layout assembly =====
         card.add(info).left().row();
         card.add(hpLabel).left().row();
         card.add(damageLabel).left().row();
         card.add(energyLabel).left().row();
 
-        // —— 容量块 ——
+        // —— Capacity section ——
         card.add(new Label("Summon Capacity", skin)).left().row();
         card.add(aliveBar).left().width(sw * 0.10f).padTop(sh * 0.004f).row();
         card.add(aliveLabel).left().row();
 
-        // —— 冷却块 ——
+        // —— Cooldown section ——
         card.add(new Label("Summon Cooldown", skin)).left().row();
         card.add(cooldownBar).left().width(sw * 0.10f).padTop(sh * 0.004f).row();
         card.add(cooldownLabel).left().row();
 
-        // —— 升级/ULT ——
+        // —— Upgrade / ULT ——
         card.add(costLabel).left().row();
         card.add(upgradeBtn).left().width(sw * 0.10f).padTop(sh * 0.004f).row();
         card.add(ultBtn).left().row();
@@ -164,7 +164,7 @@ public class HeroStatusPanelComponent extends Component {
         root.add(card).width(PANEL_W).height(PANEL_H);
         stage.addActor(root);
 
-        // ===== 事件绑定 =====
+        // ===== Event bindings =====
         hero.getEvents().addListener("hero.hp", (Integer cur, Integer max) -> {
             if (cur == null || max == null) return;
             hpLabel.setText("HP: " + cur + "/" + max);
@@ -186,7 +186,7 @@ public class HeroStatusPanelComponent extends Component {
             refreshUpgradeInfo();
         });
 
-        // —— 容量监听：alive/max ——
+        // —— Capacity listener: alive/max ——
         hero.getEvents().addListener("summonAliveChanged", (Integer alive, Integer max) -> {
             if (alive == null || max == null) return;
             lastAlive = Math.max(0, alive);
@@ -195,7 +195,7 @@ public class HeroStatusPanelComponent extends Component {
             float progress = (lastMax > 0) ? (Math.min(lastAlive, lastMax) / (float) lastMax) : 0f;
             aliveBar.setValue(progress);
 
-            // 文案 & 满载高亮
+            // Text & highlight when full
             if (lastMax > 0) {
                 boolean full = lastAlive >= lastMax;
                 String text = "Summons: " + lastAlive + " / " + lastMax + (full ? " (FULL)" : "");
@@ -207,12 +207,12 @@ public class HeroStatusPanelComponent extends Component {
             }
         });
 
-        // —— 冷却监听：remaining/total ——
+        // —— Cooldown listener: remaining/total ——
         hero.getEvents().addListener("summon:cooldown", (Float remaining, Float total) -> {
             if (remaining == null || total == null) return;
             float rem = Math.max(0f, remaining);
-            float tot = Math.max(0.0001f, total); // 防止除0
-            float progress = (tot - rem) / tot;   // 0~1（0:刚开始冷却; 1:已就绪）
+            float tot = Math.max(0.0001f, total); // Prevent division by zero
+            float progress = (tot - rem) / tot;   // 0~1 (0: just started cooldown; 1: ready)
             cooldownBar.setValue(progress);
 
             if (rem > 0f) {
@@ -221,11 +221,11 @@ public class HeroStatusPanelComponent extends Component {
                 cooldownLabel.setColor(Color.WHITE);
             } else {
                 cooldownLabel.setText("Summon ready");
-                cooldownLabel.setColor(new Color(0.80f, 1f, 0.80f, 1f)); // 就绪时给个淡绿提示
+                cooldownLabel.setColor(new Color(0.80f, 1f, 0.80f, 1f)); // Light green hint when ready
             }
         });
 
-        // —— 升级按钮 ——
+        // —— Upgrade button ——
         upgradeBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -240,7 +240,7 @@ public class HeroStatusPanelComponent extends Component {
 
         hero.getEvents().addListener("upgradeFailed", (String msg) -> refreshUpgradeInfo());
 
-        // 初始化升级显示
+        // Initialize upgrade display
         refreshUpgradeInfo();
     }
 
@@ -268,7 +268,7 @@ public class HeroStatusPanelComponent extends Component {
         upgradeBtn.setDisabled(next > 3);
     }
 
-    /** 生成纯色贴图 */
+    /** Generate a solid-color texture */
     private static TextureRegion makeSolid(int w, int h, Color c) {
         Pixmap pm = new Pixmap(w, h, Pixmap.Format.RGBA8888);
         pm.setColor(c);
@@ -278,5 +278,3 @@ public class HeroStatusPanelComponent extends Component {
         return new TextureRegion(tex);
     }
 }
-
-

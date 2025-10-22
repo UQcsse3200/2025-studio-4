@@ -10,7 +10,7 @@ import com.csse3200.game.areas.terrain.ITerrainComponent;
 import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.Renderer;
 import com.csse3200.game.services.ServiceLocator;
-// ✅ 修正导入路径（复数）
+// ✅ Fixed import path (plural)
 import com.csse3200.game.components.towers.TowerComponent;
 
 import java.util.Map;
@@ -18,7 +18,7 @@ import java.util.Map;
 final class HeroPlacementRules {
     private HeroPlacementRules() {}
 
-    /** 将屏幕坐标转换成瓦片坐标（做了边界检查） */
+    /** Convert screen coordinates to tile coordinates (with bounds checking). */
     static GridPoint2 screenToGridNoClamp(int sx, int sy, ITerrainComponent terrain) {
         Renderer r = Renderer.getCurrentRenderer();
         if (r == null || r.getCamera() == null || terrain == null) return null;
@@ -37,20 +37,20 @@ final class HeroPlacementRules {
     }
 
     /**
-     * 判断这个格子是否被阻塞：
-     * 1. 路径/障碍/水域（invalidTiles）
-     * 2. 该格子上已有防御塔
+     * Determine whether a cell is blocked:
+     * 1. Path/obstacle/water (invalidTiles)
+     * 2. A tower already occupies this cell
      */
     static boolean isBlockedCell(int x, int y, IMapEditor mapEditor, ITerrainComponent terrain) {
         if (mapEditor == null || terrain == null) return false;
 
-        // === 1) 路径/障碍/水域 ===
+        // === 1) Path/obstacle/water ===
         Map<String, GridPoint2> invalidTiles = mapEditor.getInvalidTiles();
         if (invalidTiles != null && invalidTiles.containsKey(x + "," + y)) {
             return true;
         }
 
-        // === 2) 已有防御塔占用 ===
+        // === 2) Occupied by an existing tower ===
         var entityService = ServiceLocator.getEntityService();
         if (entityService != null) {
             Array<Entity> all = entityService.getEntitiesCopy();
@@ -69,7 +69,7 @@ final class HeroPlacementRules {
                 int ty = (int) Math.floor(pos.y / tileSize);
 
                 if (tx == x && ty == y) {
-                    // 建议换 logger，这里先保留输出方便你本地调试
+                    // Consider switching to a logger; println kept here for local debugging convenience
                     System.out.println("⚠️ Hero placement blocked: tower already at (" + x + "," + y + ")");
                     return true;
                 }
@@ -79,6 +79,3 @@ final class HeroPlacementRules {
         return false;
     }
 }
-
-
-

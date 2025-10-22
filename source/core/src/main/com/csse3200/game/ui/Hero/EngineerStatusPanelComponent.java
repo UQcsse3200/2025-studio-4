@@ -5,18 +5,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.csse3200.game.ui.Hero.BaseHeroStatusPanelComponent;
 
 /**
- * 工程师状态栏：
- * - 在基类基础上增加两块：Summon Capacity（已放置/最大）+ Summon Cooldown（倒计时）
- * - 监听事件：
+ * Engineer status panel:
+ * - Adds two sections on top of the base class: Summon Capacity (placed/max) + Summon Cooldown (countdown)
+ * - Listens to events:
  *   - summonAliveChanged(alive, max)
  *   - summon:cooldown(remaining, total)
  */
 public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
-    // 容量
+    // Capacity
     private Label aliveLabel;
     private ProgressBar aliveBar;
 
-    // 冷却
+    // Cooldown
     private Label cooldownLabel;
     private ProgressBar cooldownBar;
 
@@ -24,20 +24,20 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
         super(
                 hero,
                 heroName != null ? heroName : "Engineer",
-                new Color(0.15f, 0.15f, 0.18f, 0.90f), // 背景
-                Color.WHITE,                           // 文本
-                new Color(0.98f, 0.80f, 0.10f, 1f),    // 强调：工业黄
-                0.32f                                  // 面板高度略高一些
+                new Color(0.15f, 0.15f, 0.18f, 0.90f), // Background
+                Color.WHITE,                           // Text
+                new Color(0.98f, 0.80f, 0.10f, 1f),    // Accent: industrial yellow
+                0.32f                                  // Panel height slightly taller
         );
     }
     @Override
     public void create() {
         super.create();
-        // 把基类里初始化写死的“200”替换成占位符
+        // Replace the hardcoded “200” from the base class with a placeholder
         if (costLabel != null) {
             costLabel.setText("Upgrade cost: —");
         }
-        // 立刻按工程师组件的真实价格刷新一次
+        // Immediately refresh once using the engineer component’s actual price
         refreshUpgradeInfo();
     }
     @Override
@@ -45,14 +45,14 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
         var engUp = hero.getComponent(
                 com.csse3200.game.components.hero.engineer.EngineerUpgradeComponent.class);
 
-        if (engUp == null) { // 兜底：不是工程师就走基类逻辑
+        if (engUp == null) { // Fallback: if not an engineer, use base-class logic
             super.refreshUpgradeInfo();
             return;
         }
 
         int lvl   = engUp.getLevel();
         int maxLv = engUp.getMaxLevel();
-        int cost  = engUp.getNextCost(); // -1 表示无下一次（满级或异常）
+        int cost  = engUp.getNextCost(); // -1 means no next upgrade (max level or error)
 
         if (levelLabel != null) levelLabel.setText("Lv. " + lvl);
 
@@ -72,7 +72,7 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
             return;
         }
 
-        // 只显示价格数字
+        // Show only the numeric price
         if (costLabel != null) {
             costLabel.setText("Upgrade cost: " + cost);
             costLabel.setColor(textColor);
@@ -113,7 +113,7 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
 
     @Override
     protected void bindExtraListeners() {
-        // 容量：alive/max
+        // Capacity: alive/max
         hero.getEvents().addListener("summonAliveChanged", (Integer alive, Integer max) -> {
             if (alive == null || max == null || aliveBar == null || aliveLabel == null) return;
             int a = Math.max(0, alive);
@@ -126,7 +126,7 @@ public class EngineerStatusPanelComponent extends BaseHeroStatusPanelComponent {
             aliveLabel.setColor(full ? accentColor : textColor);
         });
 
-        // 冷却：remaining/total
+        // Cooldown: remaining/total
         hero.getEvents().addListener("summon:cooldown", (Float remaining, Float total) -> {
             if (remaining == null || total == null || cooldownBar == null || cooldownLabel == null) return;
             float rem = Math.max(0f, remaining);

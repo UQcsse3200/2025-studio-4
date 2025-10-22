@@ -14,16 +14,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 非阻挡的一次性接触伤害：每个目标（按 Entity）首次进入时结算一次伤害，之后不再命中。
- * 需要：本体具备 HitboxComponent(用于 overlap 事件)，可选 CombatStatsComponent（作为攻击者）。
+ * Non-blocking one-shot contact damage: each target (by Entity) takes damage once on first entry,
+ * and won't be hit again afterward.
+ * Requires: this entity has a HitboxComponent (for overlap events); optional CombatStatsComponent (as the attacker).
  */
 public class OneShotOverlapDamageComponent extends Component {
-    private final short targetMask;          // 例如 PhysicsLayer.NPC
-    private final int fallbackDamage;        // 若本体没有 CombatStats，用这个伤害值
+    private final short targetMask;          // e.g., PhysicsLayer.NPC
+    private final int fallbackDamage;        // If this entity lacks CombatStats, use this damage
     private HitboxComponent hitbox;
     private CombatStatsComponent myStats;
 
-    // 已命中的目标，防止重复结算
+    // Targets already hit to prevent repeated damage
     private final Set<Entity> alreadyHit = new HashSet<>();
 
     public OneShotOverlapDamageComponent(short targetMask, int fallbackDamage) {
@@ -45,7 +46,7 @@ public class OneShotOverlapDamageComponent extends Component {
         Entity target = ((BodyUserData) other.getBody().getUserData()).entity;
         if (target == null || alreadyHit.contains(target)) return;
 
-        // 结算一次伤害（按签名传“攻击者”的 CombatStatsComponent；没有就用临时的）
+        // Apply damage once (pass the attacker's CombatStatsComponent; if absent, use a temporary one)
         CombatStatsComponent attacker = (myStats != null)
                 ? myStats
                 : new CombatStatsComponent(1, fallbackDamage, DamageTypeConfig.None, DamageTypeConfig.None);

@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 武士攻击工具条（百分比定位版）
- * - 固定在屏幕右侧，位于 Hotbar 正下
- * - 三个按钮：居合斩(1) / 横扫斩(2) / 旋风斩(3)
- * - 点击触发 hero 事件 "ui:samurai:attack" -> "jab"/"sweep"/"spin"
+ * Samurai attack toolbar (percentage-based positioning)
+ * - Fixed to the right side of the screen, directly below the Hotbar
+ * - Three buttons: Iai Slash (1) / Sweeping Slash (2) / Whirlwind Slash (3)
+ * - Click to fire hero event "ui:samurai:attack" -> "jab"/"sweep"/"spin"
  */
 public class SamuraiAttackToolbarComponent extends Component {
     private final Entity hero;
@@ -31,17 +31,17 @@ public class SamuraiAttackToolbarComponent extends Component {
     private ImageButton btnJab, btnSweep, btnSpin;
     private Label lbl1, lbl2, lbl3;
 
-    // 如果后面你想做冷却 / 禁用，可通过这些状态刷新
+    // If you later add cooldown/disable logic, these states can be used to refresh UI
     private float cdRemaining = 0f;
     private boolean canAttack = true;
 
-    // ===== 与 Engineer 工具条一致的百分比参数（可按需调整）=====
+    // ===== Percentage parameters consistent with Engineer toolbar (adjust as needed) =====
     private static final float HOTBAR_HEIGHT_PCT = 0.28f;
     private static final float HOTBAR_BOTTOM_PCT = 0.5f + HOTBAR_HEIGHT_PCT * 0.5f;
     private static final float GAP_BELOW_HOTBAR_PCT = 0.00f;
 
     private static final float PANEL_WIDTH_PCT = 0.195f;
-    // 稍高一些给数字标签留空间
+    // Slightly taller to leave space for numeric labels
     private static final float BAR_HEIGHT_PCT = 0.06f;
     private static final float RIGHT_MARGIN_PCT = 0.0f;
 
@@ -55,8 +55,8 @@ public class SamuraiAttackToolbarComponent extends Component {
     @Override
     public void create() {
         stage = ServiceLocator.getRenderService().getStage();
-        font = new BitmapFont(); // 默认字体即可
-        font.getData().setScale(0.9f); // 适当缩小
+        font = new BitmapFont(); // Default font is fine
+        font.getData().setScale(0.9f); // Scale down a bit
 
         root = new Table();
         root.setFillParent(true);
@@ -67,9 +67,9 @@ public class SamuraiAttackToolbarComponent extends Component {
         Table bar = new Table();
         bar.setBackground(new TextureRegionDrawable(makeSolid(2, 2, new Color(0.15f, 0.15f, 0.18f, 0.85f))));
         bar.pad(Value.percentHeight(0.006f, root));
-        bar.defaults().padRight(Value.percentWidth(0.010f, root)); // 按钮间距
+        bar.defaults().padRight(Value.percentWidth(0.010f, root)); // Button spacing
 
-        // 三个“垂直单元”：图标按钮 + 下方数字标签
+        // Three “vertical units”: icon button + numeric label underneath
         btnJab   = makeIconButton("images/samurai/Stab.png");
         btnSweep = makeIconButton("images/samurai/Slash.png");
         btnSpin  = makeIconButton("images/samurai/Spin.png");
@@ -78,12 +78,12 @@ public class SamuraiAttackToolbarComponent extends Component {
         lbl2 = makeKeyLabel("2");
         lbl3 = makeKeyLabel("3");
 
-        // 点击事件 -> 通知武士攻击组件
+        // Click events -> notify samurai attack component
         btnJab.addListener(SimpleClick.on(() -> triggerAttack("jab")));
         btnSweep.addListener(SimpleClick.on(() -> triggerAttack("sweep")));
         btnSpin.addListener(SimpleClick.on(() -> triggerAttack("spin")));
 
-        // 每个“单元”用一个小 Table 装：上图标/下数字
+        // Each “unit” packed in a small Table: icon on top / number below
         bar.add(makeIconWithLabel(btnJab,  lbl1, bar)).left();
         bar.add(makeIconWithLabel(btnSweep,lbl2, bar)).left();
         bar.add(makeIconWithLabel(btnSpin, lbl3, bar)).left();
@@ -94,18 +94,18 @@ public class SamuraiAttackToolbarComponent extends Component {
 
         stage.addActor(root);
 
-        bindHeroEvents();       // 预留：如你后续发冷却/能否攻击事件，可自动禁用
-        refreshDisabledState(); // 初始状态
+        bindHeroEvents();       // Reserved: if you emit cooldown/can-attack events later, UI will auto-disable
+        refreshDisabledState(); // Initial state
     }
 
     private void bindHeroEvents() {
-        // 如果你在 Samurai 组件里触发这些事件，UI 就会联动
-        // 冷却：hero.getEvents().trigger("samurai:cooldown", remaining)
+        // If you trigger these events in the Samurai component, the UI will sync accordingly
+        // Cooldown: hero.getEvents().trigger("samurai:cooldown", remaining)
         hero.getEvents().addListener("samurai:cooldown", (Float remaining) -> {
             cdRemaining = remaining != null ? Math.max(0f, remaining) : 0f;
             refreshDisabledState();
         });
-        // 能否攻击：hero.getEvents().addListener("samurai:canAttack", (Boolean ok)->{...})
+        // Can attack: hero.getEvents().addListener("samurai:canAttack", (Boolean ok)->{...})
         hero.getEvents().addListener("samurai:canAttack", (Boolean ok) -> {
             canAttack = ok == null || ok;
             refreshDisabledState();
@@ -126,7 +126,7 @@ public class SamuraiAttackToolbarComponent extends Component {
     }
 
     private void triggerAttack(String type) {
-        // 这里可以做一次“虚拟询问”，如果你想：
+        // Optional “virtual ask” if you want:
         // boolean[] allow = new boolean[]{true};
         // hero.getEvents().trigger("samurai:canAttack?", allow);
         // if (!allow[0]) { hero.getEvents().trigger("ui:toast", "On cooldown"); return; }
@@ -140,7 +140,7 @@ public class SamuraiAttackToolbarComponent extends Component {
 
     private Table makeIconWithLabel(ImageButton btn, Label label, Table bar) {
         Table cell = new Table();
-        float iconSize = 0.58f; // 相对 bar 高度（给标签留空间）
+        float iconSize = 0.58f; // Relative to bar height (leaves space for label)
         cell.add(btn)
                 .size(Value.percentHeight(iconSize, bar), Value.percentHeight(iconSize, bar))
                 .row();
@@ -162,7 +162,7 @@ public class SamuraiAttackToolbarComponent extends Component {
     }
 
     private Label makeKeyLabel(String text) {
-        Label.LabelStyle ls = new Label.LabelStyle(font, Color.valueOf("C0F2FF")); // 赛博浅青
+        Label.LabelStyle ls = new Label.LabelStyle(font, Color.valueOf("C0F2FF")); // Cyber light-cyan
         Label lb = new Label(text, ls);
         lb.setAlignment(1); // center
         return lb;
@@ -186,7 +186,7 @@ public class SamuraiAttackToolbarComponent extends Component {
         toDispose.clear();
     }
 
-    /** 小工具：无参数点击监听器 */
+    /** Small utility: click listener with no parameters */
     private static final class SimpleClick extends com.badlogic.gdx.scenes.scene2d.utils.ClickListener {
         private final Runnable run;
         private SimpleClick(Runnable r) { this.run = r; }

@@ -20,20 +20,20 @@ import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 
 /**
- * 右侧中部的英雄热键栏（百分比布局版）。
- * - 宽/高/边距使用 Value.percentWidth/percentHeight
- * - 始终位于右侧，垂直居中
- * - 仅显示当前已选英雄的图标按钮，点击可调用 HeroPlacementComponent 进行放置/取消
+ * Hero hotbar in the middle-right of the screen (percentage-based layout).
+ * - Uses Value.percentWidth/percentHeight for width/height/margins
+ * - Always on the right side, vertically centered
+ * - Shows only the currently selected hero's icon button; clicking calls HeroPlacementComponent to place/cancel
  */
 public class HeroHotbarDisplay extends UIComponent {
     private Table rootTable;
     private Skin uiSkin;
     private HeroPlacementComponent placement;
 
-    // 背景纹理（手动创建，需要释放）
+    // Background texture (manually created, must be disposed)
     private Texture bgTexture;
 
-    // 图标纹理（需要释放）
+    // Icon textures (must be disposed)
     private Texture engTex;
     private Texture samTex;
     private Texture defTex;
@@ -49,21 +49,21 @@ public class HeroHotbarDisplay extends UIComponent {
         placement = entity.getComponent(HeroPlacementComponent.class);
         uiSkin = skin;
 
-        // ===== 1) 根表填满舞台，用于百分比定位 =====
+        // ===== 1) Root table fills the stage for percentage-based positioning =====
         rootTable = new Table();
         rootTable.setFillParent(true);
         stage.addActor(rootTable);
 
-        // ===== 2) 背景容器（半透明深色）=====
+        // ===== 2) Background container (semi-transparent dark) =====
         bgTexture = buildSolidTexture(new Color(0.15f, 0.15f, 0.18f, 0.9f));
         Drawable bgDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
         Container<Table> container = new Container<>();
         container.setBackground(bgDrawable);
-        // 可按需要用百分比 padding：但这里我们用外层单元格的 padRight 来控制与屏幕右侧的距离
+        // You can use percentage padding if needed; here we use the outer cell's padRight to control distance from the right edge
         // container.pad(Value.percentWidth(0.006f, rootTable));
 
-        // ===== 3) 内容：标题 + 图标按钮（仅显示已选英雄）=====
+        // ===== 3) Content: title + icon button (only the selected hero) =====
         Table content = new Table();
 
         Label title = new Label("HERO", uiSkin, "title");
@@ -73,14 +73,14 @@ public class HeroHotbarDisplay extends UIComponent {
                 .padBottom(Value.percentHeight(0.02f, rootTable))
                 .row();
 
-        // 图标按钮区域（只放一个按钮）
+        // Icon button area (only one button)
         Table btnTable = new Table();
         ImageButton chosenBtn = buildChosenHeroButton();
-        // 按钮尺寸也用百分比，基于 rootTable（舞台）或 content 都可以；
-        // 这里直接基于 rootTable，使得在不同分辨率下更稳定：
+        // Button size also uses percentages, based on rootTable (stage) or content;
+        // here we base it on rootTable for more stable behavior across resolutions:
         btnTable.add(chosenBtn)
-                .width(Value.percentWidth(0.08f, rootTable))   // 按钮宽 = 屏幕宽的 8%
-                .height(Value.percentHeight(0.12f, rootTable))  // 按钮高 = 屏幕高的 12%
+                .width(Value.percentWidth(0.08f, rootTable))   // button width = 8% of screen width
+                .height(Value.percentHeight(0.12f, rootTable)) // button height = 12% of screen height
                 .center();
 
         ScrollPane sp = new ScrollPane(btnTable, uiSkin);
@@ -91,36 +91,36 @@ public class HeroHotbarDisplay extends UIComponent {
 
         container.setActor(content);
 
-        // ===== 4) 把容器放到右侧中部（百分比宽高 + 右侧边距）=====
+        // ===== 4) Place the container at the middle-right (percentage width/height + right margin) =====
         rootTable.add(container)
                 .width(Value.percentWidth(0.195f, rootTable))
-                .height(Value.percentHeight(0.28f, rootTable))   // 面板高 = 屏幕高的 28%
-                .expand()                                        // 占据可用空间（让对齐生效）
-                .align(Align.right)                              // 水平贴右，垂直默认居中
+                .height(Value.percentHeight(0.28f, rootTable))   // panel height = 28% of screen height
+                .expand()                                        // occupy available space (enables alignment)
+                .align(Align.right)                              // horizontally flush right, vertically centered by default
                 .padRight(Value.percentWidth(0f, rootTable));
 
-        // 如果想让它在垂直方向略微上移/下移，可在这里加 padTop/padBottom 的百分比：
+        // If you want to nudge it up/down vertically, add percentage padTop/padBottom here:
         // .padTop(Value.percentHeight(0.03f, rootTable))
         // .padBottom(Value.percentHeight(0.01f, rootTable))
 
-        applyUiScale(); // 维持你原先的 UI 缩放逻辑
+        applyUiScale(); // Keep your existing UI scale logic
         GameStateService gs = ServiceLocator.getGameStateService();
 
-// 皮肤变化：如果变的是当前选中英雄，就刷新热键图标
+        // Skin change: if the skin changed for the currently selected hero, refresh the hotbar icon
         unsubSkinChanged = gs.onSkinChanged((who, newSkin) -> {
             if (gs.getSelectedHero() == who) {
-                refreshChosenHeroIcon(); // 只换图，不重建按钮
+                refreshChosenHeroIcon(); // swap only the image, don't rebuild the button
             }
         });
 
-// 选中英雄变化：重建按钮（图标与点击逻辑一起变）
+        // Selected-hero change: rebuild the button (icon and click logic together)
         unsubSelectedHeroChanged = gs.onSelectedHeroChanged(nowSelected -> {
-            rebuildChosenHeroButton();   // 重建 UI 上的按钮
+            rebuildChosenHeroButton();   // rebuild the button in the UI
         });
     }
 
     /**
-     * 根据当前 GameStateService 选择的英雄，创建对应的图标按钮并挂载点击逻辑。
+     * Create the icon button for the hero currently selected in GameStateService, and attach its click logic.
      */
     private ImageButton buildChosenHeroButton() {
         GameStateService gs = ServiceLocator.getGameStateService();
@@ -130,7 +130,7 @@ public class HeroHotbarDisplay extends UIComponent {
         String skinKey = (gs != null) ? gs.getSelectedSkin(chosen) : "default";
         String iconPath = HeroSkinAtlas.body(chosen, skinKey);
 
-        // 建议用 ResourceService 避免重复 new Texture
+        // Prefer ResourceService to avoid repeatedly new'ing Textures
         var rs = ServiceLocator.getResourceService();
         Texture tex = rs.getAsset(iconPath, Texture.class);
         if (tex == null) {
@@ -141,7 +141,7 @@ public class HeroHotbarDisplay extends UIComponent {
 
         ImageButton btn = new ImageButton(new TextureRegionDrawable(new TextureRegion(tex)));
 
-        // 点击回调（保持你原来的逻辑）
+        // Click callback (keep your original logic)
         switch (chosen) {
             case ENGINEER -> addHeroClick(btn, "engineer");
             case SAMURAI  -> addHeroClick(btn, "samurai");
@@ -152,17 +152,17 @@ public class HeroHotbarDisplay extends UIComponent {
 
 
     /**
-     * 点击回调：请求/取消放置对应英雄。
+     * Click callback: request/cancel placement for the corresponding hero.
      */
     private void addHeroClick(ImageButton btn, String heroType) {
         btn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (placement != null) {
-                    // 再次点击同类型会在 HeroPlacementComponent 内部切换为取消
+                    // Clicking again on the same type toggles cancel inside HeroPlacementComponent
                     placement.requestPlacement(heroType);
                 } else {
-                    // 兜底事件（如果没挂载组件）
+                    // Fallback event (if the component isn't attached)
                     entity.getEvents().trigger("heroPlacement:request", heroType);
                 }
             }
@@ -170,7 +170,7 @@ public class HeroHotbarDisplay extends UIComponent {
     }
 
     /**
-     * 应用用户设置中的 UI 缩放。
+     * Apply UI scale from user settings.
      */
     private void applyUiScale() {
         UserSettings.Settings st = UserSettings.get();
@@ -183,7 +183,7 @@ public class HeroHotbarDisplay extends UIComponent {
     }
 
     /**
-     * 工具：创建纯色纹理（用作半透明背景）
+     * Utility: create a solid-color texture (used for semi-transparent background).
      */
     private Texture buildSolidTexture(Color color) {
         Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -195,14 +195,14 @@ public class HeroHotbarDisplay extends UIComponent {
     }
 
     /**
-     * 工具：安全加载纹理（出现问题时返回 1x1 的透明纹理，避免 NPE）
+     * Utility: safely load a texture (returns a 1x1 transparent texture on failure to avoid NPE).
      */
     private Texture safeLoad(String path) {
         try {
             return new Texture(Gdx.files.internal(path));
         } catch (Exception e) {
             Gdx.app.error("HeroHotbarDisplay", "Failed to load texture: " + path, e);
-            // fallback：透明像素
+            // fallback: transparent pixel
             Pixmap pm = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
             pm.setColor(0, 0, 0, 0);
             pm.fill();
@@ -221,7 +221,7 @@ public class HeroHotbarDisplay extends UIComponent {
         String skinKey = gs.getSelectedSkin(chosen);
         String iconPath = HeroSkinAtlas.body(chosen, skinKey);
 
-        Texture tex = safeLoad(iconPath); // 或用 ResourceService 方案
+        Texture tex = safeLoad(iconPath); // or use the ResourceService path
         chosenBtn.getStyle().imageUp = new TextureRegionDrawable(new TextureRegion(tex));
         chosenBtn.invalidateHierarchy();
     }
@@ -244,7 +244,7 @@ public class HeroHotbarDisplay extends UIComponent {
 
     @Override
     public void draw(SpriteBatch batch) {
-        // UI 用 Stage 渲染，这里无需额外绘制
+        // UI is rendered by Stage; nothing extra to draw here
     }
 
     @Override
@@ -253,7 +253,7 @@ public class HeroHotbarDisplay extends UIComponent {
         try { if (unsubSkinChanged != null) unsubSkinChanged.close(); } catch (Exception ignore) {}
         try { if (unsubSelectedHeroChanged != null) unsubSelectedHeroChanged.close(); } catch (Exception ignore) {}
 
-        // 释放手动创建/加载的纹理
+        // Dispose of manually created/loaded textures
         if (bgTexture != null) { bgTexture.dispose(); bgTexture = null; }
         if (engTex != null) { engTex.dispose(); engTex = null; }
         if (samTex != null) { samTex.dispose(); samTex = null; }

@@ -1014,12 +1014,6 @@ public class ForestGameArea extends GameArea {
 
         spawnEntityAt(hero, cell, true, true);
 
-        // 6️⃣ 一次性提示窗口
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(hero).showOnceOn(stage);
-            heroHintShown = true;
-        }
 
     }
 
@@ -1067,12 +1061,6 @@ public class ForestGameArea extends GameArea {
         // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
 
-        // 6) 一次性提示
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(engineer).showOnceOn(stage);
-            heroHintShown = true;
-        }
     }
 
     private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
@@ -1144,12 +1132,6 @@ public class ForestGameArea extends GameArea {
         // 6) 放置
         spawnEntityAt(samurai, cell, true, true);
 
-        // 7) 一次性提示
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
-            heroHintShown = true;
-        }
     }
 
     private void createHeroPlacementUI() {

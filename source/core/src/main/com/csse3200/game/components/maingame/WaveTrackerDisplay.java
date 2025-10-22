@@ -250,29 +250,31 @@ public class WaveTrackerDisplay extends UIComponent {
 
     /**
      * Update the color of the wave number and progress bar based on progression
-     * Uses grey/white theme, with red for boss wave
+     * WAVE and / text stay white, wave number is light blue (or red for boss wave)
      */
     private void updateWaveColor() {
-        Color textColor;
+        Color waveNumberColor;
         Color progressColor;
         Color borderColor;
 
         if (currentWave == totalWaves) {
-            // Boss wave - Red theme
-            textColor = new Color(1f, 0.2f, 0.2f, 1f);
+            // Boss wave - Red theme for wave number
+            waveNumberColor = new Color(1f, 0.2f, 0.2f, 1f);
             progressColor = new Color(0.95f, 0.2f, 0.2f, 1f);
             borderColor = new Color(0.8f, 0.1f, 0.1f, 0.6f);
         } else {
-            // Normal waves - Grey/White theme
-            textColor = Color.WHITE;
+            // Normal waves - Light blue for wave number
+            waveNumberColor = new Color(0.5f, 0.7f, 1f, 1f); // Light blue
             progressColor = new Color(0.9f, 0.9f, 0.9f, 1f);
             borderColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
         }
 
-        // Set all label font colors by updating their styles
-        waveLabel.getStyle().fontColor = textColor;
-        waveNumberLabel.getStyle().fontColor = textColor;
-        totalLabel.getStyle().fontColor = textColor;
+        // WAVE and / text always stay white
+        waveLabel.getStyle().fontColor = Color.WHITE;
+        totalLabel.getStyle().fontColor = Color.WHITE;
+
+        // Wave number changes color based on wave
+        waveNumberLabel.getStyle().fontColor = waveNumberColor;
 
         // Update progress bar color
         ProgressBar.ProgressBarStyle style = progressBar.getStyle();

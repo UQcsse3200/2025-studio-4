@@ -36,6 +36,7 @@ import com.csse3200.game.components.towers.StatsBoostComponent;
 
 import java.util.Map;
 import java.util.EnumMap;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 
 /**
  * UI component for displaying and upgrading towers.
@@ -59,6 +60,12 @@ public class TowerUpgradeMenu extends UIComponent {
     private Label sellRefundLabel; // <-- shows refund amount under "Sell"
     private Image sellRefundIcon;  // <-- currency icon under "Sell"
     private Table sellRefundRow;   // <-- container for icon + amount
+
+    // NEW fields to support dynamic sizing
+    private TextButton sellButton;            // promoted from local to field
+    private Label sellLabel;                  // label "Sell Tower" promoted to field
+    private Container<Table> container;       // store container so we can adjust width
+    private Cell<Container<Table>> containerCell;        // store cell used to set width/height
 
     private static final CurrencyType UPGRADE_CURRENCY = CurrencyType.METAL_SCRAP;
     private static final Color GREYED_OUT_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.6f);
@@ -112,7 +119,7 @@ public class TowerUpgradeMenu extends UIComponent {
         bgTexture = buildSolidTexture(new Color(0.10f, 0.10f, 0.12f, 0.95f));
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
-        Container<Table> container = new Container<>();
+        container = new Container<>();
         container.setBackground(backgroundDrawable);
         container.pad(10);
 
@@ -129,7 +136,8 @@ public class TowerUpgradeMenu extends UIComponent {
         pathAButton = new TextButton("", skin);
         pathATable.add(pathATitleLabel).row();
         pathATable.add(pathALevelLabel).row();
-        pathATable.add(pathAButton).width(180).row();
+        // removed fixed width to allow dynamic sizing
+        pathATable.add(pathAButton).row();
 
         // Make Path A button background dark grey
         {
@@ -148,7 +156,8 @@ public class TowerUpgradeMenu extends UIComponent {
         pathBButton = new TextButton("", skin);
         pathBTable.add(pathBTitleLabel).row();
         pathBTable.add(pathBLevelLabel).row();
-        pathBTable.add(pathBButton).width(180).row();
+        // removed fixed width to allow dynamic sizing
+        pathBTable.add(pathBButton).row();
 
         // Make Path B button background dark grey
         {
@@ -158,7 +167,7 @@ public class TowerUpgradeMenu extends UIComponent {
         }
 
         // --- Sell button (placed to the right of upgrades) ---
-        TextButton sellButton = new TextButton("Sell", skin);
+        sellButton = new TextButton("Sell", skin);
         sellButton.getLabel().setColor(Color.WHITE); // button text white
         // Tint sell button background dark grey
         {
@@ -168,7 +177,7 @@ public class TowerUpgradeMenu extends UIComponent {
         }
         Table sellTable = new Table(skin);
         sellTable.defaults().pad(5);
-        Label sellLabel = new Label("Sell Tower", skin);
+        sellLabel = new Label("Sell Tower", skin);
         sellLabel.setColor(Color.WHITE); // was RED
         sellTable.add(sellLabel).row();
 
@@ -183,7 +192,8 @@ public class TowerUpgradeMenu extends UIComponent {
         sellTable.add(sellRefundRow).row();
 
         // Add sell button
-        sellTable.add(sellButton).width(160).row();
+        // removed fixed width to allow dynamic sizing
+        sellTable.add(sellButton).row();
 
         // --- Sell button listener ---
         sellButton.addListener(new ClickListener() {
@@ -268,7 +278,8 @@ public class TowerUpgradeMenu extends UIComponent {
 
         container.pad(8);
         rootTable.clearChildren();
-        rootTable.add(container)
+        // store the cell so we can change width dynamically later
+        containerCell = rootTable.add(container)
                 .width(desiredWidth)
                 .height(desiredHeight)
                 .center()
@@ -652,6 +663,13 @@ public class TowerUpgradeMenu extends UIComponent {
             // Reset titles to defaults when nothing selected
             if (pathATitleLabel != null) pathATitleLabel.setText("Damage & Range");
             if (pathBTitleLabel != null) pathBTitleLabel.setText("Cooldown & Speed");
+            // When nothing selected ensure container returns to a default min width
+            if (containerCell != null) {
+                float screenW = Gdx.graphics.getWidth();
+                float defaultW = Math.max(480f, Math.min(screenW * 0.45f, 700f));
+                containerCell.width(defaultW);
+                rootTable.invalidateHierarchy();
+            }
             return;
         }
 
@@ -783,12 +801,14 @@ public class TowerUpgradeMenu extends UIComponent {
 
         // Path A
         pathAButton.clearChildren();
+        int computedCostA = 0;
         if (levelA >= maxLevelA) {
             setButtonCenteredText(pathAButton, "MAX");
             pathAButton.setDisabled(true);
             pathAButton.setColor(NORMAL_COLOR);
         } else {
             int costA = (upgradesA != null && upgradesA.containsKey(nextLevelA)) ? upgradesA.get(nextLevelA).cost : 0;
+            computedCostA = costA;
             boolean canAffordA = canAffordCost(costA, displayCurrency);
             setupButtonContentWithAffordability(pathAButton, costA, displayCurrency, canAffordA);
             // Inline affordability state
@@ -798,6 +818,7 @@ public class TowerUpgradeMenu extends UIComponent {
 
         // Path B
         pathBButton.clearChildren();
+        int computedCostB = 0;
         if (levelB >= maxLevelB) {
             setButtonCenteredText(pathBButton, "MAX");
             pathBButton.setDisabled(true);
@@ -806,11 +827,7 @@ public class TowerUpgradeMenu extends UIComponent {
             if ("bank".equalsIgnoreCase(currentTowerType)) {
                 int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
                         ? upgradesB.get(nextLevelB).cost : 0;
-                // We still set the title text to reflect what unlocks next, but the icon on the button
-                // must show the COST currency (Titanium Core), not the unlocked currency.
-                // CurrencyType unlockCurrency = nextLevelB == 2 ? CurrencyType.TITANIUM_CORE
-                //         : nextLevelB == 3 ? CurrencyType.NEUROCHIP
-                //         : displayCurrency;
+                computedCostB = costB;
                 boolean canAffordB = canAffordCost(costB, displayCurrency);
                 // CHANGED: pass displayCurrency (cost currency) so the icon shows Titanium Core
                 setupButtonContentWithAffordability(pathBButton, costB, displayCurrency, canAffordB);
@@ -820,12 +837,64 @@ public class TowerUpgradeMenu extends UIComponent {
             } else {
                 int costB = (upgradesB != null && upgradesB.containsKey(nextLevelB))
                         ? upgradesB.get(nextLevelB).cost : 0;
+                computedCostB = costB;
                 boolean canAffordB = canAffordCost(costB, displayCurrency);
                 setupButtonContentWithAffordability(pathBButton, costB, displayCurrency, canAffordB);
                 // Inline affordability state
                 pathBButton.setDisabled(!canAffordB);
                 pathBButton.setColor(canAffordB ? NORMAL_COLOR : GREYED_OUT_COLOR);
             }
+        }
+
+        // --- Dynamic width calculation to ensure consistent padding between content and bar edge ---
+        // Section padding on each side of content (keeps the gap consistent across towers)
+        final float sectionPadding = 12f;
+        final float iconSize = 24f;
+        final float iconPadRight = 5f;
+        // Create temporary labels using same skin to measure widths of numeric cost texts / button text
+        Label tmpCostALabel = new Label(String.valueOf(Math.max(0, computedCostA)), skin);
+        tmpCostALabel.setColor(Color.WHITE);
+        Label tmpCostBLabel = new Label(String.valueOf(Math.max(0, computedCostB)), skin);
+        tmpCostBLabel.setColor(Color.WHITE);
+        Label tmpSellRefundLabel = new Label(sellRefundLabel != null ? sellRefundLabel.getText().toString() : "0", skin);
+        tmpSellRefundLabel.setColor(Color.WHITE);
+        Label tmpSellButtonLabel = new Label("Sell", skin);
+        tmpSellButtonLabel.setColor(Color.WHITE);
+
+        float titleAWidth = pathATitleLabel != null ? pathATitleLabel.getPrefWidth() : 0f;
+        float levelAWidth = pathALevelLabel != null ? pathALevelLabel.getPrefWidth() : 0f;
+        float buttonAContentWidth = iconSize + iconPadRight + tmpCostALabel.getPrefWidth() + 8f; // +8 safety
+        float sectionAWidth = Math.max(titleAWidth, Math.max(levelAWidth, buttonAContentWidth)) + 2f * sectionPadding;
+
+        float titleBWidth = pathBTitleLabel != null ? pathBTitleLabel.getPrefWidth() : 0f;
+        float levelBWidth = pathBLevelLabel != null ? pathBLevelLabel.getPrefWidth() : 0f;
+        float buttonBContentWidth = iconSize + iconPadRight + tmpCostBLabel.getPrefWidth() + 8f; // +8 safety
+        float sectionBWidth = Math.max(titleBWidth, Math.max(levelBWidth, buttonBContentWidth)) + 2f * sectionPadding;
+
+        float sellTitleWidth = sellLabel != null ? sellLabel.getPrefWidth() : 0f;
+        float sellButtonContentWidth = tmpSellButtonLabel.getPrefWidth() + 12f; // some breathing room
+        float sellRefundWidth = iconSize + iconPadRight + tmpSellRefundLabel.getPrefWidth();
+        float sectionSellWidth = Math.max(sellTitleWidth, Math.max(sellButtonContentWidth, sellRefundWidth)) + 2f * sectionPadding;
+
+        // Inter-column spacing mirrors how content was constructed: padRight(20) between A-B and B-Sell
+        final float interColumnSpacing = 20f + 20f; // A->B + B->Sell
+        // Container padding (we set container.pad(8) in create)
+        final float containerPad = 8f;
+        float totalWidth = containerPad * 2f + sectionAWidth + sectionBWidth + sectionSellWidth + interColumnSpacing;
+
+        // Enforce the same minimum width behaviour as before
+        float screenW = Gdx.graphics.getWidth();
+        float minWidth = Math.max(480f, Math.min(screenW * 0.45f, 700f));
+        if (totalWidth < minWidth) totalWidth = minWidth;
+
+        // Apply to container cell so the whole bar resizes
+        if (containerCell != null) {
+            // preserve previous desired height; query current preferred/actual height if needed
+            float currHeight = containerCell.getPrefHeight();
+            containerCell.width(totalWidth);
+            // keep height as before (use pref height set earlier)
+            containerCell.height(currHeight > 0 ? currHeight : Math.min(Gdx.graphics.getHeight() * 0.18f, 170f));
+            rootTable.invalidateHierarchy();
         }
     }
 

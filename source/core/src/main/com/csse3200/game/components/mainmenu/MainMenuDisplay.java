@@ -53,10 +53,10 @@ public class MainMenuDisplay extends UIComponent {
     TextButton loadBtn = new TextButton("Continue", customButtonStyle);
     TextButton exitBtn = new TextButton("Exit", customButtonStyle);
 
-    ImageButton settingsBtn = createImageButton("images/settings.png", "Settings");
-    ImageButton bookBtn = createImageButton("images/book.png", "Book");
-    ImageButton storyBtn = createImageButton("images/story.png", "Story"); // Using same image for story
-    ImageButton rankingBtn = createImageButton("images/rank.png", "Ranking");
+    ImageButton settingsBtn = createImageButton("images/cogwheel2-modified.png", "Settings");
+    ImageButton bookBtn = createImageButton("images/book-modified.png", "Book");
+    ImageButton storyBtn = createImageButton("images/story3-modified.png", "Story"); // Using same image for story
+    ImageButton rankingBtn = createImageButton("images/rank-modified.png", "Ranking");
 
     float buttonWidth = 200f;
     float buttonHeight = 50f;

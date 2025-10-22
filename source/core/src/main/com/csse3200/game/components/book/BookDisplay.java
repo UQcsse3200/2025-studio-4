@@ -222,22 +222,23 @@ public class BookDisplay extends UIComponent {
             String lockedValue = stats.get(DeckComponent.StatType.LOCKED);
             boolean isLocked = lockedValue != null && lockedValue.equals("true");
             
-            // 始终使用成就的图标，不管是否锁定
-            buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), !isLocked);
+            // 始终使用成就的图标，不管是否锁定，且所有成就都可点击
+            buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), true);
             button = new TextButton("", buttonStyle);
             
             // 如果锁定，添加半透明效果
             if (isLocked) {
-                button.setColor(1f, 1f, 1f, 0.4f); // 40% 透明度
-            } else {
-                button.addListener(new ChangeListener() {
-                    @Override
-                    public void changed(ChangeEvent changeEvent, Actor actor) {
-                        logger.debug("Button inside bookPage clicked");
-                        entity.getEvents().trigger(eventName, currentDeck);
-                    }
-                });
+                button.setColor(1f, 1f, 1f, 0.4f); // 40% 透明度表示锁定状态
             }
+            
+            // 所有成就都可以点击查看详情
+            button.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent changeEvent, Actor actor) {
+                    logger.debug("Button inside bookPage clicked");
+                    entity.getEvents().trigger(eventName, currentDeck);
+                }
+            });
 
             // Wrap button with a bordered table
             Table borderedButton = new Table();

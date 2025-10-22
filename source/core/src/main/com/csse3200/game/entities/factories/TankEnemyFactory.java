@@ -41,7 +41,7 @@ public class TankEnemyFactory {
     private static final String TANK_DEATH_SOUND = "sounds/Enemy Sounds/tank/Tank_Death.mp3";
     private static final String TANK_AMBIENT_SOUND = "sounds/Enemy Sounds/tank/Tank_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
-    CurrencyType.METAL_SCRAP, 150,
+    CurrencyType.METAL_SCRAP, 75,
     CurrencyType.TITANIUM_CORE, 100,
     CurrencyType.NEUROCHIP, 50
     );

@@ -48,9 +48,9 @@ public class SpeederEnemyFactory {
     private static final String SPEEDSTER_DEATH_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Death.mp3";
     private static final String SPEEDSTER_AMBIENT_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
-    CurrencyType.METAL_SCRAP, 200,
+    CurrencyType.METAL_SCRAP, 100,
     CurrencyType.TITANIUM_CORE, 100,
-    CurrencyType.NEUROCHIP, 25
+    CurrencyType.NEUROCHIP, 75
     );
     private static final int DEFAULT_POINTS = 400;  // Double points for mini-boss
     private static final float SPEED_EPSILON = 0.001f;

@@ -18,10 +18,16 @@ public class EnemySoundComponent extends Component {
     private Sound deathSound;
     private Sound ambientSound;
     private Sound bossMusic;
+
+    // Store active sound IDs
+    private long walkSoundId = -1;
+    private long walkSound2Id = -1;
+    private long attackSoundId = -1;
+    private long ambientSoundId = -1;
     
     private float lastAmbientSound = 0f;
     private static final float MIN_AMBIENT_DELAY = 5f; // Minimum seconds between ambient sounds
-    private static final float AMBIENT_CHANCE = 0.01f; // 1% chance per frame when checked
+    private static final float AMBIENT_CHANCE = 0.001f; // 1% chance per frame when checked
     
     private boolean isBoss = false;
     private long bossMusicId = -1;
@@ -60,22 +66,19 @@ public class EnemySoundComponent extends Component {
         this.isBoss = true;
     }
 
-    @Override
+@Override
     public void create() {
-        // Hook into the SAME events as EnemyAnimationController
         entity.getEvents().addListener("chaseStart", this::playWalkSound);
         entity.getEvents().addListener("attackStart", this::playAttackSound);
         entity.getEvents().addListener("entityDeath", this::playDeathSound);
         
-        // Start boss music if this is a boss
         if (isBoss && bossMusic != null) {
-            bossMusicId = bossMusic.loop(0.7f); // Play at 70% volume
+            bossMusicId = bossMusic.loop(0.7f);
         }
     }
 
     @Override
     public void update() {
-        // Random chance to play ambient sound if enough time has passed
         if (ambientSound != null) {
             float currentTime = ServiceLocator.getTimeSource().getTime();
             if (currentTime - lastAmbientSound >= MIN_AMBIENT_DELAY && MathUtils.random() < AMBIENT_CHANCE) {
@@ -87,13 +90,20 @@ public class EnemySoundComponent extends Component {
 
     private void playWalkSound() {
         if (walkSound != null) {
-            walkSound.play(0.3f); // Walk sounds at 30% volume
-            // If this is a boss with two walk sounds
+            // Stop previous walk sound if still playing
+            if (walkSoundId != -1) {
+                walkSound.stop(walkSoundId);
+            }
+            walkSoundId = walkSound.play(0.3f);
+            
             if (walkSound2 != null) {
                 Timer.schedule(new Timer.Task() {
                     @Override
                     public void run() {
-                        walkSound2.play(0.3f);
+                        if (walkSound2Id != -1) {
+                            walkSound2.stop(walkSound2Id);
+                        }
+                        walkSound2Id = walkSound2.play(0.3f);
                     }
                 }, walkSound1Duration);
             }
@@ -102,36 +112,68 @@ public class EnemySoundComponent extends Component {
 
     private void playAttackSound() {
         if (attackSound != null) {
-            attackSound.play(0.8f); // Attack sounds at 80% volume
+            // Stop previous attack sound if still playing
+            if (attackSoundId != -1) {
+                attackSound.stop(attackSoundId);
+            }
+            attackSoundId = attackSound.play(0.8f);
         }
     }
 
     private void playDeathSound() {
-        // Only play death sound once
         if (hasPlayedDeathSound) {
             return;
         }
         hasPlayedDeathSound = true;
         
-        if (deathSound != null) {
-            deathSound.play(0.5f); // Death sound at 50% volume
-        }
+        // Stop all currently playing sounds
+        stopAllSounds();
         
-        // Stop boss music if this was a boss
-        if (isBoss && bossMusic != null && bossMusicId != -1) {
-            bossMusic.stop(bossMusicId);
+        // Then play the death sound
+        if (deathSound != null) {
+            //deathSound.play(0.5f);
         }
     }
 
     private void playAmbientSound() {
         if (ambientSound != null) {
-            ambientSound.play(0.4f); // Ambient sounds at 40% volume
+            if (ambientSoundId != -1) {
+                ambientSound.stop(ambientSoundId);
+            }
+            ambientSoundId = ambientSound.play(0.1f);
         }
     }
 
     /**
-     * Set a second walk sound that will play after the first one (for boss)
+     * Stop all currently playing sounds for this enemy
      */
+    private void stopAllSounds() {
+        if (walkSound != null && walkSoundId != -1) {
+            walkSound.stop(walkSoundId);
+            walkSoundId = -1;
+        }
+        
+        if (walkSound2 != null && walkSound2Id != -1) {
+            walkSound2.stop(walkSound2Id);
+            walkSound2Id = -1;
+        }
+        
+        if (attackSound != null && attackSoundId != -1) {
+            attackSound.stop(attackSoundId);
+            attackSoundId = -1;
+        }
+        
+        if (ambientSound != null && ambientSoundId != -1) {
+            ambientSound.stop(ambientSoundId);
+            ambientSoundId = -1;
+        }
+        
+        if (isBoss && bossMusic != null && bossMusicId != -1) {
+            bossMusic.stop(bossMusicId);
+            bossMusicId = -1;
+        }
+    }
+
     public void setSecondWalkSound(Sound walkSound2, float walkSound1Duration) {
         this.walkSound2 = walkSound2;
         this.walkSound1Duration = walkSound1Duration;
@@ -139,11 +181,6 @@ public class EnemySoundComponent extends Component {
 
     @Override
     public void dispose() {
-        if (isBoss && bossMusic != null && bossMusicId != -1) {
-            bossMusic.stop(bossMusicId);
-        }
-        if (walkSound2 != null) {
-            walkSound2.dispose();
-        }
+        stopAllSounds();
     }
 }

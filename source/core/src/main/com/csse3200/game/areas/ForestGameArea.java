@@ -80,7 +80,7 @@ public class ForestGameArea extends GameArea {
     private List<List<Entity>> waypointLists;
 
     private Entity waveTrackerUI;
-    private static final int TOTAL_WAVES = 5;
+    private int TOTAL_WAVES;
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
@@ -201,20 +201,27 @@ public class ForestGameArea extends GameArea {
 
         waves = new ArrayList<>();
 
-        // Wave 1: Basic enemies
-        waves.add(new Wave(1, 5, 1, 0, 0, 0, 0, 3.0f, waypointLists));
+        waves.add(new Wave(1, 5, 3, 0, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 2: Introduce speeders
-        waves.add(new Wave(2, 8, 3, 0, 0, 0, 2, 2.0f, waypointLists));
+        waves.add(new Wave(2, 0, 10, 0, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 3: More variety
-        waves.add(new Wave(3, 10, 5, 2, 0, 0, 3, 2.0f, waypointLists));
+        waves.add(new Wave(3, 8, 0, 5, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 4: Dividers appear
-        waves.add(new Wave(4, 8, 6, 3, 0, 1, 2, 1.5f, waypointLists));
+        waves.add(new Wave(4, 0, 5, 3, 0, 1, 0, 2.0f, waypointLists));
 
-        // Wave 5: Final wave with boss
-        waves.add(new Wave(5, 10, 8, 4, 1, 1, 4, 1.2f, waypointLists));
+        waves.add(new Wave(5, 5, 0, 0, 0, 1, 2, 2.0f, waypointLists));
+
+        waves.add(new Wave(6, 15, 5, 0, 0, 0, 0, 2.0f, waypointLists));
+
+        waves.add(new Wave(7, 5, 5, 5, 0, 2, 2, 1.0f, waypointLists));
+
+        waves.add(new Wave(8, 3, 2, 5, 0, 5, 3, 1.0f, waypointLists));
+
+        waves.add(new Wave(9, 5, 5, 5, 0, 0, 0, 1.0f, waypointLists));
+
+        waves.add(new Wave(10, 20, 15, 10, 2, 5, 5, 0.5f, waypointLists));
+
+        TOTAL_WAVES = waves.size();
     }
 
     private void initializeSpawnCallbacks() {
@@ -315,9 +322,9 @@ public class ForestGameArea extends GameArea {
             // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
 
-            if (waveTrackerUI != null) {
-                waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
-            }
+            // if (waveTrackerUI != null) {
+            //     waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+            // }
 
             // Notify UI that current wave is complete (re-enable button)
             if (MainGameScreen.ui != null) {
@@ -1173,13 +1180,13 @@ public class ForestGameArea extends GameArea {
                             showTowerUI();
 
                             // Spawn wave tracker after dialogue completes
-                            spawnWaveTracker();
-                            createHeroPlacementUI();
-                            playMusic();
-
                             if (waves == null) {
                                 initializeWaves();
                             }
+
+                            spawnWaveTracker();
+                            createHeroPlacementUI();
+                            playMusic();
                         })
         );
         spawnEntity(dialogueEntity);

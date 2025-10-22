@@ -41,9 +41,9 @@ public class GruntEnemyFactory {
     private static final String GRUNT_DEATH_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Death.mp3";
     private static final String GRUNT_AMBIENT_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
-    CurrencyType.METAL_SCRAP, 100,
-    CurrencyType.TITANIUM_CORE, 50,
-    CurrencyType.NEUROCHIP, 15
+    CurrencyType.METAL_SCRAP, 35,
+    CurrencyType.TITANIUM_CORE, 30,
+    CurrencyType.NEUROCHIP, 25
     );
     private static final int DEFAULT_POINTS = 150;
     private static final float SPEED_EPSILON = 0.001f;

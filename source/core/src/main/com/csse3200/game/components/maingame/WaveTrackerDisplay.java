@@ -21,7 +21,7 @@ public class WaveTrackerDisplay extends UIComponent {
     private Table backgroundPanel;
     private Table borderPanel;
     private ProgressBar progressBar;
-    private int currentWave = 1;
+    private int currentWave = 0;
     private final int totalWaves;
 
     // Base scale factors for responsive scaling

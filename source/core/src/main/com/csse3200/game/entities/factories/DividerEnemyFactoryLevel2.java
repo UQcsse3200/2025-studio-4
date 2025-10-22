@@ -45,7 +45,7 @@ public class DividerEnemyFactoryLevel2 {
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 50,
     CurrencyType.TITANIUM_CORE, 25,
-    CurrencyType.NEUROCHIP, 15
+    CurrencyType.NEUROCHIP, 50
     );
     private static final int DEFAULT_POINTS = 300;
     private static final float SPEED_EPSILON = 0.001f;

@@ -41,9 +41,9 @@ public class DroneEnemyFactory {
     private static final String DRONE_DEATH_SOUND = "sounds/Enemy Sounds/drone/Drone_Death.mp3";
     private static final String DRONE_AMBIENT_SOUND = "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
-    CurrencyType.METAL_SCRAP, 75,
-    CurrencyType.TITANIUM_CORE, 25,
-    CurrencyType.NEUROCHIP, 5
+    CurrencyType.METAL_SCRAP, 25,
+    CurrencyType.TITANIUM_CORE, 20,
+    CurrencyType.NEUROCHIP, 15
     );
     private static final int DEFAULT_POINTS = 100;
     private static final float SPEED_EPSILON = 0.001f;

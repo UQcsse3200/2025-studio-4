@@ -46,7 +46,7 @@ public class BossEnemyFactory {
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 500,
     CurrencyType.TITANIUM_CORE, 300,
-    CurrencyType.NEUROCHIP, 150
+    CurrencyType.NEUROCHIP, 250
     );
     private static final int DEFAULT_POINTS = 600;
     private static final float SPEED_EPSILON = 0.001f;

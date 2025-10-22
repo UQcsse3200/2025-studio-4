@@ -89,7 +89,7 @@ public class ForestGameArea2 extends GameArea2 {
     private List<List<Entity>> waypointLists;
 
     private Entity waveTrackerUI;
-    private static final int TOTAL_WAVES = 1; // Update this if you uncomment more waves
+    private int TOTAL_WAVES;
 
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
@@ -208,6 +208,8 @@ public class ForestGameArea2 extends GameArea2 {
 
         // Wave 6: Ultimate test
         waves.add(new Wave(6, 30, 20, 16, 2, 4, 8, 0.5f, waypointLists));
+
+        TOTAL_WAVES = waves.size();
     }
 
     private void initializeSpawnCallbacks() {

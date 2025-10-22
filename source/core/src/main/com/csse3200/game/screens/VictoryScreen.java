@@ -122,7 +122,13 @@ public class VictoryScreen implements Screen {
         String[] textures = {
             "images/Game_Victory.png",
             "images/Main_Menu_Button_Background.png",
-            "images/Main_Game_Button.png"
+            "images/Main_Game_Button.png",
+            // Achievement icons used in victory display
+            "images/tough survivor.jpg",
+            "images/speed runner.jpg",
+            "images/slayer.jpg",
+            "images/perfect clear.jpg",
+            "images/participation.jpg"
         };
         
         try {
@@ -272,10 +278,53 @@ public class VictoryScreen implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
         
+        // Achievements section (below title, above buttons)
+        Table achievementTable = new Table();
+        achievementTable.center();
+        mainTable.add(achievementTable).expandX().center().padTop(60f).padBottom(20f).row();
+
+        // Title - use main menu font for consistency
+        Label title = new Label(
+            "Achievements unlocked this run",
+            new Label.LabelStyle(skin.getFont("segoe_ui"), Color.WHITE)
+        );
+        title.setAlignment(Align.center);
+        achievementTable.add(title).colspan(5).padBottom(15f).center().row();
+
+        // Icons row
+        String[] achievementIds = {
+            com.csse3200.game.services.AchievementService.TOUGH_SURVIVOR,
+            com.csse3200.game.services.AchievementService.SPEED_RUNNER,
+            com.csse3200.game.services.AchievementService.SLAYER,
+            com.csse3200.game.services.AchievementService.PERFECT_CLEAR,
+            com.csse3200.game.services.AchievementService.PARTICIPATION
+        };
+        String[] achievementImages = {
+            "images/tough survivor.jpg",
+            "images/speed runner.jpg",
+            "images/slayer.jpg",
+            "images/perfect clear.jpg",
+            "images/participation.jpg"
+        };
+
+        com.csse3200.game.services.AchievementService achievementService = ServiceLocator.getAchievementService();
+        for (int i = 0; i < achievementIds.length; i++) {
+            boolean unlocked = achievementService != null && achievementService.isUnlocked(achievementIds[i]);
+            Image icon = new Image(resourceService.getAsset(achievementImages[i], Texture.class));
+            if (!unlocked) {
+                icon.setColor(0.5f, 0.5f, 0.5f, 0.6f);
+            } else {
+                icon.setColor(1.2f, 1.1f, 0.8f, 1f);
+            }
+            achievementTable.add(icon).size(80f, 80f).pad(8f);
+        }
+        achievementTable.row();
+
+        // Buttons section (at the bottom of layout)
         buttonTable = new Table();
         buttonTable.center();
-        mainTable.add(buttonTable).expandX().center();
-        
+        mainTable.add(buttonTable).expandX().center().padTop(10f);
+
         createButtons();
     }
     

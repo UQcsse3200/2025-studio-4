@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.enemy.EnemyHealthTintComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
@@ -119,7 +120,8 @@ public class EnemyFactory {
         anim.addAnimation("death", deathDur, PlayMode.NORMAL);
 
     e.addComponent(anim)
-            .addComponent(new EnemyAnimationController());
+            .addComponent(new EnemyAnimationController())
+            .addComponent(new EnemyHealthTintComponent());
 
     // Start something valid so there is a current frame
     if (walkRegions.size > 0) {

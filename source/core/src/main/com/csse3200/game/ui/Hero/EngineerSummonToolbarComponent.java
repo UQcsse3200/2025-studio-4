@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 工程师召唤工具条（安全版：零 tint / 零透明度改动 / 防批处理串色）
+ * Engineer summon toolbar (safe version: zero tint / zero alpha changes / prevents batch color bleed)
  */
 public class EngineerSummonToolbarComponent extends Component {
     private final Entity hero;
@@ -49,22 +49,22 @@ public class EngineerSummonToolbarComponent extends Component {
     public void create() {
         stage = ServiceLocator.getRenderService().getStage();
 
-        // 根容器：贴右，放在 Hotbar 下
+        // Root container: flush right, placed under the Hotbar
         root = new Table();
         root.setFillParent(true);
         root.top().right();
         root.padTop(Value.percentHeight(HOTBAR_BOTTOM_PCT + GAP_BELOW_HOTBAR_PCT, root))
                 .padRight(Value.percentWidth(RIGHT_MARGIN_PCT, root));
-        root.setColor(Color.WHITE); // 防父节点 tint 传染
+        root.setColor(Color.WHITE); // Prevent tint propagation from parent
 
-        // 条形背景
+        // Bar background
         Table bar = new Table();
         bar.setBackground(new TextureRegionDrawable(makeSolid(2, 2, new Color(0.15f, 0.15f, 0.18f, 0.85f))));
         bar.pad(Value.percentHeight(0.006f, root));
         bar.defaults().padRight(Value.percentWidth(0.008f, root));
-        bar.setColor(Color.WHITE); // 防父节点 tint 传染
+        bar.setColor(Color.WHITE); // Prevent tint propagation from parent
 
-        // 三个按钮（安全按钮，内部自复位 batch 颜色）
+        // Three buttons (safe buttons that auto-reset the batch color internally)
         btnMelee    = makeIconButton("images/engineer/Sentry.png");
         btnTurret   = makeIconButton("images/engineer/Turret.png");
         btnCurrency = makeIconButton("images/engineer/Currency_tower.png");
@@ -102,23 +102,23 @@ public class EngineerSummonToolbarComponent extends Component {
         boolean onCooldown = cdRemaining > 0f;
         boolean disabled = onCooldown || !canAnyPlace;
 
-        // 只禁用，不改透明度/不做 tint
+        // Only disable; do not change alpha or apply tint
         btnMelee.setDisabled(disabled);
         btnTurret.setDisabled(disabled);
         btnCurrency.setDisabled(disabled);
 
-        // 明确设为白色，避免继承父节点颜色
+        // Explicitly set to white to avoid inheriting parent color
         btnMelee.setColor(1,1,1,1);
         btnTurret.setColor(1,1,1,1);
         btnCurrency.setColor(1,1,1,1);
-        // 同时把内部 image 也设白，双保险
+        // Also set the internal image to white as double insurance
         getImage(btnMelee).setColor(1,1,1,1);
         getImage(btnTurret).setColor(1,1,1,1);
         getImage(btnCurrency).setColor(1,1,1,1);
     }
 
     private Image getImage(ImageButton b) {
-        // ImageButton 内部的 image 是第一个 child
+        // The internal image inside ImageButton is the first child
         for (Actor c : b.getChildren()) if (c instanceof Image i) return i;
         return null;
     }
@@ -138,21 +138,21 @@ public class EngineerSummonToolbarComponent extends Component {
         toDispose.clear();
     }
 
-    // ===== 工具 =====
+    // ===== Utilities =====
 
-    /** 防串色的 ImageButton：绘制前后把 Batch 颜色强制设回白色 */
+    /** ImageButton that prevents color bleeding: force the Batch color to white before/after drawing */
     private static class SafeImageButton extends ImageButton {
         public SafeImageButton(ImageButtonStyle style) { super(style); }
         @Override
         public void draw(Batch batch, float parentAlpha) {
             Color old = batch.getColor();
-            batch.setColor(1f,1f,1f,1f); // 防外部乘色影响到本控件
+            batch.setColor(1f,1f,1f,1f); // Prevent external multiplicative color from affecting this widget
             super.draw(batch, parentAlpha);
-            batch.setColor(old);         // 恢复外部颜色，防本控件影响别人
+            batch.setColor(old);         // Restore external color to avoid this widget affecting others
         }
     }
 
-    /** 生成图标按钮（不使用任何 tint/背景；使用 SafeImageButton） */
+    /** Create an icon button (no tint/background; uses SafeImageButton) */
     private ImageButton makeIconButton(String texPath) {
         Texture tex = new Texture(Gdx.files.internal(texPath));
         toDispose.add(tex);
@@ -161,20 +161,20 @@ public class EngineerSummonToolbarComponent extends Component {
         TextureRegionDrawable disabled = new TextureRegionDrawable(new TextureRegion(tex));
 
         ImageButton.ImageButtonStyle st = new ImageButton.ImageButtonStyle();
-        // 不使用皮肤背景，避免奇怪的默认着色
+        // Do not use skin backgrounds to avoid odd default tinting
         st.up = st.down = st.over = st.checked = st.disabled = null;
         st.imageUp = up;
         st.imageDown = down;
         st.imageDisabled = disabled;
 
         ImageButton btn = new SafeImageButton(st);
-        btn.setColor(1,1,1,1);                 // 明确设白
+        btn.setColor(1,1,1,1);                 // Explicitly set to white
         Image img = getImage(btn);
-        if (img != null) img.setColor(1,1,1,1);// 明确设白（子节点）
+        if (img != null) img.setColor(1,1,1,1);// Explicitly set to white (child)
         return btn;
     }
 
-    /** 生成纯色纹理区域，用于背景色块（半透明） */
+    /** Generate a solid texture region for background color blocks (semi-transparent) */
     private TextureRegion makeSolid(int w, int h, Color c) {
         Pixmap pm = new Pixmap(w, h, Pixmap.Format.RGBA8888);
         pm.setColor(c);
@@ -185,7 +185,7 @@ public class EngineerSummonToolbarComponent extends Component {
         return new TextureRegion(tex);
     }
 
-    /** 无参数点击监听器 */
+    /** Click listener with no parameters */
     private static final class SimpleClick extends com.badlogic.gdx.scenes.scene2d.utils.ClickListener {
         private final Runnable run;
         private SimpleClick(Runnable r) { this.run = r; }
@@ -193,5 +193,3 @@ public class EngineerSummonToolbarComponent extends Component {
         public static SimpleClick on(Runnable r) { return new SimpleClick(r); }
     }
 }
-
-

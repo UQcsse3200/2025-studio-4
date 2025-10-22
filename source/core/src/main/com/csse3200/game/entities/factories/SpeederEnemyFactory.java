@@ -17,6 +17,8 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,8 +33,8 @@ public class SpeederEnemyFactory {
     // Default speeder configuration
     // IF YOU WANT TO MAKE A NEW ENEMY, THIS IS THE VARIABLE STUFF YOU CHANGE
     ///////////////////////////////////////////////////////////////////////////////////////////////
-    private static final int DEFAULT_HEALTH = 150;  // High health - hard to kill quickly
-    private static final int DEFAULT_DAMAGE = 45;   // TRIPLE damage to base (15 * 3)
+    private static final int DEFAULT_HEALTH = 100;  // High health - hard to kill quickly
+    private static final int DEFAULT_DAMAGE = 25;   // TRIPLE damage to base (15 * 3)
     private static final DamageTypeConfig DEFAULT_RESISTANCE = DamageTypeConfig.None;
     private static final DamageTypeConfig DEFAULT_WEAKNESS = DamageTypeConfig.Electricity;
     private static final Vector2 DEFAULT_SPEED = new Vector2(0.15f, 0.15f); // Starts VERY VERY slow - creeping
@@ -41,10 +43,14 @@ public class SpeederEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/speedster_enemy.png";
     private static final String DEFAULT_NAME = "Speeder Enemy";
     private static final float DEFAULT_CLICKRADIUS = 1f;  // Bigger click radius for boss
+    private static final String SPEEDSTER_WALK_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Walk.mp3";
+    private static final String SPEEDSTER_ATTACK_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Attack.mp3";
+    private static final String SPEEDSTER_DEATH_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Death.mp3";
+    private static final String SPEEDSTER_AMBIENT_SOUND = "sounds/Enemy Sounds/speedster/Speedster_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
-    CurrencyType.METAL_SCRAP, 200,
+    CurrencyType.METAL_SCRAP, 100,
     CurrencyType.TITANIUM_CORE, 100,
-    CurrencyType.NEUROCHIP, 25
+    CurrencyType.NEUROCHIP, 75
     );
     private static final int DEFAULT_POINTS = 400;  // Double points for mini-boss
     private static final float SPEED_EPSILON = 0.001f;
@@ -97,9 +103,16 @@ public class SpeederEnemyFactory {
                 .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("speeder"))
                 .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
                 .addComponent(new clickable(clickRadius))
+                .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
                 // KEY COMPONENT: Add acceleration mechanic
                 .addComponent(new AccelerateOverTimeComponent(speed.x, maxSpeed, accelerationRate))
-                .addComponent(new SlowEffectComponent()); // 添加减速特效组件
+                .addComponent(new SlowEffectComponent()) // 添加减速特效组件
+                .addComponent(new EnemySoundComponent(
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_WALK_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_ATTACK_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_DEATH_SOUND, Sound.class),
+                    ServiceLocator.getResourceService().getAsset(SPEEDSTER_AMBIENT_SOUND, Sound.class)
+                ));
 
         speeder.getEvents().addListener("entityDeath", () -> destroyEnemy(speeder));
 
@@ -157,40 +170,50 @@ public class SpeederEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         // Check which game area is active and use its counters
         if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
-            // We're in ForestGameArea2
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
         } else {
-            // Default to ForestGameArea (original behavior)
             ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
             ForestGameArea.checkEnemyCount();
         }
 
-        // Drop currency upon defeat
-        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        if (wc != null && wc.getPlayerRef() != null) {
-            Entity player = wc.getPlayerRef();
-            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-            if (currencyManager != null) {
-                player.getEvents().trigger("dropCurrency", currencyDrops);
-            }
+        // Check if enemy reached the base
+        com.csse3200.game.components.ReachedBaseComponent reachedBaseComp = 
+            entity.getComponent(com.csse3200.game.components.ReachedBaseComponent.class);
+        boolean reachedBase = (reachedBaseComp != null && reachedBaseComp.hasReachedBase());
+        
+        //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " died. ReachedBase: " + reachedBase);
+        
+        if (!reachedBase) {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - DROPPING CURRENCY (killed by player)");
+            
+            WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+            if (wc != null && wc.getPlayerRef() != null) {
+                Entity player = wc.getPlayerRef();
 
-            // Award points to player upon defeating enemy
-            PlayerScoreComponent totalScore = wc.getPlayerRef().getComponent(PlayerScoreComponent.class);
-            if (totalScore != null) {
-                totalScore.addPoints(points);
-            }
+                // Drop currency upon defeat
+                CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                if (currencyManager != null) {
+                    player.getEvents().trigger("dropCurrency", currencyDrops);
+                }
 
-            // Track kill for ranking component
-            com.csse3200.game.components.PlayerRankingComponent prc = wc.getPlayerRef().getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
-            if (prc != null) {
-                prc.addKill();
+                // Add points to score
+                PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+                if (psc != null) {
+                    psc.addPoints(points);
+                }
+
+                // Track kill for ranking component
+                com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+                if (prc != null) {
+                    prc.addKill();
+                }
             }
+        } else {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - NO CURRENCY (reached base)");
         }
 
         playDeathSound(deathSoundPath);
-        //Gdx.app.postRunnable(entity::dispose);
-        //Eventually add point/score logic here maybe?
     }
 
     private static void playDeathSound(String soundPath) {

@@ -53,15 +53,16 @@ public final class SummonFactory {
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent()
                         .setSensor(false)
-                        .setLayer(PhysicsLayer.PLAYER))
+                        .setLayer(PhysicsLayer.ALLY ))
                 .addComponent(new HitboxComponent()
-                        .setLayer(PhysicsLayer.PLAYER))
+                        .setLayer(PhysicsLayer.ALLY ))
                 .addComponent(new TextureRenderComponent(texturePath))
-                .addComponent(new CombatStatsComponent(100, 0, resistance, weakness))
-                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 4.0f))
+                .addComponent(new CombatStatsComponent(200,10,resistance,weakness))
+                .addComponent(new TouchAttackComponent(PhysicsLayer.NPC, 4f))
                 .addComponent(new AutoDespawnOnDeathComponent())// ✅ Auto-despawn on death
-                .addComponent(new SfxOnDeathComponent("sounds/explosion_2s.ogg", 0.9f));
-
+                .addComponent(new SfxOnDeathComponent("sounds/explosion_2s.ogg", 0.9f))
+                .addComponent(new OneShotOverlapDamageComponent(
+                        PhysicsLayer.NPC, /*fallback*/10));
         var phys = s.getComponent(PhysicsComponent.class);
         if (phys != null) {
             phys.setBodyType(com.badlogic.gdx.physics.box2d.BodyDef.BodyType.StaticBody);
@@ -98,9 +99,9 @@ public final class SummonFactory {
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent()
                         .setSensor(false)
-                        .setLayer(PhysicsLayer.PLAYER))
+                        .setLayer(PhysicsLayer.ALLY))
                 .addComponent(new HitboxComponent()
-                        .setLayer(PhysicsLayer.PLAYER))
+                        .setLayer(PhysicsLayer.ALLY))
                 .addComponent(new TextureRenderComponent(texturePath))
                 .addComponent(new CombatStatsComponent(20, 25, resistance, weakness))
                 .addComponent(new AutoDespawnOnDeathComponent())// ✅ Auto-despawn on death
@@ -160,9 +161,9 @@ public final class SummonFactory {
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent()
                         .setSensor(false)
-                        .setLayer(PhysicsLayer.PLAYER))
+                        .setLayer(PhysicsLayer.ALLY))
                 .addComponent(new HitboxComponent()
-                        .setLayer(PhysicsLayer.PLAYER))
+                        .setLayer(PhysicsLayer.ALLY))
                 .addComponent(new TextureRenderComponent(texturePath))
                 .addComponent(new CombatStatsComponent(5, 0, resistance, weakness)) // Minimal HP
                 .addComponent(new AutoDespawnOnDeathComponent())

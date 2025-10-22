@@ -24,7 +24,7 @@ import com.csse3200.game.ui.SimpleUI;
 import com.csse3200.game.ui.UltimateButtonComponent;
 
 /**
- * 英雄数值窗口：显示等级、生命、攻击，并支持升级。
+ * Hero stats window: displays level, health, attack, and supports upgrading.
  */
 public class HeroStatsDialog extends Window {
     private final Entity hero;
@@ -46,7 +46,7 @@ public class HeroStatsDialog extends Window {
 
         setModal(true);
         setMovable(true);
-        setTouchable(Touchable.enabled); // 确保点击空白背景也能接收事件
+        setTouchable(Touchable.enabled); // Ensure clicks on empty background are also received
         pad(14);
         getTitleLabel().setAlignment(Align.center);
 
@@ -59,7 +59,7 @@ public class HeroStatsDialog extends Window {
         closeBtn = new TextButton("Close", SimpleUI.darkButton());
         ultBtn = UltimateButtonComponent.createUltimateButton(hero);
 
-        // 使用高分辨率位图字体并小幅缩放（避免放大导致模糊）
+        // Use high-resolution bitmap fonts and scale down slightly (avoid blur from upscaling)
         fontTitle = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
         fontTitle.getData().setScale(0.85f);
         fontTitle.setColor(Color.BLACK);
@@ -91,13 +91,13 @@ public class HeroStatsDialog extends Window {
         closeStyle.fontColor = Color.BLACK;
         closeStyle.overFontColor = Color.BLACK;
         closeStyle.downFontColor = Color.BLACK;
-        // 白色背景
+        // White background
         closeStyle.up = SimpleUI.solid(Color.WHITE);
         closeStyle.over = SimpleUI.solid(Color.WHITE);
         closeStyle.down = SimpleUI.solid(Color.WHITE);
         closeBtn.setStyle(closeStyle);
 
-        // ULT 按钮样式（白色背景，黑色文字）
+        // ULT button style (white background, black text)
         TextButton.TextButtonStyle ultStyle = SimpleUI.darkButton();
         ultStyle.font = fontButton;
         ultStyle.fontColor = Color.BLACK;
@@ -128,7 +128,7 @@ public class HeroStatsDialog extends Window {
 
         upgradeBtn.addListener(new ChangeListener() {
             @Override public void changed(ChangeEvent event, Actor actor) {
-                // 触发升级事件（Player 可能在 HeroUpgradeComponent 里已 attach）
+                // Trigger upgrade event (Player may have already been attached in HeroUpgradeComponent)
                 hero.getEvents().trigger("requestUpgrade", findPlayer());
                 refresh();
             }
@@ -139,17 +139,17 @@ public class HeroStatsDialog extends Window {
             }
         });
 
-        // 使用捕获监听：点击窗口或其任意子元素时置顶
+        // Use a capture listener: bring window to front when clicking the window or any of its children
         addCaptureListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 toFront();
                 if (getStage() != null) setZIndex(getStage().getActors().size - 1);
-                return false; // 不拦截，继续分发给子元素
+                return false; // Do not intercept; continue dispatching to children
             }
         });
 
-        // 响应升级结果，刷新显示
+        // Respond to upgrade results and refresh the display
         hero.getEvents().addListener("upgraded", (Integer level, Object currencyType, Integer cost) -> refresh());
         hero.getEvents().addListener("upgradeFailed", (String msg) -> refresh());
     }
@@ -194,12 +194,12 @@ public class HeroStatsDialog extends Window {
     public void showOn(Stage stage) {
         stage.addActor(this);
         pack();
-        // Enforce a larger minimum size, then place near hero initially
+        // Enforce a larger minimum size, then place near the hero initially
         float minW = 500f;
         float minH = 300f;
         setSize(Math.max(getWidth(), minW), Math.max(getHeight(), minH));
         updateFollowPosition(stage);
-        // 确保最新窗口在最上层
+        // Ensure the newest window is on top
         toFront();
         setZIndex(stage.getActors().size - 1);
     }
@@ -235,10 +235,10 @@ public class HeroStatsDialog extends Window {
         return (r != null && r.getCamera() != null) ? r.getCamera().getCamera() : null;
     }
 
-    // 简单分隔条
+    // Simple separator bar
     private static class Separator extends Table {
         public Separator() {
             setBackground(SimpleUI.solid(new com.badlogic.gdx.graphics.Color(0,0,0,0.08f)));
         }
     }
-} 
+}

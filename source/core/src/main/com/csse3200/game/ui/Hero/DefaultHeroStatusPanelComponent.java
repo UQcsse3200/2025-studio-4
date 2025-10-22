@@ -6,19 +6,19 @@ import com.csse3200.game.entities.Entity;
 import com.badlogic.gdx.utils.Timer;
 
 /**
- * 普通英雄状态栏（用于 Hero1/2/3 等）
- * - 在基础信息下方新增：Weapon Switch Cooldown 条
- * - 会在英雄升级锁定后，自动变为灰色“Locked”状态
+ * Default hero status panel (for Hero1/2/3, etc.)
+ * - Adds a “Weapon Switch Cooldown” bar below the basic info
+ * - Automatically turns into gray “Locked” state after the hero is upgrade-locked
  */
 public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponent {
 
     private Label weaponCooldownLabel;
     private ProgressBar weaponCooldownBar;
 
-    /** 是否已被升级锁定（来自 HeroOneShotFormSwitchComponent 的事件） */
+    /** Whether switching has been locked due to upgrade (event from HeroOneShotFormSwitchComponent) */
     private boolean locked = false;
 
-    /** 用于逐步更新冷却进度的计时器任务 */
+    /** Timer task used to incrementally update cooldown progress */
     private Timer.Task cooldownTask;
 
     public DefaultHeroStatusPanelComponent(Entity hero, String heroName) {
@@ -55,7 +55,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
 
     @Override
     protected void bindExtraListeners() {
-        // === 启动冷却 ===
+        // === Start cooldown ===
         hero.getEvents().addListener("ui:weapon:cooldown:start", (Long totalMs) -> {
             if (locked || totalMs == null || totalMs <= 0) return;
 
@@ -64,7 +64,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
             weaponCooldownLabel.setText("Switching...");
             weaponCooldownLabel.setColor(textColor);
 
-            // Timer定时更新（比Thread安全）
+            // Timer-based updates (safer than using a Thread)
             float totalSec = totalMs / 1000f;
             cooldownTask = Timer.schedule(new Timer.Task() {
                 float elapsed = 0f;
@@ -83,7 +83,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
             }, 0f, 0.05f);
         });
 
-        // === 冷却中提示 ===
+        // === During cooldown hint ===
         hero.getEvents().addListener("ui:weapon:cooldown", (Long remainMs) -> {
             if (locked || remainMs == null) return;
             float remainSec = remainMs / 1000f;
@@ -91,7 +91,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
             weaponCooldownLabel.setColor(textColor);
         });
 
-        // === 被锁定后（来自 HeroOneShotFormSwitchComponent） ===
+        // === After being locked (from HeroOneShotFormSwitchComponent) ===
         hero.getEvents().addListener("ui:weapon:locked", () -> {
             locked = true;
             cancelCooldown();
@@ -100,7 +100,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
             weaponCooldownBar.setValue(0f);
         });
 
-        // === 若有解锁逻辑（未来版本可扩展） ===
+        // === If there is unlock logic (for future expansion) ===
         hero.getEvents().addListener("ui:weapon:unlocked", () -> {
             locked = false;
             weaponCooldownLabel.setText("Switch ready");
@@ -109,7 +109,7 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
         });
     }
 
-    /** 取消当前冷却任务 */
+    /** Cancel the current cooldown task */
     private void cancelCooldown() {
         if (cooldownTask != null) {
             cooldownTask.cancel();
@@ -123,5 +123,3 @@ public class DefaultHeroStatusPanelComponent extends BaseHeroStatusPanelComponen
         cancelCooldown();
     }
 }
-
-

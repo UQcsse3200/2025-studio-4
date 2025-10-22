@@ -1,4 +1,4 @@
-// === 新增/修改点：HeroPlacementComponent ===
+// === New/Modified: HeroPlacementComponent ===
 package com.csse3200.game.components.hero;
 
 import com.badlogic.gdx.Gdx;
@@ -31,11 +31,11 @@ public class HeroPlacementComponent extends InputComponent {
 
     private boolean placementActive = false;
 
-    // 放置上限
+    // Placement limit
     private int maxPlacements = 1;
     private int placedCount = 0;
 
-    // === 新增：由UI选择的英雄类型（用于决定Ghost贴图与放置的“业务类型”） ===
+    // === New: hero type chosen by UI (decides ghost texture and the “business type” of placement) ===
     private String pendingType = "default"; // "engineer" | "samurai" | "default"
 
     public HeroPlacementComponent(ITerrainComponent terrain, IMapEditor mapEditor, Consumer<GridPoint2> onPlace) {
@@ -58,12 +58,12 @@ public class HeroPlacementComponent extends InputComponent {
         logger.info("HeroPlacement ready. Press 'S' to place at mouse cell. Right-click to cancel. (cap: {}/{})",
                 placedCount, maxPlacements);
 
-        // 可保留 S 键，也可删除。如果不想要键盘入口，删除整个 hotkeyAdapter 即可。
+        // You can keep the S key, or remove it. If you don't want a keyboard entry point, delete the entire hotkeyAdapter.
         hotkeyAdapter = new InputAdapter() {
             @Override
             public boolean keyDown(int keycode) {
                 if (keycode == Input.Keys.S) {
-                    // 用默认类型进入
+                    // Enter with default type
                     requestPlacement("default");
                     return true;
                 }
@@ -157,7 +157,7 @@ public class HeroPlacementComponent extends InputComponent {
                     exitPlacementMode();
                 });
             } else {
-                // 继续放置下一次（如果你希望单次点击后退出，这里可以直接 exitPlacementMode()）
+                // Continue placing the next one (if you want to exit after a single placement, call exitPlacementMode() here)
                 Gdx.app.postRunnable(() -> {
                     preview.remove();
                     preview.createGhost(resolveTextureByType(pendingType));
@@ -169,9 +169,9 @@ public class HeroPlacementComponent extends InputComponent {
         return true;
     }
 
-    // === 新增：供 UI 调用的方法 ===
+    // === New: method for the UI to call ===
     public void requestPlacement(String heroType) {
-        // 若已在放置模式并且点击的是同一类型 → 视为“切换/取消”
+        // If already in placement mode and the same type is clicked → treat as toggle/cancel
         if (placementActive && heroType != null && heroType.equalsIgnoreCase(pendingType)) {
             cancelPlacement();
             return;
@@ -198,13 +198,13 @@ public class HeroPlacementComponent extends InputComponent {
         this.maxPlacements = Math.max(1, n);
     }
 
-    // === 贴图解析：根据英雄类型决定 Ghost 贴图 ===
+    // === Texture resolution: decide ghost texture based on hero type ===
     private String resolveTextureByType(String type) {
         if (type == null) return currentHeroTexture();
         switch (type.toLowerCase()) {
             case "engineer": return "images/engineer/Engineer.png";
             case "samurai":  return "images/samurai/Samurai.png";
-            // 你有更多英雄就在这里扩展
+            // Add more heroes here if you have them
             default:         return currentHeroTexture();
         }
     }
@@ -218,7 +218,7 @@ public class HeroPlacementComponent extends InputComponent {
 
     private void enterPlacementModeWithTexture(String texturePath) {
         if (placementActive) {
-            // 切换类型时更新 Ghost
+            // When switching types, update the ghost
             Gdx.app.postRunnable(preview::remove);
         }
         placementActive = true;
@@ -266,7 +266,3 @@ public class HeroPlacementComponent extends InputComponent {
         removeHotkeyAdapter();
     }
 }
-
-
-
-

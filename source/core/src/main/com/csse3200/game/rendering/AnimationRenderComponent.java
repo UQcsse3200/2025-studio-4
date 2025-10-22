@@ -78,12 +78,12 @@ public class AnimationRenderComponent extends RenderComponent {
   public boolean addAnimation(String name, float frameDuration, PlayMode playMode) {
     Array<AtlasRegion> regions = atlas.findRegions(name);
     if (regions == null || regions.size == 0) {
-      logger.warn("Animation {} not found in texture atlas", name);
+      //logger.warn("Animation {} not found in texture atlas", name);
       return false;
     } else if (animations.containsKey(name)) {
-      logger.warn(
-          "Animation {} already added in texture atlas. Animations should only be added once.",
-          name);
+      //logger.warn(
+          //"Animation {} already added in texture atlas. Animations should only be added once.",
+          //name);
       return false;
     }
 

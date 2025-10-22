@@ -53,7 +53,6 @@ public class EnemyFactory {
                     .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
                     .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
                     .addComponent(new com.csse3200.game.ui.DamagePopupComponent())
-                    .addComponent(aiComponent)
                     .addComponent(new EnemyMeleeEngageComponent(
                             PhysicsLayer.ALLY, /*fallbackDmg*/ 3, /*tick*/ 0.3f,
                             /*push*/ 0f, /*pauseWhileEngaged*/ false))

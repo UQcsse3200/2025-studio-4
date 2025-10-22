@@ -46,6 +46,7 @@ public class GameStateService {
      * 每个英雄可用皮肤列表（如需换成从 JSON 读取，也能很方便替换）
      */
     private final Map<HeroType, String[]> availableSkins = new HashMap<>();
+    private volatile boolean readyPromptFinished = false;
 
     public GameStateService() {
         // should load from save file later
@@ -311,5 +312,17 @@ public class GameStateService {
     public AutoCloseable onSelectedHeroChanged(java.util.function.Consumer<HeroType> l) {
         selectedHeroChangedListeners.add(l);
         return () -> selectedHeroChangedListeners.remove(l);
+    }
+
+    public void resetReadyPromptFinished() {
+        readyPromptFinished = false;
+    }
+
+    public void markReadyPromptFinished() {
+        readyPromptFinished = true;
+    }
+
+    public boolean isReadyPromptFinished() {
+        return readyPromptFinished;
     }
 }

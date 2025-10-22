@@ -52,7 +52,7 @@ public class DialogueConfig {
                 "sounds/map/man.mp3",   
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA"  // 对话者名字
             ),
             
             new IntroDialogueComponent.DialogueEntry(
@@ -61,7 +61,8 @@ public class DialogueConfig {
                 "sounds/map/man.mp3",
                 "right",
                 "images/talker2.png",  // 使用talker.png作为对话框背景
-                getPlayerName()  // 对话者名字
+                getPlayerName(),  // 对话者名字
+                0.8f  // 字体缩放比例
             ),
             
             new IntroDialogueComponent.DialogueEntry(
@@ -70,7 +71,7 @@ public class DialogueConfig {
                 "sounds/map/say.mp3",
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA"  // 对话者名字
             ),
             
             new IntroDialogueComponent.DialogueEntry(
@@ -91,16 +92,17 @@ public class DialogueConfig {
     public static List<IntroDialogueComponent.DialogueEntry> getMap2Dialogue() {
         return List.of(
             new IntroDialogueComponent.DialogueEntry(
-                "Ha... Ha-ha-ha! Man, I missed this feeling, chaos, heat, and the pulse of war.\nGuess even death couldn't keep me away forever.", 
+                "Ha... Ha-ha-ha! Man!\n I missed this feeling, chaos, heat, and the pulse of war.\nGuess even death couldn't keep me away forever.", 
                 "images/map2talker.png", 
                 "sounds/map/man.mp3",   
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA",  // 对话者名字
+                0.77f  // 字体缩放比例
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "Enjoy it while you can, MAMBA. The city's heart is close, and it's crawling with AI patrols.\nThis is where we end it.", 
+                "Enjoy it while you can, MAMBA. \nThe city's heart is close, \nand it's crawling with AI patrols.\nThis is where we end it.", 
                 getPlayerAvatarPath(),  // 使用玩家选择的头像
                 "sounds/map/man.mp3",
                 "right",
@@ -109,12 +111,12 @@ public class DialogueConfig {
             ),
             
             new IntroDialogueComponent.DialogueEntry(
-                "(grinning, blue light flickering in his eyes) You think you can end it?\nThe network never sleeps, Commander... but I like your spirit.", 
+                "(grinning, blue light flickering in his eyes) \nYou think you can end it?\nThe network never sleeps, Commander... \nbut I like your spirit.", 
                 "images/map2talker.png", 
                 "sounds/map/say.mp3",
                 "left",
                 "images/talker.png",  // 使用talker.png作为对话框背景
-                "NPC"  // 对话者名字
+                "MAMBA"  // 对话者名字
             ),
             
             new IntroDialogueComponent.DialogueEntry(

@@ -283,6 +283,11 @@ public class IntroDialogueComponent extends UIComponent {
     DialogueEntry entry = entries.get(currentIndex);
     dialogueLabel.setText(entry.text());
     
+    // 应用字体缩放
+    if (entry.fontScale() != null) {
+      dialogueFont.getData().setScale(entry.fontScale());
+    }
+    
     // 更新对话者名字
     if (entry.speakerName() != null && !entry.speakerName().isEmpty()) {
       speakerNameLabel.setText(entry.speakerName());
@@ -584,34 +589,42 @@ public class IntroDialogueComponent extends UIComponent {
    * @param portraitSide 头像位置（"left"或"right"，可选，默认为"left"）
    * @param dialogueBackgroundPath 对话框背景图片路径（可选，传null使用默认背景）
    * @param speakerName 对话者名字（可选，传null表示不显示名字）
+   * @param fontScale 字体缩放比例（可选，默认为0.8f）
    */
-  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath, String speakerName) {
+  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath, String speakerName, Float fontScale) {
     /**
      * 创建不带音频的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath) {
-      this(text, portraitPath, null, "left", null, null);
+      this(text, portraitPath, null, "left", null, null, 0.8f);
     }
     
     /**
      * 创建带音频的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath, String soundPath) {
-      this(text, portraitPath, soundPath, "left", null, null);
+      this(text, portraitPath, soundPath, "left", null, null, 0.8f);
     }
     
     /**
      * 创建带头像位置的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide) {
-      this(text, portraitPath, soundPath, portraitSide, null, null);
+      this(text, portraitPath, soundPath, portraitSide, null, null, 0.8f);
     }
     
     /**
      * 创建带对话框背景的对话条目（向后兼容）
      */
     public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath) {
-      this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, null);
+      this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, null, 0.8f);
+    }
+    
+    /**
+     * 创建带说话者名字的对话条目（向后兼容）
+     */
+    public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath, String speakerName) {
+      this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, speakerName, 0.8f);
     }
   }
 

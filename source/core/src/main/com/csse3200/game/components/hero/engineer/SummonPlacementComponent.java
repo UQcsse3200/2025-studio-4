@@ -16,7 +16,7 @@ import com.csse3200.game.services.ResourceService;
 
 public class SummonPlacementComponent extends Component {
 
-    /** 召唤规格（纹理 + 类型） */
+    /** Summon specification (texture + type) */
     public static class SummonSpec {
         public final String texture;  // e.g. "images/engineer/Sentry.png"
         public final String type;     // "melee" | "turret" | "currencyBot"
@@ -26,13 +26,13 @@ public class SummonPlacementComponent extends Component {
     private boolean placementActive = false;
     private String pendingType = "melee";
     private String pendingTexture = "images/engineer/Sentry.png";
-    private Entity ghost; // 预览实体
+    private Entity ghost; // Preview entity
     private OrthographicCamera camera;
     private String placeSfxMelee   = "sounds/place_soft_click.ogg";
     private String placeSfxTurret  = "sounds/place_metal_clunk.ogg";
     private String placeSfxCurrency= "sounds/place_energy_drop.ogg";
     private float placeSfxVolume   = 1.0f;
-    // 限频，避免一次点击被触发两次
+    // Rate limit to avoid double-trigger on a single click
     private float placeSfxMinInterval = 0.05f; // 50ms
     private float placeSfxCd = 0f;
 
@@ -51,7 +51,7 @@ public class SummonPlacementComponent extends Component {
         super.create();
     }
 
-    /** 进入召唤放置模式 */
+    /** Enter summon placement mode */
     public void armSummon(SummonSpec spec) {
         cancel();
 
@@ -60,19 +60,19 @@ public class SummonPlacementComponent extends Component {
         this.pendingTexture = (spec != null && spec.texture != null && !spec.texture.isEmpty())
                 ? spec.texture : this.pendingTexture;
 
-        // 统一用近战 ghost 作为预览（足够表达 1x1 footprint）
+        // Use the melee ghost as a unified preview (expresses a 1x1 footprint well enough)
         ghost = SummonFactory.createMeleeSummonGhost(pendingTexture, 1f);
         ServiceLocator.getEntityService().register(ghost);
         ghost.create();
 
-        // 通知 MapHighlighter：进入“召唤放置模式”
+        // Notify MapHighlighter: entered "summon placement mode"
         if (entity != null && entity.getEvents() != null) {
             entity.getEvents().trigger("summon:placement:on", pendingType);
         }
         Gdx.app.log("SummonPlacement", "ON type=" + pendingType);
     }
 
-    /** 退出/取消当前放置 */
+    /** Exit/cancel current placement */
     public void cancel() {
         if (ghost != null) {
             try { ghost.dispose(); } catch (Exception ignore) {}
@@ -98,12 +98,12 @@ public class SummonPlacementComponent extends Component {
 
         if (camera == null) findWorldCamera();
 
-        // 屏幕 → 世界
+        // Screen → world
         Vector3 mp3 = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0f);
         camera.unproject(mp3);
         Vector2 mouseWorld = new Vector2(mp3.x, mp3.y);
 
-        // 吸附到格
+        // Snap to grid
         float ts = terrain.getTileSize();
         GridPoint2 tile = new GridPoint2((int)(mouseWorld.x / ts), (int)(mouseWorld.y / ts));
         GridPoint2 bounds = terrain.getMapBounds(0);
@@ -112,28 +112,28 @@ public class SummonPlacementComponent extends Component {
         Vector2 snap = inBounds ? terrain.tileToWorldPosition(tile.x, tile.y) : mouseWorld;
         if (ghost != null) ghost.setPosition(snap);
 
-        // 规则：只能 Path 上，且该格没有其他召唤（避免重叠）
+        // Rule: must be on the Path, and the tile must not already have a summon (avoid overlap)
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT) && inBounds) {
             if (!isOnPath(tile)) return;
             if (hasSummonOnTile(tile, ts)) return;
             placeSummon(snap, tile);
         }
 
-        // 右键退出
+        // Right-click to exit
         if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT)) {
             cancel();
         }
     }
 
-    /** 真正创建召唤实体并注册 */
+    /** Actually create the summon entity and register it */
     private void placeSummon(Vector2 snapPos, GridPoint2 tile) {
         String type = pendingType;
 
-        // === [新增] 在真正生成前询问工程师是否允许（会触发 EngineerSummonComponent.canPlace(...)）===
+        // === [New] Before spawning, ask Engineer if placement is allowed (triggers EngineerSummonComponent.canPlace(...)) ===
         EngineerSummonComponent owner = findEngineerOwner();
         if (owner != null) {
             final boolean[] allow = { true };
-            owner.getEntity().getEvents().trigger("summon:canSpawn?", type, allow); // <-- 关键行（顺序：String, boolean[]）
+            owner.getEntity().getEvents().trigger("summon:canSpawn?", type, allow); // <-- key line (order: String, boolean[])
             if (!allow[0]) {
                 cancel();
                 Gdx.app.log("SummonPlacement", "blocked by cap at " + tile + " type=" + type);
@@ -141,10 +141,10 @@ public class SummonPlacementComponent extends Component {
             }
         }
 
-        // 清理预览
+        // Clear preview
         if (ghost != null) { try { ghost.dispose(); } catch (Exception ignore) {} ghost = null; }
 
-        // 生成召唤物
+        // Spawn summon
         Entity created;
         if ("turret".equals(type)) {
             created = SummonFactory.createDirectionalTurret(pendingTexture, 1f, 1f, new Vector2(-1, 0));
@@ -160,18 +160,18 @@ public class SummonPlacementComponent extends Component {
         }
 
         if (created != null) {
-            // 绑定主人：它在 create() 时会自动触发 "summon:spawned"
+            // Bind owner: it will automatically trigger "summon:spawned" in create()
             created.addComponent(new com.csse3200.game.components.hero.engineer.SummonOwnerComponent(owner, type));
             created.setPosition(snapPos);
             ServiceLocator.getEntityService().register(created);
             playPlaceSfx(type);
-            // === [删除] 不要再手动触发 spawned，会双计数 ===
+            // === [Removed] Do not manually trigger spawned again, it would double-count ===
             // if (owner != null) {
             //     owner.getEntity().getEvents().trigger("summon:spawned", created, type);
             // }
         }
 
-        // 退出放置
+        // Exit placement
         if (entity != null && entity.getEvents() != null) {
             entity.getEvents().trigger("summon:placement:off");
         }
@@ -180,14 +180,14 @@ public class SummonPlacementComponent extends Component {
     }
 
 
-    // ================== 工具函数 ==================
+    // ================== Utilities ==================
     private com.csse3200.game.areas.terrain.ITerrainComponent findTerrain() {
         Array<Entity> all = safeEntities(); if (all == null) return null;
         for (Entity e : all) {
             var t = e.getComponent(com.csse3200.game.areas.terrain.TerrainComponent.class);
             if (t != null) return t;
             var t2 = e.getComponent(com.csse3200.game.areas2.terrainTwo.TerrainComponent2.class);
-            if (t2 != null) return t2; // 兼容 TerrainComponent2
+            if (t2 != null) return t2; // Compatible with TerrainComponent2
         }
         return null;
     }
@@ -202,7 +202,7 @@ public class SummonPlacementComponent extends Component {
 
     private boolean isOnPath(GridPoint2 tile) {
         var pc = findPlacementController();
-        return pc != null && pc.isPath(tile.x, tile.y); // ✅ 走纯路径
+        return pc != null && pc.isPath(tile.x, tile.y); // ✅ strictly path-only
     }
 
 
@@ -253,7 +253,7 @@ public class SummonPlacementComponent extends Component {
         catch (Exception ex) { return null; }
     }
     private void playPlaceSfx(String type) {
-        if (placeSfxCd > 0f) return; // 限频
+        if (placeSfxCd > 0f) return; // rate limit
         String key;
         switch (type) {
             case "turret"      -> key = placeSfxTurret;
@@ -273,7 +273,7 @@ public class SummonPlacementComponent extends Component {
             if (s != null) {
                 s.play(vol);
             } else {
-                // 回退：直接从文件系统加载（确保 assets 里有对应文件）
+                // Fallback: load directly from file system (ensure corresponding file exists in assets)
                 if (Gdx.files.internal(key).exists() && Gdx.audio != null) {
                     Sound s2 = Gdx.audio.newSound(Gdx.files.internal(key));
                     s2.play(vol);

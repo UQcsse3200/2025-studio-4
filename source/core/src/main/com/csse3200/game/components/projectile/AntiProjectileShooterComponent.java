@@ -107,7 +107,7 @@ public class AntiProjectileShooterComponent extends Component {
 
         interceptor.addComponent(arc);
 
-        interceptor.setScale(1.2f, 1.2f);
+        interceptor.setScale(0.8f, 0.8f);
 
 
         PhysicsComponent physics = new PhysicsComponent().setBodyType(BodyDef.BodyType.KinematicBody);

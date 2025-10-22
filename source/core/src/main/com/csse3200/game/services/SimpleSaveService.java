@@ -36,8 +36,8 @@ public class SimpleSaveService {
       FileHandle dir = Gdx.files.absolute("./saves");
       if (!dir.exists()) dir.mkdirs();
       Gdx.files.absolute("./" + SAVE_FILE).writeString(json.toJson(data), false);
-      logger.info("Saved to ./{} (players={}, towers={}, enemies={})", SAVE_FILE,
-              data.player != null, data.towers.size(), data.enemies.size());
+      logger.info("Saved to ./{} (player={}, towers={}, enemies={})", SAVE_FILE,
+              data.player != null ? "yes" : "no", data.towers.size(), data.enemies.size());
       return true;
     } catch (Exception e) {
       logger.error("Save failed", e);
@@ -57,8 +57,8 @@ public class SimpleSaveService {
       if (!dir.exists()) dir.mkdirs();
       String target = "saves/" + safe + ".json";
       Gdx.files.absolute("./" + target).writeString(json.toJson(data), false);
-      logger.info("Saved to ./{} (players={}, towers={}, enemies={})", target,
-              data.player != null, data.towers.size(), data.enemies.size());
+      logger.info("Saved to ./{} (player={}, towers={}, enemies={})", target,
+              data.player != null ? "yes" : "no", data.towers.size(), data.enemies.size());
       return true;
     } catch (Exception e) {
       logger.error("SaveAs failed", e);
@@ -139,14 +139,24 @@ public class SimpleSaveService {
       data.player.pos = player.getPosition();
       var combat = player.getComponent(com.csse3200.game.components.PlayerCombatStatsComponent.class);
       if (combat != null) data.player.hp = combat.getHealth();
-      // Prefer currency manager (team economy) if present; fallback to InventoryComponent
+      
+      // Save all currency types
       var cm = player.getComponent(com.csse3200.game.components.currencysystem.CurrencyManagerComponent.class);
       if (cm != null) {
-        data.player.gold = cm.getCurrencyAmount(
+        data.player.metalScrap = cm.getCurrencyAmount(
             com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP);
+        data.player.titaniumCore = cm.getCurrencyAmount(
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.TITANIUM_CORE);
+        data.player.neurochip = cm.getCurrencyAmount(
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.NEUROCHIP);
+        data.player.gold = data.player.metalScrap; // For backward compatibility
       } else {
+        // Fallback to InventoryComponent for older saves
         var wallet = player.getComponent(com.csse3200.game.components.player.InventoryComponent.class);
-        if (wallet != null) data.player.gold = wallet.getGold();
+        if (wallet != null) {
+          data.player.gold = wallet.getGold();
+          data.player.metalScrap = wallet.getGold();
+        }
       }
     }
 
@@ -160,6 +170,8 @@ public class SimpleSaveService {
         if (ts != null) {
           t.hp = ts.getHealth();
           t.cd = ts.getAttackCooldown();
+          t.levelA = ts.getLevel_A();
+          t.levelB = ts.getLevel_B();
         }
         data.towers.add(t);
       }
@@ -197,14 +209,28 @@ public class SimpleSaveService {
       player.setPosition(validPos(data.player.pos));
       var combat = player.getComponent(com.csse3200.game.components.PlayerCombatStatsComponent.class);
       if (combat != null) combat.setHealth(data.player.hp);
+      
+      // Restore all currency types
       var cm = player.getComponent(com.csse3200.game.components.currencysystem.CurrencyManagerComponent.class);
       if (cm != null) {
+        // Use specific currency values if available, otherwise fall back to gold
+        int metalScrap = data.player.metalScrap > 0 ? data.player.metalScrap : data.player.gold;
+        int titaniumCore = data.player.titaniumCore;
+        int neurochip = data.player.neurochip;
+        
         cm.setCurrencyAmount(
             com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP,
-            data.player.gold);
+            metalScrap);
+        cm.setCurrencyAmount(
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.TITANIUM_CORE,
+            titaniumCore);
+        cm.setCurrencyAmount(
+            com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.NEUROCHIP,
+            neurochip);
       } else {
+        // Fallback to InventoryComponent for older saves
         var wallet = player.getComponent(com.csse3200.game.components.player.InventoryComponent.class);
-        if (wallet != null) wallet.setGold(data.player.gold);
+        if (wallet != null) wallet.setGold(data.player.gold > 0 ? data.player.gold : data.player.metalScrap);
       }
     }
     if (newPlayer) entityService.register(player);
@@ -222,6 +248,7 @@ public class SimpleSaveService {
     // restore towers
     for (SaveData.Tower t : data.towers) {
       var type = t.type == null ? "bone" : t.type;
+      logger.info("Restoring tower: type={}, pos={}", type, t.pos);
       Entity tower = null;
       var defaultCurrency = com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyType.METAL_SCRAP;
         switch (type) {
@@ -234,7 +261,33 @@ public class SimpleSaveService {
             case "cavemen":
                 tower = com.csse3200.game.entities.factories.TowerFactory.createCavemenTower();
                 break;
+            case "pterodactyl":
+                logger.info("Creating pterodactyl tower at {}", t.pos);
+                tower = com.csse3200.game.entities.factories.TowerFactory.createPterodactylTower();
+                break;
+            case "supercavemen":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createSuperCavemenTower();
+                break;
+            case "totem":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createTotemTower();
+                break;
+            case "bank":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createBankTower();
+                break;
+            case "raft":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createRaftTower();
+                break;
+            case "frozenmamoothskull":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createFrozenmamoothskullTower();
+                break;
+            case "bouldercatapult":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createBouldercatapultTower();
+                break;
+            case "villageshaman":
+                tower = com.csse3200.game.entities.factories.TowerFactory.createVillageshamanTower();
+                break;
             default:
+                logger.warn("Unknown tower type '{}' - using bone tower as fallback", type);
                 tower = com.csse3200.game.entities.factories.TowerFactory.createBoneTower();
         }
 
@@ -244,8 +297,26 @@ public class SimpleSaveService {
         if (ts != null) {
           ts.setHealth(t.hp);
           ts.setAttackCooldown(t.cd);
+          ts.setLevel_A(t.levelA);
+          ts.setLevel_B(t.levelB);
         }
+        
+        // Register the tower base
         entityService.register(tower);
+        
+        // IMPORTANT: Register the tower's head entity if it has one
+        var towerComp = tower.getComponent(TowerComponent.class);
+        if (towerComp != null && towerComp.hasHead()) {
+          Entity headEntity = towerComp.getHeadEntity();
+          if (headEntity != null) {
+            entityService.register(headEntity);
+            logger.info("Registered head entity for {} tower", type);
+          }
+        }
+        
+        logger.info("Successfully restored and registered {} tower at {}", type, t.pos);
+      } else {
+        logger.error("Failed to create tower of type: {}", type);
       }
     }
 
@@ -377,8 +448,15 @@ public class SimpleSaveService {
     public List<Tower> towers = new ArrayList<>();
     public List<Enemy> enemies = new ArrayList<>();
 
-    public static class Player { public Vector2 pos; public int hp; public int gold; }
-    public static class Tower { public String type; public Vector2 pos; public int hp; public float cd; }
+    public static class Player { 
+      public Vector2 pos; 
+      public int hp; 
+      public int gold; 
+      public int metalScrap; 
+      public int titaniumCore; 
+      public int neurochip; 
+    }
+    public static class Tower { public String type; public Vector2 pos; public int hp; public float cd; public int levelA; public int levelB; }
     public static class Enemy { public String type; public Vector2 pos; public int hp; }
   }
 }

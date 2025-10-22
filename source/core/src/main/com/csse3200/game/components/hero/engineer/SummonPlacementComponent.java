@@ -202,12 +202,9 @@ public class SummonPlacementComponent extends Component {
 
     private boolean isOnPath(GridPoint2 tile) {
         var pc = findPlacementController();
-        if (pc == null) return false;
-        int[][] path = pc.getFixedPath();
-        if (path == null) return false;
-        for (int[] p : path) if (p[0] == tile.x && p[1] == tile.y) return true;
-        return false;
+        return pc != null && pc.isPath(tile.x, tile.y); // ✅ 走纯路径
     }
+
 
     private boolean hasSummonOnTile(GridPoint2 tile, float ts) {
         Array<Entity> all = safeEntities(); if (all == null) return false;

@@ -168,12 +168,15 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(15, 14));   // Third waypoint
         keyWaypoints.add(new GridPoint2(15, 25));   // Fifth waypoint
         keyWaypoints.add(new GridPoint2(14, 25));
-        keyWaypoints.add(new GridPoint2(13, 25));
         keyWaypoints.add(new GridPoint2(5, 25));    // Fourth waypoint
         keyWaypoints.add(new GridPoint2(5, 38));    // End - extended past base to ensure enemies reach it
 
         // 新增的5个关键点
         keyWaypoints2.add(new GridPoint2(28, 6));    // 新坐标5
+        keyWaypoints2.add(new GridPoint2(29, 7));
+        keyWaypoints2.add(new GridPoint2(30, 8));
+        keyWaypoints2.add(new GridPoint2(31, 9));
+        keyWaypoints2.add(new GridPoint2(32, 10));
         keyWaypoints2.add(new GridPoint2(33, 11));   // 新坐标4
         keyWaypoints2.add(new GridPoint2(33, 21));   // 新坐标3
         keyWaypoints2.add(new GridPoint2(28, 27));   // 新坐标2
@@ -194,13 +197,19 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             Map.entry("5,4", 0.5f),
             Map.entry("5,5", 0.5f),
             Map.entry("5,6", 0.5f),
-            Map.entry("13,25", 0.5f),
             Map.entry("14,25", 0.5f),
             Map.entry("15,25", 0.5f),
             Map.entry("21,27", 0.5f),
             Map.entry("22,27", 0.5f),
             Map.entry("23,27", 0.5f),
-            Map.entry("24,27", 0.5f)
+            Map.entry("24,27", 0.5f),
+            // 在关键点之间的减速区域
+            Map.entry("28,6", 0.5f),
+            Map.entry("29,7", 0.5f),
+            Map.entry("30,8", 0.5f),
+            Map.entry("31,9", 0.5f),
+            Map.entry("32,10", 0.5f),
+            Map.entry("33,11", 0.5f)
         );
 
         // Mark key path points标记关键路径点
@@ -218,6 +227,11 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             waypointList.add(waypoint);
         }
 
+        // 定义不需要显示视觉效果的减速区域坐标
+        java.util.Set<String> noVisualEffectCoords = java.util.Set.of(
+            "28,6", "29,7", "30,8", "31,9", "32,10", "33,11"
+        );
+        
         // Mark keyWaypoints2 points标记第二组关键路径点
         for (GridPoint2 wp : keyWaypoints2) {
             String key = wp.x + "," + wp.y;
@@ -227,7 +241,10 @@ public class MapEditor2 extends InputAdapter implements IMapEditor {
             waypoint.setPosition(wp.x / 2f, wp.y / 2f);
             if (modifier != null) {
                 waypoint.addComponent(new SpeedWaypointComponent(modifier));
-                slowZoneTiles.add(new GridPoint2(wp));
+                // 只有不在noVisualEffectCoords中的坐标才添加到slowZoneTiles
+                if (!noVisualEffectCoords.contains(key)) {
+                    slowZoneTiles.add(new GridPoint2(wp));
+                }
             }
             waypointList2.add(waypoint);
         }

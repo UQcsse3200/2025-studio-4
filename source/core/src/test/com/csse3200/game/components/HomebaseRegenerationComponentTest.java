@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
- * 测试HomebaseRegenerationComponent的生命回复功能
+ * Test the health regeneration functionality of HomebaseRegenerationComponent
  */
 public class HomebaseRegenerationComponentTest {
     private Entity homebase;
@@ -30,7 +30,7 @@ public class HomebaseRegenerationComponentTest {
         gameTime = mock(GameTime.class);
         when(ServiceLocator.getTimeSource()).thenReturn(gameTime);
         
-        // 创建homebase实体和组件
+        // Create homebase entity and components
         homebase = new Entity();
         combatStats = new PlayerCombatStatsComponent(100, 10);
         regenComponent = new HomebaseRegenerationComponent();
@@ -48,7 +48,7 @@ public class HomebaseRegenerationComponentTest {
     }
     
     /**
-     * 测试组件初始化
+     * Test component initialization
      */
     @Test
     void testComponentInitialization() {
@@ -57,131 +57,131 @@ public class HomebaseRegenerationComponentTest {
     }
     
     /**
-     * 测试5秒后开始回复状态
+     * Test regeneration starts after 5 seconds
      */
     @Test
     void testRegenerationStartsAfter5Seconds() {
-        // 设置初始时间
+        // Set initial time
         when(gameTime.getTime()).thenReturn(0L);
         
-        // 受到伤害
+        // Take damage
         combatStats.setHealth(90);
         
-        // 5秒后
+        // After 5 seconds
         when(gameTime.getTime()).thenReturn(5000L);
         regenComponent.update();
         
-        // 应该进入回复状态
+        // Should enter regeneration state
         assertTrue(regenComponent.isRegenerating());
     }
     
     /**
-     * 测试每4秒回复5点生命
+     * Test regeneration amount and interval (5 health every 4 seconds)
      */
     @Test
     void testRegenerationAmountAndInterval() {
-        // 设置初始时间
+        // Set initial time
         when(gameTime.getTime()).thenReturn(0L);
         
-        // 受到伤害
+        // Take damage
         combatStats.setHealth(80);
         
-        // 5秒后，开始回复状态
+        // After 5 seconds, start regeneration state
         when(gameTime.getTime()).thenReturn(5000L);
         regenComponent.update();
         assertTrue(regenComponent.isRegenerating());
         
-        // 9秒后（5+4），应该回复一次
+        // After 9 seconds (5+4), should regenerate once
         when(gameTime.getTime()).thenReturn(9000L);
         regenComponent.update();
         assertEquals(85, combatStats.getHealth()); // 80 + 5 = 85
         
-        // 13秒后（5+4+4），应该再回复一次
+        // After 13 seconds (5+4+4), should regenerate again
         when(gameTime.getTime()).thenReturn(13000L);
         regenComponent.update();
         assertEquals(90, combatStats.getHealth()); // 85 + 5 = 90
     }
     
     /**
-     * 测试生命值不会超过最大值
+     * Test health does not exceed maximum value
      */
     @Test
     void testRegenerationDoesNotExceedMaxHealth() {
-        // 设置初始时间
+        // Set initial time
         when(gameTime.getTime()).thenReturn(0L);
         
-        // 受到少量伤害（只损失3点生命）
+        // Take small damage (only lose 3 health)
         combatStats.setHealth(97);
         
-        // 5秒后，开始回复状态
+        // After 5 seconds, start regeneration state
         when(gameTime.getTime()).thenReturn(5000L);
         regenComponent.update();
         
-        // 9秒后（5+4），应该回复，但不超过最大值
+        // After 9 seconds (5+4), should regenerate but not exceed maximum
         when(gameTime.getTime()).thenReturn(9000L);
         regenComponent.update();
-        assertEquals(100, combatStats.getHealth()); // 应该是100，不是97+5=102
+        assertEquals(100, combatStats.getHealth()); // Should be 100, not 97+5=102
     }
     
     /**
-     * 测试满血时不回复
+     * Test no regeneration at full health
      */
     @Test
     void testNoRegenerationAtFullHealth() {
-        // 设置初始时间
+        // Set initial time
         when(gameTime.getTime()).thenReturn(0L);
         
-        // 满血状态
+        // Full health state
         combatStats.setHealth(100);
         
-        // 5秒后
+        // After 5 seconds
         when(gameTime.getTime()).thenReturn(5000L);
         regenComponent.update();
         
-        // 9秒后
+        // After 9 seconds
         when(gameTime.getTime()).thenReturn(9000L);
         regenComponent.update();
         
-        // 生命值应该保持不变
+        // Health should remain unchanged
         assertEquals(100, combatStats.getHealth());
     }
     
     /**
-     * 测试获取距离上次受伤的时间
+     * Test getting time since last damage
      */
     @Test
     void testGetTimeSinceLastDamage() {
-        // 设置初始时间
+        // Set initial time
         when(gameTime.getTime()).thenReturn(0L);
         
-        // 受到伤害
+        // Take damage
         combatStats.setHealth(80);
         
-        // 3秒后
+        // After 3 seconds
         when(gameTime.getTime()).thenReturn(3000L);
         float timeSinceDamage = regenComponent.getTimeSinceLastDamage();
         assertEquals(3.0f, timeSinceDamage, 0.01f);
     }
     
     /**
-     * 测试获取距离下次回复的时间
+     * Test getting time until next regeneration
      */
     @Test
     void testGetTimeUntilNextRegen() {
-        // 设置初始时间
+        // Set initial time
         when(gameTime.getTime()).thenReturn(0L);
         
-        // 受到伤害
+        // Take damage
         combatStats.setHealth(80);
         
-        // 5秒后，开始回复状态
+        // After 5 seconds, start regeneration state
         when(gameTime.getTime()).thenReturn(5000L);
         regenComponent.update();
         
-        // 7秒后（距离上次回复2秒）
+        // After 7 seconds (2 seconds since last regeneration)
         when(gameTime.getTime()).thenReturn(7000L);
         float timeUntilNext = regenComponent.getTimeUntilNextRegen();
-        assertEquals(2.0f, timeUntilNext, 0.01f); // 4-2 = 2秒
+        assertEquals(2.0f, timeUntilNext, 0.01f); // 4-2 = 2 seconds
     }
 }
 

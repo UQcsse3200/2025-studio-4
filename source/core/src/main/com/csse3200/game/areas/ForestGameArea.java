@@ -42,6 +42,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -670,7 +671,11 @@ public class ForestGameArea extends GameArea {
                 towerTargets.add(entity);
                 continue;
             }
-            if (entity.getComponent(EnemyTypeComponent.class) != null) {
+            EnemyTypeComponent typeComponent = entity.getComponent(EnemyTypeComponent.class);
+            if (typeComponent != null) {
+                if (isPlasmaImmune(typeComponent)) {
+                    continue;
+                }
                 enemyTargets.add(entity);
             }
         }
@@ -707,6 +712,18 @@ public class ForestGameArea extends GameArea {
         }
         tower.dispose();
         ServiceLocator.getEntityService().unregister(tower);
+    }
+
+    private boolean isPlasmaImmune(EnemyTypeComponent typeComponent) {
+        if (typeComponent == null) {
+            return false;
+        }
+        String type = typeComponent.getType();
+        if (type == null) {
+            return false;
+        }
+        String normalised = type.trim().toLowerCase(Locale.ROOT);
+        return "tank".equals(normalised) || "boss".equals(normalised);
     }
 
     private void eliminateEnemy(Entity enemy) {

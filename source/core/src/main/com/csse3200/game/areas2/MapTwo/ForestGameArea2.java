@@ -51,6 +51,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -677,13 +678,18 @@ public class ForestGameArea2 extends GameArea2 {
             if (entityPosition == null || entityPosition.dst2(position) > radiusSquared) {
                 continue;
             }
-            if (entity.getComponent(TowerComponent.class) != null
-                    || entity.getComponent(EnemyTypeComponent.class) != null) {
-                if (entity.getComponent(TowerComponent.class) != null) {
-                    towerTargets.add(entity);
-                } else {
-                    enemyTargets.add(entity);
+            boolean isTower = entity.getComponent(TowerComponent.class) != null;
+            EnemyTypeComponent typeComponent = entity.getComponent(EnemyTypeComponent.class);
+            boolean isEnemy = typeComponent != null;
+            if (isTower) {
+                towerTargets.add(entity);
+                continue;
+            }
+            if (isEnemy) {
+                if (isPlasmaImmune(typeComponent)) {
+                    continue;
                 }
+                enemyTargets.add(entity);
             }
         }
         if (towerTargets.size > 0 || enemyTargets.size > 0) {
@@ -719,6 +725,18 @@ public class ForestGameArea2 extends GameArea2 {
         }
         tower.dispose();
         ServiceLocator.getEntityService().unregister(tower);
+    }
+
+    private boolean isPlasmaImmune(EnemyTypeComponent typeComponent) {
+        if (typeComponent == null) {
+            return false;
+        }
+        String type = typeComponent.getType();
+        if (type == null) {
+            return false;
+        }
+        String normalised = type.trim().toLowerCase(Locale.ROOT);
+        return "tank".equals(normalised) || "boss".equals(normalised);
     }
 
     private void eliminateEnemy(Entity enemy) {

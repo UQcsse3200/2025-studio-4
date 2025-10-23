@@ -60,6 +60,7 @@ public class TowerConfig {
         public String projectileTexture;
         /** image of tower */
         public String image;
+        public String icon;
         public int level_A;
         public int level_B;
     }

@@ -96,7 +96,8 @@ public class InMemoryLeaderboardService implements LeaderboardService {
                 oldEntry.playerId,
                 oldEntry.displayName,
                 oldEntry.score,
-                oldEntry.achievedAtMs
+                oldEntry.achievedAtMs,
+                oldEntry.avatarId
             ));
         }
     }

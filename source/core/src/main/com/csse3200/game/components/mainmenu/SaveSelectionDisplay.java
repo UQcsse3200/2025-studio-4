@@ -45,7 +45,7 @@ public class SaveSelectionDisplay extends UIComponent {
     Image backgroundImage =
         new Image(
             ServiceLocator.getResourceService()
-                .getAsset("images/main_menu_background.png", Texture.class));
+                .getAsset("images/main_menu_notext.png", Texture.class));
     backgroundImage.setFillParent(true);
     stage.addActor(backgroundImage);
 
@@ -113,13 +113,15 @@ public class SaveSelectionDisplay extends UIComponent {
     File savesDir = new File("saves");
     if (!savesDir.exists() || savesDir.listFiles() == null || savesDir.listFiles().length == 0) {
       Label noSavesLabel = new Label("No save files found", skin);
-      noSavesLabel.setColor(Color.WHITE);
+      noSavesLabel.getStyle().fontColor = Color.WHITE;
+      //noSavesLabel.setColor(Color.WHITE);
       saveTable.add(noSavesLabel).padTop(50f);
       return saveTable;
     }
 
     Label headerLabel = new Label("Available Saves:", skin);
-    headerLabel.setColor(Color.WHITE);
+    headerLabel.getStyle().fontColor = Color.WHITE;
+    //headerLabel.setColor(Color.WHITE);
     saveTable.add(headerLabel).padBottom(20f);
     saveTable.row();
 
@@ -139,12 +141,14 @@ public class SaveSelectionDisplay extends UIComponent {
     Table rowTable = new Table();
     
     Label nameLabel = new Label(saveFile.getName().replace(".json", ""), skin);
-    nameLabel.setColor(Color.WHITE);
+    nameLabel.getStyle().fontColor = Color.WHITE;
+    //nameLabel.setColor(Color.WHITE);
     
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     String dateStr = sdf.format(new Date(saveFile.lastModified()));
     Label dateLabel = new Label(dateStr, skin);
-    dateLabel.setColor(Color.WHITE);
+    dateLabel.getStyle().fontColor = Color.WHITE;
+    //dateLabel.setColor(Color.WHITE);
 
     TextButtonStyle customButtonStyle = createCustomButtonStyle();
     

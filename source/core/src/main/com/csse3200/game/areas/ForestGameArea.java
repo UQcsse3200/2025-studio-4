@@ -252,14 +252,25 @@ public class ForestGameArea extends GameArea {
 
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
-            // All waves complete - trigger victory!
-            logger.info("All waves completed! Victory!");
+            // All waves complete - trigger victory after 1 second delay!
+            logger.info("All waves completed! Victory in 1 second...");
+            
+            // Notify UI that all waves are complete (permanently disable button)
             if (MainGameScreen.ui != null) {
-                MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
-                if (winComponent != null) {
-                    winComponent.addActors();
-                }
+                MainGameScreen.ui.getEvents().trigger("allWavesComplete");
             }
+            
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if (MainGameScreen.ui != null) {
+                        MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+                        if (winComponent != null) {
+                            winComponent.addActors();
+                        }
+                    }
+                }
+            }, 1.0f);
         } else {
             // Start next wave after delay
             currentWaveIndex++;
@@ -710,6 +721,12 @@ public class ForestGameArea extends GameArea {
     }
 
     private void eliminateEnemy(Entity enemy) {
+        // Tank enemies are immune to plasma impact
+        EnemyTypeComponent enemyType = enemy.getComponent(EnemyTypeComponent.class);
+        if (enemyType != null && "tank".equalsIgnoreCase(enemyType.getType())) {
+            return;
+        }
+        
         CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
         if (stats != null) {
             stats.setHealth(0);

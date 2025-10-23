@@ -13,18 +13,36 @@ import com.csse3200.game.services.ServiceLocator;
  * Renders a subtle animated overlay to represent a slow-zone tile (e.g., swamp, ice).
  * The component procedurally generates a soft radial texture and pulsates its alpha/scale
  * to keep the effect lightweight without extra art assets.
+ * 
+ * @author Team1
+ * @since Sprint 4
  */
 public class SlowZoneVisualComponent extends RenderComponent {
+  /** Cached texture region for all slow zone effects */
   private static TextureRegion cachedRegion;
 
+  /** Size of the tile this effect represents */
   private final float tileSize;
+  /** Color tint to apply to the effect */
   private final Color tint;
+  /** Time elapsed for animation calculations */
   private float elapsed = 0f;
 
+  /**
+   * Creates a slow zone visual effect with default white tint.
+   * 
+   * @param tileSize size of the tile in world units
+   */
   public SlowZoneVisualComponent(float tileSize) {
-    this(tileSize, new Color(0.05f, 0.22f, 0.08f, 1f));
+    this(tileSize, new Color(1.0f, 1.0f, 1.0f, 1f));
   }
 
+  /**
+   * Creates a slow zone visual effect with custom tint.
+   * 
+   * @param tileSize size of the tile in world units
+   * @param tint color tint to apply to the effect
+   */
   public SlowZoneVisualComponent(float tileSize, Color tint) {
     this.tileSize = tileSize;
     this.tint = new Color(tint);
@@ -47,9 +65,8 @@ public class SlowZoneVisualComponent extends RenderComponent {
       return;
     }
 
-    float pulse = 0.55f + 0.25f * MathUtils.sin(elapsed * 3.1f);
-    pulse = MathUtils.clamp(pulse, 0.3f, 0.9f);
-    float scale = 1f + 0.05f * MathUtils.sin(elapsed * 2.6f);
+    float pulse = 1.0f; // Set to opaque
+    float scale = 1.5f + 0.1f * MathUtils.sin(elapsed * 2.6f); // Increase base size
     float width = tileSize * scale;
     float height = tileSize * scale;
 
@@ -59,9 +76,9 @@ public class SlowZoneVisualComponent extends RenderComponent {
     Color previous = batch.getColor();
     batch.setColor(tint.r, tint.g, tint.b, pulse);
     batch.draw(cachedRegion, entity.getPosition().x + offsetX, entity.getPosition().y + offsetY, width, height);
-    float highlightAlpha = 0.25f + 0.15f * MathUtils.sin(elapsed * 2.4f + 1.3f);
-    batch.setColor(0.30f, 0.65f, 0.28f, MathUtils.clamp(highlightAlpha, 0.15f, 0.35f));
-    float innerScale = scale * 0.78f;
+    float highlightAlpha = 1.0f; // Set to opaque
+    batch.setColor(1.0f, 1.0f, 1.0f, highlightAlpha); // Change to white
+    float innerScale = scale * 0.85f; // Slightly adjust inner layer ratio
     float innerWidth = tileSize * innerScale;
     float innerHeight = tileSize * innerScale;
     float innerOffsetX = (tileSize - innerWidth) / 2f;
@@ -71,6 +88,10 @@ public class SlowZoneVisualComponent extends RenderComponent {
     batch.setColor(previous);
   }
 
+  /**
+   * Ensures the slow zone texture is created and cached.
+   * Creates a complex radial pattern with ripple effects procedurally.
+   */
   private static void ensureRegion() {
     if (cachedRegion != null) {
       return;

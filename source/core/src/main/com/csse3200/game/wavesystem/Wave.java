@@ -111,6 +111,7 @@ public class Wave {
     
     /**
      * Gets the total number of enemies in this wave.
+     * Note: Dividers count as 4 (1 parent + 3 children)
      */
     public int getTotalEnemies() {
         return numDrones + numGrunts + numTanks + numBosses + (numDividers * 4) + numSpeeders;

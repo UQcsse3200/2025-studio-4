@@ -16,6 +16,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,10 +36,14 @@ public class GruntEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/grunt_enemy.png";
     private static final String DEFAULT_NAME = "Grunt Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.7f;
+    private static final String GRUNT_WALK_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Walk.mp3";
+    private static final String GRUNT_ATTACK_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Attack.wav";
+    private static final String GRUNT_DEATH_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Death.mp3";
+    private static final String GRUNT_AMBIENT_SOUND = "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
-    CurrencyType.METAL_SCRAP, 100,
-    CurrencyType.TITANIUM_CORE, 50,
-    CurrencyType.NEUROCHIP, 15
+    CurrencyType.METAL_SCRAP, 35,
+    CurrencyType.TITANIUM_CORE, 30,
+    CurrencyType.NEUROCHIP, 25
     );
     private static final int DEFAULT_POINTS = 150;
     private static final float SPEED_EPSILON = 0.001f;
@@ -88,7 +93,14 @@ public class GruntEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("grunt"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius))
-            .addComponent(new SlowEffectComponent()); // 添加减速特效组件
+            .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+            .addComponent(new SlowEffectComponent()) 
+            .addComponent(new EnemySoundComponent(
+                ServiceLocator.getResourceService().getAsset(GRUNT_WALK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(GRUNT_ATTACK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(GRUNT_DEATH_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(GRUNT_AMBIENT_SOUND, Sound.class)
+            ));
             CombatStatsComponent combatStats = grunt.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 
@@ -143,41 +155,50 @@ public class GruntEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         // Check which game area is active and use its counters
         if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
-            // We're in ForestGameArea2
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
         } else {
-            // Default to ForestGameArea (original behavior)
             ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
             ForestGameArea.checkEnemyCount();
         }
 
-        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        if (wc != null && wc.getPlayerRef() != null) {
-            Entity player = wc.getPlayerRef();
+        // Check if enemy reached the base
+        com.csse3200.game.components.ReachedBaseComponent reachedBaseComp = 
+            entity.getComponent(com.csse3200.game.components.ReachedBaseComponent.class);
+        boolean reachedBase = (reachedBaseComp != null && reachedBaseComp.hasReachedBase());
+        
+        //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " died. ReachedBase: " + reachedBase);
+        
+        if (!reachedBase) {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - DROPPING CURRENCY (killed by player)");
+            
+            WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+            if (wc != null && wc.getPlayerRef() != null) {
+                Entity player = wc.getPlayerRef();
 
-            // Drop currency upon defeat
-            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-            if (currencyManager != null) {
-                player.getEvents().trigger("dropCurrency", currencyDrops);
-            }
+                // Drop currency upon defeat
+                CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                if (currencyManager != null) {
+                    player.getEvents().trigger("dropCurrency", currencyDrops);
+                }
 
-            // Award points to player upon defeating enemy
-            PlayerScoreComponent totalScore = player.getComponent(PlayerScoreComponent.class);
-            if (totalScore != null) {
-                totalScore.addPoints(points);
-            }
+                // Add points to score
+                PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+                if (psc != null) {
+                    psc.addPoints(points);
+                }
 
-            // Track kill for ranking component
-            com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
-            if (prc != null) {
-                prc.addKill();
+                // Track kill for ranking component
+                com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+                if (prc != null) {
+                    prc.addKill();
+                }
             }
+        } else {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - NO CURRENCY (reached base)");
         }
 
         playDeathSound(deathSoundPath);
-        //Gdx.app.postRunnable(entity::dispose);
-        //Eventually add point/score logic here maybe?
     }
 
     private static void playDeathSound(String soundPath) {

@@ -47,8 +47,8 @@ public class SpeederEnemyFactoryTest {
         Entity speeder = SpeederEnemyFactory.createSpeederEnemy(waypointList, target, Difficulty.EASY);
         CombatStatsComponent stats = speeder.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(150, stats.getHealth());
-        assertEquals(45, stats.getBaseAttack());
+        assertEquals(100, stats.getHealth());
+        assertEquals(25, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.Electricity, stats.getWeaknesses());
         assertEquals(new Vector2(0.15f, 0.15f), SpeederEnemyFactory.getSpeed());
@@ -215,8 +215,8 @@ public class SpeederEnemyFactoryTest {
         Entity speeder = SpeederEnemyFactory.createSpeederEnemy(waypointList, target, Difficulty.HARD);
         CombatStatsComponent stats = speeder.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
-        assertEquals(600, stats.getHealth()); // 150 * 4 (HARD multiplier)
-        assertEquals(180, stats.getBaseAttack()); // 45 * 4 (HARD multiplier)
+        assertEquals(400, stats.getHealth()); // 100 * 4 (HARD multiplier)
+        assertEquals(100, stats.getBaseAttack()); // 25 * 4 (HARD multiplier)
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.Electricity, stats.getWeaknesses());
         assertEquals(new Vector2(0.15f, 0.15f), SpeederEnemyFactory.getSpeed());
@@ -246,9 +246,9 @@ public class SpeederEnemyFactoryTest {
         assertEquals(200, SpeederEnemyFactory.getHealth());
         // Setting health to 0 or negative should default
         SpeederEnemyFactory.setHealth(0);
-        assertEquals(150, SpeederEnemyFactory.getHealth());
+        assertEquals(100, SpeederEnemyFactory.getHealth());
         SpeederEnemyFactory.setHealth(-50);
-        assertEquals(150, SpeederEnemyFactory.getHealth());
+        assertEquals(100, SpeederEnemyFactory.getHealth());
     }
 
     @Test
@@ -258,8 +258,8 @@ public class SpeederEnemyFactoryTest {
         assertEquals(100, SpeederEnemyFactory.getDamage());
         // Setting damage to 0 or negative should default
         SpeederEnemyFactory.setDamage(0);
-        assertEquals(45, SpeederEnemyFactory.getDamage());
+        assertEquals(25, SpeederEnemyFactory.getDamage());
         SpeederEnemyFactory.setDamage(-20);
-        assertEquals(45, SpeederEnemyFactory.getDamage());
+        assertEquals(25, SpeederEnemyFactory.getDamage());
     }
 }

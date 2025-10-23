@@ -15,32 +15,32 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * 专属工程师的升级组件：
- * - 支持独立价格曲线、货币类型、等级上限（默认更贵）
- * - 触发：Enter/小键盘Enter 或 外部事件("requestUpgrade", playerEntity)
- * - 成功会广播("upgraded", level, currencyType, cost) 和 UI 刷新事件
+ * Engineer-only upgrade component:
+ * - Supports its own price curve, currency type, and max level (defaults to pricier settings)
+ * - Triggers via: Enter/Numpad Enter or external event ("requestUpgrade", playerEntity)
+ * - On success broadcasts ("upgraded", level, currencyType, cost) and UI refresh events
  */
 public class EngineerUpgradeComponent extends Component {
-    /** 当前等级（从1开始） */
+    /** Current level (starts at 1) */
     private int level = 1;
 
-    /** 升级价格曲线：数组长度 = 可升级次数。例：{300, 500} => 1->2=300, 2->3=500，最大等级=3 */
-    private int[] upgradeCosts = new int[]{1000}; // 默认：只升到2级，价格300（工程师贵点）
+    /** Upgrade price curve: array length = number of possible upgrades. e.g., {300, 500} => 1->2=300, 2->3=500, max level=3 */
+    private int[] upgradeCosts = new int[]{1000}; // Default: can only upgrade to level 2, price 1000 (engineer is pricier)
 
-    /** 货币类型（工程师默认用 METAL_SCRAP） */
+    /** Currency type (engineer uses METAL_SCRAP by default) */
     private CurrencyType currencyType = CurrencyType.METAL_SCRAP;
 
-    /** 音效设置（可选） */
+    /** SFX settings (optional) */
     private String upgradeSfxKey = "sounds/hero_upgrade.ogg";
     private float upgradeSfxVolume = 1.0f;
     private String shootSfxLevel2 = "sounds/hero_lv2_shot.ogg";
     private float shootSfxVolume = 1.0f;
 
-    /** 缓存玩家与钱包 */
+    /** Cached player and wallet */
     private Entity player;
     private CurrencyManagerComponent wallet;
 
-    /** —— 可选注入：价格曲线与货币 —— */
+    /** —— Optional injection: price curve and currency —— */
     public EngineerUpgradeComponent setUpgradeCosts(CurrencyType currency, int... costs) {
         if (currency != null) this.currencyType = currency;
         if (costs != null && costs.length > 0) {
@@ -49,7 +49,7 @@ public class EngineerUpgradeComponent extends Component {
         return this;
     }
 
-    /** 可选注入：玩家引用（推荐在 spawn 时 attach，减少全局查找） */
+    /** Optional injection: player reference (recommended to attach at spawn to reduce global lookups) */
     public EngineerUpgradeComponent attachPlayer(Entity player) {
         this.player = player;
         this.wallet = (player != null) ? player.getComponent(CurrencyManagerComponent.class) : null;
@@ -71,7 +71,7 @@ public class EngineerUpgradeComponent extends Component {
 
     private static float clamp01(float v) { return Math.max(0f, Math.min(1f, v)); }
 
-    /** 获取最大等级 = 可升级次数 + 1 */
+    /** Get max level = number of upgrades + 1 */
     public int getMaxLevel() {
         return (upgradeCosts == null || upgradeCosts.length == 0) ? 1 : (upgradeCosts.length + 1);
     }
@@ -85,7 +85,7 @@ public class EngineerUpgradeComponent extends Component {
         return currencyType;
     }
 
-    /** 获取下一级价格（nextLevel 从2开始）；若越界返回 Integer.MAX_VALUE 以防误扣 */
+    /** Get cost for the next level (nextLevel starts from 2); if out of bounds, return Integer.MAX_VALUE to avoid accidental charges */
     private int getCostForLevel(int nextLevel) {
         if (upgradeCosts == null) return Integer.MAX_VALUE;
         int idx = nextLevel - 2;
@@ -95,7 +95,7 @@ public class EngineerUpgradeComponent extends Component {
 
     @Override
     public void create() {
-        // 允许外部事件触发升级（UI按钮等）
+        // Allow external events to trigger upgrades (UI buttons, etc.)
         entity.getEvents().addListener("requestUpgrade", (Entity p) -> {
             if (p != null && p != this.player) attachPlayer(p);
             tryUpgrade();
@@ -155,7 +155,7 @@ public class EngineerUpgradeComponent extends Component {
             applyLv2ShootSfx();
         }
 
-        // 广播新数值给 UI
+        // Broadcast new stats to the UI
         entity.getEvents().trigger("hero.level", level);
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
@@ -163,9 +163,10 @@ public class EngineerUpgradeComponent extends Component {
         }
     }
 
-    /** 工程师的成长：你也可以定制成跟通用英雄不同 */
+    /** Engineer growth: you can also customize this differently from generic heroes */
     private void applyStatGrowth(int newLevel) {
-        // 示例：工程师主打召唤，不强调伤害；这里维持基础攻击在 10，并把攻速提到 1.1s -> 0.9s
+        // Example: Engineer focuses on summoning rather than damage; here we keep base attack at 10
+        // and improve attack speed from 1.1s -> 0.9s
         CombatStatsComponent stats = entity.getComponent(CombatStatsComponent.class);
         if (stats != null) {
             stats.setBaseAttack(50);
@@ -177,7 +178,7 @@ public class EngineerUpgradeComponent extends Component {
         }
     }
 
-    /** 找玩家（带钱包）的回退策略 */
+    /** Fallback strategy to find a player (with a wallet) */
     private Entity findPlayerEntity() {
         for (Entity e : ServiceLocator.getEntityService().getEntities()) {
             if (e.getComponent(com.csse3200.game.components.player.PlayerActions.class) != null &&
@@ -216,7 +217,7 @@ public class EngineerUpgradeComponent extends Component {
         }
     }
 
-    // 对外只读（可选）
+    // Public read-only accessors (optional)
     public int getLevel() { return level; }
     public CurrencyManagerComponent getWallet() { return wallet; }
     public Entity getPlayer() { return player; }

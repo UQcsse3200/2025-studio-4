@@ -93,7 +93,7 @@ public class BookComponent {
                             baseStats.titaniumCoreCost,
                             baseStats.neurochipCost,
                             wrapper.lore,
-                            baseStats.image,
+                            baseStats.icon,
                             wrapper.locked
                     ));
                 }

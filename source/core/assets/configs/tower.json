@@ -14,12 +14,12 @@
       "projectileSpeed": 4.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/bone_projectile.png",
-      "image": "images/towers/bones/bonelvl1.png"
+      "image": "images/towers/bones/bonelvl1.png",
+      "icon": "images/towers/bones/boneicon.png"
     }
   },
   "dinoTower": {
     "name": "Dino",
-    "locked": true,
     "lore": "Forged from the bones and scales of ancient beasts, Dino Towers launch fireballs that scorch everything in their path. Their ferocious roars echo across the battlefield, intimidating foes before they even reach your defenses.",
     "base": {
       "level_A": 1,
@@ -33,7 +33,8 @@
       "projectileSpeed": 2,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/fireballdino.png",
-      "image": "images/towers/dino/dinolvl1.png"
+      "image": "images/towers/dino/dinolvl1.png",
+      "icon": "images/towers/dino/dinoicon.png"
     }
   },
   "cavemenTower": {
@@ -51,7 +52,8 @@
       "projectileSpeed": 6.0,
       "projectileLife": 4,
       "projectileTexture": "images/towers/projectile animations/caveman bullet.png",
-      "image": "images/towers/cavemen/lvl1/caveman_lvl1.png"
+      "image": "images/towers/cavemen/lvl1/caveman_lvl1.png",
+      "icon": "images/towers/cavemen/cavemenicon.png"
     }
   },
   "pterodactylTower": {
@@ -69,7 +71,8 @@
       "projectileSpeed": 15.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/spike.png",
-      "image": "images/towers/pteradactyl/perolvl1.png"
+      "image": "images/towers/pteradactyl/perolvl1.png",
+      "icon": "images/towers/pteradactyl/pterodactylicon.png"
     }
   },
   "supercavemenTower": {
@@ -87,7 +90,8 @@
       "projectileSpeed": 10.0,
       "projectileLife": 4,
       "projectileTexture": "images/towers/projectile animations/lazer.png",
-      "image": "images/towers/super/superlvl1.png"
+      "image": "images/towers/super/superlvl1.png",
+      "icon": "images/towers/super/supercavemenicon.png"
     }
   },
   "totemTower": {
@@ -105,7 +109,8 @@
       "projectileSpeed": 0.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/crystal.png",
-      "image": "images/towers/totem/totemlvl1.png"
+      "image": "images/towers/totem/totemlvl1.png",
+      "icon": "images/towers/totem/totemicon.png"
     }
   },
   "bankTower": {
@@ -123,7 +128,8 @@
       "projectileSpeed": 0,
       "projectileLife": 0,
       "projectileTexture": "",
-      "image": "images/towers/bank/banklvl1.png"
+      "image": "images/towers/bank/banklvl1.png",
+      "icon": "images/towers/bank/bankicon.png"
     }
   },
   "raftTower": {
@@ -140,8 +146,9 @@
       "neurochipCost": 0,
       "projectileSpeed": 5.0,
       "projectileLife": 2,
-      "projectileTexture": "images/towers/projectile animations/raftproj.png",
-      "image": "images/towers/viking/vikinglvl1.png"
+      "projectileTexture": "images/towers/projectile animations/arrow.png",
+      "image": "images/towers/viking/archerlvl1.png",
+      "icon": "images/towers/viking/rafticon.png"
     }
   },
   "frozenmamoothskullTower": {
@@ -154,12 +161,13 @@
       "range": 1.5,
       "cooldown": 1.3,
       "metalScrapCost": 0,
-      "titaniumCoreCost": 300,
+      "titaniumCoreCost": 500,
       "neurochipCost": 0,
       "projectileSpeed": 6.0,
       "projectileLife": 1,
       "projectileTexture": "images/towers/projectile animations/icecube.png",
-      "image": "images/towers/mammoth/frozenmamoothskull.png"
+      "image": "images/towers/mammoth/frozenmamoothskull.png",
+      "icon": "images/towers/mammoth/frozenmamoothskullicon.png"
     }
   },
   "bouldercatapultTower": {
@@ -168,22 +176,22 @@
     "base": {
       "level_A": 1,
       "level_B": 1,
-      "damage": 40,
-      "range": 7.0,
-      "cooldown": 2.0,
+      "damage": 4,
+      "range": 6.0,
+      "cooldown": 4.0,
       "metalScrapCost": 0,
       "titaniumCoreCost": 500,
       "neurochipCost": 0,
       "projectileSpeed": 8.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/rockcatapault.png",
-      "image": "images/towers/catapault/catapaultlvl1.png"
+      "image": "images/towers/catapault/catapaultlvl1.png",
+      "icon": "images/towers/catapault/bouldercatapulticon.png"
     }
   },
   "villageshamanTower": {
     "name": "Village Shaman",
     "lore": "The Village Shaman Tower draws its strength from ancient spirits and forgotten rituals. Guided by wisdom older than time, its chants summon lightning and energy from the skies, striking down enemies with divine precision.",
-    "locked": true,
     "base": {
       "level_A": 1,
       "level_B": 1,
@@ -196,7 +204,8 @@
       "projectileSpeed": 5.0,
       "projectileLife": 2,
       "projectileTexture": "images/towers/projectile animations/magic.png",
-      "image": "images/towers/shaman/charmanlvl1.png"
+      "image": "images/towers/shaman/charmanlvl1.png",
+      "icon": "images/towers/shaman/villageshamanicon.png"
     }
   }
 }

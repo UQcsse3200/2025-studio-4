@@ -12,9 +12,10 @@ public class EnemyConfig {
         public EnemyStats droneEnemy;
         public EnemyStats gruntEnemy;
         public EnemyStats tankEnemy;
+        public EnemyStats speederEnemy;
 
         public List<EnemyStats> getAllEnemies() {
-            return List.of(bossEnemy, dividerEnemy, dividerChildEnemy, droneEnemy, gruntEnemy, tankEnemy);
+            return List.of(bossEnemy, dividerEnemy, dividerChildEnemy, droneEnemy, gruntEnemy, tankEnemy, speederEnemy);
         }
     }
 

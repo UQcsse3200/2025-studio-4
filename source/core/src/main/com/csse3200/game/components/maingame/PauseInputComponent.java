@@ -39,7 +39,7 @@ public class PauseInputComponent extends UIComponent {
      * Returns true if the key is handled; otherwise false.
      */
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) {
+        if ((keycode == Input.Keys.ESCAPE || keycode == Input.Keys.P) && stage.getKeyboardFocus() == null) {
             // Trigger event so external listeners (and our own listener) respond consistently
             entity.getEvents().trigger("togglePause");
             return true;
@@ -80,6 +80,7 @@ public class PauseInputComponent extends UIComponent {
 
         // Hide overlay first
         entity.getEvents().trigger("hidePauseUI");
+        entity.getEvents().trigger("hideSaveMenuOnly");
 
         // Tell everyone we resumed so AI can REPATH from current tile
         broadcast("gameResumed");

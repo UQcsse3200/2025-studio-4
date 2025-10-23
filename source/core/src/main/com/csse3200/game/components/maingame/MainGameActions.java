@@ -130,8 +130,19 @@ public class MainGameActions extends Component {
       logger.error("Error submitting defeat score", e);
     }
     
-    // 切换到游戏结束屏幕或主菜单
-    game.setScreen(GdxGame.ScreenType.MAIN_MENU);
+    // Get current map ID
+    String currentMapId = null;
+    try {
+      var gameStateService = ServiceLocator.getGameStateService();
+      if (gameStateService != null) {
+        currentMapId = gameStateService.getCurrentMapId();
+      }
+    } catch (Exception e) {
+      logger.error("Error getting current map ID", e);
+    }
+    
+    // Switch to defeat screen with current map ID
+    game.setScreen(GdxGame.ScreenType.DEFEAT, false, currentMapId);
   }
   
   /**
@@ -154,7 +165,19 @@ public class MainGameActions extends Component {
       logger.error("Error submitting victory score", e);
     }
     
-    game.setScreen(GdxGame.ScreenType.VICTORY);
+    // Get current map ID
+    String currentMapId = null;
+    try {
+      var gameStateService = ServiceLocator.getGameStateService();
+      if (gameStateService != null) {
+        currentMapId = gameStateService.getCurrentMapId();
+      }
+    } catch (Exception e) {
+      logger.error("Error getting current map ID", e);
+    }
+    
+    // Switch to victory screen with current map ID
+    game.setScreen(GdxGame.ScreenType.VICTORY, false, currentMapId);
   }
   
   /**
@@ -230,6 +253,8 @@ public class MainGameActions extends Component {
                 if (success) {
                   logger.info("Saved as '{}' successfully", name);
                   entity.getEvents().trigger("showSaveSuccess");
+
+                    entity.getEvents().trigger("resume"); //unpause after save
                 } else {
                   entity.getEvents().trigger("showSaveError");
                 }
@@ -239,7 +264,8 @@ public class MainGameActions extends Component {
               }
             }
             @Override public void onCancelled() { 
-              // Dialog cancelled, no action needed
+              // Dialog cancelled, unpause
+                entity.getEvents().trigger("resume");
             }
           }
       );

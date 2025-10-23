@@ -31,30 +31,16 @@ public class OpeningCutsceneScreen implements Screen {
     private float timeElapsed = 0f;
     private boolean cutsceneFinished = false;
     
-    // Background options
-    private static final String[] BACKGROUND_OPTIONS = {
-        "images/Opening_Cutscene_Screen.png",
-        "images/dim_bg.jpeg",
-        "images/main_menu_background.png", 
-        "images/desert.png",
-        "images/snow.png",
-        "images/terrain_ortho.png"
-    };
-    private String selectedBackground = "images/Opening_Cutscene_Screen.png";
-    
     // UI Elements
     private Image backgroundImage;
-    private Image logoImage;
     
     private Table mainTable;
     
     // Animation timing
-    private float logoDuration = 3f;
-    private float blackScreenDelay = 1f; // 1 second after logo
-    private float fadeDuration = 2f;
+    private float backgroundDisplayDuration = 3f;
+    private float fadeDuration = 1f;
     
     // Animation states
-    private boolean logoShown = false;
     private boolean backgroundFaded = false;
     private boolean scrollTextStarted = false;
     private boolean scrollTextFinished = false;
@@ -77,35 +63,9 @@ public class OpeningCutsceneScreen implements Screen {
     
     
     public OpeningCutsceneScreen(GdxGame game) {
-        this(game, BACKGROUND_OPTIONS[0]);
-    }
-    
-    public OpeningCutsceneScreen(GdxGame game, String backgroundPath) {
         this.game = game;
-        this.selectedBackground = backgroundPath;
         initializeServices();
         setupCutscene();
-    }
-    
-    /**
-
-     * @param game
-     * @param backgroundIndex
-     * @return
-     */
-    public static OpeningCutsceneScreen withBackground(GdxGame game, int backgroundIndex) {
-        if (backgroundIndex < 0 || backgroundIndex >= BACKGROUND_OPTIONS.length) {
-            backgroundIndex = 0;
-        }
-        return new OpeningCutsceneScreen(game, BACKGROUND_OPTIONS[backgroundIndex]);
-    }
-    
-    /**
-
-     * @return
-     */
-    public static String[] getAvailableBackgrounds() {
-        return BACKGROUND_OPTIONS.clone();
     }
     
     private void initializeServices() {
@@ -129,8 +89,7 @@ public class OpeningCutsceneScreen implements Screen {
         ResourceService resourceService = ServiceLocator.getResourceService();
         
         String[] textures = {
-            selectedBackground,
-            "images/logo.png",
+            "images/Opening_Cutscene_Screen.jpg",
             "images/box_boy.png"
         };
         
@@ -141,7 +100,7 @@ public class OpeningCutsceneScreen implements Screen {
     private void createUI() {
         // Background
         backgroundImage = new Image(ServiceLocator.getResourceService()
-            .getAsset(selectedBackground, Texture.class));
+            .getAsset("images/Opening_Cutscene_Screen.jpg", Texture.class));
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
         
@@ -150,31 +109,25 @@ public class OpeningCutsceneScreen implements Screen {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
         
-        // Logo
-        logoImage = new Image(ServiceLocator.getResourceService()
-            .getAsset("images/logo.png", Texture.class));
-        logoImage.setSize(300, 150);
-        logoImage.addAction(Actions.alpha(0f)); // Start invisible
-        mainTable.add(logoImage).center().padBottom(50f);
-        mainTable.row();
-        
         // Scrolling text setup
         setupScrollingText();
     }
     
     private void setupScrollingText() {
-        String scrollText = "Year 2157. The AI Uprising has devastated Earth...\n\n" +
-                           "After humanity lost control of its own creations,\n" +
-                           "corrupted military AI systems turned their weapons against their makers.\n\n" +
-                           "You are Commander, tasked with defending the last two strongholds:\n" +
-                           "The Forest Demo Sector - a winding maze of natural barriers,\n" +
-                           "and Map Two Sector - an open battlefield testing your strategic mastery.\n\n" +
-                           "Face relentless waves: swift Drone swarms from neon megacities,\n" +
-                           "mass-produced Grunt cyber-soldiers, armored Tank siegebreakers,\n" +
-                           "unstable Dividers that split into deadly offspring,\n" +
-                           "and the corrupted Boss - once humanity's defender, now its greatest threat.\n\n" +
-                           "Deploy defensive towers, command elite hero units,\n" +
-                           "and hold the line. The fate of humanity rests in your hands!";
+        String scrollText = "The world has fallen.\n" +
+                           "AI machines have conquered Earth and destroyed our cities.\n\n" +
+                           "But in the frozen land of Icebox,\n" +
+                           "human sorcerers discovered something the machines cannot touch:\n" +
+                           "Magic.\n\n" +
+                           "Using the power of frost and flame,\n" +
+                           "humanity has awakened an ancient force.\n" +
+                           "For the first time, we can fight back.\n\n" +
+                           "Your mission: Lead the rebellion from Icebox,\n" +
+                           "break through enemy defenses,\n" +
+                           "and destroy the AI fortress at Ascent.\n\n" +
+                           "Deploy your towers. Command your heroes.\n" +
+                           "The fate of humanity is in your hands.\n\n" +
+                           "The battle for Earth begins now.";
         
         // Create a custom font for better rendering
         scrollFont = new BitmapFont();
@@ -281,24 +234,16 @@ public class OpeningCutsceneScreen implements Screen {
     }
     
     private void updateAnimation(float delta) {
-        // Logo fade in
-        if (timeElapsed >= 1f && !logoShown) {
-            logoImage.addAction(Actions.fadeIn(1f));
-            logoShown = true;
-        }
-        
-        // Fade background and logo to black after logo is shown
-        if (timeElapsed >= logoDuration + blackScreenDelay && !backgroundFaded) {
-            backgroundImage.addAction(Actions.fadeOut(1f));
-            logoImage.addAction(Actions.fadeOut(1f));
+        // Fade background to black after display duration
+        if (timeElapsed >= backgroundDisplayDuration && !backgroundFaded) {
+            backgroundImage.addAction(Actions.fadeOut(fadeDuration));
             backgroundFaded = true;
         }
         
         // Start scrolling text after background fades
-        if (timeElapsed >= logoDuration + blackScreenDelay + 1f && !scrollTextStarted) {
+        if (timeElapsed >= backgroundDisplayDuration + fadeDuration && !scrollTextStarted) {
             scrollLabel.addAction(Actions.fadeIn(1f));
             scrollTextStarted = true;
-            // Show skip hint when text starts
             skipLabel.addAction(Actions.fadeIn(1f));
         }
         
@@ -336,6 +281,15 @@ public class OpeningCutsceneScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        
+        if (scrollLabel != null) {
+            scrollLabel.setWidth(width * 0.7f);
+            scrollLabel.setX((width - scrollLabel.getWidth()) / 2f);
+        }
+        
+        if (skipLabel != null) {
+            skipLabel.setPosition(width / 2f - skipLabel.getWidth() / 2f, 20f);
+        }
     }
     
     @Override
@@ -351,7 +305,6 @@ public class OpeningCutsceneScreen implements Screen {
     @Override
     public void hide() {
         logger.info("Opening cutscene hidden");
-        // 恢复InputService作为输入处理器
         if (ServiceLocator.getInputService() != null) {
             Gdx.input.setInputProcessor(ServiceLocator.getInputService());
             logger.info("Restored InputService as input processor");

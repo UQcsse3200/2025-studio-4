@@ -163,9 +163,9 @@ public class HeroTurretAttackComponent extends Component {
 
         int dmg = computeDamageFromStats();
 
-        final Entity bullet = ProjectileFactory.createBullet(
-                bulletTexture, firePos, vx, vy, bulletLife, dmg
-        );
+      final Entity bullet = ProjectileFactory.createBullet(
+              bulletTexture, firePos, vx, vy, bulletLife, dmg, true
+      );
 
         var es = ServiceLocator.getEntityService();
         if (es != null) {
@@ -224,9 +224,9 @@ public class HeroTurretAttackComponent extends Component {
                 } catch (Throwable ignored) {}
                 if (s != null) {
                     long id = s.play(vol);
-                    Gdx.app.log("HeroTurretSFX",
-                            "Played via ResourceService: key=" + key + ", id=" + id + ", vol=" + vol
-                                    + (overrideShootSfxKey != null ? " (override)" : ""));
+                    // Gdx.app.log("HeroTurretSFX",
+                    //         "Played via ResourceService: key=" + key + ", id=" + id + ", vol=" + vol
+                    //                 + (overrideShootSfxKey != null ? " (override)" : ""));
                     sfxCooldown = shootSfxMinInterval;
                     return;
                 } else {

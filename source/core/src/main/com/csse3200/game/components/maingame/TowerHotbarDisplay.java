@@ -39,6 +39,15 @@ public class TowerHotbarDisplay extends UIComponent {
     private Texture bgTexture;
     private Texture transparentBtnTexture;
 
+    // Cache UI for relayout
+    private Container<Table> rootContainer;
+    private Table buttonTable;
+    private ScrollPane scrollPane;
+    private Label title;
+    private ImageButton placeholderBtn;
+    private ImageButton[] allButtonsArr;
+    private int lastScreenW = -1, lastScreenH = -1;
+
     private static final Color GREYED_OUT_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.5f);
     private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f);
     private static final float UPDATE_INTERVAL = 0.5f; // Update button states every 0.5 seconds
@@ -59,7 +68,8 @@ public class TowerHotbarDisplay extends UIComponent {
         TOWER_COSTS.put("totem", createCostMap(0, 150, 0));
         TOWER_COSTS.put("bank", createCostMap(0, 200, 0));
         TOWER_COSTS.put("raft", createCostMap(0, 250, 0));
-        TOWER_COSTS.put("frozenmamoothskull", createCostMap(0, 300, 0));
+        // Change: ungray Frozen Mammoth Skull at 500 Titanium Core
+        TOWER_COSTS.put("frozenmamoothskull", createCostMap(0, 500, 0));
         TOWER_COSTS.put("bouldercatapult", createCostMap(0, 500, 0));
         TOWER_COSTS.put("villageshaman", createCostMap(0, 0, 500));
         TOWER_COSTS.put("supercavemen", createCostMap(0, 0, 1000));
@@ -89,11 +99,12 @@ public class TowerHotbarDisplay extends UIComponent {
         bgTexture = buildSolidTexture(new Color(0.15f, 0.15f, 0.18f, 0.6f));
         Drawable backgroundDrawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
 
-        Container<Table> container = new Container<>();
-        container.setBackground(backgroundDrawable);
-        container.pad(screenWidth * 0.0025f);
+        // Use field so we can resize later
+        rootContainer = new Container<>();
+        rootContainer.setBackground(backgroundDrawable);
+        rootContainer.pad(screenWidth * 0.0025f);
 
-        Label title = new Label("TOWERS", skin, "title");
+        title = new Label("TOWERS", skin, "title");
         title.setAlignment(Align.center);
         title.getStyle().fontColor = Color.valueOf("#FFFFFF");
 
@@ -131,9 +142,10 @@ public class TowerHotbarDisplay extends UIComponent {
         transparentStyle.down = transparentDrawable;
         transparentStyle.over = transparentDrawable;
         transparentStyle.checked = transparentDrawable;
-        ImageButton placeholderBtn = new ImageButton(transparentStyle);
+        placeholderBtn = new ImageButton(transparentStyle);
 
-        ImageButton[] allButtons = {
+        // Store array for rebuilds
+        allButtonsArr = new ImageButton[] {
                 boneBtn, dinoBtn, cavemenBtn, pteroBtn, totemBtn, bankBtn,
                 raftBtn, frozenmamoothskullBtn, bouldercatapultBtn, villageshamanBtn,
                 superCavemenBtn, placeholderBtn
@@ -165,29 +177,23 @@ public class TowerHotbarDisplay extends UIComponent {
         addPlacementListener(villageshamanBtn, "villageshaman");
         addPlacementListener(superCavemenBtn, "supercavemen");
 
-        // Button grid
-        Table buttonTable = new Table();
-        float BUTTON_W = screenWidth * 0.072f;
-        float BUTTON_H = screenHeight * 0.112f;
-        float BUTTON_PAD = screenWidth * 0.001f;
-        buttonTable.defaults().pad(BUTTON_PAD).center();
-
-        for (int i = 0; i < allButtons.length; i++) {
-            buttonTable.add(allButtons[i]).size(BUTTON_W, BUTTON_H);
-            if ((i + 1) % 3 == 0) buttonTable.row();
-        }
+        // Button grid table (kept as field for rebuild)
+        buttonTable = new Table();
+        rebuildButtonGrid(); // initial build with current size
 
         Table content = new Table();
         content.add(title).colspan(3).center().padBottom(screenHeight * 0.006f).row();
 
-        ScrollPane scrollPane = new ScrollPane(buttonTable, skin);
+        scrollPane = new ScrollPane(buttonTable, skin);
         scrollPane.setScrollingDisabled(true, false);
         scrollPane.setFadeScrollBars(false);
         content.add(scrollPane).colspan(3).center().expand().fill();
 
-        container.setActor(content);
+        rootContainer.setActor(content);
 
-        rootTable.add(container)
+        // Initial layout based on current screen size
+        rootTable.clearChildren();
+        rootTable.add(rootContainer)
                 .width(screenWidth * 0.232f)
                 .height(screenHeight * 0.55f);
         stage.addActor(rootTable);
@@ -201,12 +207,65 @@ public class TowerHotbarDisplay extends UIComponent {
         Gdx.input.setInputProcessor(multiplexer);
 
         applyUiScale();
-        
+
         // 应用初始可见性状态
         rootTable.setVisible(isVisible);
 
         // Initial button state update
         updateButtonAffordability();
+
+        lastScreenW = (int) screenWidth;
+        lastScreenH = (int) screenHeight;
+    }
+
+    // Rebuild the 3-column button grid with sizes derived from current screen size
+    private void rebuildButtonGrid() {
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+        if (screenWidth <= 0 || screenHeight <= 0) return;
+
+        float BUTTON_W = screenWidth * 0.072f;
+        float BUTTON_H = screenHeight * 0.112f;
+        float BUTTON_PAD = screenWidth * 0.001f;
+
+        buttonTable.clearChildren();
+        buttonTable.defaults().pad(BUTTON_PAD).center();
+        for (int i = 0; i < allButtonsArr.length; i++) {
+            buttonTable.add(allButtonsArr[i]).size(BUTTON_W, BUTTON_H);
+            if ((i + 1) % 3 == 0) buttonTable.row();
+        }
+        buttonTable.invalidateHierarchy();
+    }
+
+    // Relayout sizes for container and title padding when the window size changes
+    private void relayoutForScreen() {
+        float screenWidth = Gdx.graphics.getWidth();
+        float screenHeight = Gdx.graphics.getHeight();
+        if (screenWidth <= 0 || screenHeight <= 0) return;
+
+        // Update container padding
+        if (rootContainer != null) {
+            rootContainer.pad(screenWidth * 0.0025f);
+        }
+
+        // Update title spacing
+        if (title != null && title.getParent() instanceof Table) {
+            Table parent = (Table) title.getParent();
+            // Re-apply bottom pad on the title row
+            parent.getCell(title).padBottom(screenHeight * 0.006f);
+        }
+
+        // Rebuild buttons with new sizes
+        rebuildButtonGrid();
+
+        // Re-apply root container size
+        if (rootTable != null) {
+            rootTable.clearChildren();
+            rootTable.add(rootContainer)
+                    .width(screenWidth * 0.232f)
+                    .height(screenHeight * 0.55f);
+            rootTable.invalidateHierarchy();
+        }
     }
 
     /**
@@ -365,6 +424,15 @@ public class TowerHotbarDisplay extends UIComponent {
         if (timeSinceLastUpdate >= UPDATE_INTERVAL) {
             updateButtonAffordability();
             timeSinceLastUpdate = 0f;
+        }
+
+        // Responsive relayout on window resize/minimize/maximize
+        int w = Gdx.graphics.getWidth();
+        int h = Gdx.graphics.getHeight();
+        if (w != lastScreenW || h != lastScreenH) {
+            lastScreenW = w;
+            lastScreenH = h;
+            relayoutForScreen();
         }
     }
 

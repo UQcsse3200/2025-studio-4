@@ -50,7 +50,7 @@ class BookComponentTest {
         assertEquals("images/boss_enemy.png", boss.image);
 
         // Optionally check all enemies are loaded
-        assertEquals(6, enemyConfig.getAllEnemies().size());
+        assertEquals(7, enemyConfig.getAllEnemies().size());
     }
 
     @Test
@@ -74,7 +74,7 @@ class BookComponentTest {
     @Test
     void shouldGetEnemyDecks() {
         enemyBook = new BookComponent.EnemyBookComponent();
-        assertEquals(6, enemyBook.getDecks().size());
+        assertEquals(7, enemyBook.getDecks().size());
     }
 
     @Test

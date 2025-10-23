@@ -206,28 +206,28 @@ public class MapEditor extends InputAdapter implements IMapEditor {
         keyWaypoints.add(new GridPoint2(0, 10));    // Start
         keyWaypoints.add(new GridPoint2(5, 10));    // First turn
         keyWaypoints.add(new GridPoint2(5, 6));     // Up turn completed
-        keyWaypoints.add(new GridPoint2(6, 6));
-        keyWaypoints.add(new GridPoint2(7, 6));
-        keyWaypoints.add(new GridPoint2(8, 6));
-        keyWaypoints.add(new GridPoint2(9, 6));
-        keyWaypoints.add(new GridPoint2(12, 6));    // Walk to the right completed
+        keyWaypoints.add(new GridPoint2(10, 6));
+        keyWaypoints.add(new GridPoint2(11, 6));
+        keyWaypoints.add(new GridPoint2(12, 6));
+        keyWaypoints.add(new GridPoint2(12, 7));
         keyWaypoints.add(new GridPoint2(12, 12));   // Down turn completed
-        keyWaypoints.add(new GridPoint2(18, 12));
-        keyWaypoints.add(new GridPoint2(19, 12));
-        keyWaypoints.add(new GridPoint2(20, 12));
         keyWaypoints.add(new GridPoint2(21, 12));
+        keyWaypoints.add(new GridPoint2(22, 12));
+        keyWaypoints.add(new GridPoint2(23, 12));
+        keyWaypoints.add(new GridPoint2(24, 12));
         keyWaypoints.add(new GridPoint2(25, 12));   // Long distance to the right completed
         keyWaypoints.add(new GridPoint2(25, 6));    // Up turn completed
         keyWaypoints.add(new GridPoint2(32, 6));    // End - extended past base to ensure enemies reach it
-        Map<String, Float> speedModifiers = Map.of(
-            "6,6", 0.5f,
-            "7,6", 0.5f,
-            "8,6", 0.5f,
-            "9,6", 0.5f,
-            "18,12", 0.5f,
-            "19,12", 0.5f,
-            "20,12", 0.5f,
-            "21,12", 0.5f
+        Map<String, Float> speedModifiers = Map.ofEntries(
+            Map.entry("10,6", 0.5f),
+            Map.entry("11,6", 0.5f),
+            Map.entry("12,6", 0.5f),
+            Map.entry("12,7", 0.5f),
+            Map.entry("21,12", 0.5f),
+            Map.entry("22,12", 0.5f),
+            Map.entry("23,12", 0.5f),
+            Map.entry("24,12", 0.5f),
+            Map.entry("25,12", 0.5f)
         );
 
         // Mark key path points标记关键路径点
@@ -274,21 +274,26 @@ public class MapEditor extends InputAdapter implements IMapEditor {
 
         // water area
         int[][] waterArea = {
-                {21,23,10,19},
-                {24,26,16,19},
-                {25,31,18,20},
-                {27,31,21,22},
-                {20,24,9,12},
+                {21,26,13,19},
+                {23,40,17,21},
+                {28,31,21,23},
+                {20,24,9,11},
                 {18,22,6,9},
                 {0,12,0,2},
                 {13,21,0,1},
-                {0,4,4,9},
                 {22,24,0,2},
                 {25,31,0,1},
                 {30,32,2,5},
                 {30,32,6,7},
                 {17,22,0,4},
-                {32,33,0,5}
+                {32,33,0,5},
+                {21,26,9,11},
+                {24,26,13,16},
+                {24,26,7,8},
+                {21,23,6,8},
+                {29,31,0,3},
+                {29,31,18,22},
+                {26,28,16,17}
         };
 
         // Water tile
@@ -299,8 +304,6 @@ public class MapEditor extends InputAdapter implements IMapEditor {
                 }
             }
         }
-
-
 
         // generatePlaceableAreas();
         System.out.println("✅ Fixed path generated, number=" + pathTiles.size());

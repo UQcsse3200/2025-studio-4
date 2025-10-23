@@ -86,6 +86,7 @@ public class DividerChildEnemyFactory {
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius))
             .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+            .addComponent(new SlowEffectComponent())
             .addComponent(new EnemySoundComponent(
                 ServiceLocator.getResourceService().getAsset(DIVIDER_WALK_SOUND, Sound.class),
                 ServiceLocator.getResourceService().getAsset(DIVIDER_ATTACK_SOUND, Sound.class),

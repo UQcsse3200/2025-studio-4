@@ -105,6 +105,7 @@ public class GameStateService {
      * Allowed BODY skins per hero.
      */
     private final Map<HeroType, String[]> availableSkins = new HashMap<>();
+    private volatile boolean readyPromptFinished = false;
 
     /**
      * Constructs the runtime game state with default values.
@@ -441,6 +442,17 @@ public class GameStateService {
     // Map tracking
     // -------------------------------
 
+    public void resetReadyPromptFinished() {
+        readyPromptFinished = false;
+    }
+
+    public void markReadyPromptFinished() {
+        readyPromptFinished = true;
+    }
+
+    public boolean isReadyPromptFinished() {
+        return readyPromptFinished;
+    }
     /**
      * Sets the identifier of the current map.
      * Example: "MapTwo" for level 2; {@code null} can represent the default map (level 1).

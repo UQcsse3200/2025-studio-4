@@ -94,8 +94,8 @@ public class BookDisplay extends UIComponent {
         rightTable.setFillParent(true);
         rightTable.top().right()
                 .padLeft(stage.getViewport().getWorldWidth() * 0.2f)
-                .padTop(stage.getViewport().getWorldHeight() * 0.08f)
-                .padRight(stage.getViewport().getWorldWidth()* 0.17f);
+                .padTop(stage.getViewport().getWorldHeight() * 0.15f)
+                .padRight(stage.getViewport().getWorldWidth()* 0.19f);
         addActors();
         stage.addActor(rightTable);
         this.entity.getEvents().addListener(eventName, this::renderRightDeck);
@@ -367,10 +367,10 @@ public class BookDisplay extends UIComponent {
         if (lore != null && !lore.isEmpty()) {
             String trimmedLore = trimWords(lore, maxWordsLore);
             Label loreLabel = new Label(trimmedLore, skin, "small"); // use a smaller style
-            loreLabel.setFontScale(stageWidth * 0.0008f);
+            loreLabel.setFontScale(stageWidth * 0.0006f); // Reduced from 0.0008f to make text smaller
             loreLabel.setWrap(true);
             rightTable.add(loreLabel)
-                    .width(stageWidth * 0.3f)
+                    .width(stageWidth * 0.25f) // Reduced from 0.3f to keep within book bounds
                     .center();
             rightTable.row().padTop(stageHeight * 0.02f);
         }

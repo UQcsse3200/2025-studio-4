@@ -93,9 +93,14 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">SamuraiSpinAttackComponent</span>
 <span class="extends-implements">extends <a href="../../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">负责：生成“剑”实体 + 安装三种攻击组件 + 处理输入并转发给控制器。
- 注意：SwordFactory.createSword(...) 需要只创建“视觉+物理”的剑，
- 不要再往里挂旧的 SwordJabPhysicsComponent。</div>
+<div class="block">Responsibilities:
+ - Spawn the "sword" entity (visual + physics only)
+ - Attach three attack components (jab / sweep / spin) to the sword
+ - Handle input and forward it to the controller
+ <p>
+ Notes:
+ - SwordFactory.createSword(...) MUST create ONLY the visual + physics sword.
+ Do NOT attach legacy components such as SwordJabPhysicsComponent inside the factory.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

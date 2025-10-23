@@ -1412,12 +1412,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/SwordFactory.html#createSword(com.csse3200.game.entities.Entity,com.csse3200.game.entities.configs.SamuraiConfig,java.lang.String,float,float)" class="member-name-link">createSword(Entity, SamuraiConfig, String, float, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordFactory.html" title="class in com.csse3200.game.entities.factories">SwordFactory</a></dt>
 <dd>
-<div class="block">创建“纯可视 + 物理”的剑实体，并配置冷却与等级同步。</div>
+<div class="block">Create a sword entity with only visuals and physics, and configure cooldowns and level sync.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/SwordFactory.html#createSword(com.csse3200.game.entities.Entity,java.lang.String,float,com.csse3200.game.entities.configs.SamuraiConfig,float)" class="member-name-link">createSword(Entity, String, float, SamuraiConfig, float)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordFactory.html" title="class in com.csse3200.game.entities.factories">SwordFactory</a></dt>
 <dd>
-<div class="block">旧签名：保留一个重载以兼容你现有调用处。
- （参数顺序与你当前使用一致：owner, cfg, swordTexture, radius, angularSpeedDeg）</div>
+<div class="block">Legacy signature: keep an overload to maintain compatibility with existing call sites.</div>
 </dd>
 <dt><a href="com/csse3200/game/entities/factories/SwordQiFactory.html#createSwordQi(com.badlogic.gdx.math.Vector2,float,float,float,int,float,float,java.lang.String,int,int,int,int,float,float,float,boolean)" class="member-name-link">createSwordQi(Vector2, float, float, float, int, float, float, String, int, int, int, int, float, float, float, boolean)</a> - Static method in class com.csse3200.game.entities.factories.<a href="com/csse3200/game/entities/factories/SwordQiFactory.html" title="class in com.csse3200.game.entities.factories">SwordQiFactory</a></dt>
 <dd>&nbsp;</dd>
@@ -5670,9 +5669,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" class="type-name-link" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a> - Class in <a href="com/csse3200/game/components/hero/samurai/package-summary.html">com.csse3200.game.components.hero.samurai</a></dt>
 <dd>
-<div class="block">负责：生成“剑”实体 + 安装三种攻击组件 + 处理输入并转发给控制器。
- 注意：SwordFactory.createSword(...) 需要只创建“视觉+物理”的剑，
- 不要再往里挂旧的 SwordJabPhysicsComponent。</div>
+<div class="block">Responsibilities:
+ - Spawn the "sword" entity (visual + physics only)
+ - Attach three attack components (jab / sweep / spin) to the sword
+ - Handle input and forward it to the controller</div>
 </dd>
 <dt><a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html#%3Cinit%3E(float,java.lang.String,com.csse3200.game.entities.configs.SamuraiConfig,com.badlogic.gdx.graphics.Camera)" class="member-name-link">SamuraiSpinAttackComponent(float, String, SamuraiConfig, Camera)</a> - Constructor for class com.csse3200.game.components.hero.samurai.<a href="com/csse3200/game/components/hero/samurai/SamuraiSpinAttackComponent.html" title="class in com.csse3200.game.components.hero.samurai">SamuraiSpinAttackComponent</a></dt>
 <dd>&nbsp;</dd>

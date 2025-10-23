@@ -2,114 +2,127 @@ package com.csse3200.game.components.mainmenu;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.areas.ForestGameArea;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.GameStateService;
+import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import com.csse3200.game.ui.UIStyleHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A ui component for displaying the Main menu.
+ * Main menu themed like Settings, with a smaller panel placed lower
+ * so the big game title remains visible above it.
  */
 public class MainMenuDisplay extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(MainMenuDisplay.class);
   private static final float Z_INDEX = 2f;
-  private Table table;
+
+  private static final String BG_TEX    = "images/main_menu_background.png";
+  private static final String PANEL_TEX = "images/settings_bg.png";
+  private static final String BTN_TEX   = "images/settings_bg_button.png";
+
+  private Table root;
 
   @Override
   public void create() {
     super.create();
+    ensureAssetsLoaded();
     addActors();
     ForestGameArea.NUM_ENEMIES_DEFEATED = 0;
     ForestGameArea.NUM_ENEMIES_TOTAL = 0;
   }
 
-  private void addActors() {
-    table = new Table();
-    table.setFillParent(true);
+  private void ensureAssetsLoaded() {
+    ResourceService rs = ServiceLocator.getResourceService();
+    rs.loadTextures(new String[]{
+        BG_TEX, PANEL_TEX, BTN_TEX,
+        "images/cogwheel2-modified.png", "images/book-modified.png",
+        "images/story3-modified.png", "images/rank-modified.png", "images/star.png"
+    });
+    rs.loadAll();
+  }
 
+  private void addActors() {
+    // Background
     Image backgroundImage =
-            new Image(
-                    ServiceLocator.getResourceService()
-                            .getAsset("images/main_menu_background.png", Texture.class));
+        new Image(ServiceLocator.getResourceService().getAsset(BG_TEX, Texture.class));
     backgroundImage.setFillParent(true);
     stage.addActor(backgroundImage);
 
-    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
-    TextButton startBtn = new TextButton("New Game", customButtonStyle);
-    TextButton loadBtn = new TextButton("Continue", customButtonStyle);
-    TextButton exitBtn = new TextButton("Exit", customButtonStyle);
-
-    ImageButton settingsBtn = createImageButton("images/settings.png", "Settings");
-    ImageButton bookBtn = createImageButton("images/book.png", "Book");
-    ImageButton storyBtn = createImageButton("images/story.png", "Story"); // Using same image for story
-    ImageButton rankingBtn = createImageButton("images/rank.png", "Ranking");
-
-    float buttonWidth = 200f;
-    float buttonHeight = 50f;
-    float imageButtonSize = 64f;
+    // Button style (same family as Settings)
+    TextButtonStyle buttonStyle = createSettingsButtonStyle();
+    TextButton startBtn = new TextButton("New Game", buttonStyle);
+    TextButton loadBtn  = new TextButton("Continue", buttonStyle);
+    TextButton exitBtn  = new TextButton("Exit", buttonStyle);
 
     startBtn.getLabel().setColor(Color.WHITE);
     loadBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
 
-    startBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Start button clicked");
-                entity.getEvents().trigger("start");
-              }
-            });
+    // Icon buttons
+    ImageButton settingsBtn = createImageButton("images/cogwheel2-modified.png", "settings");
+    ImageButton bookBtn     = createImageButton("images/book-modified.png", "book");
+    ImageButton storyBtn    = createImageButton("images/story3-modified.png", "story");
+    ImageButton rankingBtn  = createImageButton("images/rank-modified.png", "ranking");
 
-    loadBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Continue button clicked");
-                entity.getEvents().trigger("continue");
-              }
-            });
+    // === Listeners ===
+    startBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Start button clicked");
+        // Ensure a fresh game state (keep from non-game-ui branch)
+        ServiceLocator.registerGameStateService(new GameStateService());
+        entity.getEvents().trigger("start");
+      }
+    });
 
-    settingsBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Settings button clicked");
-                entity.getEvents().trigger("settings");
-              }
-            });
+    loadBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Continue button clicked");
+        entity.getEvents().trigger("continue");
+      }
+    });
 
-    rankingBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Ranking button clicked");
-                entity.getEvents().trigger("ranking");
-              }
-            });
+    exitBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Exit button clicked");
+        entity.getEvents().trigger("exit");
+      }
+    });
 
-    exitBtn.addListener(
-            new ChangeListener() {
-              @Override
-              public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Exit button clicked");
-                entity.getEvents().trigger("exit");
-              }
-            });
+    settingsBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Settings button clicked");
+        entity.getEvents().trigger("settings");
+      }
+    });
+
+    rankingBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Ranking button clicked");
+        entity.getEvents().trigger("ranking");
+      }
+    });
 
     bookBtn.addListener(new ChangeListener() {
       @Override
@@ -127,152 +140,114 @@ public class MainMenuDisplay extends UIComponent {
       }
     });
 
-    table.add().expandY().row();
+    // === Panel (smaller + tighter) ===
+    Texture panelTex = ServiceLocator.getResourceService().getAsset(PANEL_TEX, Texture.class);
+    NinePatch panelPatch = new NinePatch(new TextureRegion(panelTex), 20, 20, 20, 20);
 
-    table.add(startBtn).size(buttonWidth, buttonHeight).padTop(50f);
-    table.row();
-    table.add(loadBtn).size(buttonWidth, buttonHeight).padTop(20f);
-    table.row();
-    table.add(exitBtn).size(buttonWidth, buttonHeight).padTop(20f);
-    table.row();
+    final float PANEL_W = 410f;        // smaller frame
+    final float PANEL_H = 380f;        // shorter height (reveals more of game title)
 
-    HorizontalGroup imageButtonsGroup = new HorizontalGroup();
-    imageButtonsGroup.space(20);
-    Table settingsContainer = new Table();
-    Table bookContainer = new Table();
-    Table storyContainer = new Table();
-    Table rankingContainer = new Table();
+    Table panel = new Table(skin);
+    panel.setBackground(new NinePatchDrawable(panelPatch));
+    panel.pad(18f, 22f, 18f, 22f);
+    panel.defaults().pad(6f);
 
-    settingsContainer.add(settingsBtn).size(imageButtonSize, imageButtonSize);
-    bookContainer.add(bookBtn).size(imageButtonSize, imageButtonSize);
-    storyContainer.add(storyBtn).size(imageButtonSize, imageButtonSize);
-    rankingContainer.add(rankingBtn).size(imageButtonSize, imageButtonSize);
+    // Title (tucked up into the top band)
+    Label title = new Label("Main Menu", skin, "title");
+    title.setColor(Color.valueOf("CFF2FF"));
+    title.setAlignment(Align.center);
+    panel.add(title).expandX().padTop(-6f).padBottom(8f).row();
 
-    imageButtonsGroup.addActor(settingsContainer);
-    imageButtonsGroup.addActor(bookContainer);
-    imageButtonsGroup.addActor(storyContainer);
-    imageButtonsGroup.addActor(rankingContainer);
+    // Center column of menu buttons
+    Table mainButtons = new Table();
+    mainButtons.defaults().width(240f).height(46f).padTop(10f);
+    mainButtons.add(startBtn).row();
+    mainButtons.add(loadBtn).row();
+    mainButtons.add(exitBtn).row();
 
-    table.add(imageButtonsGroup).padTop(20f);
-    table.row();
-    table.add().expandY();
+    // Footer icons
+    float iconSize = 56f;
+    Table footerIcons = new Table();
+    footerIcons.defaults().size(iconSize, iconSize).padRight(16f);
+    footerIcons.add(settingsBtn);
+    footerIcons.add(bookBtn);
+    footerIcons.add(storyBtn);
+    footerIcons.add(rankingBtn);
 
-    stage.addActor(table);
+    panel.add(mainButtons).center().row();
+    panel.add(footerIcons).center().padTop(12f).row();
+
+    // === Root positioning ===
+    // Place the panel lower so the large title above is fully visible.
+    root = new Table();
+    root.setFillParent(true);
+    root.top();                    // anchor from top
+    root.add().height(170f).row(); // push panel down ~170px (tweak if needed)
+    root.add(panel).size(PANEL_W, PANEL_H).center();
+    root.row();
+    root.add().expandY();          // fill the rest
+    stage.addActor(root);
+
     applyUiScale();
   }
 
-  /**
-   * Creates an ImageButton with the specified image, with error handling
-   *
-   * @param imagePath Path to the button image
-   * @param buttonName Name for the button (for logging)
-   * @return The created Button
-   */
-  private ImageButton createImageButton(String imagePath, String buttonName) {
-    try {
-      logger.debug("Attempting to load texture from: {}", imagePath);
+  private ImageButton createImageButton(String imagePath, String eventName) {
+    Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
+    TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(texture));
+    ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
+    style.up = drawable;
+    style.down = drawable;
+    style.over = drawable;
 
-      Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
-      logger.debug("Successfully loaded texture for {}", buttonName);
-
-      TextureRegion region = new TextureRegion(texture);
-      TextureRegionDrawable drawable = new TextureRegionDrawable(region);
-
-      TextureRegionDrawable drawableDown = new TextureRegionDrawable(region);
-      drawableDown.setMinSize(drawable.getMinWidth() * 0.9f, drawable.getMinHeight() * 0.9f);
-
-      ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-      style.up = drawable;
-      style.down = drawableDown;
-      style.over = drawable;
-
-      ImageButton button = new ImageButton(style);
-      button.setTransform(true);
-      button.setScale(0.8f);
-      return button;
-    } catch (Exception e) {
-      logger.error("Failed to create {} button from {}: {}", buttonName, imagePath, e.getMessage());
-      logger.error("Stack trace: ", e);
-      try {
-        logger.debug("Attempting fallback to star.png");
-        Texture fallbackTexture = ServiceLocator.getResourceService().getAsset("images/star.png", Texture.class);
-        TextureRegionDrawable fallbackDrawable = new TextureRegionDrawable(new TextureRegion(fallbackTexture));
-
-        ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-        style.up = fallbackDrawable;
-        style.down = fallbackDrawable;
-        style.over = fallbackDrawable;
-
-        ImageButton button = new ImageButton(style);
-        button.setTransform(true);
-        button.setScale(0.8f);
-
-        return button;
-      } catch (Exception ex) {
-        logger.error("Failed to create fallback button: {}", ex.getMessage());
-        return new ImageButton(new ImageButton.ImageButtonStyle());
+    ImageButton button = new ImageButton(style);
+    button.setTransform(true);
+    button.setScale(0.85f);
+    button.addListener(new ChangeListener() {
+      @Override public void changed(ChangeEvent event, Actor actor) {
+        entity.getEvents().trigger(eventName);
       }
-    }
+    });
+    return button;
+  }
+
+  /** Orange slab buttons like the Settings menu */
+  private TextButtonStyle createSettingsButtonStyle() {
+    TextButtonStyle style = new TextButtonStyle();
+    style.font = skin.getFont("segoe_ui");
+
+    Texture tex = ServiceLocator.getResourceService().getAsset(BTN_TEX, Texture.class);
+    TextureRegion tr = new TextureRegion(tex);
+
+    TextureRegionDrawable up   = new TextureRegionDrawable(tr);
+    TextureRegionDrawable down = new TextureRegionDrawable(tr);
+    TextureRegionDrawable over = new TextureRegionDrawable(tr);
+
+    down.tint(new Color(0.8f, 0.8f, 0.8f, 1f));
+    over.tint(new Color(1.1f, 1.1f, 1.1f, 1f));
+
+    style.up = up; style.down = down; style.over = over;
+    style.fontColor = Color.WHITE;
+    style.overFontColor = Color.WHITE;
+    style.downFontColor = Color.LIGHT_GRAY;
+    return style;
   }
 
   private void applyUiScale() {
     UserSettings.Settings settings = UserSettings.get();
-    if (table != null) {
-      table.setTransform(true);
-      table.validate();
-      table.setOrigin(table.getWidth() / 2f, table.getHeight() / 2f);
-      table.setScale(settings.uiScale);
+    if (root != null) {
+      root.setTransform(true);
+      root.validate();
+      root.setOrigin(root.getWidth() / 2f, root.getHeight() / 2f);
+      root.setScale(settings.uiScale);
     }
   }
 
-  @Override
-  public void draw(SpriteBatch batch) {
-    // Empty implementation as required by interface
-  }
-
-  @Override
-  public float getZIndex() {
-    return Z_INDEX;
-  }
-
-  private TextButtonStyle createCustomButtonStyle() {
-    TextButtonStyle style = new TextButtonStyle();
-
-    // Use Segoe UI font
-    style.font = skin.getFont("segoe_ui");
-
-    // Load button background image
-    Texture buttonTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Menu_Button_Background.png", Texture.class);
-    TextureRegion buttonRegion = new TextureRegion(buttonTexture);
-
-    // Create NinePatch for scalable button background
-    NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-
-    // Create pressed state NinePatch (slightly darker)
-    NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-    pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-
-    // Create hover state NinePatch (slightly brighter)
-    NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-    hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
-
-    // Set button states
-    style.up = new NinePatchDrawable(buttonPatch);
-    style.down = new NinePatchDrawable(pressedPatch);
-    style.over = new NinePatchDrawable(hoverPatch);
-
-    // Set font colors
-    style.fontColor = Color.WHITE;
-    style.downFontColor = Color.LIGHT_GRAY;
-    style.overFontColor = Color.WHITE;
-
-    return style;
-  }
+  @Override public void draw(SpriteBatch batch) { /* stage draws */ }
+  @Override public float getZIndex() { return Z_INDEX; }
 
   @Override
   public void dispose() {
-    table.clear();
+    if (root != null) root.clear();
     super.dispose();
   }
 }

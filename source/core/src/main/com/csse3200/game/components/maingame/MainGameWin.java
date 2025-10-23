@@ -2,15 +2,20 @@ package com.csse3200.game.components.maingame;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
 import com.csse3200.game.ui.UIStyleHelper;
@@ -46,28 +51,32 @@ public class MainGameWin extends UIComponent {
     }
     
     table = new Table();
-    table.top().center();
+    table.center();
     table.setFillParent(true);
 
-    // Create custom button style
-    TextButtonStyle customButtonStyle = UIStyleHelper.orangeButtonStyle();
-
-
-    TextButton mainMenuBtn = new TextButton("You Won!", customButtonStyle);
-
-    // Triggers an event when the button is pressed.
-    mainMenuBtn.addListener(
-      new ChangeListener() {
-        @Override
-        public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Win button clicked");
-          ServiceLocator.getGameStateService().rewardStarsOnWin();
-          entity.getEvents().trigger("gamewin");
-        }
-      });
-    table.add(mainMenuBtn);
-
+    BitmapFont font = new BitmapFont();
+    font.getData().setScale(3.0f);
+    
+    Label.LabelStyle labelStyle = new Label.LabelStyle();
+    labelStyle.font = font;
+    labelStyle.fontColor = Color.GOLD;
+    
+    Label winLabel = new Label("You Won!", labelStyle);
+    winLabel.setAlignment(Align.center);
+    winLabel.setColor(1f, 1f, 1f, 0f);
+    
+    table.add(winLabel).center();
     stage.addActor(table);
+    
+    winLabel.addAction(Actions.sequence(
+      Actions.fadeIn(0.5f),
+      Actions.delay(1.5f),
+      Actions.run(() -> {
+        logger.info("Auto-triggering victory screen");
+        ServiceLocator.getGameStateService().rewardStarsOnWin();
+        entity.getEvents().trigger("gamewin");
+      })
+    ));
   }
 
   @Override

@@ -52,8 +52,8 @@ public class MainGameScreen extends ScreenAdapter {
           "images/Main_Menu_Button_Background.png",
           "images/Main_Game_Button.png",
           "images/scrap.png",
-          "images/Game_Over.png",
-          "images/Game_Victory.png",
+          "images/Defeat.jpg",
+          "images/Victory.jpg",
           "images/homebase1.png",
           "images/homebase2.png",
           "images/basement.png",
@@ -240,9 +240,8 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.getEntityService().dispose();
     ServiceLocator.getRenderService().dispose();
-    ServiceLocator.getResourceService().dispose();
 
-    //ServiceLocator.clear();
+    //ServiceLocator.getResourceService().dispose();
   }
 
   private void loadAssets() {

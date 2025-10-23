@@ -1,37 +1,44 @@
 package com.csse3200.game.components.mainmenu;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.csse3200.game.files.UserSettings;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import com.csse3200.game.ui.UIStyleHelper;
 import com.csse3200.game.utils.Difficulty;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 /**
- * Map Selection UI using the universal orange button style and a neat centered layout.
+ * Map Selection aligned to the Settings panel look and feel.
  */
 public class MapSelectionDisplay extends UIComponent {
-    private static final String BG_TEX = "images/main_menu_notext.png";
-    private static final String THUMB_TEX = "images/Main_Game_Button.png"; // fallback
-    private String thumbTexMap1;
-    private String thumbTexMap2;
+    private static final String BG_TEX    = "images/main_menu_notext.png";
+    private static final String PANEL_TEX = "images/settings_bg.png";
+    private static final String BTN_TEX   = "images/settings_bg_button.png";
+
+    private static final String FALLBACK_THUMB = "images/Main_Game_Button.png";
+    private String thumbTexMap1, thumbTexMap2;
+
     private Table root;
-    private Table bottomBar;
 
     private final List<MapEntry> entries = new ArrayList<>();
     private int currentIndex = 0;
@@ -43,59 +50,31 @@ public class MapSelectionDisplay extends UIComponent {
     @Override
     public void create() {
         super.create();
-        ensureThumbLoaded();
+        ensureAssetsLoaded();
         buildEntries();
         addActors();
         refreshCard();
     }
 
-    /* ------------------------------------------------------ */
-    /*   Asset resolution                                     */
-    /* ------------------------------------------------------ */
-
-    private void ensureThumbLoaded() {
+    private void ensureAssetsLoaded() {
         ResourceService rs = ServiceLocator.getResourceService();
-
         String mmap1 = "images/mmap1.png";
-        String mmapFallback = "images/mmap.png"; // present in assets
         String mmap2 = "images/mmap2.png";
+        String fallback = "images/mmap.png";
 
-        boolean hasMmap1 = Gdx.files.internal(mmap1).exists();
-        boolean hasMmapFallback = Gdx.files.internal(mmapFallback).exists();
-        boolean hasMmap2 = Gdx.files.internal(mmap2).exists();
+        thumbTexMap1 = Gdx.files.internal(mmap1).exists() ? mmap1 :
+                (Gdx.files.internal(fallback).exists() ? fallback : FALLBACK_THUMB);
+        thumbTexMap2 = Gdx.files.internal(mmap2).exists() ? mmap2 : FALLBACK_THUMB;
 
-        thumbTexMap1 = hasMmap1 ? mmap1 : (hasMmapFallback ? mmapFallback : THUMB_TEX);
-        thumbTexMap2 = hasMmap2 ? mmap2 : THUMB_TEX;
-
-        rs.loadTextures(new String[] { THUMB_TEX, thumbTexMap1, thumbTexMap2, BG_TEX });
+        rs.loadTextures(new String[]{ BG_TEX, PANEL_TEX, BTN_TEX, thumbTexMap1, thumbTexMap2, FALLBACK_THUMB });
         rs.loadAll();
     }
 
     private void buildEntries() {
-        MapEntry defaultMap = new MapEntry();
-        defaultMap.mapId = null;            // default game area
-        defaultMap.displayName = "Icebox";
-        defaultMap.thumbTex = thumbTexMap1;
-        entries.add(defaultMap);
-
-        MapEntry mapTwo = new MapEntry();
-        mapTwo.mapId = "MapTwo";
-        mapTwo.displayName = "Ascent";
-        mapTwo.thumbTex = thumbTexMap2;
-        entries.add(mapTwo);
-
-        if (entries.isEmpty()) {
-            MapEntry placeholder = new MapEntry();
-            placeholder.mapId = null;
-            placeholder.displayName = "Default";
-            placeholder.thumbTex = THUMB_TEX;
-            entries.add(placeholder);
-        }
+        entries.add(new MapEntry("Icebox", thumbTexMap1, null));
+        entries.add(new MapEntry("Ascent", thumbTexMap2, "MapTwo"));
+        if (entries.isEmpty()) entries.add(new MapEntry("Default", FALLBACK_THUMB, null));
     }
-
-    /* ------------------------------------------------------ */
-    /*   UI                                                    */
-    /* ------------------------------------------------------ */
 
     private void addActors() {
         // Background
@@ -104,140 +83,115 @@ public class MapSelectionDisplay extends UIComponent {
         stage.addActor(bg);
 
         // Title
-        Label title = new Label("Select Map", skin);
-        title.setFontScale(1.8f);
-        title.setColor(new Color(1f, 0.9f, 0.6f, 1f));
-        title.getStyle().fontColor = Color.valueOf("CFF2FF");
+        Label title = new Label("Select Map", skin, "title");
+        title.setColor(Color.valueOf("CFF2FF"));
         title.setAlignment(Align.center);
 
-        // Thumbnail card
-        thumbImage = new Image(ServiceLocator.getResourceService().getAsset(THUMB_TEX, Texture.class));
+        // Preview content
+        thumbImage = new Image(ServiceLocator.getResourceService().getAsset(FALLBACK_THUMB, Texture.class));
         thumbImage.setScaling(Scaling.fit);
 
         mapNameLabel = new Label("", skin);
         mapNameLabel.setAlignment(Align.center);
+        mapNameLabel.setColor(Color.valueOf("AEE7F2"));
 
         counterLabel = new Label("", skin);
         counterLabel.setAlignment(Align.center);
+        counterLabel.setColor(Color.LIGHT_GRAY);
 
-        // Difficulty selector
+        // Difficulty row
+        Label diffLabel = new Label("Difficulty:", skin);
+        diffLabel.setColor(Color.valueOf("F9B44C")); // warm gold-orange like the buttons
+        diffLabel.setAlignment(Align.right);
+        final SelectBox<String> diffSelect = new SelectBox<>(skin);
+        diffSelect.setItems("Easy", "Normal", "Hard");
+        Table diffRow = new Table();
+        diffRow.add(diffLabel).right().padRight(10f);
+        diffRow.add(diffSelect).width(170f).left();
 
-        Label difficultyLabel = new Label("Difficulty:", skin);
-        difficultyLabel.getStyle().fontColor = Color.valueOf("B0E0E6");
-        final SelectBox<String> difficultySelect = new SelectBox<>(skin);
-        difficultySelect.setItems("Easy", "Normal", "Hard");
-
-        Table difficultyRow = new Table();
-        difficultyRow.add(difficultyLabel).right().padRight(10f);
-        difficultyRow.add(difficultySelect).width(160f).left();
-
-        // Assemble the center "card" (image + labels + difficulty)
+        // Card (image + labels) – give vertical breathing room
         Table card = new Table();
         card.defaults().pad(6f);
-        card.add(thumbImage).width(420f).height(420f).row();
-        card.add(mapNameLabel).padTop(8f).row();
+        card.add(thumbImage).width(420f).height(300f).padBottom(8f).row();
+        card.add(mapNameLabel).padTop(4f).row();
         card.add(counterLabel).padTop(2f).row();
-        card.add(difficultyRow).padTop(10f).row();
 
-        // Orange button style for all menu buttons
-        TextButton.TextButtonStyle orange = UIStyleHelper.orangeButtonStyle();
+        // Button style
+        TextButtonStyle buttonStyle = createSettingsButtonStyle();
 
-        // Left/right arrows — small fixed-size buttons so they never stretch
-        TextButton leftArrow = new TextButton("<", orange);
-        TextButton rightArrow = new TextButton(">", orange);
-        leftArrow.getLabel().setAlignment(Align.center);
-        rightArrow.getLabel().setAlignment(Align.center);
+        // Carousel – arrows vertically centered with thumbnail
+        TextButton leftArrow  = new TextButton("<", buttonStyle);
+        TextButton rightArrow = new TextButton(">", buttonStyle);
+        leftArrow.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ move(-1); }});
+        rightArrow.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ move(+1); }});
 
-        // Force compact arrow size
-        final float ARROW_W = 64f, ARROW_H = 48f;
+        Table carousel = new Table();
+        carousel.defaults().pad(0f);
+        carousel.add(leftArrow).width(56f).height(44f).padRight(16f).center();
+        carousel.add(card).expandX().center();
+        carousel.add(rightArrow).width(56f).height(44f).padLeft(16f).center();
 
-        leftArrow.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) { move(-1); }
-        });
-        rightArrow.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) { move(+1); }
-        });
+        // Action buttons INSIDE panel bottom (like Settings)
+        TextButton back = new TextButton("Back", buttonStyle);
+        TextButton hero = new TextButton("Select Hero", buttonStyle);
+        TextButton play = new TextButton("Play", buttonStyle);
+        back.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("backToMainMenu"); }});
+        hero.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("toUpgradeMenu"); }});
+        play.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){
+            MapEntry entry = entries.get(currentIndex);
+            String sel = diffSelect.getSelected();
+            Difficulty diff = "Hard".equals(sel) ? Difficulty.HARD : "Normal".equals(sel) ? Difficulty.MEDIUM : Difficulty.EASY;
+            entity.getEvents().trigger("mapSelected", entry.mapId, diff);
+        }});
 
-        // Place arrows close to the image using a 3-column row
-        Table carouselRow = new Table();
-        carouselRow.add(leftArrow).width(ARROW_W).height(ARROW_H).padRight(20f).bottom();
-        carouselRow.add(card).center().pad(4f);
-        carouselRow.add(rightArrow).width(ARROW_W).height(ARROW_H).padLeft(20f).bottom();
+        Table bottomBtns = new Table();
+        bottomBtns.defaults().width(170f).height(52f).pad(0f, 10f, 0f, 10f);
+        bottomBtns.add(back);
+        bottomBtns.add(hero);
+        bottomBtns.add(play);
 
-        // Bottom menu bar with Back / Unlocks / Play (orange)
-        TextButton backBtn = new TextButton("Back", orange);
-        TextButton unlocksBtn = new TextButton("Select hero", orange);
-        TextButton playBtn = new TextButton("Play", orange);
+        // Settings-style panel wrapper (same look; slightly wider for the image)
+        Texture panelTex = ServiceLocator.getResourceService().getAsset(PANEL_TEX, Texture.class);
+        NinePatch panelPatch = new NinePatch(new TextureRegion(panelTex), 20, 20, 20, 20);
+        final float PANEL_W = 640f;  // slight bump so content breathes
+        final float PANEL_H = 680f;
 
-        backBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
-                entity.getEvents().trigger("backToMainMenu");
-            }
-        });
+        Table panel = new Table(skin);
+        panel.setBackground(new NinePatchDrawable(panelPatch));
+        panel.pad(20f, 24f, 20f, 24f);
+        panel.defaults().pad(8f);
 
-        unlocksBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
-                entity.getEvents().trigger("toUpgradeMenu");
-            }
-        });
+        panel.add(title).expandX().padTop(2f).padBottom(14f).row();
+        panel.add(carousel).growX().padBottom(8f).row();
+        panel.add(diffRow).padTop(6f).row();
+        panel.add(bottomBtns).padTop(14f).row();
 
-        playBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent event, Actor actor) {
-                MapEntry e = entries.get(currentIndex);
-                Difficulty diff;
-                String sel = difficultySelect.getSelected();
-                if ("Hard".equals(sel)) diff = Difficulty.HARD;
-                else if ("Normal".equals(sel)) diff = Difficulty.MEDIUM;
-                else diff = Difficulty.EASY;
-                entity.getEvents().trigger("mapSelected", e.mapId, diff);
-            }
-        });
-
-        // Build the main root (title + carousel)
         root = new Table();
         root.setFillParent(true);
-        root.top().center();
-        root.add(title).expandX().padTop(28f).row();
-        root.add(carouselRow).expand().center().padTop(14f).row();
-
+        root.add(panel).size(PANEL_W, PANEL_H).center();
         stage.addActor(root);
-
-        // Separate bottom bar anchored to the bottom (prevents crowding)
-        bottomBar = new Table();
-        bottomBar.setFillParent(true);
-        bottomBar.bottom().padBottom(28f);
-        bottomBar.add(backBtn).width(170f).height(56f).padRight(60f).left().expandX();
-        bottomBar.add(unlocksBtn).width(170f).height(56f).center();
-        bottomBar.add(playBtn).width(170f).height(56f).padLeft(60f).right().expandX();
-        stage.addActor(bottomBar);
-
-        // Disable arrows if only one entry
-        boolean single = entries.size() <= 1;
-        leftArrow.setDisabled(single);
-        rightArrow.setDisabled(single);
-
-        applyUiScale();
     }
 
-    private void applyUiScale() {
-        UserSettings.Settings settings = UserSettings.get();
-        if (root != null) {
-            root.setTransform(true);
-            root.validate();
-            root.setOrigin(root.getWidth() / 2f, root.getHeight() / 2f);
-            root.setScale(settings.uiScale);
-        }
-        if (bottomBar != null) {
-            bottomBar.setTransform(true);
-            bottomBar.validate();
-            bottomBar.setOrigin(bottomBar.getWidth() / 2f, 0f);  // Bottom-center origin
-            bottomBar.setScale(settings.uiScale);
-        }
-    }
+    private TextButtonStyle createSettingsButtonStyle() {
+        TextButtonStyle style = new TextButtonStyle();
+        style.font = skin.getFont("segoe_ui");
 
-    /* ------------------------------------------------------ */
-    /*   Carousel helpers                                     */
-    /* ------------------------------------------------------ */
+        Texture tex = ServiceLocator.getResourceService().getAsset(BTN_TEX, Texture.class);
+        TextureRegion tr = new TextureRegion(tex);
+
+        TextureRegionDrawable up   = new TextureRegionDrawable(tr);
+        TextureRegionDrawable down = new TextureRegionDrawable(tr);
+        TextureRegionDrawable over = new TextureRegionDrawable(tr);
+
+        down.tint(new Color(0.8f, 0.8f, 0.8f, 1f));
+        over.tint(new Color(1.08f, 1.08f, 1.08f, 1f));
+
+        style.up = up; style.down = down; style.over = over;
+        style.fontColor = Color.WHITE;
+        style.overFontColor = Color.WHITE;
+        style.downFontColor = Color.LIGHT_GRAY;
+        return style;
+    }
 
     private void move(int delta) {
         if (entries.isEmpty()) return;
@@ -255,12 +209,7 @@ public class MapSelectionDisplay extends UIComponent {
         counterLabel.setText((currentIndex + 1) + " / " + entries.size());
     }
 
-    /* ------------------------------------------------------ */
-    /*   Misc                                                 */
-    /* ------------------------------------------------------ */
-
-    @Override
-    protected void draw(SpriteBatch batch) { /* stage draws */ }
+    @Override protected void draw(SpriteBatch batch) { }
 
     @Override
     public void dispose() {
@@ -269,8 +218,9 @@ public class MapSelectionDisplay extends UIComponent {
     }
 
     private static class MapEntry {
-        String mapId;
-        String displayName;
-        String thumbTex;
+        String displayName, thumbTex, mapId;
+        MapEntry(String displayName, String thumbTex, String mapId) {
+            this.displayName = displayName; this.thumbTex = thumbTex; this.mapId = mapId;
+        }
     }
 }

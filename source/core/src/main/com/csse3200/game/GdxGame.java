@@ -148,7 +148,9 @@ public class GdxGame extends Game {
       case OPENING_CUTSCENE:
         return new OpeningCutsceneScreen(this);
       case VICTORY:
-        return new VictoryScreen(this);
+        return new VictoryScreen(this, saveFileName);
+      case DEFEAT:
+        return new DefeatScreen(this, saveFileName);
       case MAP_SELECTION: // NEW
         return new MapSelectionScreen(this);
       case UPGRADES:
@@ -169,21 +171,17 @@ public class GdxGame extends Game {
   }
 
   public enum ScreenType {
-    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY,
+    MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY, DEFEAT,
     MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, UPGRADES, HERO_BOOK
   }
 
-  /**
-   * 设置带有指定背景的开场动画
-   * @param backgroundIndex 背景索引 (0-4)
-   */
   public void setOpeningCutsceneWithBackground(int backgroundIndex) {
-    logger.info("Setting opening cutscene with background index: {}", backgroundIndex);
+    logger.info("Setting opening cutscene");
     Screen currentScreen = getScreen();
     if (currentScreen != null) {
       currentScreen.dispose();
     }
-    setScreen(OpeningCutsceneScreen.withBackground(this, backgroundIndex));
+    setScreen(new OpeningCutsceneScreen(this));
   }
 
   /**

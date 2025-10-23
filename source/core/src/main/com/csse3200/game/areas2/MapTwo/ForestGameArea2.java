@@ -290,23 +290,30 @@ public class ForestGameArea2 extends GameArea2 {
 
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
-            // All waves complete - trigger victory!
-            logger.info("All waves completed! Victory!");
+            // All waves complete - trigger victory after 1 second delay!
+            logger.info("All waves completed! Victory in 1 second...");
             
             // Notify UI that all waves are complete (permanently disable button)
             if (MainGameScreen.ui != null) {
                 MainGameScreen.ui.getEvents().trigger("allWavesComplete");
-                
-                MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
-                if (winComponent != null) {
-                    winComponent.addActors();
-                }
             }
+            
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if (MainGameScreen.ui != null) {
+                        MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+                        if (winComponent != null) {
+                            winComponent.addActors();
+                        }
+                    }
+                }
+            }, 1.0f);
         } else {
             // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
             logger.info("Wave {} ready. Waiting for player to start...", currentWaveIndex + 1);
-            
+
             if (waveTrackerUI != null) {
                 waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
             }
@@ -824,6 +831,12 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private void eliminateEnemy(Entity enemy) {
+        // Boss enemies are immune to plasma impact on Map 2
+        EnemyTypeComponent enemyType = enemy.getComponent(EnemyTypeComponent.class);
+        if (enemyType != null && "boss".equalsIgnoreCase(enemyType.getType())) {
+            return;
+        }
+        
         CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
         if (stats != null) {
             stats.setHealth(0);

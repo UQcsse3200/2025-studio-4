@@ -140,7 +140,7 @@ public class EnemySoundComponent extends Component {
             if (ambientSoundId != -1) {
                 ambientSound.stop(ambientSoundId);
             }
-            ambientSoundId = ambientSound.play(0.1f);
+            ambientSoundId = ambientSound.play(0.2f);
         }
     }
 

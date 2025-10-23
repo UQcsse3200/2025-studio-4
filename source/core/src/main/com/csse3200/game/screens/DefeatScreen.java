@@ -119,13 +119,8 @@ public class DefeatScreen implements Screen {
         
         loadAssets();
         
-        if (currentMapId == null && Gdx.files.internal("images/Map1_Defeat").exists()) {
-            currentStage = DefeatStage.ANIMATION_PLAYING;
-            loadAnimationFrames();
-        } else {
-            currentStage = DefeatStage.SCROLLING_TEXT;
-            createScrollingText();
-        }
+        currentStage = DefeatStage.ANIMATION_PLAYING;
+        loadAnimationFrames();
     }
     
     private void loadAssets() {
@@ -153,17 +148,19 @@ public class DefeatScreen implements Screen {
         animationFrames = new ArrayList<>();
         
         try {
-            logger.info("Loading Map1 defeat animation frames");
+            String mapName = currentMapId == null ? "Map1" : "Map2";
+            String folderName = mapName + "_Defeat";
+            logger.info("Loading " + mapName + " defeat animation frames");
             
             for (int i = 0; i <= 100; i++) {
-                String framePath = "images/Map1_Defeat/Map1_Defeat_" + i + ".png";
+                String framePath = "images/" + folderName + "/" + folderName + "_" + i + ".png";
                 
                 if (Gdx.files.internal(framePath).exists()) {
                     Texture frame = new Texture(Gdx.files.internal(framePath));
                     animationFrames.add(frame);
                 } else {
                     if (i == 0) {
-                        logger.warn("No animation frames found, skipping to scrolling text");
+                        logger.warn("First frame not found, skipping animation");
                         skipAnimationToScrollingText();
                         return;
                     }
@@ -175,7 +172,7 @@ public class DefeatScreen implements Screen {
                 logger.warn("No animation frames loaded, skipping to scrolling text");
                 skipAnimationToScrollingText();
             } else {
-                logger.info("Loaded " + animationFrames.size() + " animation frames");
+                logger.info("Loaded " + animationFrames.size() + " animation frames for " + mapName);
             }
             
         } catch (Exception e) {

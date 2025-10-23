@@ -237,9 +237,8 @@ public class MainGameScreen extends ScreenAdapter {
 
     ServiceLocator.getEntityService().dispose();
     ServiceLocator.getRenderService().dispose();
-    ServiceLocator.getResourceService().dispose();
 
-    //ServiceLocator.clear();
+    //ServiceLocator.getResourceService().dispose();
   }
 
   private void loadAssets() {

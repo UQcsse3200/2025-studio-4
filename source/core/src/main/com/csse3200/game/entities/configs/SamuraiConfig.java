@@ -10,7 +10,6 @@ public class SamuraiConfig extends HeroConfig {
 
     public int[] swordDamageByLevel = {10, 16, 24};
 
-    // ✨ 新增：各技能独立伤害表（按等级，level 从 1 开始）
     public int[] jabDamageByLevel   = {20, 26, 28};
     public int[] sweepDamageByLevel = {12, 18, 26};
     public int[] spinDamageByLevel  = { 8, 14, 22};
@@ -28,8 +27,8 @@ public class SamuraiConfig extends HeroConfig {
         };
     }
 
-    public String swordTexture = "images/samurai/Sword.png"; // 初始刀
-    public String[] swordLevelTextures = {                   // 刀的分级外观
+    public String swordTexture = "images/samurai/Sword.png";
+    public String[] swordLevelTextures = {
             "images/samurai/Sword.png",              // L1
             "images/samurai/Katana_Level_2.png"     // L2
     };

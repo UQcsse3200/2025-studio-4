@@ -159,18 +159,18 @@ public class ForestGameArea extends GameArea {
     // One-time prompt: Has this been displayed?
     private boolean heroHintShown = false;
 
-    // Obstacle Coordinate Single Fact Source: Defined by the GameArea
-    // create barriers areas
+    // Obstacle coordinate single source of truth: defined by the GameArea
+    // Create barrier areas
     private static final int[][] BARRIER_COORDS = new int[][]{
             {27, 9}, {28, 9}, {29, 9}, {30, 9}, {31, 9},
             {26, 3}, {27, 3}, {28, 3}, {29, 3},
             {5, 24}, {8, 20},
-            // 在x<31且y>13且x<13范围内随机添加的坐标点
+            // Randomly added coordinates with x<31 and y>13 and x<13
             {8, 15}, {5, 17}, {11, 14}, {3, 18},
             {7, 25}, {2, 15}, {6, 29},
     };
 
-    // create snowtree areas - 避开路径坐标
+    // Create snowtree areas - avoid path tiles
     private static final int[][] SNOWTREE_COORDS = new int[][]{
             {15, 9}, {16, 8}, {17, 10}, {19, 10}, {14, 6}, {10, 3}, {13, 5}, {5, 4}, {7, 4}, {3, 8}, {15, 3}
     };
@@ -321,15 +321,16 @@ public class ForestGameArea extends GameArea {
         } else {
             // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
+            // Get current time scale, but don't divide by zero
+            float timeScale = ServiceLocator.getTimeSource().getTimeScale();
+            float adjustedDelay = timeScale > 0 ? 3.0f / timeScale : 3.0f;
 
-            // if (waveTrackerUI != null) {
-            //     waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
-            // }
-
-            // Notify UI that current wave is complete (re-enable button)
-            if (MainGameScreen.ui != null) {
-                MainGameScreen.ui.getEvents().trigger("waveComplete");
-            }
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    startEnemyWave();
+                }
+            }, adjustedDelay);
         }
     }
 
@@ -339,18 +340,18 @@ public class ForestGameArea extends GameArea {
     private void pauseWaveSpawning() {
         if (waveInProgress && !wavePaused) {
             wavePaused = true;
-            
+
             // Calculate how much time has elapsed since the spawn was scheduled
             if (waveSpawnTask != null && spawnScheduledTime > 0) {
                 long currentTime = TimeUtils.millis();
                 float elapsedSeconds = (currentTime - spawnScheduledTime) / 1000f;
-                
+
                 // Calculate remaining time
                 timeRemainingWhenPaused = Math.max(0f, adjustedSpawnDelay - elapsedSeconds);
-                
-                logger.info("Wave spawning paused. Elapsed: {}s, Remaining: {}s", 
-                           elapsedSeconds, timeRemainingWhenPaused);
-                
+
+                logger.info("Wave spawning paused. Elapsed: {}s, Remaining: {}s",
+                        elapsedSeconds, timeRemainingWhenPaused);
+
                 // Cancel the current task
                 waveSpawnTask.cancel();
                 waveSpawnTask = null;
@@ -413,7 +414,7 @@ public class ForestGameArea extends GameArea {
             waveSpawnTask.cancel();
         }
 
-        
+
         // Get time scale and handle pause (time scale = 0)
         float timeScale = ServiceLocator.getTimeSource().getTimeScale();
         if (timeScale <= 0) {
@@ -422,20 +423,20 @@ public class ForestGameArea extends GameArea {
             logger.debug("Time scale is 0, wave spawning paused");
             return;
         }
-        
+
         // Determine the delay to use
         float delayToUse;
         if (timeRemainingWhenPaused > 0f) {
             // We're resuming from a pause - use the remaining time, adjusted for current time scale
             delayToUse = timeRemainingWhenPaused / timeScale;
-            logger.debug("Resuming spawn with remaining time: {}s (adjusted: {}s)", 
-                        timeRemainingWhenPaused, delayToUse);
+            logger.debug("Resuming spawn with remaining time: {}s (adjusted: {}s)",
+                    timeRemainingWhenPaused, delayToUse);
             timeRemainingWhenPaused = 0f; // Reset for next spawn
         } else {
             // Normal spawn - use full delay adjusted for time scale
             delayToUse = spawnDelay / timeScale;
         }
-        
+
         // Store the adjusted delay and schedule time for pause calculations
         adjustedSpawnDelay = delayToUse;
         spawnScheduledTime = TimeUtils.millis();
@@ -450,7 +451,7 @@ public class ForestGameArea extends GameArea {
                     logger.debug("Wave paused, skipping spawn");
                     return;
                 }
-                
+
                 // Double-check we're still the active game area
                 if (currentGameArea != ForestGameArea.this) {
                     logger.info("Game area changed during spawn, stopping");
@@ -487,12 +488,10 @@ public class ForestGameArea extends GameArea {
      */
     @Override
     public void create() {
-        resetEnemyCounters();
-
-        // 停止主菜单音乐
+        // Stop main menu music
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().stopMusic();
-            logger.info("主菜单音乐已停止");
+            logger.info("Main menu music stopped");
         }
 
         // Load assets (textures, sounds, etc.) before creating anything that needs them
@@ -502,10 +501,10 @@ public class ForestGameArea extends GameArea {
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
 
-        // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
+        // Add tower list component, but hide initially (for a new game)
         TowerHotbarDisplay towerHotbar = new TowerHotbarDisplay();
         if (!hasExistingPlayer) {
-            towerHotbar.setVisible(false); // 新游戏时隐藏，对话结束后显示
+            towerHotbar.setVisible(false); // Hidden during a new game; show after dialogue
         }
         ui.addComponent(towerHotbar);
         ui.addComponent(new com.csse3200.game.components.maingame.MainGameWin());
@@ -591,8 +590,7 @@ public class ForestGameArea extends GameArea {
         spawnEntity(pauseListener);
 
         // Generate biomes & placeable areas
-        //mapEditor.generateBiomesAndRivers();
-
+        // mapEditor.generateBiomesAndRivers();
 
         // Tower placement highlighter
         MapHighlighter mapHighlighter =
@@ -602,12 +600,12 @@ public class ForestGameArea extends GameArea {
 
         spawnEntity(highlighterEntity);
 
-        //Tower Upgrade Menu
+        // Tower Upgrade Menu
         TowerUpgradeMenu towerUpgradeMenu = new TowerUpgradeMenu();
         Entity upgradeUI = new Entity().addComponent(towerUpgradeMenu);
         spawnEntity(upgradeUI);
 
-        //Link the upgrade menu to the map highlighter
+        // Link the upgrade menu to the map highlighter
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         if (!hasExistingPlayer) {
@@ -616,10 +614,10 @@ public class ForestGameArea extends GameArea {
 
         // Add hero placement system
 
-        // 背景音乐将在对话结束后播放
+        // Background music will play after the dialogue finishes
         if (hasExistingPlayer) {
             createHeroPlacementUI();
-            // 如果已有玩家（从存档加载），直接播放音乐
+            // If loading from a save (already has player), play music immediately
             playMusic();
             // Spawn wave tracker immediately if loading from save
             spawnWaveTracker();
@@ -659,7 +657,7 @@ public class ForestGameArea extends GameArea {
                 GridPoint2Utils.ZERO, false, false);
     }
 
-    //Register to MapEditor’s invalidTiles and generate obstacles on the map.
+    // Register to MapEditor’s invalidTiles and generate obstacles on the map.
     private void registerBarrierAndSpawn(int[][] coords) {
         if (coords == null) return;
         for (int[] p : coords) {
@@ -795,12 +793,12 @@ public class ForestGameArea extends GameArea {
     }
 
     private Entity spawnPlayer() {
-        // Map1 使用标准homebase缩放 (1.88f) 和较小的血条
+        // Map1 uses standard homebase scale (1.88f) and a smaller health bar
         HealthBarComponent healthBar = new HealthBarComponent(1.4f, 0.15f, 0.8f);
         Entity newPlayer = PlayerFactory.createPlayer("images/homebase1.png", 1.88f, healthBar);
-        // 确保新玩家有钱包组件
+        // Ensure the new player has a wallet component
         if (newPlayer.getComponent(CurrencyManagerComponent.class) == null) {
-            newPlayer.addComponent(new CurrencyManagerComponent(/* 可选初始值 */));
+            newPlayer.addComponent(new CurrencyManagerComponent(/* optional initial value */));
         }
 
         spawnEntityAt(newPlayer, PLAYER_SPAWN, true, true);
@@ -814,7 +812,6 @@ public class ForestGameArea extends GameArea {
         mapEditor.generateEnemyPath(); // Generate fixed enemy path
 
         // Set path layer opacity to 0.7 (70% opacity) for map1
-        // 调整map1路径砖块的透明度为70%
         mapEditor.setPathLayerOpacity(0.7f);
 
         // Uncomment if crystal spawning is needed:
@@ -930,17 +927,15 @@ public class ForestGameArea extends GameArea {
     }
 
     private void applySkinToHeroForms(String skinKey, HeroConfig c1, HeroConfig2 c2, HeroConfig3 c3) {
-        // 形态1
+
         c1.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 1);
         if (c1.levelTextures != null && c1.levelTextures.length > 0) c1.levelTextures[0] = c1.heroTexture;
         else c1.levelTextures = new String[]{ c1.heroTexture };
 
-        // 形态2
         c2.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 2);
         if (c2.levelTextures != null && c2.levelTextures.length > 0) c2.levelTextures[0] = c2.heroTexture;
         else c2.levelTextures = new String[]{ c2.heroTexture };
 
-        // 形态3
         c3.heroTexture   = HeroSkinAtlas.bodyForForm(GameStateService.HeroType.HERO, skinKey, 3);
         if (c3.levelTextures != null && c3.levelTextures.length > 0) c3.levelTextures[0] = c3.heroTexture;
         else c3.levelTextures = new String[]{ c3.heroTexture };
@@ -949,7 +944,6 @@ public class ForestGameArea extends GameArea {
     private void applySkinToEngineer(String skinKey, EngineerConfig cfg) {
         cfg.heroTexture   = HeroSkinAtlas.body(GameStateService.HeroType.ENGINEER, skinKey);
         cfg.bulletTexture = HeroSkinAtlas.bullet(GameStateService.HeroType.ENGINEER, skinKey);
-        // ★ 关键：避免 HeroAppearanceComponent 把皮肤“打回默认”
         if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
             cfg.levelTextures[0] = cfg.heroTexture;
         } else {
@@ -959,7 +953,6 @@ public class ForestGameArea extends GameArea {
 
 
     private void spawnHeroAt(GridPoint2 cell) {
-        // 1️⃣ 加载配置（或直接手动创建，如你示例）
         HeroConfig heroCfg = new HeroConfig();
         heroCfg.heroTexture = "images/hero/Heroshoot.png";
         heroCfg.bulletTexture = "images/hero/Bullet.png";
@@ -975,7 +968,6 @@ public class ForestGameArea extends GameArea {
         heroCfg3.bulletTexture = "images/hero3/Bullet.png";
         heroCfg3.shootSfx = "sounds/Explosion_sfx3.ogg";
         heroCfg3.shootSfxVolume = 1.0f;
-        // 2️⃣ 加载贴图资源（不放 create() 全局加载）
         ResourceService rs = ServiceLocator.getResourceService();
         java.util.ArrayList<String> sfx = new java.util.ArrayList<>();
         if (heroCfg.shootSfx  != null && !heroCfg.shootSfx.isBlank())  sfx.add(heroCfg.shootSfx);
@@ -996,16 +988,13 @@ public class ForestGameArea extends GameArea {
             logger.info("Loading hero assets... {}%", rs.getProgress());
         }
 
-        // 3️⃣ 创建英雄实体
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity hero = HeroFactory.createHero(heroCfg, cam);
 
-        // 4️⃣ 挂上 OneShotFormSwitchComponent（带三套 cfg）
         hero.addComponent(new com.csse3200.game.components.hero.HeroOneShotFormSwitchComponent(
                 heroCfg, heroCfg2, heroCfg3
         ));
 
-        // 5️⃣ 其他组件照旧
         var up = hero.getComponent(HeroUpgradeComponent.class);
         if (up != null) up.attachPlayer(player);
 
@@ -1019,11 +1008,9 @@ public class ForestGameArea extends GameArea {
         Entity heroWeaponBar = new Entity()
                 .addComponent(new com.csse3200.game.ui.Hero.HeroWeaponSwitcherToolbarComponent(
                         hero,
-                        /* 建议使用独立图标（小尺寸方图） */
                         "images/hero/gun1.png",
                         "images/hero2/gun2.png",
                         "images/hero3/gun3.png",
-                        // 也可以暂时用 heroCfg.heroTexture 等
                         "images/hero/Final_gun.png"
                 ));
         spawnEntity(heroWeaponBar);
@@ -1035,26 +1022,23 @@ public class ForestGameArea extends GameArea {
 
 
     private void spawnEngineerAt(GridPoint2 cell) {
-        // 1) 只读取工程师配置
+
         EngineerConfig engCfg = FileLoader.readClass(EngineerConfig.class, "configs/engineer.json");
         if (engCfg == null) {
             logger.warn("Failed to load configs/engineer.json, using default EngineerConfig.");
             engCfg = new EngineerConfig();
         }
 
-        // ★ 2) 取当前选中的工程师皮肤，并覆盖到 Config
         String skin = ServiceLocator.getGameStateService()
                 .getSelectedSkin(GameStateService.HeroType.ENGINEER);
         applySkinToEngineer(skin, engCfg);
 
-        // 2) 只加载工程师资源（HeroFactory 的 varargs 接受子类 -> 直接传 engCfg 即可）
         ResourceService rs = ServiceLocator.getResourceService();
-        HeroFactory.loadAssets(rs, engCfg);  // 只传工程师
+        HeroFactory.loadAssets(rs, engCfg);
         while (!rs.loadForMillis(10)) {
             logger.info("Loading engineer assets... {}%", rs.getProgress());
         }
 
-        // 3) 创建工程师实体（注意方法名：你现在实现的是 createEngineerHero）
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity engineer = HeroFactory.createEngineerHero(engCfg, cam);
 
@@ -1065,7 +1049,6 @@ public class ForestGameArea extends GameArea {
 
         engineer.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 4) 工程师 UI：状态栏 + 工具条（点击图标放置三类召唤）
         Entity heroStatusUI = new Entity()
                 .addComponent(new EngineerStatusPanelComponent(engineer, "Engineer"));
         spawnEntity(heroStatusUI);
@@ -1074,16 +1057,14 @@ public class ForestGameArea extends GameArea {
                 .addComponent(new com.csse3200.game.ui.Hero.EngineerSummonToolbarComponent(engineer));
         spawnEntity(engineerToolbarUI);
 
-        // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
 
     }
 
     private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
-        // 本体随 BODY 皮肤
+
         cfg.heroTexture = HeroSkinAtlas.body(GameStateService.HeroType.SAMURAI, skinKey);
 
-        // 刀：独立读取 WEAPON 皮肤
         String swordSkin = ServiceLocator.getGameStateService()
                 .getSelectedWeaponSkin(GameStateService.HeroType.SAMURAI);
         String sword = HeroSkinAtlas.sword(GameStateService.HeroType.SAMURAI, swordSkin);
@@ -1091,7 +1072,6 @@ public class ForestGameArea extends GameArea {
             cfg.swordTexture = sword;
         }
 
-        // 防止外观被 levelTextures 还原
         if (cfg.levelTextures != null && cfg.levelTextures.length > 0) {
             cfg.levelTextures[0] = cfg.heroTexture;
         } else {
@@ -1100,7 +1080,6 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnSamuraiAt(GridPoint2 cell) {
-        // 1) 读 samurai 配置
         SamuraiConfig samCfg = FileLoader.readClass(SamuraiConfig.class, "configs/samurai.json");
         if (samCfg == null) {
             logger.warn("Failed to load configs/samurai.json, using default SamuraiConfig.");
@@ -1108,10 +1087,9 @@ public class ForestGameArea extends GameArea {
         }
 
         String samSkin = ServiceLocator.getGameStateService()
-                .getSelectedSkin(GameStateService.HeroType.SAMURAI); // 自己已有的方法/字段
+                .getSelectedSkin(GameStateService.HeroType.SAMURAI);
         applySkinToSamurai(samSkin, samCfg);
 
-        // 2) 预加载 samurai 资源（主体 + 刀）
         ResourceService rs = ServiceLocator.getResourceService();
         HeroFactory.loadAssets(rs, samCfg);
         rs.loadTextures(new String[]{
@@ -1121,11 +1099,9 @@ public class ForestGameArea extends GameArea {
             logger.info("Loading samurai assets... {}%", rs.getProgress());
         }
 
-        // 3) 创建 samurai 英雄（你之前实现的 createSamuraiHero）
         Camera cam = Renderer.getCurrentRenderer().getCamera().getCamera();
         Entity samurai = HeroFactory.createSamuraiHero(samCfg, cam);
 
-        // 4) 附加钱包/升级等（和其他英雄保持一致）
         if (samurai.getComponent(CurrencyManagerComponent.class) == null) {
             samurai.addComponent(new CurrencyManagerComponent());
         }
@@ -1135,17 +1111,14 @@ public class ForestGameArea extends GameArea {
         }
         samurai.addComponent(new com.csse3200.game.components.hero.HeroClickableComponent(0.8f));
 
-        // 5) 创建状态栏UI
         Entity heroStatusUI = new Entity()
                 .addComponent(new SamuraiStatusPanelComponent(samurai, "Samurai"));
         spawnEntity(heroStatusUI);
 
-        // 5.5) ★ 新增：创建“武士攻击工具条”UI（带 1/2/3 提示）
         Entity samuraiAttackUI = new Entity()
                 .addComponent(new com.csse3200.game.ui.Hero.SamuraiAttackToolbarComponent(samurai));
         spawnEntity(samuraiAttackUI);
 
-        // 6) 放置
         spawnEntityAt(samurai, cell, true, true);
 
     }
@@ -1206,7 +1179,7 @@ public class ForestGameArea extends GameArea {
     }
 
     private void spawnIntroDialogue() {
-        // 使用 DialogueConfig 获取地图1的对话脚本
+        // Use DialogueConfig to get Map 1's dialogue script
         java.util.List<com.csse3200.game.components.maingame.IntroDialogueComponent.DialogueEntry> script =
                 com.csse3200.game.components.maingame.DialogueConfig.getMap1Dialogue();
 
@@ -1214,7 +1187,7 @@ public class ForestGameArea extends GameArea {
                 new com.csse3200.game.components.maingame.IntroDialogueComponent(
                         script,
                         () -> {
-                            // 对话结束后显示防御塔列表和播放背景音乐
+                            // After the dialogue ends, show the tower list and play background music
                             showTowerUI();
 
                             // Spawn wave tracker after dialogue completes
@@ -1261,15 +1234,15 @@ public class ForestGameArea extends GameArea {
     }
 
     /**
-     * 显示防御塔UI（在对话结束后调用）
+     * Show the tower UI (called after the dialogue ends)
      */
     private void showTowerUI() {
-        // 先隐藏塔防UI
+        // Find the main UI entity and show the tower list component
         for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
             TowerHotbarDisplay towerUI = entity.getComponent(TowerHotbarDisplay.class);
             if (towerUI != null) {
-                towerUI.setVisible(false);
-                logger.info("防御塔列表已隐藏");
+                towerUI.setVisible(true);
+                logger.info("Tower list is now visible");
                 break;
             }
         }
@@ -1397,9 +1370,9 @@ public class ForestGameArea extends GameArea {
             }
         }
         if (ServiceLocator.getAudioService() != null) {
-            //ServiceLocator.getAudioService().stopMusic();
+            // ServiceLocator.getAudioService().stopMusic();
         } else {
-            //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
+            // ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
 

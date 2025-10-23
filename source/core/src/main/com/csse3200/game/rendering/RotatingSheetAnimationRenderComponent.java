@@ -10,8 +10,9 @@ import com.csse3200.game.services.GameTime;
 import com.csse3200.game.services.ServiceLocator;
 
 /**
- * 使用 PNG sprite sheet（非 .atlas），按网格切帧的“可旋转”帧动画渲染组件。
- * - 支持：旋转、缩放、原点、播完事件（animationFinished）、前景层/自定义 zIndex。
+ * Render component for frame animations cut from a PNG sprite sheet (not .atlas),
+ * supporting grid slicing with rotation, scaling, custom origin, a completion event
+ * ({@code animationFinished}), and layer/z-index control.
  */
 public class RotatingSheetAnimationRenderComponent extends RenderComponent implements AutoCloseable {
     private final GameTime time = ServiceLocator.getTimeSource();
@@ -21,17 +22,23 @@ public class RotatingSheetAnimationRenderComponent extends RenderComponent imple
 
     private float playTime = 0f;
 
-    private float rotationDeg = 0f;      // 最终绘制角度（度）
-    private float baseRotationDeg = 0f;  // 素材基准朝向（上=90，右=0）
+    /** Final render angle in degrees. */
+    private float rotationDeg = 0f;
+    /** Base facing of the source art (e.g., up=90, right=0). */
+    private float baseRotationDeg = 0f;
     private float scaleX = 1f, scaleY = 1f;
-    private float originX = -1f, originY = -1f; // <0 = 使用帧中心
+    /** Origin in entity-scale units; negative = use frame center. */
+    private float originX = -1f, originY = -1f;
+    /** If true in NORMAL mode, stop updating once the animation ends. */
     private boolean autoRemoveOnFinish = false;
 
-    // ===== 新增：层 & zIndex =====
-    private int layer = 5;                // 默认放在较前的层（RenderComponent 默认是 1）
-    private Float zOverride = null;       // 若不为 null，则用该值作为 zIndex
+    // ===== Layer & zIndex =====
+    /** Default to a foreground-ish layer (RenderComponent default is 1). */
+    private int layer = 5;
+    /** If non-null, forces zIndex instead of using the default -pos.y scheme. */
+    private Float zOverride = null;
 
-    // 调试：只打印前几帧
+    // Debug: print only for the first few frames
     private int dbgCount = 0;
 
     private RotatingSheetAnimationRenderComponent(TextureRegion[] frames,
@@ -45,7 +52,18 @@ public class RotatingSheetAnimationRenderComponent extends RenderComponent imple
         this.ownedTexture = owned;
     }
 
-    /** 从 PNG 网格切帧构造组件。（内部自行 new Texture）*/
+    /**
+     * Build from a grid-sliced PNG sheet. This constructor loads the Texture internally.
+     *
+     * @param pngPath  path to the PNG sprite sheet
+     * @param cols     number of columns
+     * @param rows     number of rows
+     * @param frameW   frame width in pixels
+     * @param frameH   frame height in pixels
+     * @param frameDur duration of each frame in seconds
+     * @param playMode libGDX {@link PlayMode}
+     * @param animName logical animation name for events/logging
+     */
     public static RotatingSheetAnimationRenderComponent fromSheet(String pngPath,
                                                                   int cols, int rows,
                                                                   int frameW, int frameH,
@@ -64,18 +82,18 @@ public class RotatingSheetAnimationRenderComponent extends RenderComponent imple
         return new RotatingSheetAnimationRenderComponent(frames, frameDur, playMode, animName, sheet);
     }
 
-    // ===== 公开控制 API =====
+    // ===== Public control API =====
     public void start() { playTime = 0f; }
     public void setRotation(float deg) { this.rotationDeg = deg; }
     public void setBaseRotation(float deg) { this.baseRotationDeg = deg; }
     public void setScale(float sx, float sy) { this.scaleX = sx; this.scaleY = sy; }
-    /** 原点（相对 entity.scale 的大小单位）。传负值=中心。*/
+    /** Origin relative to entity scale; negative values use the frame center. */
     public void setOrigin(float ox, float oy) { this.originX = ox; this.originY = oy; }
-    /** NORMAL 模式播完后自动移除本组件（停止绘制）。*/
+    /** In NORMAL mode, automatically stop updating after the animation completes. */
     public void setAutoRemoveOnFinish(boolean v) { this.autoRemoveOnFinish = v; }
-    /** 设置渲染层：RenderService 会按层分桶渲染。*/
+    /** Assign render layer; the RenderService buckets by layer. */
     public void setLayer(int layer) { this.layer = layer; }
-    /** 强制覆盖 zIndex（不跟随 -pos.y）。*/
+    /** Force a fixed zIndex (disables the default -pos.y behavior). */
     public void setZIndexOverride(Float z) { this.zOverride = z; }
 
     @Override
@@ -86,13 +104,13 @@ public class RotatingSheetAnimationRenderComponent extends RenderComponent imple
     @Override
     public float getZIndex() {
         if (zOverride != null) return zOverride;
-        return super.getZIndex(); // 默认：-entity.getPosition().y
+        return super.getZIndex(); // Default: -entity.getPosition().y
     }
 
     @Override
     public void create() {
-        super.create(); // 注册到 RenderService
-        //Gdx.app.log("SwordQi", "created layer=" + layer + " z=" + getZIndex());
+        super.create(); // Register with RenderService
+        // Gdx.app.log("SwordQi", "created layer=" + layer + " z=" + getZIndex());
     }
 
     @Override
@@ -101,15 +119,15 @@ public class RotatingSheetAnimationRenderComponent extends RenderComponent imple
         if (frame == null) return;
 
         var pos = entity.getPosition();
-        var size = entity.getScale(); // 宽高由实体 scale 决定
+        var size = entity.getScale(); // Width/height driven by entity scale
         float w = size.x, h = size.y;
 
         float ox = originX < 0 ? w * 0.5f : originX;
         float oy = originY < 0 ? h * 0.5f : originY;
 
         if (dbgCount < 3) {
-            // 只打印少量帧，确认被调用
-            //Gdx.app.log("SwordQi.draw", "pos=" + pos + " size=" + size + " layer=" + getLayer() + " z=" + getZIndex());
+            // Print a few frames only to confirm draw is called
+            // Gdx.app.log("SwordQi.draw", "pos=" + pos + " size=" + size + " layer=" + getLayer() + " z=" + getZIndex());
             dbgCount++;
         }
 
@@ -129,8 +147,8 @@ public class RotatingSheetAnimationRenderComponent extends RenderComponent imple
                 && playTime >= animation.getAnimationDuration()) {
             entity.getEvents().trigger("animationFinished", animationName);
             if (autoRemoveOnFinish) {
-                // 可按你们引擎约定停止绘制，如有 enabled/visible 标志可置为 false
-                // 这里简单地把 playTime 固定到最后一帧前
+                // Depending on your engine, you might disable/flag visibility instead.
+                // Here we clamp playTime to just before the last frame to stop progress.
                 playTime = animation.getAnimationDuration() - 0.0001f;
             }
         }

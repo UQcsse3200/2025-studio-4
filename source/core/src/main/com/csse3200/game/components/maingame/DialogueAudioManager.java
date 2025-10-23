@@ -13,21 +13,39 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * 对话音频管理器
- * 负责预加载、播放和停止对话音频
+ * Manages dialogue audio playback, preloading, and volume control.
+ * 
+ * <p>This class handles the loading and playback of dialogue sounds during
+ * conversation sequences. It provides volume management with a configurable
+ * multiplier to make dialogue more audible, and includes methods for
+ * preloading sounds, playing audio, and controlling playback state.</p>
+ * 
+ * <p>The manager integrates with the game's ResourceService for sound loading
+ * and UserSettings for volume configuration, ensuring consistent audio
+ * behavior across the application.</p>
+ * 
+ * @author Team1
+ * @since sprint 4
  */
 public class DialogueAudioManager {
     private static final Logger logger = LoggerFactory.getLogger(DialogueAudioManager.class);
     
+    /** Currently playing sound instance */
     private Sound currentSound = null;
+    /** ID of the currently playing sound for control operations */
     private long currentSoundId = -1;
     
-    // 对话音量倍数，让对话声音更响亮
+    /** Dialogue volume multiplier to make dialogue sounds more audible */
     private static float DIALOGUE_VOLUME_MULTIPLIER = 1.5f;
 
     /**
-     * 预加载对话条目中的所有音频
-     * @param entries 对话条目列表
+     * Preloads all audio files from the given dialogue entries.
+     * 
+     * <p>Extracts unique sound paths from the dialogue entries and loads them
+     * through the ResourceService. This ensures smooth playback without
+     * loading delays during dialogue sequences.</p>
+     * 
+     * @param entries list of dialogue entries containing sound paths
      */
     public void preloadSounds(List<IntroDialogueComponent.DialogueEntry> entries) {
         ResourceService resourceService = ServiceLocator.getResourceService();
@@ -54,8 +72,13 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 播放对话音频
-     * @param soundPath 音频文件路径
+     * Plays dialogue audio using user's volume settings with volume multiplier.
+     * 
+     * <p>Loads the sound from ResourceService and plays it at a volume calculated
+     * from the user's sound settings multiplied by the dialogue volume multiplier.
+     * This ensures dialogue is audible even when general sound volume is low.</p>
+     * 
+     * @param soundPath path to the audio file to play
      */
     public void playSound(String soundPath) {
         if (soundPath == null || soundPath.isBlank()) {
@@ -71,12 +94,12 @@ public class DialogueAudioManager {
         try {
             Sound sound = resourceService.getAsset(soundPath, Sound.class);
             if (sound != null) {
-                // 获取用户音量设置并应用对话音量倍数
+                // Get user volume settings and apply dialogue volume multiplier
                 UserSettings.Settings settings = UserSettings.get();
                 float baseVolume = settings.soundVolume;
                 float dialogueVolume = Math.min(1.0f, baseVolume * DIALOGUE_VOLUME_MULTIPLIER);
                 
-                // 播放音频并记录
+                // Play audio and record
                 currentSound = sound;
                 currentSoundId = sound.play(dialogueVolume);
                 logger.debug("Playing dialogue sound: {} at volume {} (base: {}, multiplier: {})", 
@@ -90,9 +113,14 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 播放对话音频（可指定音量）
-     * @param soundPath 音频文件路径
-     * @param volume 音量（0.0 到 1.0）
+     * Plays dialogue audio with a specified volume level.
+     * 
+     * <p>Similar to the parameterless playSound method, but allows direct
+     * volume control. The specified volume is still multiplied by the
+     * dialogue volume multiplier for consistency.</p>
+     * 
+     * @param soundPath path to the audio file to play
+     * @param volume volume level (0.0 to 1.0)
      */
     public void playSound(String soundPath, float volume) {
         if (soundPath == null || soundPath.isBlank()) {
@@ -108,11 +136,11 @@ public class DialogueAudioManager {
         try {
             Sound sound = resourceService.getAsset(soundPath, Sound.class);
             if (sound != null) {
-                // 确保音量在有效范围内并应用对话音量倍数
+                // Ensure volume is within valid range and apply dialogue volume multiplier
                 float baseVolume = Math.max(0f, Math.min(1f, volume));
                 float dialogueVolume = Math.min(1.0f, baseVolume * DIALOGUE_VOLUME_MULTIPLIER);
                 
-                // 播放音频并记录
+                // Play audio and record
                 currentSound = sound;
                 currentSoundId = sound.play(dialogueVolume);
                 logger.debug("Playing dialogue sound: {} at volume {} (base: {}, multiplier: {})", 
@@ -126,7 +154,10 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 停止当前播放的音频
+     * Stops the currently playing dialogue sound.
+     * 
+     * <p>If a sound is currently playing, this method stops it and clears
+     * the current sound references. Safe to call even if no sound is playing.</p>
      */
     public void stopCurrentSound() {
         if (currentSound != null && currentSoundId != -1) {
@@ -142,7 +173,10 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 暂停当前播放的音频
+     * Pauses the currently playing dialogue sound.
+     * 
+     * <p>Pauses playback without stopping the sound, allowing it to be
+     * resumed later. Safe to call even if no sound is playing.</p>
      */
     public void pauseCurrentSound() {
         if (currentSound != null && currentSoundId != -1) {
@@ -156,7 +190,10 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 恢复当前暂停的音频
+     * Resumes the currently paused dialogue sound.
+     * 
+     * <p>Resumes playback of a previously paused sound. Safe to call even
+     * if no sound is paused or playing.</p>
      */
     public void resumeCurrentSound() {
         if (currentSound != null && currentSoundId != -1) {
@@ -170,16 +207,21 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 检查是否有音频正在播放
-     * @return true 如果有音频正在播放
+     * Checks if a dialogue sound is currently playing.
+     * 
+     * @return true if a sound is currently playing, false otherwise
      */
     public boolean isPlaying() {
         return currentSound != null && currentSoundId != -1;
     }
 
     /**
-     * 设置当前播放音频的音量
-     * @param volume 音量（0.0 到 1.0）
+     * Sets the volume of the currently playing audio.
+     * 
+     * <p>Adjusts the volume of the currently playing sound in real-time.
+     * The volume is clamped to the valid range [0.0, 1.0].</p>
+     * 
+     * @param volume volume level (0.0 to 1.0)
      */
     public void setVolume(float volume) {
         if (currentSound != null && currentSoundId != -1) {
@@ -194,8 +236,13 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 设置对话音量倍数
-     * @param multiplier 音量倍数（建议范围：0.5 - 3.0）
+     * Sets the dialogue volume multiplier for all dialogue sounds.
+     * 
+     * <p>This multiplier is applied to all dialogue sounds to make them
+     * more audible relative to other game sounds. The value is clamped
+     * to a reasonable range to prevent audio distortion.</p>
+     * 
+     * @param multiplier volume multiplier (recommended range: 0.5 - 3.0)
      */
     public static void setVolumeMultiplier(float multiplier) {
         DIALOGUE_VOLUME_MULTIPLIER = Math.max(0.1f, Math.min(5.0f, multiplier));
@@ -203,15 +250,20 @@ public class DialogueAudioManager {
     }
 
     /**
-     * 获取当前对话音量倍数
-     * @return 当前音量倍数
+     * Gets the current dialogue volume multiplier.
+     * 
+     * @return the current volume multiplier value
      */
     public static float getVolumeMultiplier() {
         return DIALOGUE_VOLUME_MULTIPLIER;
     }
 
     /**
-     * 清理资源
+     * Cleans up resources and stops any playing sounds.
+     * 
+     * <p>Stops the current sound and clears all references. Should be called
+     * when the dialogue audio manager is no longer needed to prevent
+     * resource leaks.</p>
      */
     public void dispose() {
         stopCurrentSound();

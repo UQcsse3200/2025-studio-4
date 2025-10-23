@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.SimpleUI;
@@ -34,21 +35,33 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Locale;
 
+/**
+ * Component that displays introduction dialogue sequences with portraits, audio, and custom backgrounds.
+ * This component pauses game time while active and provides skip/continue functionality.
+ * 
+ * @author Team1
+ * @since sprint 4
+ */
 public class IntroDialogueComponent extends UIComponent {
   private static final Logger logger = LoggerFactory.getLogger(IntroDialogueComponent.class);
 
   private final List<DialogueEntry> entries;
   private final Runnable onComplete;
   private final float originalTimeScale;
-  private final DialogueAudioManager audioManager; // 音频管理器
+  /** Audio manager for handling dialogue sound effects */
+  private final DialogueAudioManager audioManager;
 
   private Table overlayRoot;
-  private Table dialogueTable; // 对话框表格
+  /** Table container for dialogue box */
+  private Table dialogueTable;
   private Image portraitImage;
   private Label dialogueLabel;
-  private Label speakerNameLabel; // 对话者名字标签
-  private Table speakerNameContainer; // 名字标签容器，用于添加背景
-  private TextButton continueButton; // 继续按钮
+  /** Label displaying the speaker's name */
+  private Label speakerNameLabel;
+  /** Container for speaker name label with background */
+  private Table speakerNameContainer;
+  /** Button to continue to next dialogue */
+  private TextButton continueButton;
   private TextButton skipButton;
   private int currentIndex = -1;
   private boolean finished = false;
@@ -58,10 +71,18 @@ public class IntroDialogueComponent extends UIComponent {
   private float dialogueHeight;
   private Cell<Table> dialogueCell;
   
-  // 字体样式选择
+  /** Font style for dialogue text */
   private BitmapFont dialogueFont;
+  /** Font style for speaker name */
   private BitmapFont speakerNameFont;
 
+  /**
+   * Constructs a new IntroDialogueComponent with specified dialogue entries and completion callback.
+   * 
+   * @param entries List of dialogue entries to display in sequence
+   * @param onComplete Callback to execute when dialogue sequence completes or is skipped
+   * @throws NullPointerException if entries is null
+   */
   public IntroDialogueComponent(List<DialogueEntry> entries, Runnable onComplete) {
     this.entries = Objects.requireNonNull(entries, "entries");
     this.onComplete = onComplete;
@@ -70,9 +91,17 @@ public class IntroDialogueComponent extends UIComponent {
     this.originalTimeScale = timeSource != null ? timeSource.getTimeScale() : 1f;
   }
 
+  /**
+   * Initializes the dialogue component by preloading resources, pausing game time,
+   * building the UI overlay, and starting the dialogue sequence.
+   */
   @Override
   public void create() {
     super.create();
+    GameStateService gameState = ServiceLocator.getGameStateService();
+    if (gameState != null) {
+      gameState.resetReadyPromptFinished();
+    }
     if (entries.isEmpty()) {
       logger.warn("IntroDialogueComponent started with no dialogue entries");
       finishDialogue();
@@ -80,12 +109,16 @@ public class IntroDialogueComponent extends UIComponent {
     }
 
     preloadPortraits();
-    audioManager.preloadSounds(entries); // 预加载音频
+    audioManager.preloadSounds(entries);
     pauseGameTime();
     buildOverlay();
     advanceDialogue();
   }
 
+  /**
+   * Preloads all portrait textures and dialogue background textures from dialogue entries.
+   * This ensures smooth transitions between dialogues without loading delays.
+   */
   private void preloadPortraits() {
     ResourceService resourceService = ServiceLocator.getResourceService();
     if (resourceService == null) {
@@ -94,9 +127,9 @@ public class IntroDialogueComponent extends UIComponent {
     }
 
     Set<String> textures = new LinkedHashSet<>();
-    // 预加载头像纹理
+    // Preload Portrait Textures
     entries.stream().map(DialogueEntry::portraitPath).filter(Objects::nonNull).forEach(textures::add);
-    // 预加载对话框背景纹理
+    // Preload Dialogue Box Background Textures
     entries.stream().map(DialogueEntry::dialogueBackgroundPath).filter(Objects::nonNull).forEach(textures::add);
     if (textures.isEmpty()) {
       return;
@@ -107,14 +140,21 @@ public class IntroDialogueComponent extends UIComponent {
     resourceService.loadAll();
   }
 
+  /**
+   * Pauses game time by setting the time scale to 0.
+   * The original time scale is restored when dialogue finishes.
+   */
   private void pauseGameTime() {
     if (ServiceLocator.getTimeSource() != null) {
       ServiceLocator.getTimeSource().setTimeScale(0f);
     }
   }
 
+  /**
+   * Builds the UI overlay including dialogue box, buttons, portrait image, and speaker name container.
+   * Creates the complete dialogue interface with proper positioning and styling.
+   */
   private void buildOverlay() {
-    // 获取屏幕尺寸
     this.screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
     this.screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
     float screenWidth = this.screenWidth;
@@ -124,7 +164,7 @@ public class IntroDialogueComponent extends UIComponent {
     overlayRoot.setFillParent(true);
     overlayRoot.setTouchable(Touchable.enabled);
     overlayRoot.defaults().pad(screenWidth * 0.01f);
-    overlayRoot.align(Align.bottom); // 底部对齐
+    overlayRoot.align(Align.bottom);
     overlayRoot.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.45f)));
     overlayRoot.addListener(new InputListener() {
       @Override
@@ -138,10 +178,10 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueTable.align(Align.center);
     dialogueTable.defaults().pad(screenWidth * 0.005f);
     
-    // 初始不设置背景，在advanceDialogue中根据每条对话动态设置
+    // Background will be set dynamically in advanceDialogue for each dialogue entry
     dialogueTable.setTouchable(Touchable.enabled);
 
-    // 创建自定义字体样式
+    // Create custom font styles
     createDialogueFont();
     createSpeakerNameFont();
     
@@ -149,16 +189,16 @@ public class IntroDialogueComponent extends UIComponent {
     dialogueLabel.setWrap(true);
     dialogueLabel.setAlignment(Align.center, Align.center);
 
-    // 创建对话者名字标签
+    // Create speaker name label
     speakerNameLabel = new Label("", new Label.LabelStyle(speakerNameFont, Color.WHITE));
     speakerNameLabel.setAlignment(Align.center, Align.center);
     
-    // 创建名字标签容器，添加黑色底纹背景
+    // Create speaker name container with dark background
     speakerNameContainer = new Table();
     speakerNameContainer.align(Align.center);
     speakerNameContainer.setBackground(SimpleUI.solid(new Color(0f, 0f, 0f, 0.8f)));
-    speakerNameContainer.add(speakerNameLabel).pad(8f, 12f, 8f, 12f); // 添加内边距
-    speakerNameContainer.pack(); // 确保容器有正确的尺寸
+    speakerNameContainer.add(speakerNameLabel).pad(8f, 12f, 8f, 12f);
+    speakerNameContainer.pack();
 
     continueButton = new TextButton("continue", UIStyleHelper.continueButtonStyle());
     continueButton.getLabel().setColor(Color.WHITE);
@@ -178,24 +218,24 @@ public class IntroDialogueComponent extends UIComponent {
       }
     });
 
-    // 创建对话内容容器
+    // Create dialogue content container
     Container<Label> dialogueContent = new Container<>(dialogueLabel);
     dialogueContent.align(Align.center);
     dialogueContent.fill();
 
-    // 添加对话内容到对话框
+    // Add dialogue content to dialogue table
     dialogueTable.add(dialogueContent)
             .grow()
             .center()
-            .padTop(screenHeight * 0.05f);  // 添加顶部间距，让文字往下移动
+            .padTop(screenHeight * 0.05f);
     dialogueTable.row();
 
-    float continueButtonWidth = screenWidth * 0.18f;  // 从0.135f增加到0.18f
-    float continueButtonHeight = screenHeight * 0.2f;  // 从0.065f增加到0.08f
+    float continueButtonWidth = screenWidth * 0.18f;
+    float continueButtonHeight = screenHeight * 0.2f;
     float skipButtonWidth = screenWidth * 0.13f;
     float skipButtonHeight = screenHeight * 0.15f;
 
-    // 对话框固定在底部中央（保持原始位置）
+    // Dialogue box fixed at bottom center
     dialogueWidth = screenWidth * 0.5f;
     dialogueHeight = screenHeight * 0.25f;
     dialogueCell = overlayRoot.add(dialogueTable)
@@ -204,12 +244,12 @@ public class IntroDialogueComponent extends UIComponent {
             .bottom()
             .padBottom(screenHeight * 0.08f);
     
-    // 创建独立的按钮容器，直接放在屏幕底部
+    // Create separate button container at screen bottom
     Table buttonContainer = new Table();
     buttonContainer.setFillParent(true);
     buttonContainer.align(Align.bottom);
     
-    // continue按钮居中
+    // Continue button centered
     Table continueRow = new Table();
     continueRow.add().expandX();
     continueRow.add(continueButton)
@@ -218,7 +258,7 @@ public class IntroDialogueComponent extends UIComponent {
             .center();
     continueRow.add().expandX();
     
-    // skip按钮右对齐
+    // Skip button right-aligned
     Table skipRow = new Table();
     skipRow.add().expandX();
     skipRow.add(skipButton)
@@ -227,7 +267,7 @@ public class IntroDialogueComponent extends UIComponent {
             .right()
             .padRight(screenWidth * 0.15f);
     
-    // 将两个按钮行叠加
+    // Stack button rows
     Stack buttonStack = new Stack();
     buttonStack.add(continueRow);
     buttonStack.add(skipRow);
@@ -237,16 +277,16 @@ public class IntroDialogueComponent extends UIComponent {
             .height(continueButtonHeight)
             .padBottom(screenHeight * 0.005f);
     
-    // 将按钮容器添加到overlayRoot
+    // Add button container to overlayRoot
     overlayRoot.addActor(buttonContainer);
     
-    // 头像单独添加到stage，初始隐藏
+    // Add portrait image to stage, initially hidden
     portraitImage.setSize(screenWidth * 0.15f, screenHeight * 0.3f);
-    portraitImage.setVisible(false); // 初始隐藏，在advanceDialogue中显示和定位
+    portraitImage.setVisible(false);
     stage.addActor(portraitImage);
     
-    // 对话者名字容器单独添加到stage，初始隐藏
-    speakerNameContainer.setVisible(false); // 初始隐藏，在advanceDialogue中显示和定位
+    // Add speaker name container to stage, initially hidden
+    speakerNameContainer.setVisible(false);
     stage.addActor(speakerNameContainer);
     dialogueTable.addListener(new ClickListener() {
       @Override
@@ -266,12 +306,17 @@ public class IntroDialogueComponent extends UIComponent {
     stage.addActor(overlayRoot);
   }
 
+  /**
+   * Advances to the next dialogue entry in the sequence.
+   * Stops current audio, updates text, portrait, speaker name, and background.
+   * Finishes dialogue if no more entries remain.
+   */
   private void advanceDialogue() {
     if (finished) {
       return;
     }
 
-    // 停止之前的音频
+    // Stop previous audio
     audioManager.stopCurrentSound();
 
     currentIndex++;
@@ -283,37 +328,52 @@ public class IntroDialogueComponent extends UIComponent {
     DialogueEntry entry = entries.get(currentIndex);
     dialogueLabel.setText(entry.text());
     
-    // 更新对话者名字
+    // Apply font scaling
+    if (entry.fontScale() != null) {
+      dialogueFont.getData().setScale(entry.fontScale());
+    }
+    
+    // Update speaker name
     if (entry.speakerName() != null && !entry.speakerName().isEmpty()) {
       speakerNameLabel.setText(entry.speakerName());
-      speakerNameLabel.setColor(Color.WHITE); // 确保文字是白色
-      speakerNameContainer.clearChildren(); // 清除旧内容
-      speakerNameContainer.add(speakerNameLabel).pad(8f, 12f, 8f, 12f); // 重新添加标签
-      speakerNameContainer.pack(); // 重新打包容器以适应新文本
+      speakerNameLabel.setColor(Color.WHITE);
+      speakerNameContainer.clearChildren();
+      speakerNameContainer.add(speakerNameLabel).pad(8f, 12f, 8f, 12f);
+      speakerNameContainer.pack();
       speakerNameContainer.setVisible(true);
     } else {
       speakerNameLabel.setText("");
       speakerNameContainer.setVisible(false);
     }
 
-    // 更新对话框背景
+    // Update dialogue background
     updateDialogueBackground(entry.dialogueBackgroundPath());
 
     Texture portraitTexture = resolveTexture(entry.portraitPath());
     if (portraitTexture != null) {
       portraitImage.setDrawable(new Image(portraitTexture).getDrawable());
-      // 根据头像位置调整布局
+      // Adjust layout based on portrait position
       adjustPortraitLayout(entry.portraitSide());
+      // Adjust dialogue text position based on portrait position
+      adjustDialogueTextPosition(entry.portraitSide());
     } else {
-      // 没有头像时隐藏
+      // Hide portrait when not available
       portraitImage.setDrawable(null);
       portraitImage.setVisible(false);
+      // Reset dialogue text position
+      adjustDialogueTextPosition(null);
     }
 
-    // 播放对话音频
+    // Play dialogue audio
     audioManager.playSound(entry.soundPath());
   }
 
+  /**
+   * Resolves a texture from a given file path using the ResourceService.
+   * 
+   * @param path Path to the texture file
+   * @return Texture object if found and loaded, null otherwise
+   */
   private Texture resolveTexture(String path) {
     if (path == null || path.isBlank()) {
       return null;
@@ -326,8 +386,9 @@ public class IntroDialogueComponent extends UIComponent {
   }
 
   /**
-   * 更新对话框背景
-   * @param backgroundPath 背景图片路径（可选，传null使用默认背景）
+   * Updates the dialogue box background with custom texture or default style.
+   * 
+   * @param backgroundPath Path to background image (optional, null uses default background)
    */
   private void updateDialogueBackground(String backgroundPath) {
     if (backgroundPath != null && !backgroundPath.isBlank()) {
@@ -343,82 +404,134 @@ public class IntroDialogueComponent extends UIComponent {
       }
     }
     
-    // 使用默认背景
+    // Use default background
     dialogueTable.setBackground(SimpleUI.roundRect(new Color(0.96f, 0.94f, 0.88f, 0.92f),
             new Color(0.2f, 0.2f, 0.2f, 1f), 16, 2));
     updateDialogueSizing(null, false);
   }
 
   /**
-   * 根据头像位置调整布局
-   * @param portraitSide 头像位置（"left"或"right"）
+   * Adjusts the portrait image layout based on its specified side position.
+   * Also positions the speaker name container above the portrait.
+   * 
+   * @param portraitSide Portrait position ("left" or "right", defaults to "left" if null)
    */
   private void adjustPortraitLayout(String portraitSide) {
     if (portraitSide == null || portraitSide.isBlank()) {
-      portraitSide = "left"; // 默认为左侧
+      portraitSide = "left";
     }
     
-    // 显示头像
+    // Show portrait
     portraitImage.setVisible(true);
     
     float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
     float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
     float currentDialogueWidth = dialogueWidth > 0f ? dialogueWidth : screenWidth * 0.5f;
-    // 计算对话框的位置（屏幕底部中央）
-    float dialogueX = (screenWidth - currentDialogueWidth) / 2; // 对话框X位置（居中）
-    float dialogueY = screenHeight * 0.08f; // 对话框Y位置（距底部）
+    // Calculate dialogue box position (bottom center of screen)
+    float dialogueX = (screenWidth - currentDialogueWidth) / 2;
+    float dialogueY = screenHeight * 0.08f;
     
     float portraitWidth = screenWidth * 0.15f;
     float portraitHeight = screenHeight * 0.3f;
     
     if ("right".equalsIgnoreCase(portraitSide)) {
-      // 头像在对话框右侧
-      float portraitX = dialogueX + currentDialogueWidth; // 头像直接贴着对话框
-      float portraitY = dialogueY + screenHeight * 0.1f; // 头像往上移一点
+      // Portrait on right side of dialogue box
+      float portraitX = dialogueX + currentDialogueWidth;
+      float portraitY = dialogueY + screenHeight * 0.1f;
       portraitImage.setPosition(portraitX, portraitY);
       
-      // 对话者名字在头像上方居中，紧贴头像框
+      // Speaker name centered above portrait, flush with portrait frame
       if (speakerNameContainer.isVisible()) {
-        float nameX = portraitX + portraitWidth / 2; // 头像中心X位置
-        float nameY = portraitY + portraitHeight; // 紧贴头像顶部
+        float nameX = portraitX + portraitWidth / 2;
+        float nameY = portraitY + portraitHeight;
         speakerNameContainer.setPosition(nameX - speakerNameContainer.getWidth() / 2, nameY);
       }
     } else {
-      // 头像在对话框左侧（默认）
-      float portraitX = dialogueX - portraitWidth; // 头像直接贴着对话框
-      float portraitY = dialogueY + screenHeight * 0.1f; // 头像往上移一点，与右侧头像对齐
+      // Portrait on left side of dialogue box (default)
+      float portraitX = dialogueX - portraitWidth;
+      float portraitY = dialogueY + screenHeight * 0.1f;
       portraitImage.setPosition(portraitX, portraitY);
       
-      // 对话者名字在头像上方居中，紧贴头像框
+      // Speaker name centered above portrait, flush with portrait frame
       if (speakerNameContainer.isVisible()) {
-        float nameX = portraitX + portraitWidth / 2; // 头像中心X位置
-        float nameY = portraitY + portraitHeight; // 紧贴头像顶部
+        float nameX = portraitX + portraitWidth / 2;
+        float nameY = portraitY + portraitHeight;
         speakerNameContainer.setPosition(nameX - speakerNameContainer.getWidth() / 2, nameY);
       }
     }
   }
 
+  /**
+   * Adjusts dialogue text position within the dialogue box based on portrait side.
+   * Text moves up when portrait is on the left side.
+   * 
+   * @param portraitSide Portrait position ("left" or "right")
+   */
+  private void adjustDialogueTextPosition(String portraitSide) {
+    if (dialogueTable == null) {
+      return;
+    }
+    
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    
+    // Clear existing dialogue content
+    dialogueTable.clearChildren();
+    
+    // Create dialogue content container
+    Container<Label> dialogueContent = new Container<>(dialogueLabel);
+    dialogueContent.align(Align.center);
+    dialogueContent.fill();
+    
+    // Set different top padding based on portrait position
+    float topPadding;
+    if ("left".equalsIgnoreCase(portraitSide)) {
+      // When portrait is on left, move dialogue text upward
+      topPadding = screenHeight * 0.02f;
+    } else {
+      // When portrait is on right or no portrait, use default position
+      topPadding = screenHeight * 0.05f;
+    }
+    
+    // Re-add dialogue content to dialogue table
+    dialogueTable.add(dialogueContent)
+            .grow()
+            .center()
+            .padTop(topPadding);
+    dialogueTable.row();
+    
+    // Re-layout
+    dialogueTable.invalidateHierarchy();
+    overlayRoot.invalidateHierarchy();
+  }
+
+  /**
+   * Finishes the dialogue sequence by cleaning up resources, restoring time scale,
+   * showing "Ready for Fight!" message, and calling the completion callback.
+   */
   private void finishDialogue() {
     if (finished) {
       return;
     }
     finished = true;
 
-    // 停止当前播放的音频并清理资源
+    // Stop current audio and clean up resources
     audioManager.dispose();
+
+    // Show "Ready for Fight!" message
+    showReadyForFightMessage();
 
     if (overlayRoot != null) {
       overlayRoot.remove();
       overlayRoot = null;
     }
 
-    // 移除头像
+    // Remove portrait image
     if (portraitImage != null) {
       portraitImage.remove();
       portraitImage = null;
     }
 
-    // 移除对话者名字容器
+    // Remove speaker name container
     if (speakerNameContainer != null) {
       speakerNameContainer.remove();
       speakerNameContainer = null;
@@ -439,65 +552,76 @@ public class IntroDialogueComponent extends UIComponent {
     entity.dispose();
   }
 
+  /**
+   * Draws the component. Stage handles all drawing internally.
+   * 
+   * @param batch SpriteBatch for rendering
+   */
   @Override
   protected void draw(SpriteBatch batch) {
     // Stage handles drawing
   }
 
   /**
-   * 创建对话框字体样式
-   * 您可以选择不同的字体风格：
-   * 1. pixel_32.fnt - 像素风格字体（推荐用于游戏对话）
-   * 2. arial_black_32.fnt - 粗体Arial字体（清晰易读）
-   * 3. segoe_ui_18.fnt - 现代UI字体
-   * 4. 默认字体 - 简单默认字体
+   * Creates and configures the font style for dialogue text.
+   * Selects appropriate font size based on screen resolution.
+   * Available font styles:
+   * <ul>
+   *   <li>pixel_32.fnt - Pixel style font (recommended for game dialogue)</li>
+   *   <li>arial_black_32.fnt - Bold Arial font (clear and readable)</li>
+   *   <li>segoe_ui_18.fnt - Modern UI font</li>
+   *   <li>Default font - Simple fallback font</li>
+   * </ul>
    */
   private void createDialogueFont() {
     try {
       float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
       float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
       
-      // 根据屏幕分辨率选择不同大小的字体文件
+      // Select font size based on screen resolution
       String fontPath;
       if (screenWidth >= 2560 || screenHeight >= 1440) {
-        // 高分辨率屏幕 (2K/4K) - 使用更大的字体
+        // High resolution screens (2K/4K) - use larger font
         fontPath = "flat-earth/skin/fonts/pixel_32.fnt";
       } else if (screenWidth >= 1920 || screenHeight >= 1080) {
-        // 标准分辨率屏幕 (1080p) - 使用中等字体
+        // Standard resolution screens (1080p) - use medium font
         fontPath = "flat-earth/skin/fonts/pixel_32.fnt";
       } else {
-        // 低分辨率屏幕 (720p及以下) - 使用较小字体
+        // Low resolution screens (720p and below) - use smaller font
         fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
       }
       
       dialogueFont = new BitmapFont(com.badlogic.gdx.Gdx.files.internal(fontPath));
+      dialogueFont.getData().setScale(0.8f);
       dialogueFont.setColor(Color.WHITE);
     } catch (Exception e) {
       logger.warn("Failed to load custom font, using default font", e);
-      // 如果加载失败，使用默认字体
+      // If loading fails, use default font
       dialogueFont = SimpleUI.font();
+      dialogueFont.getData().setScale(0.8f);
       dialogueFont.setColor(Color.WHITE);
     }
   }
 
   /**
-   * 创建对话者名字字体样式
+   * Creates and configures the font style for speaker name text.
+   * Selects appropriate font size based on screen resolution.
    */
   private void createSpeakerNameFont() {
     try {
       float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
       float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
       
-      // 根据屏幕分辨率选择不同大小的字体文件
+      // Select font size based on screen resolution
       String fontPath;
       if (screenWidth >= 2560 || screenHeight >= 1440) {
-        // 高分辨率屏幕 (2K/4K) - 使用更大的字体
+        // High resolution screens (2K/4K) - use larger font
         fontPath = "flat-earth/skin/fonts/arial_black_32.fnt";
       } else if (screenWidth >= 1920 || screenHeight >= 1080) {
-        // 标准分辨率屏幕 (1080p) - 使用中等字体
+        // Standard resolution screens (1080p) - use medium font
         fontPath = "flat-earth/skin/fonts/arial_black_32.fnt";
       } else {
-        // 低分辨率屏幕 (720p及以下) - 使用较小字体
+        // Low resolution screens (720p and below) - use smaller font
         fontPath = "flat-earth/skin/fonts/segoe_ui_18.fnt";
       }
       
@@ -505,18 +629,22 @@ public class IntroDialogueComponent extends UIComponent {
       speakerNameFont.setColor(Color.WHITE);
     } catch (Exception e) {
       logger.warn("Failed to load speaker name font, using default font", e);
-      // 如果加载失败，使用默认字体
+      // If loading fails, use default font
       speakerNameFont = SimpleUI.font();
       speakerNameFont.setColor(Color.WHITE);
     }
   }
 
+  /**
+   * Disposes of component resources including custom fonts.
+   * Ensures dialogue is finished before disposing.
+   */
   @Override
   public void dispose() {
     if (!finished) {
       finishDialogue();
     }
-    // 释放自定义字体资源
+    // Release custom font resources
     if (dialogueFont != null && dialogueFont != SimpleUI.font()) {
       dialogueFont.dispose();
     }
@@ -527,44 +655,85 @@ public class IntroDialogueComponent extends UIComponent {
   }
 
   /**
-   * 对话条目记录
-   * @param text 对话文本
-   * @param portraitPath 头像图片路径（可选，传null表示不显示头像）
-   * @param soundPath 对话音频路径（可选，传null表示无音频）
-   * @param portraitSide 头像位置（"left"或"right"，可选，默认为"left"）
-   * @param dialogueBackgroundPath 对话框背景图片路径（可选，传null使用默认背景）
-   * @param speakerName 对话者名字（可选，传null表示不显示名字）
+   * Record representing a single dialogue entry with text, portrait, audio, and styling options.
+   * 
+   * @param text Dialogue text to display
+   * @param portraitPath Portrait image path (optional, null means no portrait)
+   * @param soundPath Dialogue audio path (optional, null means no audio)
+   * @param portraitSide Portrait position ("left" or "right", optional, defaults to "left")
+   * @param dialogueBackgroundPath Dialogue box background image path (optional, null uses default background)
+   * @param speakerName Speaker's name (optional, null means no name displayed)
+   * @param fontScale Font scale ratio (optional, defaults to 0.8f)
    */
-  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath, String speakerName) {
+  public record DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath, String speakerName, Float fontScale) {
     /**
-     * 创建不带音频的对话条目（向后兼容）
+     * Creates a dialogue entry without audio (backward compatibility).
+     * 
+     * @param text Dialogue text
+     * @param portraitPath Portrait image path
      */
     public DialogueEntry(String text, String portraitPath) {
-      this(text, portraitPath, null, "left", null, null);
+      this(text, portraitPath, null, "left", null, null, 0.8f);
     }
     
     /**
-     * 创建带音频的对话条目（向后兼容）
+     * Creates a dialogue entry with audio (backward compatibility).
+     * 
+     * @param text Dialogue text
+     * @param portraitPath Portrait image path
+     * @param soundPath Audio file path
      */
     public DialogueEntry(String text, String portraitPath, String soundPath) {
-      this(text, portraitPath, soundPath, "left", null, null);
+      this(text, portraitPath, soundPath, "left", null, null, 0.8f);
     }
     
     /**
-     * 创建带头像位置的对话条目（向后兼容）
+     * Creates a dialogue entry with portrait position (backward compatibility).
+     * 
+     * @param text Dialogue text
+     * @param portraitPath Portrait image path
+     * @param soundPath Audio file path
+     * @param portraitSide Portrait position ("left" or "right")
      */
     public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide) {
-      this(text, portraitPath, soundPath, portraitSide, null, null);
+      this(text, portraitPath, soundPath, portraitSide, null, null, 0.8f);
     }
     
     /**
-     * 创建带对话框背景的对话条目（向后兼容）
+     * Creates a dialogue entry with custom background (backward compatibility).
+     * 
+     * @param text Dialogue text
+     * @param portraitPath Portrait image path
+     * @param soundPath Audio file path
+     * @param portraitSide Portrait position
+     * @param dialogueBackgroundPath Background image path
      */
     public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath) {
-      this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, null);
+      this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, null, 0.8f);
+    }
+    
+    /**
+     * Creates a dialogue entry with speaker name (backward compatibility).
+     * 
+     * @param text Dialogue text
+     * @param portraitPath Portrait image path
+     * @param soundPath Audio file path
+     * @param portraitSide Portrait position
+     * @param dialogueBackgroundPath Background image path
+     * @param speakerName Speaker's name
+     */
+    public DialogueEntry(String text, String portraitPath, String soundPath, String portraitSide, String dialogueBackgroundPath, String speakerName) {
+      this(text, portraitPath, soundPath, portraitSide, dialogueBackgroundPath, speakerName, 0.8f);
     }
   }
 
+  /**
+   * Updates dialogue box sizing based on background texture dimensions.
+   * Can preserve aspect ratio or use default fixed dimensions.
+   * 
+   * @param backgroundTexture Background texture (null for default sizing)
+   * @param preserveAspect Whether to preserve texture aspect ratio
+   */
   private void updateDialogueSizing(Texture backgroundTexture, boolean preserveAspect) {
     if (dialogueCell == null) {
       return;
@@ -598,11 +767,219 @@ public class IntroDialogueComponent extends UIComponent {
     overlayRoot.invalidateHierarchy();
   }
 
+  /**
+   * Checks if the background path refers to a "talker" background image.
+   * 
+   * @param path Background image path
+   * @return true if path ends with "talker.png" or "talker2.png"
+   */
   private boolean isTalkerBackground(String path) {
     if (path == null) {
       return false;
     }
     String normalised = path.replace("\\", "/").toLowerCase(Locale.ROOT);
     return normalised.endsWith("talker.png") || normalised.endsWith("talker2.png");
+  }
+
+  /**
+   * Displays the "Ready for Fight!" message with animated word sequence.
+   * Each word appears, scales in, pauses, then scales out before the next word appears.
+   */
+  private void showReadyForFightMessage() {
+    // Create larger, clearer font
+    BitmapFont largeFont = createLargeFont();
+    
+    // Split text into three words
+    String[] words = {"Ready", "for", "Fight!"};
+    float screenWidth = com.badlogic.gdx.Gdx.graphics.getWidth();
+    float screenHeight = com.badlogic.gdx.Gdx.graphics.getHeight();
+    
+    // Create label for each word
+    Label[] wordLabels = new Label[words.length];
+    for (int i = 0; i < words.length; i++) {
+      // Use specified color RGB(246, 255, 205) - light yellow-green
+      Color customColor = new Color(246f/255f, 255f/255f, 205f/255f, 1f);
+      Label.LabelStyle labelStyle = new Label.LabelStyle(largeFont, customColor);
+      wordLabels[i] = new Label(words[i], labelStyle);
+      wordLabels[i].setAlignment(Align.center);
+      
+      // Set initial position (screen center)
+      wordLabels[i].setPosition(
+          (screenWidth - wordLabels[i].getPrefWidth()) / 2f,
+          (screenHeight - wordLabels[i].getPrefHeight()) / 2f
+      );
+      
+      // Set initial scale (large)
+      wordLabels[i].setScale(3.0f);
+      
+      // Initially hide all words
+      wordLabels[i].setVisible(false);
+      
+      // Add to stage
+      stage.addActor(wordLabels[i]);
+    }
+    
+    // Add animation effects for each word
+    animateWordsSequentially(wordLabels, largeFont);
+  }
+  
+  /**
+   * Animates words in sequence, starting with the first word.
+   * 
+   * @param wordLabels Array of word labels to animate
+   * @param largeFont Font to dispose after all animations complete
+   */
+  private void animateWordsSequentially(Label[] wordLabels, BitmapFont largeFont) {
+    animateSingleWord(wordLabels, 0, largeFont);
+  }
+  
+  /**
+   * Animates a single word at the specified index.
+   * After completion, automatically starts animation for the next word.
+   * 
+   * @param wordLabels Array of all word labels
+   * @param wordIndex Index of current word to animate
+   * @param largeFont Font to dispose after all animations complete
+   */
+  private void animateSingleWord(Label[] wordLabels, int wordIndex, BitmapFont largeFont) {
+    if (wordIndex >= wordLabels.length) {
+      GameStateService gameState = ServiceLocator.getGameStateService();
+      if (gameState != null) {
+        gameState.markReadyPromptFinished();
+      }
+      // All word animations complete, clean up resources
+      com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+        @Override
+        public void run() {
+          // Clean up all labels
+          for (Label label : wordLabels) {
+            if (label != null) {
+              label.remove();
+            }
+          }
+          // Clean up font resources
+          if (largeFont != null && largeFont != SimpleUI.font()) {
+            largeFont.dispose();
+          }
+        }
+      }, 0.1f);
+      return;
+    }
+    
+    final Label currentLabel = wordLabels[wordIndex];
+    final int nextWordIndex = wordIndex + 1;
+    
+    // Show current word
+    currentLabel.setVisible(true);
+    
+    // Start scale animation: from 3.0x to 1.0x
+    animateScale(currentLabel, 3.0f, 1.0f, 0.4f, () -> {
+      // After scaling complete, wait 0.2s then start fade-out animation
+      com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+        @Override
+        public void run() {
+          // Start fade-out animation: linear scale from 1.0x to 0.1x
+          animateScaleLinear(currentLabel, 1.0f, 0.1f, 0.2f, () -> {
+            // Hide word after fade-out complete
+            currentLabel.setVisible(false);
+            
+            // Immediately start next word animation
+            animateSingleWord(wordLabels, nextWordIndex, largeFont);
+          });
+        }
+      }, 0.2f);
+    });
+  }
+  
+  /**
+   * Performs a scale animation with easing.
+   * 
+   * @param label Label to animate
+   * @param startScale Starting scale value
+   * @param endScale Ending scale value
+   * @param duration Animation duration in seconds
+   * @param onComplete Callback to run when animation completes
+   */
+  private void animateScale(Label label, float startScale, float endScale, float duration, Runnable onComplete) {
+    final float[] currentTime = {0f};
+    final float totalDuration = duration;
+    
+    com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+      @Override
+      public void run() {
+        currentTime[0] += 0.016f;
+        
+        if (currentTime[0] >= totalDuration) {
+          label.setScale(endScale);
+          this.cancel();
+          if (onComplete != null) {
+            onComplete.run();
+          }
+          return;
+        }
+        
+        // Use easing function for smooth animation
+        //float progress = currentTime[0] / totalDuration;
+        //float easedProgress = easeOutElastic(progress); // Use elastic easing for bounce effect
+        
+        //float currentScale = startScale + (endScale - startScale) * easedProgress;
+        //label.setScale(currentScale);
+      }
+    }, 0f, 0.016f);
+  }
+  
+  /**
+   * Performs a linear scale animation.
+   * 
+   * @param label Label to animate
+   * @param startScale Starting scale value
+   * @param endScale Ending scale value
+   * @param duration Animation duration in seconds
+   * @param onComplete Callback to run when animation completes
+   */
+  private void animateScaleLinear(Label label, float startScale, float endScale, float duration, Runnable onComplete) {
+    final float[] currentTime = {0f};
+    final float totalDuration = duration;
+    
+    com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+      @Override
+      public void run() {
+        currentTime[0] += 0.016f;
+        
+        if (currentTime[0] >= totalDuration) {
+          label.setScale(endScale);
+          this.cancel();
+          if (onComplete != null) {
+            onComplete.run();
+          }
+          return;
+        }
+        
+        // Use linear interpolation for constant speed animation
+        float progress = currentTime[0] / totalDuration;
+        float currentScale = startScale + (endScale - startScale) * progress;
+        label.setScale(currentScale);
+      }
+    }, 0f, 0.016f);
+  }
+  
+  /**
+   * Creates a large font for display messages.
+   * Attempts to load arial_black_32.fnt, falls back to default font if loading fails.
+   * 
+   * @return BitmapFont scaled appropriately for large text display
+   */
+  private BitmapFont createLargeFont() {
+    try {
+      // Try to load a larger font
+      BitmapFont font = new BitmapFont(com.badlogic.gdx.Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
+      font.getData().setScale(2.0f);
+      return font;
+    } catch (Exception e) {
+      // If loading fails, use default font and scale up
+      BitmapFont defaultFont = SimpleUI.font();
+      defaultFont.getData().setScale(3.0f);
+      return defaultFont;
+    }
   }
 }

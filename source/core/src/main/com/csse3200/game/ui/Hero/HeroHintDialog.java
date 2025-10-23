@@ -19,7 +19,7 @@ import com.badlogic.gdx.Gdx;
 import com.csse3200.game.ui.SimpleUI;
 
 /**
- * 一次性提示窗口：只显示武器切换提示与关闭按钮。
+ * One-time hint window: shows only the weapon-switch hint and a close button.
  */
 public class HeroHintDialog extends Window {
     private final Entity hero;
@@ -29,7 +29,7 @@ public class HeroHintDialog extends Window {
     private final Vector3 tmp = new Vector3();
     private final Vector2 offset = new Vector2(0f, 72f);
 
-    // High-res fonts (dispose on remove)
+    // High-resolution fonts (dispose on remove)
     private BitmapFont fontLabel;
     private BitmapFont fontButton;
 
@@ -45,9 +45,9 @@ public class HeroHintDialog extends Window {
         hintLabel = new Label("Hint: press keyboard 1/2/3 use hero power", SimpleUI.label());
         closeBtn = new TextButton("Close", SimpleUI.darkButton());
 
-        // 使用高分辨率位图字体（避免放大模糊）：加载 32px 字体并小幅缩放
+        // Use high-resolution bitmap fonts (avoid blur from upscaling): load a 32px font and scale it down slightly
         fontLabel = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
-        fontLabel.getData().setScale(0.7f); // 缩小而不是放大，保持清晰
+        fontLabel.getData().setScale(0.7f); // Scale down rather than up to keep it crisp
         fontLabel.setColor(Color.BLACK);
 
         fontButton = new BitmapFont(Gdx.files.internal("flat-earth/skin/fonts/arial_black_32.fnt"));
@@ -62,7 +62,7 @@ public class HeroHintDialog extends Window {
         closeStyle.fontColor = Color.BLACK;
         closeStyle.overFontColor = Color.BLACK;
         closeStyle.downFontColor = Color.BLACK;
-        // 白色背景
+        // White background
         closeStyle.up = SimpleUI.solid(Color.WHITE);
         closeStyle.over = SimpleUI.solid(Color.WHITE);
         closeStyle.down = SimpleUI.solid(Color.WHITE);
@@ -75,7 +75,7 @@ public class HeroHintDialog extends Window {
 
         add(content).grow().row();
 
-        // 置顶点击
+        // Bring-to-front on click
         addCaptureListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -93,7 +93,7 @@ public class HeroHintDialog extends Window {
     }
 
     public void showOnceOn(Stage stage) {
-        // 如果已经在舞台上，不重复显示
+        // If already on stage, do not show again
         if (getStage() != null) return;
         stage.addActor(this);
         pack();

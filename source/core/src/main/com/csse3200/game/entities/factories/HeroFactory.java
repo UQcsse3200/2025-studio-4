@@ -103,7 +103,7 @@ public final class HeroFactory {
         Entity hero = new Entity()
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent().setSensor(true))
-                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                //.addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
                 .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
                 .addComponent(new CombatStatsComponent(cfg.health, cfg.baseAttack, resistance, weakness))
                 .addComponent(new HeroTurretAttackComponent(
@@ -199,7 +199,7 @@ public final class HeroFactory {
                 // === Core physics & collision setup ===
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent().setSensor(true))
-                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                //.addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
 
                 // === Rendering ===
                 .addComponent(new RotatingTextureRenderComponent(cfg.heroTexture))
@@ -277,7 +277,7 @@ public final class HeroFactory {
                 // === 基础物理/碰撞（沿用你原来的设置）===
                 .addComponent(new PhysicsComponent())
                 .addComponent(new ColliderComponent().setSensor(true))
-                .addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
+                //.addComponent(new HitboxComponent().setLayer(PhysicsLayer.PLAYER))
 
                 // === 渲染 ===
                 .addComponent(body)

@@ -254,7 +254,7 @@ public class ForestGameArea extends GameArea {
         timeRemainingWhenPaused = 0f;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
-        
+
         // Notify UI that wave has started
         if (MainGameScreen.ui != null) {
             MainGameScreen.ui.getEvents().trigger("waveStarted");
@@ -308,11 +308,11 @@ public class ForestGameArea extends GameArea {
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory!
-            
+
             // Notify UI that all waves are complete (permanently disable button)
             if (MainGameScreen.ui != null) {
                 MainGameScreen.ui.getEvents().trigger("allWavesComplete");
-                
+
                 MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
                 if (winComponent != null) {
                     winComponent.addActors();
@@ -839,13 +839,13 @@ public class ForestGameArea extends GameArea {
         if (waveTrackerUI != null) {
             waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
         }
-        
+
         // Check if all waves are already complete
         if (currentWaveIndex >= waves.size()) {
             logger.info("All waves already completed!");
             return;
         }
-        
+
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
@@ -1124,7 +1124,7 @@ public class ForestGameArea extends GameArea {
     }
 
     private void createHeroPlacementUI() {
-        // 先创建英雄放置实体，但初始隐藏
+        // Create the hero placement entity first, keep it hidden initially
         var gs = ServiceLocator.getGameStateService();
         GameStateService.HeroType chosen = gs.getSelectedHero();
         java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
@@ -1137,11 +1137,11 @@ public class ForestGameArea extends GameArea {
                 .addComponent(new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb))
                 .addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
         spawnEntity(placementEntity);
-        
-        // 立即隐藏英雄UI
+
+        // Hide the hero UI immediately
         hideHeroUI();
-        
-        // 2秒后显示英雄UI
+
+        // Show the hero UI after 2 seconds
         com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
             public void run() {
@@ -1149,30 +1149,30 @@ public class ForestGameArea extends GameArea {
             }
         }, 2.0f);
     }
-    
+
     /**
-     * 隐藏英雄UI
+     * Hide Hero UI
      */
     private void hideHeroUI() {
         for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
             com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
             if (heroUI != null) {
                 heroUI.setVisible(false);
-                logger.info("英雄UI已隐藏");
+                logger.info("Hero UI hidden");
                 break;
             }
         }
     }
-    
+
     /**
-     * 显示英雄UI
+     * Show Hero UI
      */
     private void showHeroUI() {
         for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
             com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
             if (heroUI != null) {
                 heroUI.setVisible(true);
-                logger.info("英雄UI已显示");
+                logger.info("Hero UI shown");
                 break;
             }
         }
@@ -1202,22 +1202,22 @@ public class ForestGameArea extends GameArea {
         );
         spawnEntity(dialogueEntity);
     }
-    
+
     /**
-     * 显示章节介绍
+     * Show chapter intro
      */
     private void showChapterIntro() {
         String[] storyTexts = {
-            "Chapter I : Icebox",
-            "This is Icebox, a former research outpost now buried beneath eternal night.\nThe AI legions have ravaged this land beyond recognition,\nbut now, it stands as the cradle of humanity's awakening.",
-            "The sorcerers gathered here forming circles of frost and flame\nunleashed the first wave of pure human magic, untouched by machines.\nGlaciers shattered. Circuits failed.\nAcross the frozen plains, the echoes of ancient power\nannounced the dawn of rebellion.\n\n\"On the coldest land, the oldest flame burns once more.\""
+                "Chapter I : Icebox",
+                "This is Icebox, a former research outpost now buried beneath eternal night.\nThe AI legions have ravaged this land beyond recognition,\nbut now, it stands as the cradle of humanity's awakening.",
+                "The sorcerers gathered here forming circles of frost and flame\nunleashed the first wave of pure human magic, untouched by machines.\nGlaciers shattered. Circuits failed.\nAcross the frozen plains, the echoes of ancient power\nannounced the dawn of rebellion.\n\n\"On the coldest land, the oldest flame burns once more.\""
         };
-        
+
         Entity chapterEntity = new Entity().addComponent(
                 new com.csse3200.game.components.maingame.ChapterIntroComponent(
                         storyTexts,
                         () -> {
-                            // 章节介绍结束后开始对话
+                            // Start dialogue after the chapter intro ends
                             spawnIntroDialogue();
                         })
         );
@@ -1246,8 +1246,8 @@ public class ForestGameArea extends GameArea {
                 break;
             }
         }
-        
-        // 3.3秒后显示塔防UI
+
+        // Show tower UI after 2.0 seconds
         com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
             @Override
             public void run() {
@@ -1255,7 +1255,7 @@ public class ForestGameArea extends GameArea {
                     TowerHotbarDisplay towerUI = entity.getComponent(TowerHotbarDisplay.class);
                     if (towerUI != null) {
                         towerUI.setVisible(true);
-                        logger.info("防御塔列表已显示");
+                        logger.info("Tower list shown");
                         break;
                     }
                 }
@@ -1284,13 +1284,13 @@ public class ForestGameArea extends GameArea {
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
 
-    while (!resourceService.loadForMillis(10)) {
-      logger.info("Loading... {}%", resourceService.getProgress());
-    }
-    if (ServiceLocator.getAudioService() != null) {
-      ServiceLocator.getAudioService().registerSound("plasma_warning", PLASMA_WARNING_SOUND);
-      ServiceLocator.getAudioService().registerSound("plasma_impact", PLASMA_IMPACT_SOUND);
-    }
+        while (!resourceService.loadForMillis(10)) {
+            logger.info("Loading... {}%", resourceService.getProgress());
+        }
+        if (ServiceLocator.getAudioService() != null) {
+            ServiceLocator.getAudioService().registerSound("plasma_warning", PLASMA_WARNING_SOUND);
+            ServiceLocator.getAudioService().registerSound("plasma_impact", PLASMA_IMPACT_SOUND);
+        }
 //        try {
 //            com.badlogic.gdx.audio.Sound s =
 //                    resourceService.getAsset("sounds/Explosion_sfx.ogg", com.badlogic.gdx.audio.Sound.class);

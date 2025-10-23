@@ -233,14 +233,19 @@ public class ForestGameArea2 extends GameArea2 {
 
         // Check if this was the final wave
         if (currentWaveIndex + 1 >= waves.size()) {
-            // All waves complete - trigger victory!
-            logger.info("All waves completed! Victory!");
-            if (MainGameScreen.ui != null) {
-                MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
-                if (winComponent != null) {
-                    winComponent.addActors();
+            // All waves complete - trigger victory after 1 second delay!
+            logger.info("All waves completed! Victory in 1 second...");
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    if (MainGameScreen.ui != null) {
+                        MainGameWin winComponent = MainGameScreen.ui.getComponent(MainGameWin.class);
+                        if (winComponent != null) {
+                            winComponent.addActors();
+                        }
+                    }
                 }
-            }
+            }, 1.0f);
         } else {
             // Start next wave after delay
             currentWaveIndex++;

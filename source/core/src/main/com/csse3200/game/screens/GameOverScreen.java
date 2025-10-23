@@ -2,16 +2,20 @@ package com.csse3200.game.screens;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.components.maingame.MainGameExitDisplay;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -32,73 +36,47 @@ public class GameOverScreen extends UIComponent {
   }
 
   public void addActors() {
-    try {
-      // 提交当前游戏得分到排行榜（即使游戏失败也记录得分）
-      submitCurrentScore();
-      
-      // Remove existing UI if present
-      if (table != null && table.getStage() != null) {
-        table.remove();
+    // Ensure stage is initialized
+    if (stage == null) {
+      stage = ServiceLocator.getRenderService().getStage();
+      if (stage == null) {
+        logger.warn("Stage not available, cannot add actors");
+        return;
       }
-
-      // Add background image to stage
-      Image gameOverBackground = new Image(ServiceLocator.getResourceService()
-          .getAsset("images/Defeat.jpg", Texture.class));
-      gameOverBackground.setFillParent(true);
-      stage.addActor(gameOverBackground);
-
-      // Create main table for content layout
-      table = new Table();
-      table.setFillParent(true);
-
-      // Create button container
-      Table buttonTable = new Table();
-      buttonTable.center();
-
-      // Create custom button style
-      TextButtonStyle customButtonStyle = createCustomButtonStyle();
-
-      // Restart button
-      TextButton restartBtn = new TextButton("Restart Game", customButtonStyle);
-      restartBtn.addListener(new ChangeListener() {
-        @Override
-        public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Restart button clicked");
-          entity.getEvents().trigger("restart");
-        }
-      });
-
-      // Main menu button
-      TextButton mainMenuBtn = new TextButton("Main Menu", customButtonStyle);
-      mainMenuBtn.addListener(new ChangeListener() {
-        @Override
-        public void changed(ChangeEvent changeEvent, Actor actor) {
-          logger.debug("Main Menu button clicked");
-          entity.getEvents().trigger("gameover");
-        }
-      });
-
-      // Set button colors
-      restartBtn.getLabel().setColor(Color.BLUE); // Normal blue
-      mainMenuBtn.getLabel().setColor(Color.BLUE); // Normal blue
-
-      // Add buttons to button table
-      buttonTable.add(restartBtn).size(250f, 60f).pad(15f);
-      buttonTable.row();
-      buttonTable.add(mainMenuBtn).size(250f, 60f).pad(15f);
-
-      // Add space at top
-      table.add().expand();
-      table.row();
-      
-      // Add buttons to main table bottom
-      table.add(buttonTable).bottom().padBottom(150f);
-
-      stage.addActor(table);
-      logger.info("Game Over screen with background image displayed successfully");
-    } catch (Exception e) {
-      logger.error("Error displaying Game Over screen: {}", e.getMessage());
     }
+    
+    // Remove existing UI if present
+    if (table != null && table.getStage() != null) {
+      table.remove();
+    }
+    
+    table = new Table();
+    table.center();
+    table.setFillParent(true);
+
+    BitmapFont font = new BitmapFont();
+    font.getData().setScale(3.0f);
+    
+    Label.LabelStyle labelStyle = new Label.LabelStyle();
+    labelStyle.font = font;
+    labelStyle.fontColor = Color.RED;
+    
+    Label failLabel = new Label("You Failed!", labelStyle);
+    failLabel.setAlignment(Align.center);
+    failLabel.setColor(1f, 1f, 1f, 0f);
+    
+    table.add(failLabel).center();
+    stage.addActor(table);
+    
+    failLabel.addAction(Actions.sequence(
+      Actions.fadeIn(0.5f),
+      Actions.delay(1.5f),
+      Actions.run(() -> {
+        logger.info("Auto-triggering defeat screen");
+        submitCurrentScore();
+        entity.getEvents().trigger("gameover");
+      })
+    ));
   }
 
   @Override

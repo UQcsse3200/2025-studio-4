@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.csse3200.game.ai.tasks.AITaskComponent;
 import com.csse3200.game.components.EnemyMeleeEngageComponent;
 import com.csse3200.game.components.TouchAttackComponent;
+import com.csse3200.game.components.enemy.EnemyHealthTintComponent;
 import com.csse3200.game.components.npc.EnemyAnimationController;
 import com.csse3200.game.components.tasks.ChaseTask;
 import com.csse3200.game.entities.Entity;
@@ -52,7 +53,6 @@ public class EnemyFactory {
                     .addComponent(new HitboxComponent().setLayer(PhysicsLayer.NPC))
                     .addComponent(new TouchAttackComponent(PhysicsLayer.PLAYER))
                     .addComponent(new com.csse3200.game.ui.DamagePopupComponent())
-                    .addComponent(aiComponent)
                     .addComponent(new EnemyMeleeEngageComponent(
                             PhysicsLayer.ALLY, /*fallbackDmg*/ 3, /*tick*/ 0.3f,
                             /*push*/ 0f, /*pauseWhileEngaged*/ false))
@@ -124,7 +124,8 @@ public class EnemyFactory {
         anim.addAnimation("death", deathDur, PlayMode.NORMAL);
 
     e.addComponent(anim)
-            .addComponent(new EnemyAnimationController());
+            .addComponent(new EnemyAnimationController())
+            .addComponent(new EnemyHealthTintComponent());
 
     // Start something valid so there is a current frame
     if (walkRegions.size > 0) {

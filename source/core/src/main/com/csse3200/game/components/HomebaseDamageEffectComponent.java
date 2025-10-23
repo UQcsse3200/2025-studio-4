@@ -11,25 +11,26 @@ import org.slf4j.LoggerFactory;
 /**
  * Component that handles visual damage effects for the homebase.
  * Changes the texture and color when the homebase takes damage to provide visual feedback.
+ * @author Team1 
+ * @since Sprint 3
  */
 public class HomebaseDamageEffectComponent extends Component {
     private static final Logger logger = LoggerFactory.getLogger(HomebaseDamageEffectComponent.class);
     
-    // 默认贴图路径
+    // Default texture paths
     private static final String DEFAULT_NORMAL_TEXTURE_PATH = "images/basement.png";
-    private static final String DEFAULT_DAMAGED_TEXTURE_PATH = "images/basement_damaged.png";
     
-    // 音效路径
+    // Sound effect path
     private static final String HIT_SOUND_PATH = "sounds/homebase_hit_sound.mp3";
     
-    // 受击效果持续时间（秒）
+    // Damage effect duration (seconds)
     private static final float DAMAGE_EFFECT_DURATION = 0.3f;
     
-    // 受击时的颜色（红色闪烁效果）
-    private static final Color DAMAGE_COLOR = new Color(1f, 0.3f, 0.3f, 1f); // 红色
-    private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f); // 白色（正常）
+    // Damage color (red flash effect)
+    private static final Color DAMAGE_COLOR = new Color(1f, 0.3f, 0.3f, 1f); // Red
+    private static final Color NORMAL_COLOR = new Color(1f, 1f, 1f, 1f); // White (normal)
     
-    // 实例变量用于存储贴图路径
+    // Instance variables for storing texture paths
     private final String normalTexturePath;
     private final String damagedTexturePath;
     
@@ -68,25 +69,25 @@ public class HomebaseDamageEffectComponent extends Component {
     public void create() {
         super.create();
         
-        // 获取纹理渲染组件
+        // Get texture render component
         textureComponent = entity.getComponent(SwitchableTextureRenderComponent.class);
         if (textureComponent == null) {
             logger.error("HomebaseDamageEffectComponent requires SwitchableTextureRenderComponent");
             return;
         }
         
-        // 加载贴图和音效
+        // Load textures and sound effects
         loadTextures();
         loadHitSound();
         
-        // 获取初始生命值
+        // Get initial health value
         PlayerCombatStatsComponent combatStats = entity.getComponent(PlayerCombatStatsComponent.class);
         if (combatStats != null) {
             previousHealth = combatStats.getHealth();
             logger.debug("Initial health set to: {}", previousHealth);
         }
         
-        // 监听伤害事件
+        // Listen for damage events
         entity.getEvents().addListener("updateHealth", this::onHealthUpdate);
         logger.debug("Added updateHealth event listener");
         
@@ -94,31 +95,31 @@ public class HomebaseDamageEffectComponent extends Component {
     }
     
     /**
-     * 检查是否有受击贴图可用
-     * @return true如果有受击贴图，false如果只有颜色效果
+     * Check if damaged texture is available
+     * @return true if damaged texture exists, false if only color effect is used
      */
     public boolean hasDamagedTexture() {
         return hasDamagedTexture;
     }
     
     /**
-     * 获取受击效果持续时间
-     * @return 持续时间（秒）
+     * Get damage effect duration
+     * @return duration in seconds
      */
     public float getDamageEffectDuration() {
         return DAMAGE_EFFECT_DURATION;
     }
     
     /**
-     * 检查是否正在显示受击效果
-     * @return true如果正在显示受击效果，false否则
+     * Check if damage effect is currently being displayed
+     * @return true if damage effect is being shown, false otherwise
      */
     public boolean isShowingDamageEffect() {
         return isShowingDamageEffect;
     }
     
     /**
-     * 加载正常和受击状态的贴图
+     * Load normal and damaged state textures
      */
     private void loadTextures() {
         try {
@@ -135,13 +136,13 @@ public class HomebaseDamageEffectComponent extends Component {
             logger.debug("Loaded damaged homebase texture: {}", damagedTexturePath);
         } catch (Exception e) {
             logger.warn("Could not load damaged texture, will use color-only effect: {}", e.getMessage());
-            damagedTexture = null; // 设置为null，表示只使用颜色效果
+            damagedTexture = null; // Set to null, indicating only color effect will be used
             hasDamagedTexture = false;
         }
     }
     
     /**
-     * 加载受击音效
+     * Load hit sound effect
      */
     private void loadHitSound() {
         try {
@@ -154,36 +155,36 @@ public class HomebaseDamageEffectComponent extends Component {
     }
     
     /**
-     * 当生命值更新时触发
+     * Triggered when health is updated
      */
     private void onHealthUpdate(int newHealth) {
         logger.debug("Health update: previous={}, new={}", previousHealth, newHealth);
         
-        // 检查是否受到伤害（生命值减少）
+        // Check if damage was taken (health decreased)
         if (previousHealth > 0 && newHealth < previousHealth) {
             int damageAmount = previousHealth - newHealth;
             logger.debug("Damage detected! Damage amount: {}", damageAmount);
             showDamageEffect(damageAmount);
         }
         
-        // 更新previousHealth
+        // Update previousHealth
         previousHealth = newHealth;
     }
     
     /**
-     * 显示受击效果
+     * Show damage effect
      */
     private void showDamageEffect(int damageAmount) {
         if (isShowingDamageEffect) {
-            return; // 已经在显示受击效果
+            return; // Already showing damage effect
         }
         
         isShowingDamageEffect = true;
         damageEffectTimer = DAMAGE_EFFECT_DURATION;
         
-        // 切换到受击贴图和颜色
+        // Switch to damaged texture and color
         if (textureComponent != null) {
-            // 如果有受击贴图，则切换贴图；否则只改变颜色
+            // If damaged texture exists, switch texture; otherwise only change color
             if (hasDamagedTexture && damagedTexture != null) {
                 textureComponent.setTexture(damagedTexture);
                 logger.debug("Switched to damaged texture");
@@ -192,10 +193,10 @@ public class HomebaseDamageEffectComponent extends Component {
             }
             textureComponent.setColor(DAMAGE_COLOR);
         }
-        // 显示伤害数字
+        // Show damage number
         showDamageNumber(damageAmount);
 
-        // 播放受击音效
+        // Play hit sound effect
         if (hitSound != null) {
             hitSound.play();
             logger.debug("Playing homebase hit sound");
@@ -205,11 +206,11 @@ public class HomebaseDamageEffectComponent extends Component {
     }
     
     /**
-     * 显示伤害数字
+     * Show damage number
      */
     private void showDamageNumber(int damageAmount) {
         try {
-            // 触发伤害数字显示事件，让UI系统处理
+            // Trigger damage number display event for UI system to handle
             entity.getEvents().trigger("showDamage", damageAmount, entity.getCenterPosition().cpy());
             logger.debug("Triggered damage number display: {} damage", damageAmount);
         } catch (Exception e) {
@@ -218,7 +219,7 @@ public class HomebaseDamageEffectComponent extends Component {
     }
     
     /**
-     * 恢复正常状态
+     * Return to normal state
      */
     private void returnToNormal() {
         if (!isShowingDamageEffect) {
@@ -228,7 +229,7 @@ public class HomebaseDamageEffectComponent extends Component {
         isShowingDamageEffect = false;
         damageEffectTimer = 0f;
         
-        // 恢复正常贴图和颜色
+        // Restore normal texture and color
         if (textureComponent != null) {
             textureComponent.setTexture(normalTexture);
             textureComponent.setColor(NORMAL_COLOR);
@@ -241,7 +242,7 @@ public class HomebaseDamageEffectComponent extends Component {
     public void update() {
         super.update();
         
-        // 更新受击效果计时器
+        // Update damage effect timer
         if (isShowingDamageEffect) {
             damageEffectTimer -= ServiceLocator.getTimeSource().getDeltaTime();
             
@@ -254,7 +255,7 @@ public class HomebaseDamageEffectComponent extends Component {
     @Override
     public void dispose() {
         super.dispose();
-        // 确保在销毁时恢复正常颜色
+        // Ensure normal color is restored when disposing
         if (textureComponent != null) {
             textureComponent.setColor(NORMAL_COLOR);
         }

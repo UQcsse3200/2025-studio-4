@@ -46,7 +46,7 @@ public class BossEnemyFactoryTest {
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(300, stats.getHealth());
-        assertEquals(20, stats.getBaseAttack());
+        assertEquals(50, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());
@@ -171,7 +171,7 @@ public class BossEnemyFactoryTest {
         CombatStatsComponent stats = boss.getComponent(CombatStatsComponent.class);
         assertNotNull(stats);
         assertEquals(1200, stats.getHealth());
-        assertEquals(80, stats.getBaseAttack());
+        assertEquals(200, stats.getBaseAttack());
         assertEquals(DamageTypeConfig.None, stats.getResistances());
         assertEquals(DamageTypeConfig.None, stats.getWeaknesses());
         assertEquals(new Vector2(0.5f, 0.5f), BossEnemyFactory.getSpeed());

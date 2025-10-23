@@ -10,8 +10,8 @@
       "currency": "Very High",
       "lore": "Designed by the US Department of Defence, the boss bot once fought alongside humans against the robot horde. But one decisive battle proved disastrous, with an AI virus infecting the robot's neural core. This beast is now corrupted and seeks only to annihilate humanity.",
       "points": "Very High",
-      "weakness": "none",
-      "resistance": "none",
+      "weakness": "None",
+      "resistance": "None",
       "image": "images/boss_enemy.png"
     },
     "dividerEnemy": {
@@ -24,8 +24,8 @@
       "currency": "Moderate",
       "lore": "The works of a mad scientist gone crazy by AI, the concept of the Divider was initially made to be used in medicine as a way to target patient's illnesses at a microscopic level. At least that was until the military took over the project...",
       "points": "Moderate",
-      "weakness": "none",
-      "resistance": "none",
+      "weakness": "None",
+      "resistance": "None",
       "image": "images/divider_enemy.png"
     },
     "dividerChildEnemy": {
@@ -38,8 +38,8 @@
       "currency": "Very Low",
       "lore": "When the Divider is destroyed, its unstable core splits apart into multiple smaller but faster offspring. These children are far deadlier than they appear.",
       "points": "Very Low",
-      "weakness": "none",
-      "resistance": "none",
+      "weakness": "None",
+      "resistance": "None",
       "image": "images/divider_enemy.png"
     },
     "droneEnemy": {
@@ -52,10 +52,9 @@
       "currency": "Low",
       "lore": "Drones are automated hunter-killers, originally designed for surveillance in neon-lit megacities. Their repurposed plasma cutters make them lethal in swarms, overwhelming unprepared defences.",
       "points": "Low",
-      "weakness": "none",
-      "resistance": "none",
-      "image": "images/drone_enemy.png",
-      "locked": true
+      "weakness": "None",
+      "resistance": "None",
+      "image": "images/drone_enemy.png"
     },
     "gruntEnemy": {
       "name": "Grunt",
@@ -67,8 +66,8 @@
       "currency": "Low",
       "lore": "Grunts are mass-produced cyber-soldiers, outfitted with low-cost exosuits and energy rifles. They are often deployed in waves by crime syndicates or rogue AI's to test your defences.",
       "points": "Low",
-      "weakness": "none",
-      "resistance": "none",
+      "weakness": "None",
+      "resistance": "None",
       "image": "images/grunt_enemy.png"
     },
     "tankEnemy": {
@@ -81,9 +80,23 @@
       "currency": "High",
       "lore": "Built from salvaged military hardware, tanks are often repurposed by warlords or hacked AI systems. Their glowing energy cores hint at unstable but devastating power supplies.",
       "points": "High",
-      "weakness": "none",
-      "resistance": "none",
+      "weakness": "None",
+      "resistance": "None",
       "image": "images/tank_enemy.png"
+    },
+    "speederEnemy": {
+      "name": "Speeder",
+      "health": "Very High",
+      "damage": "Very High",
+      "speed": "Very Slow to Very Fast",
+      "traits": "Gradual acceleration; becomes harder to target or slow down once at top speed.",
+      "role": "Endurance boss — tests players’ ability to neutralize threats before they gain momentum.",
+      "currency": "Very High",
+      "lore": "Engineered from experimental hover technology, Speeders are remnants of high-speed transport drones corrupted by rogue AI warlords. Their propulsion cores hum with unstable plasma, growing hotter and faster as they move. Many defenders have learned the hard way — what starts as a lumbering hulk can end as a blinding missile of destruction.",
+      "points": "Very High",
+      "weakness": "Slowing Freezing",
+      "resistance": "Damage over time",
+      "image": "images/speedster_enemy.png"
     }
   }
 }

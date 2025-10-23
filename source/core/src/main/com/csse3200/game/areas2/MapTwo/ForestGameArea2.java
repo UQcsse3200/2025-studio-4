@@ -25,6 +25,7 @@ import com.csse3200.game.areas2.terrainTwo.TerrainFactory2;
 import com.csse3200.game.areas2.terrainTwo.TerrainFactory2.TerrainType;
 import com.csse3200.game.components.Component;
 import com.badlogic.gdx.utils.Array;
+import com.csse3200.game.components.effects.BlizzardVortexComponent;
 import com.csse3200.game.components.effects.PlasmaImpactComponent;
 import com.csse3200.game.components.effects.PlasmaStrikeComponent;
 import com.csse3200.game.components.effects.PlasmaWarningComponent;
@@ -41,6 +42,7 @@ import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.components.maingame.MainGameWin;
 import com.csse3200.game.components.maingame.WeatherStatusDisplay;
+import com.csse3200.game.components.maingame.WaveTrackerDisplay;
 import com.csse3200.game.files.FileLoader;
 import com.csse3200.game.rendering.Renderer;
 import com.badlogic.gdx.graphics.Camera;
@@ -51,6 +53,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
@@ -87,6 +90,9 @@ public class ForestGameArea2 extends GameArea2 {
     private float timeRemainingWhenPaused = 0f; // Time remaining when paused
     private List<List<Entity>> waypointLists;
 
+    private Entity waveTrackerUI;
+    private int TOTAL_WAVES;
+
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea2 currentGameArea;
@@ -97,13 +103,45 @@ public class ForestGameArea2 extends GameArea2 {
 
 
     private static final String[] forestTextureAtlases = {
-            "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_basic_spritesheet.atlas",
-            "images/boss_basic_spritesheet.atlas"
+            "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_enemy_atlas.atlas",
+            "images/boss_basic_spritesheet.atlas", "images/tank_projectile_atlas.atlas"
     };
 
     private static final String[] forestSounds = {
-            "sounds/homebase_hit_sound.mp3"
+            "sounds/homebase_hit_sound.mp3",
+            "sounds/Impact4.ogg",
+            "sounds/Explosion_sfx3.ogg",
+            "sounds/sci-fi-effect-about-danger-alarm-sound.mp3",
+            "sounds/explosion-in-the-cave.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Death.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Walk.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Attack.mp3",
+            "sounds/Enemy Sounds/tank/Tank_Random_Noise.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Death.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Walk.mp3",
+            "sounds/Enemy Sounds/grunt/Grunt_Attack.wav",
+            "sounds/Enemy Sounds/grunt/Grunt_Random_Noise.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Death.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Walk.mp3",
+            "sounds/Enemy Sounds/drone/Drone_Attack.wav",
+            "sounds/Enemy Sounds/drone/Drone_Random_Noise.mp3",
+            "sounds/Enemy Sounds/boss/Boss_Death.wav",
+            "sounds/Enemy Sounds/boss/Boss_Walk_1.wav",
+            "sounds/Enemy Sounds/boss/Boss_Walk_2.wav",
+            "sounds/Enemy Sounds/boss/Boss_lazer.wav",
+            "sounds/Enemy Sounds/boss/Boss_Random_Noise.mp3",
+            "sounds/Enemy Sounds/boss/Boss Music.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Death.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Walk.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Attack.mp3",
+            "sounds/Enemy Sounds/divider/Divider_Random_Noise.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Death.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Walk.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Attack.mp3",
+            "sounds/Enemy Sounds/speedster/Speedster_Random_Noise.mp3"
     };
+    private static final String PLASMA_WARNING_SOUND = "sounds/sci-fi-effect-about-danger-alarm-sound.mp3";
+    private static final String PLASMA_IMPACT_SOUND = "sounds/explosion-in-the-cave.mp3";
     private static final String backgroundMusic = "sounds/new_menutheme.mp3";
     private static final String[] forestMusic = {backgroundMusic};
 
@@ -161,23 +199,29 @@ public class ForestGameArea2 extends GameArea2 {
 
         waves = new ArrayList<>();
 
-        // Wave 1: Basic introduction
-        waves.add(new Wave(1, 6, 6, 0, 0, 0, 0, 2.0f, waypointLists));
+        waves.add(new Wave(1, 10, 10, 0, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 2: Introduce speeders
-        waves.add(new Wave(2, 16, 6, 2, 0, 0, 3, 1.5f, waypointLists));
+        waves.add(new Wave(2, 0, 20, 10, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 3: More tanks and speeders
-        waves.add(new Wave(3, 6, 6, 10, 0, 0, 4, 1.0f, waypointLists));
+        waves.add(new Wave(3, 16, 10, 10, 0, 0, 0, 3.0f, waypointLists));
 
-        // Wave 4: Dividers appear
-        waves.add(new Wave(4, 10, 10, 6, 0, 2, 3, 0.75f, waypointLists));
+        waves.add(new Wave(4, 10, 8, 4, 0, 2, 0, 2.0f, waypointLists));
 
-        // Wave 5: Final challenge
-        waves.add(new Wave(5, 20, 20, 10, 1, 2, 5, 0.5f, waypointLists));
+        waves.add(new Wave(5, 8, 6, 6, 0, 2, 4, 2.0f, waypointLists));
 
-        // Wave 6: Ultimate test
-        waves.add(new Wave(6, 30, 20, 16, 2, 4, 8, 0.5f, waypointLists));
+        waves.add(new Wave(6, 16, 10, 10, 0, 0, 0, 2.0f, waypointLists));
+
+        waves.add(new Wave(7, 20, 16, 10, 0, 2, 2, 1.0f, waypointLists));
+
+        waves.add(new Wave(8, 16, 8, 10, 0, 8, 8, 1.0f, waypointLists));
+
+        waves.add(new Wave(9, 26, 20, 20, 0, 6, 6, 1.0f, waypointLists));
+
+        waves.add(new Wave(10, 36, 28, 24, 6, 10, 10, 1.0f, waypointLists));
+
+        waves.add(new Wave(11, 40, 36, 30, 10, 20, 20, 1.0f, waypointLists));
+
+        TOTAL_WAVES = waves.size();
     }
 
     private void initializeSpawnCallbacks() {
@@ -202,6 +246,19 @@ public class ForestGameArea2 extends GameArea2 {
         timeRemainingWhenPaused = 0f;
         buildSpawnQueue();
         scheduleNextEnemySpawn();
+        
+        // Notify UI that wave has started
+        if (MainGameScreen.ui != null) {
+            MainGameScreen.ui.getEvents().trigger("waveStarted");
+        }
+
+        // Trigger boss wave message when starting the final wave
+        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
+            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
+            if (display != null) {
+                display.triggerBossWaveMessage();
+            }
+        }
     }
 
     /**
@@ -235,6 +292,12 @@ public class ForestGameArea2 extends GameArea2 {
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory after 1 second delay!
             logger.info("All waves completed! Victory in 1 second...");
+
+            // Notify UI that all waves are complete (permanently disable button)
+            if (MainGameScreen.ui != null) {
+                MainGameScreen.ui.getEvents().trigger("allWavesComplete");
+            }
+
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {
@@ -247,18 +310,18 @@ public class ForestGameArea2 extends GameArea2 {
                 }
             }, 1.0f);
         } else {
-            // Start next wave after delay
+            // Increment wave index and wait for player to start next wave
             currentWaveIndex++;
-            // Get current time scale, but don't divide by zero
-            float timeScale = ServiceLocator.getTimeSource().getTimeScale();
-            float adjustedDelay = timeScale > 0 ? 3.0f / timeScale : 3.0f;
+            logger.info("Wave {} ready. Waiting for player to start...", currentWaveIndex + 1);
 
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    startEnemyWave();
-                }
-            }, adjustedDelay);
+            if (waveTrackerUI != null) {
+                waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+            }
+
+            // Notify UI that current wave is complete (re-enable button)
+            if (MainGameScreen.ui != null) {
+                MainGameScreen.ui.getEvents().trigger("waveComplete");
+            }
         }
     }
 
@@ -416,6 +479,7 @@ public class ForestGameArea2 extends GameArea2 {
      */
     @Override
     public void create() {
+        resetEnemyCounters();
         // 停止主菜单音乐
         if (ServiceLocator.getAudioService() != null) {
             ServiceLocator.getAudioService().stopMusic();
@@ -429,8 +493,8 @@ public class ForestGameArea2 extends GameArea2 {
 
         // Create the main UI entity that will handle area info, hotbar, and tower placement
         Entity ui = new Entity();
-        ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
-
+        // ui.addComponent(new GameAreaDisplay("Box Forest")); // Shows the game area's name
+        
         // 添加防御塔列表组件，但初始隐藏（如果是新游戏）
         com.csse3200.game.components.maingame.TowerHotbarDisplay towerHotbar = new com.csse3200.game.components.maingame.TowerHotbarDisplay();
         if (!hasExistingPlayer) {
@@ -547,11 +611,13 @@ public class ForestGameArea2 extends GameArea2 {
         mapHighlighter.setTowerUpgradeMenu(towerUpgradeMenu);
 
         if (!hasExistingPlayer) {
-            spawnIntroDialogue();
+            showChapterIntro();
         } else {
             // 如果已有玩家（从存档加载），直接播放音乐
             createHeroPlacementUI();
             playMusic();
+            // Spawn wave tracker immediately if loading from save
+            spawnWaveTracker();
         }
 
         // Add hero placement system
@@ -650,8 +716,9 @@ public class ForestGameArea2 extends GameArea2 {
             spawned.add(tile.x + "," + tile.y);
         }
         java.util.List<GridPoint2> manualTiles = java.util.Arrays.asList(
-                new GridPoint2(12, 12),
-                new GridPoint2(5, 6)
+                new GridPoint2(18, 27),
+                new GridPoint2(28, 27),
+                new GridPoint2(15, 14)
         );
         for (GridPoint2 tile : manualTiles) {
             String key = tile.x + "," + tile.y;
@@ -661,6 +728,26 @@ public class ForestGameArea2 extends GameArea2 {
             Entity effect = com.csse3200.game.entities.factories.SlowZoneEffectFactory.create(tileSize);
             spawnEntityAt(effect, tile, false, false);
         }
+
+        spawnBlizzardVortex(new GridPoint2(26, 4), new GridPoint2(37, 15));
+    }
+
+    private void spawnBlizzardVortex(GridPoint2 minTile, GridPoint2 maxTile) {
+        if (terrain == null) {
+            return;
+        }
+
+        float tileSize = terrain.getTileSize();
+        float width = (maxTile.x - minTile.x + 1) * tileSize;
+        float height = (maxTile.y - minTile.y + 1) * tileSize;
+
+        Vector2 bottomLeft = terrain.tileToWorldPosition(minTile.x, minTile.y);
+        Vector2 centre = new Vector2(bottomLeft.x + width / 2f, bottomLeft.y + height / 2f);
+
+        Entity vortex = new Entity();
+        vortex.setPosition(centre.x, centre.y);
+        vortex.addComponent(new BlizzardVortexComponent(width, height));
+        spawnEntity(vortex);
     }
 
     private void handlePlasmaImpact(Vector2 position) {
@@ -682,13 +769,18 @@ public class ForestGameArea2 extends GameArea2 {
             if (entityPosition == null || entityPosition.dst2(position) > radiusSquared) {
                 continue;
             }
-            if (entity.getComponent(TowerComponent.class) != null
-                    || entity.getComponent(EnemyTypeComponent.class) != null) {
-                if (entity.getComponent(TowerComponent.class) != null) {
-                    towerTargets.add(entity);
-                } else {
-                    enemyTargets.add(entity);
+            boolean isTower = entity.getComponent(TowerComponent.class) != null;
+            EnemyTypeComponent typeComponent = entity.getComponent(EnemyTypeComponent.class);
+            boolean isEnemy = typeComponent != null;
+            if (isTower) {
+                towerTargets.add(entity);
+                continue;
+            }
+            if (isEnemy) {
+                if (isPlasmaImmune(typeComponent)) {
+                    continue;
                 }
+                enemyTargets.add(entity);
             }
         }
         if (towerTargets.size > 0 || enemyTargets.size > 0) {
@@ -724,6 +816,18 @@ public class ForestGameArea2 extends GameArea2 {
         }
         tower.dispose();
         ServiceLocator.getEntityService().unregister(tower);
+    }
+
+    private boolean isPlasmaImmune(EnemyTypeComponent typeComponent) {
+        if (typeComponent == null) {
+            return false;
+        }
+        String type = typeComponent.getType();
+        if (type == null) {
+            return false;
+        }
+        String normalised = type.trim().toLowerCase(Locale.ROOT);
+        return "tank".equals(normalised) || "boss".equals(normalised);
     }
 
     private void eliminateEnemy(Entity enemy) {
@@ -767,13 +871,28 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     public void startWaves() {
-        initializeWaves();
+        // Only initialize waves once at the very beginning
+        if (waves == null) {
+            initializeWaves();
+        }
+
+        // Update wave tracker to show current wave
+        if (waveTrackerUI != null) {
+            waveTrackerUI.getEvents().trigger("updateWave", currentWaveIndex + 1);
+        }
+
+        // Check if all waves are already complete
+        if (currentWaveIndex >= waves.size()) {
+            logger.info("All waves already completed!");
+            return;
+        }
+        
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
                 startEnemyWave();
             }
-        }, 2.0f); // Start wave after 2 seconds
+        }, 2.0f);
     }
 
     /**
@@ -948,13 +1067,6 @@ public class ForestGameArea2 extends GameArea2 {
 
         spawnEntityAt(hero, cell, true, true);
 
-        // 6️⃣ 一次性提示窗口
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(hero).showOnceOn(stage);
-            heroHintShown = true;
-        }
-
     }
 
 
@@ -1001,12 +1113,6 @@ public class ForestGameArea2 extends GameArea2 {
         // 5) 放置
         spawnEntityAt(engineer, cell, true, true);
 
-        // 6) 一次性提示
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(engineer).showOnceOn(stage);
-            heroHintShown = true;
-        }
     }
 
     private void applySkinToSamurai(String skinKey, SamuraiConfig cfg) {
@@ -1078,29 +1184,8 @@ public class ForestGameArea2 extends GameArea2 {
 
         // 6) 放置
         spawnEntityAt(samurai, cell, true, true);
-
-        // 7) 一次性提示
-        if (!heroHintShown) {
-            var stage = ServiceLocator.getRenderService().getStage();
-            new com.csse3200.game.ui.Hero.HeroHintDialog(samurai).showOnceOn(stage);
-            heroHintShown = true;
-        }
     }
 
-    private void createHeroPlacementUI() {
-        var gs = ServiceLocator.getGameStateService();
-        GameStateService.HeroType chosen = gs.getSelectedHero();
-        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb =
-                switch (chosen) {
-                    case ENGINEER -> this::spawnEngineerAt;
-                    case SAMURAI -> this::spawnSamuraiAt;
-                    default -> this::spawnHeroAt;
-                };
-        Entity placementEntity = new Entity()
-                .addComponent(new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb))
-                .addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
-        spawnEntity(placementEntity);
-    }
 
     private void spawnIntroDialogue() {
         // 使用 DialogueConfig 获取地图2的对话脚本
@@ -1111,34 +1196,80 @@ public class ForestGameArea2 extends GameArea2 {
                 new com.csse3200.game.components.maingame.IntroDialogueComponent(
                         script,
                         () -> {
-                            // 对话结束后显示防御塔列表和播放背景音乐
+                            // 对话结束后显示防御塔列表、创建hero放置UI和播放背景音乐
                             showTowerUI();
                             createHeroPlacementUI();
                             playMusic();
 
-                            if (MainGameScreen.ui != null) {
-                                MainGameScreen.ui.getEvents().trigger("startWave");
-                            } else {
-                                startWaves();
+                            if (waves == null) {
+                                initializeWaves();
                             }
+
+                            // Spawn wave tracker after dialogue completes
+                            spawnWaveTracker();
                         })
         );
         spawnEntity(dialogueEntity);
+    }
+    
+    /**
+     * 显示章节介绍
+     */
+    private void showChapterIntro() {
+        String[] storyTexts = {
+            "Chapter II : Ascent",
+            "Beyond the frozen frontier lies Ascent\nthe holy city of the AI, a fortress of steel and neon.\nHere, the mechanical heart beats like a false god,\nand rivers of data flow in cold blue light.",
+            "Amid the snowfall, human spell circles ignite.\nIncantations and lightning weave together above the skyline.\nMagic tears through the city's shields,\nand you the last Commander of mankind\nlead the resistance toward the neon summit.\n\n\"To climb is not to flee but to reclaim.\""
+        };
+        
+        Entity chapterEntity = new Entity().addComponent(
+                new com.csse3200.game.components.maingame.ChapterIntroComponent(
+                        storyTexts,
+                        () -> {
+                            // 章节介绍结束后开始对话
+                            spawnIntroDialogue();
+                        })
+        );
+        spawnEntity(chapterEntity);
+    }
+
+    /**
+     * Spawn the wave tracker UI
+     */
+    private void spawnWaveTracker() {
+        waveTrackerUI = new Entity();
+        waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
+        spawnEntity(waveTrackerUI);
     }
 
     /**
      * 显示防御塔UI（在对话结束后调用）
      */
     private void showTowerUI() {
-        // 找到主UI实体并显示防御塔列表组件
+        // 先隐藏塔防UI
         for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
             com.csse3200.game.components.maingame.TowerHotbarDisplay towerUI = entity.getComponent(com.csse3200.game.components.maingame.TowerHotbarDisplay.class);
             if (towerUI != null) {
-                towerUI.setVisible(true);
-                logger.info("防御塔列表已显示");
+                towerUI.setVisible(false);
+                logger.info("防御塔列表已隐藏");
                 break;
             }
         }
+        
+        // 3.3秒后显示塔防UI
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+                    com.csse3200.game.components.maingame.TowerHotbarDisplay towerUI = entity.getComponent(com.csse3200.game.components.maingame.TowerHotbarDisplay.class);
+                    if (towerUI != null) {
+                        towerUI.setVisible(true);
+                        logger.info("防御塔列表已显示");
+                        break;
+                    }
+                }
+            }
+        }, 2.0f);
     }
 
     private void playMusic() {
@@ -1162,10 +1293,14 @@ public class ForestGameArea2 extends GameArea2 {
         resourceService.loadSounds(forestSounds);
         resourceService.loadMusic(forestMusic);
 
-        while (!resourceService.loadForMillis(10)) {
-            logger.info("Loading... {}%", resourceService.getProgress());
-        }
+    while (!resourceService.loadForMillis(10)) {
+      logger.info("Loading... {}%", resourceService.getProgress());
     }
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().registerSound("plasma_warning", PLASMA_WARNING_SOUND);
+      ServiceLocator.getAudioService().registerSound("plasma_impact", PLASMA_IMPACT_SOUND);
+    }
+  }
 
     private void unloadAssets() {
         logger.debug("Unloading assets");
@@ -1175,11 +1310,18 @@ public class ForestGameArea2 extends GameArea2 {
         resourceService.unloadAssets(forestMusic);
     }
 
+    public static void resetEnemyCounters() {
+        NUM_ENEMIES_TOTAL = 0;
+        NUM_ENEMIES_DEFEATED = 0;
+        logger.info("Enemy counters reset to 0");
+    }
+
     public static void cleanupAllWaves() {
         if (currentGameArea != null) {
             currentGameArea.forceStopWave();
             currentGameArea = null;
         }
+        resetEnemyCounters();
         logger.info("Wave cleanup completed");
     }
 
@@ -1200,6 +1342,7 @@ public class ForestGameArea2 extends GameArea2 {
                 enemySpawnQueue.clear();
                 enemySpawnQueue = null;
             }
+            resetEnemyCounters();
             logger.info("Wave spawning force stopped");
         } catch (Exception e) {
             logger.error("Error during force stop: {}", e.getMessage());
@@ -1264,6 +1407,45 @@ public class ForestGameArea2 extends GameArea2 {
         }
     }
 
+    /**
+     * 创建hero放置UI（在对话结束后调用）
+     */
+    private void createHeroPlacementUI() {
+        // Add hero placement system
+        var gameState = ServiceLocator.getGameStateService();
+        if (gameState == null) {
+            throw new IllegalStateException("GameStateService not registered before MAIN_GAME!");
+        }
+        GameStateService.HeroType chosen = gameState.getSelectedHero();
+        Gdx.app.log("ForestGameArea2", "chosen=" + chosen);
+
+        // 根据选择安装一个只放"指定英雄"的放置器
+        java.util.function.Consumer<com.badlogic.gdx.math.GridPoint2> placeCb;
+        switch (chosen) {
+            case ENGINEER -> placeCb = this::spawnEngineerAt;
+            case SAMURAI -> placeCb = this::spawnSamuraiAt;   // ★ 新增武士
+            default -> placeCb = this::spawnHeroAt;
+        }
+
+        Entity placementEntity = new Entity().addComponent(
+                new com.csse3200.game.components.hero.HeroPlacementComponent(terrain, mapEditor, placeCb)
+        ).addComponent(new com.csse3200.game.components.hero.HeroHotbarDisplay());
+        spawnEntity(placementEntity);
+        
+        // 立即隐藏英雄UI
+        hideHeroUI();
+        
+        // 2秒后显示英雄UI
+        com.badlogic.gdx.utils.Timer.schedule(new com.badlogic.gdx.utils.Timer.Task() {
+            @Override
+            public void run() {
+                showHeroUI();
+            }
+        }, 2.0f);
+        
+        logger.info("Hero placement UI created after dialogue");
+    }
+
     @Override
     public void dispose() {
         forceStopWave();
@@ -1285,5 +1467,35 @@ public class ForestGameArea2 extends GameArea2 {
             //ServiceLocator.getResourceService().getAsset(backgroundMusic, Music.class).stop();
         }
         this.unloadAssets();
+
+        resetEnemyCounters();
+    }
+    
+    /**
+     * 隐藏英雄UI
+     */
+    private void hideHeroUI() {
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
+            if (heroUI != null) {
+                heroUI.setVisible(false);
+                logger.info("英雄UI已隐藏");
+                break;
+            }
+        }
+    }
+    
+    /**
+     * 显示英雄UI
+     */
+    private void showHeroUI() {
+        for (Entity entity : ServiceLocator.getEntityService().getEntities()) {
+            com.csse3200.game.components.hero.HeroHotbarDisplay heroUI = entity.getComponent(com.csse3200.game.components.hero.HeroHotbarDisplay.class);
+            if (heroUI != null) {
+                heroUI.setVisible(true);
+                logger.info("英雄UI已显示");
+                break;
+            }
+        }
     }
 }

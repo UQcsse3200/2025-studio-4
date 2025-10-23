@@ -11,16 +11,41 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.rendering.RenderComponent;
 import com.csse3200.game.services.ServiceLocator;
 
+/**
+ * Renders a visual impact effect when plasma strikes hit the ground.
+ * 
+ * <p>This component creates a bright, expanding circular effect that fades out over time.
+ * The impact effect is procedurally generated as a radial gradient texture and automatically
+ * disposes itself when the animation completes.</p>
+ * 
+ * <p>The effect plays a sound on creation and scales/fades the visual effect over the duration.</p>
+ * 
+ * @author Team1
+ * @since sprint 4
+ */
 public class PlasmaImpactComponent extends RenderComponent {
+  /** Shared texture for all impact effects */
   private static TextureRegion texture;
+  /** Duration of the impact effect in seconds */
   private final float duration;
+  /** Time elapsed since effect started */
   private float elapsed;
+  /** Whether disposal has been scheduled */
   private boolean disposeScheduled;
 
+  /**
+   * Creates a plasma impact effect with the specified duration.
+   * 
+   * @param duration duration of the effect in seconds
+   */
   public PlasmaImpactComponent(float duration) {
     this.duration = duration;
   }
 
+  /**
+   * Ensures the impact texture is created and cached.
+   * Creates a radial gradient texture procedurally.
+   */
   private static void ensureTexture() {
     if (texture != null) {
       return;
@@ -54,6 +79,9 @@ public class PlasmaImpactComponent extends RenderComponent {
     super.create();
     ensureTexture();
     elapsed = 0f;
+    if (ServiceLocator.getAudioService() != null) {
+      ServiceLocator.getAudioService().playSound("plasma_impact", 1f);
+    }
   }
 
   @Override
@@ -77,6 +105,10 @@ public class PlasmaImpactComponent extends RenderComponent {
     batch.setColor(previous);
   }
 
+  /**
+   * Schedules the entity for disposal after the effect completes.
+   * Uses postRunnable to ensure safe disposal.
+   */
   private void scheduleDispose() {
     if (disposeScheduled) {
       return;

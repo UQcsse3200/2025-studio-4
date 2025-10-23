@@ -9,6 +9,7 @@ import com.csse3200.game.components.currencysystem.CurrencyComponent.CurrencyTyp
 import com.csse3200.game.components.currencysystem.CurrencyManagerComponent;
 import com.csse3200.game.components.deck.DeckComponent;
 import com.csse3200.game.components.enemy.clickable;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 import com.csse3200.game.components.enemy.SpeedWaypointComponent;
 import com.csse3200.game.components.enemy.WaypointComponent;
 import com.csse3200.game.components.tasks.ChaseTask;
@@ -16,6 +17,7 @@ import com.csse3200.game.entities.Entity;
 import com.csse3200.game.entities.configs.DamageTypeConfig;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.utils.Difficulty;
+import com.csse3200.game.components.npc.EnemySoundComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,10 @@ public class DividerChildEnemyFactory {
     private static final String DEFAULT_TEXTURE = "images/divider_enemy.png";
     private static final String DEFAULT_NAME = "Divider Child Enemy";
     private static final float DEFAULT_CLICKRADIUS = 0.3f;
+    private static final String DIVIDER_WALK_SOUND = "sounds/Enemy Sounds/divider/Divider_Walk.mp3";
+    private static final String DIVIDER_ATTACK_SOUND = "sounds/Enemy Sounds/divider/Divider_Attack.mp3";
+    private static final String DIVIDER_DEATH_SOUND = "sounds/Enemy Sounds/divider/Divider_Death.mp3";
+    private static final String DIVIDER_AMBIENT_SOUND = "sounds/Enemy Sounds/divider/Divider_Random_Noise.mp3";
     private static final Map<CurrencyType, Integer> DEFAULT_CURRENCY_DROPS = Map.of(
     CurrencyType.METAL_SCRAP, 15,
     CurrencyType.TITANIUM_CORE, 10,
@@ -79,7 +85,14 @@ public class DividerChildEnemyFactory {
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("divider_child"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
             .addComponent(new clickable(clickRadius))
-            .addComponent(new SlowEffectComponent()); // 添加减速特效组件
+            .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
+            .addComponent(new SlowEffectComponent())
+            .addComponent(new EnemySoundComponent(
+                ServiceLocator.getResourceService().getAsset(DIVIDER_WALK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(DIVIDER_ATTACK_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(DIVIDER_DEATH_SOUND, Sound.class),
+                ServiceLocator.getResourceService().getAsset(DIVIDER_AMBIENT_SOUND, Sound.class)
+            ));
             CombatStatsComponent combatStats = DividerChild.getComponent(CombatStatsComponent.class);
             if (combatStats != null) combatStats.setIsEnemy(true);
 
@@ -161,43 +174,50 @@ public class DividerChildEnemyFactory {
     private static void destroyEnemy(Entity entity) {
         // Check which game area is active and use its counters
         if (com.csse3200.game.areas2.MapTwo.ForestGameArea2.currentGameArea != null) {
-            // We're in ForestGameArea2
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.NUM_ENEMIES_DEFEATED += 1;
             com.csse3200.game.areas2.MapTwo.ForestGameArea2.checkEnemyCount();
         } else {
-            // Default to ForestGameArea (original behavior)
             ForestGameArea.NUM_ENEMIES_DEFEATED += 1;
             ForestGameArea.checkEnemyCount();
         }
 
-        // Award points to player upon defeating enemy
-        if (currentTarget != null) {
-            PlayerScoreComponent totalScore = currentTarget.getComponent(PlayerScoreComponent.class);
-            if (totalScore != null) {
-                totalScore.addPoints(points);
-            }
+        // Check if enemy reached the base
+        com.csse3200.game.components.ReachedBaseComponent reachedBaseComp = 
+            entity.getComponent(com.csse3200.game.components.ReachedBaseComponent.class);
+        boolean reachedBase = (reachedBaseComp != null && reachedBaseComp.hasReachedBase());
+        
+        //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " died. ReachedBase: " + reachedBase);
+        
+        if (!reachedBase) {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - DROPPING CURRENCY (killed by player)");
+            
+            WaypointComponent wc = entity.getComponent(WaypointComponent.class);
+            if (wc != null && wc.getPlayerRef() != null) {
+                Entity player = wc.getPlayerRef();
 
-            // Track kill for ranking component
-            com.csse3200.game.components.PlayerRankingComponent prc = currentTarget.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
-            if (prc != null) {
-                prc.addKill();
+                // Drop currency upon defeat
+                CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
+                if (currencyManager != null) {
+                    player.getEvents().trigger("dropCurrency", currencyDrops);
+                }
+
+                // Add points to score
+                PlayerScoreComponent psc = player.getComponent(PlayerScoreComponent.class);
+                if (psc != null) {
+                    psc.addPoints(points);
+                }
+
+                // Track kill for ranking component
+                com.csse3200.game.components.PlayerRankingComponent prc = player.getComponent(com.csse3200.game.components.PlayerRankingComponent.class);
+                if (prc != null) {
+                    prc.addKill();
+                }
             }
+        } else {
+            //Gdx.app.log("CURRENCY", "Enemy " + entity.getId() + " - NO CURRENCY (reached base)");
         }
 
         playDeathSound(deathSoundPath);
-
-        // Drop currency upon defeat
-        WaypointComponent wc = entity.getComponent(WaypointComponent.class);
-        if (wc != null && wc.getPlayerRef() != null) {
-            Entity player = wc.getPlayerRef();
-            CurrencyManagerComponent currencyManager = player.getComponent(CurrencyManagerComponent.class);
-            if (currencyManager != null) {
-                player.getEvents().trigger("dropCurrency", currencyDrops);
-            }
-        }
-        
-        //Gdx.app.postRunnable(entity::dispose);
-        //Eventually add point/score logic here maybe?
     }
 
     private static void playDeathSound(String soundPath) {

@@ -6,7 +6,11 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
@@ -47,9 +51,9 @@ public class MainMenuDisplay extends UIComponent {
   private void ensureAssetsLoaded() {
     ResourceService rs = ServiceLocator.getResourceService();
     rs.loadTextures(new String[]{
-            BG_TEX, PANEL_TEX, BTN_TEX,
-            "images/cogwheel2-modified.png", "images/book-modified.png",
-            "images/story3-modified.png", "images/rank-modified.png", "images/star.png"
+        BG_TEX, PANEL_TEX, BTN_TEX,
+        "images/cogwheel2-modified.png", "images/book-modified.png",
+        "images/story3-modified.png", "images/rank-modified.png", "images/star.png"
     });
     rs.loadAll();
   }
@@ -57,7 +61,7 @@ public class MainMenuDisplay extends UIComponent {
   private void addActors() {
     // Background
     Image backgroundImage =
-            new Image(ServiceLocator.getResourceService().getAsset(BG_TEX, Texture.class));
+        new Image(ServiceLocator.getResourceService().getAsset(BG_TEX, Texture.class));
     backgroundImage.setFillParent(true);
     stage.addActor(backgroundImage);
 
@@ -71,27 +75,70 @@ public class MainMenuDisplay extends UIComponent {
     loadBtn.getLabel().setColor(Color.WHITE);
     exitBtn.getLabel().setColor(Color.WHITE);
 
-    startBtn.addListener(new ChangeListener() {
-      @Override public void changed(ChangeEvent e, Actor a) {
-        ServiceLocator.registerGameStateService(new GameStateService());
-        entity.getEvents().trigger("start");
-      }
-    });
-    loadBtn.addListener(new ChangeListener() {
-      @Override public void changed(ChangeEvent e, Actor a) {
-        entity.getEvents().trigger("continue");
-      }
-    });
-    exitBtn.addListener(new ChangeListener() {
-      @Override public void changed(ChangeEvent e, Actor a) {
-        entity.getEvents().trigger("exit");
-      }
-    });
-
+    // Icon buttons
     ImageButton settingsBtn = createImageButton("images/cogwheel2-modified.png", "settings");
     ImageButton bookBtn     = createImageButton("images/book-modified.png", "book");
     ImageButton storyBtn    = createImageButton("images/story3-modified.png", "story");
     ImageButton rankingBtn  = createImageButton("images/rank-modified.png", "ranking");
+
+    // === Listeners ===
+    startBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Start button clicked");
+        // Ensure a fresh game state (keep from non-game-ui branch)
+        ServiceLocator.registerGameStateService(new GameStateService());
+        entity.getEvents().trigger("start");
+      }
+    });
+
+    loadBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Continue button clicked");
+        entity.getEvents().trigger("continue");
+      }
+    });
+
+    exitBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Exit button clicked");
+        entity.getEvents().trigger("exit");
+      }
+    });
+
+    settingsBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Settings button clicked");
+        entity.getEvents().trigger("settings");
+      }
+    });
+
+    rankingBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Ranking button clicked");
+        entity.getEvents().trigger("ranking");
+      }
+    });
+
+    bookBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Book button clicked");
+        entity.getEvents().trigger("book");
+      }
+    });
+
+    storyBtn.addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent changeEvent, Actor actor) {
+        logger.debug("Story button clicked");
+        entity.getEvents().trigger("story");
+      }
+    });
 
     // === Panel (smaller + tighter) ===
     Texture panelTex = ServiceLocator.getResourceService().getAsset(PANEL_TEX, Texture.class);
@@ -111,7 +158,7 @@ public class MainMenuDisplay extends UIComponent {
     title.setAlignment(Align.center);
     panel.add(title).expandX().padTop(-6f).padBottom(8f).row();
 
-    // Center column of menu buttons (slightly shorter for the tighter frame)
+    // Center column of menu buttons
     Table mainButtons = new Table();
     mainButtons.defaults().width(240f).height(46f).padTop(10f);
     mainButtons.add(startBtn).row();
@@ -148,7 +195,9 @@ public class MainMenuDisplay extends UIComponent {
     Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
     TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(texture));
     ImageButton.ImageButtonStyle style = new ImageButton.ImageButtonStyle();
-    style.up = drawable; style.down = drawable; style.over = drawable;
+    style.up = drawable;
+    style.down = drawable;
+    style.over = drawable;
 
     ImageButton button = new ImageButton(style);
     button.setTransform(true);

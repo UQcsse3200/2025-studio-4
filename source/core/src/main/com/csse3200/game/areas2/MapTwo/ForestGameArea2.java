@@ -831,6 +831,12 @@ public class ForestGameArea2 extends GameArea2 {
     }
 
     private void eliminateEnemy(Entity enemy) {
+        // Boss enemies are immune to plasma impact on Map 2
+        EnemyTypeComponent enemyType = enemy.getComponent(EnemyTypeComponent.class);
+        if (enemyType != null && "boss".equalsIgnoreCase(enemyType.getType())) {
+            return;
+        }
+        
         CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
         if (stats != null) {
             stats.setHealth(0);

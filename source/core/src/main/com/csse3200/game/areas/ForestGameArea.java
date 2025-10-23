@@ -721,6 +721,12 @@ public class ForestGameArea extends GameArea {
     }
 
     private void eliminateEnemy(Entity enemy) {
+        // Tank enemies are immune to plasma impact
+        EnemyTypeComponent enemyType = enemy.getComponent(EnemyTypeComponent.class);
+        if (enemyType != null && "tank".equalsIgnoreCase(enemyType.getType())) {
+            return;
+        }
+        
         CombatStatsComponent stats = enemy.getComponent(CombatStatsComponent.class);
         if (stats != null) {
             stats.setHealth(0);

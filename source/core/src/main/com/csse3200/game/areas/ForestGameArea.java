@@ -267,14 +267,6 @@ public class ForestGameArea extends GameArea {
                 display.triggerBossWaveMessage();
             }
         }
-
-        // Trigger boss wave message when starting wave 5
-        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
-            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
-            if (display != null) {
-                display.triggerBossWaveMessage();
-            }
-        }
     }
 
     /**

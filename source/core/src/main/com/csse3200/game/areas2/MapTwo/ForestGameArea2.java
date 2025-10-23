@@ -292,12 +292,12 @@ public class ForestGameArea2 extends GameArea2 {
         if (currentWaveIndex + 1 >= waves.size()) {
             // All waves complete - trigger victory after 1 second delay!
             logger.info("All waves completed! Victory in 1 second...");
-
+            
             // Notify UI that all waves are complete (permanently disable button)
             if (MainGameScreen.ui != null) {
                 MainGameScreen.ui.getEvents().trigger("allWavesComplete");
             }
-
+            
             Timer.schedule(new Timer.Task() {
                 @Override
                 public void run() {

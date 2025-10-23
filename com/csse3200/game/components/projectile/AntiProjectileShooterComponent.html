@@ -93,12 +93,6 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AntiProjectileShooterComponent</span>
 <span class="extends-implements">extends <a href="../Component.html" title="class in com.csse3200.game.components">Component</a></span></div>
-<div class="block">Periodically searches for the nearest active tower projectile within range and fires
- an interceptor toward it. Interception and destruction are handled by
- InterceptOnHitComponent on the interceptor via radius overlap checks.
- <p>
- Uses EntityService pooling with key "interceptor:&lt;spritePath&gt;" and
- ProjectileComponent.activate()/deactivate() to reuse entities efficiently.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -119,14 +113,13 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float,float,float,float,java.lang.String)" class="member-name-link">AntiProjectileShooterComponent</a><wbr>(float&nbsp;range,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(float,float,float,float,java.lang.String,java.lang.String)" class="member-name-link">AntiProjectileShooterComponent</a><wbr>(float&nbsp;range,
  float&nbsp;cooldown,
  float&nbsp;speed,
  float&nbsp;lifetime,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;spritePath)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Create a shooter that launches interceptors on a cooldown toward hostile projectiles.</div>
-</div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlasPath,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;animationName)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -144,8 +137,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#update()" class="member-name-link">update</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Advance the internal timer and, when off cooldown, acquire a target and fire
- an interceptor.</div>
+<div class="block">Called once per frame of the game, and should be used for most component logic.</div>
 </div>
 </div>
 </div>
@@ -168,22 +160,14 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(float,float,float,float,java.lang.String)">
+<section class="detail" id="&lt;init&gt;(float,float,float,float,java.lang.String,java.lang.String)">
 <h3>AntiProjectileShooterComponent</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AntiProjectileShooterComponent</span><wbr><span class="parameters">(float&nbsp;range,
  float&nbsp;cooldown,
  float&nbsp;speed,
  float&nbsp;lifetime,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;spritePath)</span></div>
-<div class="block">Create a shooter that launches interceptors on a cooldown toward hostile projectiles.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>range</code> - maximum search radius in world units</dd>
-<dd><code>cooldown</code> - seconds between interceptor launches</dd>
-<dd><code>speed</code> - interceptor linear speed in world units per second</dd>
-<dd><code>lifetime</code> - interceptor lifetime in seconds before auto-despawn</dd>
-<dd><code>spritePath</code> - texture path used for the interceptor</dd>
-</dl>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;atlasPath,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;animationName)</span></div>
 </section>
 </li>
 </ul>
@@ -198,8 +182,9 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="update()">
 <h3>update</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">update</span>()</div>
-<div class="block">Advance the internal timer and, when off cooldown, acquire a target and fire
- an interceptor. No-ops if required services are unavailable.</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../Component.html#update()">Component</a></code></span></div>
+<div class="block">Called once per frame of the game, and should be used for most component logic. Not called if
+ component is disabled.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../Component.html#update()">update</a></code>&nbsp;in class&nbsp;<code><a href="../Component.html" title="class in com.csse3200.game.components">Component</a></code></dd>

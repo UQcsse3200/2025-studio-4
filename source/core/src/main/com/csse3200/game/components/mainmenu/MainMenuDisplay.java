@@ -71,7 +71,6 @@ public class MainMenuDisplay extends UIComponent {
               @Override
               public void changed(ChangeEvent changeEvent, Actor actor) {
                 logger.debug("Start button clicked");
-                ServiceLocator.registerGameStateService(new GameStateService());
                 entity.getEvents().trigger("start");
               }
             });

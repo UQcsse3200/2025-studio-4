@@ -52,8 +52,15 @@ public class MainBookScreen extends ScreenAdapter {
         ServiceLocator.registerInputService(new InputService());
         ServiceLocator.registerResourceService(new ResourceService());
 
-        // PRELOAD shared background (same as other menu screens)
-        String[] textures = {"images/book/encyclopedia_theme.png"};
+        // PRELOAD shared background and button images
+        String[] textures = {
+            "images/book/encyclopedia_theme.png",
+            "images/book/enemies_book.png",
+            "images/book/currencies_book.png",
+            "images/book/towers_book.png",
+            "images/score_trophy.png",
+            "images/book/hologram.png"
+        };
         ServiceLocator.getResourceService().loadTextures(textures);
         ServiceLocator.getResourceService().loadAll();
 

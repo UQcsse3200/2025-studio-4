@@ -3,6 +3,8 @@ package com.csse3200.game.components.book;
 import com.csse3200.game.components.deck.*;
 import com.csse3200.game.entities.configs.*;
 import com.csse3200.game.files.FileLoader;
+import com.csse3200.game.services.AchievementService;
+import com.csse3200.game.services.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,6 +176,70 @@ public class BookComponent {
             }
 
             return decks;
+        }
+    }
+
+    /**
+     * A book component containing achievement decks.
+     */
+    public static class AchievementBookComponent extends BookComponent {
+        /** Constructs an achievement book component with all achievements. */
+        public AchievementBookComponent() {
+            super("ACHIEVEMENTS", createDecks());
+        }
+
+        /**
+         * Creates a list of achievement deck components.
+         *
+         * @return a list of {@link DeckComponent} for all achievements
+         */
+        private static List<DeckComponent> createDecks() {
+            List<DeckComponent> decks = new ArrayList<>();
+            
+            // Get achievement service
+            AchievementService achievementService = ServiceLocator.getAchievementService();
+            
+            // Achievement definitions with descriptions and images
+            addAchievement(decks, achievementService, 
+                AchievementService.TOUGH_SURVIVOR,
+                "Tough Survivor",
+                "Survive with minimal damage and prove your resilience.",
+                "images/tough survivor.jpg");
+            
+            addAchievement(decks, achievementService,
+                AchievementService.SPEED_RUNNER,
+                "Speed Runner",
+                "Complete the level in record time.",
+                "images/speed runner.jpg");
+            
+            addAchievement(decks, achievementService,
+                AchievementService.SLAYER,
+                "Slayer",
+                "Defeat a massive number of enemies.",
+                "images/slayer.jpg");
+            
+            addAchievement(decks, achievementService,
+                AchievementService.PERFECT_CLEAR,
+                "Perfect Clear",
+                "Complete a level without taking any damage.",
+                "images/perfect clear.jpg");
+            
+            addAchievement(decks, achievementService,
+                AchievementService.PARTICIPATION,
+                "Participation",
+                "Join the game and start your journey.",
+                "images/participation.jpg");
+
+            return decks;
+        }
+
+        /**
+         * Helper method to add an achievement deck to the list.
+         */
+        private static void addAchievement(List<DeckComponent> decks, AchievementService service,
+                                          String achievementId, String name, String description, String image) {
+            boolean locked = service == null || !service.isUnlocked(achievementId);
+            decks.add(new AchievementBookDeckComponent(name, description, image, locked));
         }
     }
 

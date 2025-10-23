@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.services.leaderboard.LeaderboardService.LeaderboardEntry;
 import com.csse3200.game.services.ServiceLocator;
+import com.csse3200.game.ui.UIStyleHelper;
 import java.time.*;
 
 public class LeaderboardPopup extends Window {
@@ -31,34 +32,50 @@ public class LeaderboardPopup extends Window {
         pad(0);  // 移除默认 padding，我们自己控制
         getTitleLabel().setAlignment(Align.center);
         
-        // Set background image
+        // Set background image - 使用新的排行榜背景
         try {
             Texture bgTexture = ServiceLocator.getResourceService().getAsset(
-                "images/name and leaderbooard background.png", Texture.class);
-            setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
+                "images/leaderboard background.png", Texture.class);
+            TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
+            // 设置最小尺寸为0，允许背景图片缩放以适应对话框
+            drawable.setMinWidth(0);
+            drawable.setMinHeight(0);
+            setBackground(drawable);
         } catch (Exception e) {
             // If background fails to load, continue without it
         }
 
-        // 使用暗色样式的按钮
-        friendsBtn = new TextButton("All", skin, "dark");
-        closeBtn = new TextButton("Close", skin);  // 主按钮样式
-        prevBtn = new TextButton("< Prev", skin, "dark");
-        nextBtn = new TextButton("Next >", skin, "dark");
+        // 使用与主界面一致的橙色按钮样式
+        TextButton.TextButtonStyle orangeStyle = UIStyleHelper.orangeButtonStyle();
+        friendsBtn = new TextButton("All", orangeStyle);
+        closeBtn = new TextButton("Close", orangeStyle);
+        prevBtn = new TextButton("< Prev", orangeStyle);
+        nextBtn = new TextButton("Next >", orangeStyle);
 
         // 标题栏
         Table header = new Table();
-        header.pad(16, 20, 12, 20);
-        header.add(new Label("Leaderboard", skin, "title")).expandX().left();
+        header.pad(20, 20, 15, 20);
+        
+        // 使用 segoe_ui 字体创建标题，居中显示，放大并使用醒目的金色
+        Label.LabelStyle titleStyle = new Label.LabelStyle(
+            skin.getFont("segoe_ui"), 
+            new com.badlogic.gdx.graphics.Color(1.0f, 0.84f, 0.0f, 1.0f) // 金色 #FFD700
+        );
+        Label titleLabel = new Label("Leaderboard", titleStyle);
+        titleLabel.setAlignment(Align.center);
+        titleLabel.setFontScale(2.5f); // 放大2.5倍，更醒目
+        
+        header.add(titleLabel).expandX().center().padBottom(10);
         header.add(friendsBtn).width(100).height(36).right();
 
-        // 表头行 - 使用 header 样式
+        // 表头行 - 使用 segoe_ui 字体
         Table headerRow = new Table();
         headerRow.pad(8, 20, 8, 20);
-        headerRow.add(new Label("#", skin, "header")).width(50).left();
-        headerRow.add(new Label("Player", skin, "header")).expandX().left().padLeft(8);
-        headerRow.add(new Label("Score", skin, "header")).width(100).right();
-        headerRow.add(new Label("Time", skin, "header")).width(160).right();
+        Label.LabelStyle headerStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), com.badlogic.gdx.graphics.Color.DARK_GRAY);
+        headerRow.add(new Label("#", headerStyle)).width(50).left();
+        headerRow.add(new Label("Player", headerStyle)).expandX().left().padLeft(8);
+        headerRow.add(new Label("Score", headerStyle)).width(100).right();
+        headerRow.add(new Label("Time", headerStyle)).width(160).right();
 
         scroller = new ScrollPane(listTable, skin);
         scroller.setFadeScrollBars(false);
@@ -127,8 +144,9 @@ public class LeaderboardPopup extends Window {
         var me = controller.getMyBest();
 
         if (items.isEmpty()) {
-            // Show a message when no entries exist
-            Label noEntriesLabel = new Label("No rankings yet. Play a game to get on the leaderboard!", skin);
+            // Show a message when no entries exist - 使用 segoe_ui 字体
+            Label.LabelStyle emptyStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), com.badlogic.gdx.graphics.Color.GRAY);
+            Label noEntriesLabel = new Label("No rankings yet. Play a game to get on the leaderboard!", emptyStyle);
             noEntriesLabel.setAlignment(com.badlogic.gdx.utils.Align.center);
             listTable.add(noEntriesLabel).growX().pad(20);
         } else {
@@ -147,10 +165,12 @@ public class LeaderboardPopup extends Window {
         Table row = new Table(skin);
         row.pad(10, 0, 10, 0);  // 增加行高
 
-        Label rank = new Label(String.valueOf(e.rank), skin);
-        Label name = new Label(e.displayName + (isMe ? " (You)" : ""), skin);
-        Label score = new Label(String.valueOf(e.score), skin);
-        Label time = new Label(formatTime(e.achievedAtMs), skin);
+        // 使用 segoe_ui 字体创建所有标签
+        Label.LabelStyle rowStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), com.badlogic.gdx.graphics.Color.BLACK);
+        Label rank = new Label(String.valueOf(e.rank), rowStyle);
+        Label name = new Label(e.displayName + (isMe ? " (You)" : ""), rowStyle);
+        Label score = new Label(String.valueOf(e.score), rowStyle);
+        Label time = new Label(formatTime(e.achievedAtMs), rowStyle);
 
         // 使用奖牌图标标记前三名
         if (e.rank == 1) rank.setText("🥇 " + e.rank);
@@ -160,7 +180,12 @@ public class LeaderboardPopup extends Window {
         // 高亮自己的排名
         if (isMe) {
             row.setBackground("selection");
-            name.setStyle(new Label.LabelStyle(name.getStyle().font, com.badlogic.gdx.graphics.Color.WHITE));
+            // 使用 segoe_ui 字体，白色显示
+            Label.LabelStyle highlightStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), com.badlogic.gdx.graphics.Color.WHITE);
+            rank.setStyle(highlightStyle);
+            name.setStyle(highlightStyle);
+            score.setStyle(highlightStyle);
+            time.setStyle(highlightStyle);
         }
 
         // 添加头像显示
@@ -265,8 +290,9 @@ public class LeaderboardPopup extends Window {
     private void createAchievementSection() {
         achievementTable.clear();
         
-        // Title
-        Label achievementTitle = new Label("Achievements", skin, "title");
+        // Title - 使用 segoe_ui 字体
+        Label.LabelStyle achievementTitleStyle = new Label.LabelStyle(skin.getFont("segoe_ui"), com.badlogic.gdx.graphics.Color.BLACK);
+        Label achievementTitle = new Label("Achievements", achievementTitleStyle);
         achievementTable.add(achievementTitle).colspan(5).padBottom(10);
         achievementTable.row();
         

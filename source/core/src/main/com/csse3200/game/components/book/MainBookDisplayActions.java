@@ -47,6 +47,7 @@ public class MainBookDisplayActions extends Component {
         entity.getEvents().addListener("goToCurrency", this::goToCurrency);
         entity.getEvents().addListener("goToEnemy", this::goToEnemy);
         entity.getEvents().addListener("goToTower", this::goToTower);
+        entity.getEvents().addListener("goToAchievement", this::goToAchievement);
         entity.getEvents().addListener("goToHero", this::goToHero);
     }
 
@@ -85,6 +86,16 @@ public class MainBookDisplayActions extends Component {
     private void goToTower() {
         logger.info("Go to tower page");
         game.setScreen(GdxGame.ScreenType.TOWER_BOOK);
+        playCurrencySound(openBookSoundPath);
+    }
+
+    /**
+     * Event handler for navigating to the achievement book page and
+     * playing the open book sound effect.
+     */
+    private void goToAchievement() {
+        logger.info("Go to achievement page");
+        game.setScreen(GdxGame.ScreenType.ACHIEVEMENT_BOOK);
         playCurrencySound(openBookSoundPath);
     }
 

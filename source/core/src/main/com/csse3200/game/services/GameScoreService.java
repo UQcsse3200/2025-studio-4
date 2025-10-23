@@ -67,9 +67,15 @@ public class GameScoreService {
                 logger.warn("EntityService is null, cannot get player score");
             }
             
-            // 更新当前得分缓存（包括0分）
-            currentGameScore = score;
-            logger.debug("Updated current game score to: {}", currentGameScore);
+            // 只有在找到有效得分时才更新缓存（避免用0覆盖真实得分）
+            if (score > 0 || scoreComponentsFound > 0) {
+                currentGameScore = score;
+                logger.debug("Updated current game score to: {}", currentGameScore);
+            } else if (currentGameScore > 0) {
+                // 如果没找到得分组件但缓存中有得分，使用缓存的得分
+                score = currentGameScore;
+                logger.debug("Using cached score: {}", currentGameScore);
+            }
             
         } catch (Exception e) {
             logger.error("Error getting current game score", e);

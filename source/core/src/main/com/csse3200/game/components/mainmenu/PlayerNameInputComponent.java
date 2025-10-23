@@ -130,7 +130,7 @@ public class PlayerNameInputComponent extends UIComponent {
         // 使用自定义的背景图片
         try {
             Texture bgTexture = ServiceLocator.getResourceService()
-                .getAsset("images/name and leaderbooard background.png", Texture.class);
+                .getAsset("images/name system background.png", Texture.class);
             table.setBackground(new TextureRegionDrawable(new TextureRegion(bgTexture)));
         } catch (Exception e) {
             // 如果加载失败，使用默认的Book风格背景

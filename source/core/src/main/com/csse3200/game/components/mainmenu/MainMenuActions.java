@@ -29,7 +29,6 @@ public class MainMenuActions extends Component {
     entity.getEvents().addListener("settings", this::onSettings);
     entity.getEvents().addListener("book", this::onBook);
     entity.getEvents().addListener("ranking", this::onRanking);
-    entity.getEvents().addListener("achievement", this::onAchievement);
   }
 
 
@@ -178,35 +177,4 @@ public class MainMenuActions extends Component {
     }
   }
 
-  /**
-   * Opens the achievement screen.
-   */
-  private void onAchievement() {
-    logger.info("Launching achievement screen");
-    showAchievementDialog();
-  }
-
-  /**
-   * Shows the achievement dialog popup.
-   */
-  private void showAchievementDialog() {
-    try {
-      // Create and show achievement dialog
-      com.csse3200.game.ui.AchievementDialog dialog =
-        new com.csse3200.game.ui.AchievementDialog(
-          "Achievements",
-          com.csse3200.game.ui.SimpleUI.windowStyle()
-        );
-
-      // Get the current stage from the render service
-      if (ServiceLocator.getRenderService() != null && ServiceLocator.getRenderService().getStage() != null) {
-        dialog.show(ServiceLocator.getRenderService().getStage());
-      } else {
-        logger.warn("No stage available for achievement dialog");
-      }
-
-    } catch (Exception e) {
-      logger.error("Failed to show achievement dialog", e);
-    }
-  }
 }

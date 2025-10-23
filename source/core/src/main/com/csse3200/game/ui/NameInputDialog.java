@@ -69,14 +69,13 @@ public class NameInputDialog extends Dialog {
         nameField.setMessageText("Enter your name...");
         nameField.setMaxLength(20); // Limit name length
         
-        // Create buttons using Theme colors
-        TextButton.TextButtonStyle confirmStyle = createPrimaryButtonStyle();
-        TextButton.TextButtonStyle cancelStyle = createDarkButtonStyle();
-        confirmButton = new TextButton("Confirm", confirmStyle);
-        cancelButton = new TextButton("Cancel", cancelStyle);
+        // Create buttons using main menu orange button style
+        TextButton.TextButtonStyle buttonStyle = UIStyleHelper.orangeButtonStyle();
+        confirmButton = new TextButton("Confirm", buttonStyle);
+        cancelButton = new TextButton("Cancel", buttonStyle);
         
-        // Create error label (initially hidden)
-        Label.LabelStyle errorStyle = new Label.LabelStyle(getSkin().getFont("default"), Color.RED);
+        // Create error label (initially hidden) - using segoe_ui font
+        Label.LabelStyle errorStyle = new Label.LabelStyle(getSkin().getFont("segoe_ui"), Color.RED);
         errorLabel = new Label("", errorStyle);
         errorLabel.setVisible(false);
         
@@ -85,24 +84,42 @@ public class NameInputDialog extends Dialog {
         
         // Layout the dialog
         Table contentTable = getContentTable();
-        contentTable.pad(Theme.PAD);
-        contentTable.setBackground(SimpleUI.solid(Theme.WINDOW_BG));
+        // Add extra top padding to move all content down
+        contentTable.pad(Theme.PAD * 3, Theme.PAD, Theme.PAD, Theme.PAD);
         
-        // Title
-        Label.LabelStyle titleStyle = new Label.LabelStyle(getSkin().getFont("default"), Theme.TITLE_FG);
+        // Use custom background image with scaling
+        try {
+            Texture bgTexture = ServiceLocator.getResourceService()
+                .getAsset("images/name system background.png", Texture.class);
+            TextureRegionDrawable drawable = new TextureRegionDrawable(new TextureRegion(bgTexture));
+            
+            // Set min size to allow the background to scale properly to fit the dialog
+            // This will make the image scale down if it's larger than the dialog
+            drawable.setMinWidth(0);
+            drawable.setMinHeight(0);
+            
+            contentTable.setBackground(drawable);
+        } catch (Exception e) {
+            // Fallback to default background if image fails to load
+            logger.warn("Failed to load name system background, using default", e);
+            contentTable.setBackground(SimpleUI.solid(Theme.WINDOW_BG));
+        }
+        
+        // Title - using segoe_ui font with black color for emphasis, centered
+        Label.LabelStyle titleStyle = new Label.LabelStyle(getSkin().getFont("segoe_ui"), Color.BLACK);
         Label titleLabel = new Label("Create Your Character", titleStyle);
-        contentTable.add(titleLabel).colspan(2).padBottom(Theme.PAD);
+        contentTable.add(titleLabel).colspan(2).center().padBottom(Theme.PAD);
         contentTable.row();
         
-        // Name input field
-        Label.LabelStyle labelStyle = new Label.LabelStyle(getSkin().getFont("default"), Theme.ROW_FG);
+        // Name input field - using segoe_ui font
+        Label.LabelStyle labelStyle = new Label.LabelStyle(getSkin().getFont("segoe_ui"), Theme.ROW_FG);
         Label nameLabel = new Label("Name:", labelStyle);
         contentTable.add(nameLabel).left().padBottom(Theme.PAD_SM);
         contentTable.row();
         contentTable.add(nameField).width(300).height(40).colspan(2).padBottom(Theme.PAD);
         contentTable.row();
         
-        // Avatar selection
+        // Avatar selection - using segoe_ui font
         Label avatarLabel = new Label("Choose Avatar:", labelStyle);
         contentTable.add(avatarLabel).left().padBottom(Theme.PAD_SM);
         contentTable.row();
@@ -115,46 +132,26 @@ public class NameInputDialog extends Dialog {
         contentTable.add(errorLabel).colspan(2).padBottom(Theme.PAD_SM);
         contentTable.row();
         
-        // Buttons
+        // Buttons - using main menu button size (200x50)
         Table buttonTable = new Table();
-        buttonTable.add(cancelButton).width(120).height(40).padRight(Theme.PAD_SM);
-        buttonTable.add(confirmButton).width(120).height(40);
+        buttonTable.add(cancelButton).width(200).height(50).padRight(20);
+        buttonTable.add(confirmButton).width(200).height(50);
         contentTable.add(buttonTable).colspan(2);
         
-        // Set dialog size and position
-        setSize(450, 400);
+        // Set dialog size and position (increased width for larger buttons)
+        setSize(500, 420);
         centerWindow();
     }
     
     private TextField.TextFieldStyle createTextFieldStyle() {
         TextField.TextFieldStyle style = new TextField.TextFieldStyle();
-        style.font = getSkin().getFont("default");
+        style.font = getSkin().getFont("segoe_ui");  // Use segoe_ui font for consistency with main menu
         style.fontColor = Theme.ROW_FG;
         style.background = SimpleUI.solid(Theme.TABLE_BG);
         style.focusedBackground = SimpleUI.solid(Theme.ROW_HOVER_BG);
         style.cursor = SimpleUI.solid(Theme.ROW_FG);
         style.selection = SimpleUI.solid(new Color(Theme.BTN_PRIMARY_BG.r, Theme.BTN_PRIMARY_BG.g, Theme.BTN_PRIMARY_BG.b, 0.5f));
         style.messageFontColor = Theme.ROW_MUTED;
-        return style;
-    }
-    
-    private TextButton.TextButtonStyle createPrimaryButtonStyle() {
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.font = getSkin().getFont("default");
-        style.fontColor = Color.WHITE;
-        style.up = SimpleUI.solid(Theme.BTN_PRIMARY_BG);
-        style.over = SimpleUI.solid(Theme.BTN_PRIMARY_HV);
-        style.down = SimpleUI.solid(Theme.BTN_PRIMARY_DN);
-        return style;
-    }
-    
-    private TextButton.TextButtonStyle createDarkButtonStyle() {
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.font = getSkin().getFont("default");
-        style.fontColor = Color.WHITE;
-        style.up = SimpleUI.solid(Theme.BTN_DARK_BG);
-        style.over = SimpleUI.solid(Theme.BTN_DARK_HV);
-        style.down = SimpleUI.solid(Theme.BTN_DARK_DN);
         return style;
     }
     

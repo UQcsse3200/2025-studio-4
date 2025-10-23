@@ -1,6 +1,5 @@
 package com.csse3200.game.screens;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.csse3200.game.GdxGame;
@@ -37,7 +36,9 @@ public class MainMenuScreen extends ScreenAdapter {
     "images/slayer.jpg",
     "images/perfect clear.jpg",
     "images/participation.jpg",
-    "images/name and leaderbooard background.png"
+    "images/name and leaderbooard background.png",
+    "images/name system background.png",
+    "images/leaderboard background.png"
   };
   
   private static final String[] mainMenuMusic = {

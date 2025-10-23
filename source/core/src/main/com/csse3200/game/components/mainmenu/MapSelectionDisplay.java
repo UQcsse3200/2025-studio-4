@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Map Selection aligned to the Settings panel look & feel.
+ * Map Selection aligned to the Settings panel look and feel.
  */
 public class MapSelectionDisplay extends UIComponent {
     private static final String BG_TEX    = "images/main_menu_notext.png";

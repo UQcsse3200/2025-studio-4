@@ -9,6 +9,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -28,11 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Smaller pause pop-up aligned and centered, using Settings visuals.
+ * Pause popup that ALWAYS renders above everything and toggles with ESC.
+ * (No game pausing logic here; purely visual/input overlay.)
  */
 public class PauseMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(PauseMenuDisplay.class);
-    private static final float Z_INDEX = 100f;
+
+    // Very high to sort above other UI layers if your UI system uses z-indices.
+    private static final float Z_INDEX = 10_000f;
 
     private static final String PANEL_TEX = "images/settings_bg.png";
     private static final String BTN_TEX   = "images/settings_bg_button.png";
@@ -50,18 +56,32 @@ public class PauseMenuDisplay extends UIComponent {
         super.create();
         ensureAssetsLoaded();
         addActors();
+
+        // ESC key toggles the pause overlay
+        stage.addListener(new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ESCAPE) {
+                    entity.getEvents().trigger("togglePause");
+                    return true;
+                }
+                return false;
+            }
+        });
+
         entity.getEvents().addListener("showPauseUI", this::showOverlay);
         entity.getEvents().addListener("hidePauseUI", this::hideOverlay);
+        entity.getEvents().addListener("togglePause", this::toggleOverlay);
     }
 
     private void ensureAssetsLoaded() {
-        ResourceService rs = ServiceLocator.getResourceService();
+        var rs = ServiceLocator.getResourceService();
         rs.loadTextures(new String[] { PANEL_TEX, BTN_TEX, "images/pause_button.png" });
         rs.loadAll();
     }
 
     private void addActors() {
-        // Dim layer
+        // Dimmer (full-screen). Touchable so it swallows clicks; remove if you only want visuals.
         Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
         px.setColor(new Color(0f, 0f, 0f, 0.55f));
         px.fill();
@@ -71,17 +91,24 @@ public class PauseMenuDisplay extends UIComponent {
         dimImage = new Image(dimTexHandle);
         dimImage.setFillParent(true);
         dimImage.setVisible(false);
+        dimImage.setTouchable(Touchable.enabled);
+        dimImage.addListener(new ClickListener() {
+            @Override public void clicked(InputEvent event, float x, float y) {
+                event.stop(); // eat input so nothing underneath is clickable
+            }
+        });
         stage.addActor(dimImage);
 
-        // Compact panel
+        // Pause window (compact, settings-themed)
         Texture panelTex = ServiceLocator.getResourceService().getAsset(PANEL_TEX, Texture.class);
         NinePatch panelPatch = new NinePatch(new TextureRegion(panelTex), 20, 20, 20, 20);
 
         overlayTable = new Table(skin);
         overlayTable.setFillParent(true);
         overlayTable.setVisible(false);
+        overlayTable.setTouchable(Touchable.enabled);
 
-        final float PANEL_W = 520f; // smaller than Settings
+        final float PANEL_W = 520f;
         final float PANEL_H = 560f;
 
         Table window = new Table(skin);
@@ -89,14 +116,11 @@ public class PauseMenuDisplay extends UIComponent {
         window.pad(18f, 24f, 18f, 24f);
         window.defaults().pad(8f);
 
-        // Title
         Label title = new Label("Paused", skin, "title");
         title.setColor(Color.valueOf("CFF2FF"));
 
-        // Player info (compact)
         Table playerInfo = createPlayerInfoSection();
 
-        // Buttons – uniform sizing
         TextButtonStyle btnStyle = createSettingsButtonStyle();
         TextButton resume   = new TextButton("Resume", btnStyle);
         TextButton save     = new TextButton("Save", btnStyle);
@@ -104,13 +128,12 @@ public class PauseMenuDisplay extends UIComponent {
         TextButton ranking  = new TextButton("Ranking", btnStyle);
         TextButton quit     = new TextButton("Quit to Main Menu", btnStyle);
 
-        resume.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("resume"); }});
-        save.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("save"); }});
-        settings.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("showSettingsOverlay"); }});
-        ranking.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("showRanking"); }});
+        resume.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ toggleOverlay(); }});
+        save.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("save"); }});
+        settings.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("showSettingsOverlay"); }});
+        ranking.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("showRanking"); }});
         quit.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("quitToMenu"); }});
 
-        // Button column
         Table buttons = new Table();
         buttons.defaults().width(240f).height(48f).padTop(10f);
         buttons.add(resume).row();
@@ -119,7 +142,6 @@ public class PauseMenuDisplay extends UIComponent {
         buttons.add(ranking).row();
         buttons.add(quit).row();
 
-        // Compose window
         window.add(title).expandX().padBottom(10f).row();
         window.add(playerInfo).padBottom(6f).row();
         window.add(buttons).center().row();
@@ -127,7 +149,7 @@ public class PauseMenuDisplay extends UIComponent {
         overlayTable.add(window).size(PANEL_W, PANEL_H).center();
         stage.addActor(overlayTable);
 
-        // Pause icon
+        // Pause icon (opens/closes overlay)
         Texture pauseTex = ServiceLocator.getResourceService().getAsset("images/pause_button.png", Texture.class);
         pauseIcon = new Image(pauseTex);
         Table topRight = new Table();
@@ -138,9 +160,35 @@ public class PauseMenuDisplay extends UIComponent {
 
         pauseIcon.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
-                entity.getEvents().trigger("togglePause");
+                toggleOverlay();
             }
         });
+    }
+
+    private void bringOverlayToFront() {
+        if (dimImage != null) dimImage.toFront();
+        if (overlayTable != null) overlayTable.toFront();
+        // Grab focus so keyboard/scroll never reaches anything below.
+        stage.setKeyboardFocus(overlayTable);
+        stage.setScrollFocus(overlayTable);
+    }
+
+    private void showOverlay() {
+        dimImage.setVisible(true);
+        overlayTable.setVisible(true);
+        if (pauseIcon != null) pauseIcon.setVisible(false); // avoid overlap/icon clicks
+        bringOverlayToFront();
+    }
+
+    private void hideOverlay() {
+        overlayTable.setVisible(false);
+        dimImage.setVisible(false);
+        if (pauseIcon != null) pauseIcon.setVisible(true);
+    }
+
+    private void toggleOverlay() {
+        if (overlayTable.isVisible()) hideOverlay();
+        else showOverlay();
     }
 
     private TextButtonStyle createSettingsButtonStyle() {
@@ -191,10 +239,7 @@ public class PauseMenuDisplay extends UIComponent {
         }
     }
 
-    private void showOverlay() { dimImage.setVisible(true); overlayTable.setVisible(true); }
-    private void hideOverlay() { dimImage.setVisible(false); overlayTable.setVisible(false); }
-
-    @Override protected void draw(SpriteBatch batch) { }
+    @Override protected void draw(SpriteBatch batch) { /* Stage draws */ }
     @Override public float getZIndex() { return Z_INDEX; }
 
     @Override

@@ -129,7 +129,7 @@ public class PauseMenuDisplay extends UIComponent {
         TextButton quit     = new TextButton("Quit to Main Menu", btnStyle);
 
         resume.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ toggleOverlay(); }});
-        save.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("save"); }});
+        save.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("save"); }});
         settings.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("showSettingsOverlay"); }});
         ranking.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("showRanking"); }});
         quit.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a){ entity.getEvents().trigger("quitToMenu"); }});

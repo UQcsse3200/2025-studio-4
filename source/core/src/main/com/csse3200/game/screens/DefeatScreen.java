@@ -24,6 +24,9 @@ import com.csse3200.game.services.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DefeatScreen implements Screen {
     private static final Logger logger = LoggerFactory.getLogger(DefeatScreen.class);
     
@@ -35,11 +38,18 @@ public class DefeatScreen implements Screen {
     private String currentMapId;
     
     private enum DefeatStage {
+        ANIMATION_PLAYING,
         SCROLLING_TEXT,
         DEFEAT_DISPLAY
     }
     
-    private DefeatStage currentStage = DefeatStage.SCROLLING_TEXT;
+    private DefeatStage currentStage;
+    
+    private List<Texture> animationFrames;
+    private int currentFrame = 0;
+    private float frameTime = 0f;
+    private static final float FRAME_DURATION = 1.0f / 15.0f;
+    private boolean animationFinished = false;
     
     private Label scrollLabel;
     private BitmapFont scrollFont;
@@ -108,7 +118,14 @@ public class DefeatScreen implements Screen {
         }
         
         loadAssets();
-        createScrollingText();
+        
+        if (currentMapId == null && Gdx.files.internal("images/Map1_Defeat").exists()) {
+            currentStage = DefeatStage.ANIMATION_PLAYING;
+            loadAnimationFrames();
+        } else {
+            currentStage = DefeatStage.SCROLLING_TEXT;
+            createScrollingText();
+        }
     }
     
     private void loadAssets() {
@@ -119,7 +136,7 @@ public class DefeatScreen implements Screen {
         }
         
         String[] textures = {
-            "images/Game_Over.png",
+            "images/Defeat.jpg",
             "images/Main_Menu_Button_Background.png",
             "images/Main_Game_Button.png"
         };
@@ -132,16 +149,90 @@ public class DefeatScreen implements Screen {
         }
     }
     
+    private void loadAnimationFrames() {
+        animationFrames = new ArrayList<>();
+        
+        try {
+            logger.info("Loading Map1 defeat animation frames");
+            
+            for (int i = 0; i <= 100; i++) {
+                String framePath = "images/Map1_Defeat/Map1_Defeat_" + i + ".png";
+                
+                if (Gdx.files.internal(framePath).exists()) {
+                    Texture frame = new Texture(Gdx.files.internal(framePath));
+                    animationFrames.add(frame);
+                } else {
+                    if (i == 0) {
+                        logger.warn("No animation frames found, skipping to scrolling text");
+                        skipAnimationToScrollingText();
+                        return;
+                    }
+                    break;
+                }
+            }
+            
+            if (animationFrames.isEmpty()) {
+                logger.warn("No animation frames loaded, skipping to scrolling text");
+                skipAnimationToScrollingText();
+            } else {
+                logger.info("Loaded " + animationFrames.size() + " animation frames");
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error loading animation frames: " + e.getMessage());
+            skipAnimationToScrollingText();
+        }
+    }
+    
+    private void updateAnimation(float delta) {
+        if (animationFrames == null || animationFrames.isEmpty()) {
+            skipAnimationToScrollingText();
+            return;
+        }
+        
+        frameTime += delta;
+        
+        if (frameTime >= FRAME_DURATION) {
+            frameTime = 0f;
+            currentFrame++;
+            
+            if (currentFrame >= animationFrames.size()) {
+                currentFrame = animationFrames.size() - 1;
+                if (!animationFinished) {
+                    animationFinished = true;
+                    logger.info("Animation finished, transitioning to scrolling text");
+                    Gdx.app.postRunnable(this::skipAnimationToScrollingText);
+                }
+            }
+        }
+        
+        if (Gdx.input.justTouched()) {
+            logger.info("Click detected, skipping animation");
+            skipAnimationToScrollingText();
+        }
+    }
+    
+    private void skipAnimationToScrollingText() {
+        if (animationFrames != null) {
+            for (Texture frame : animationFrames) {
+                frame.dispose();
+            }
+            animationFrames.clear();
+            animationFrames = null;
+        }
+        currentStage = DefeatStage.SCROLLING_TEXT;
+        timeElapsed = 0f;
+        createScrollingText();
+    }
+    
     private void createScrollingText() {
         String scrollText = currentMapId == null ? 
-            // Map 1 Defeat
             "DEFEAT: The frost reclaims everything.\n" +
             "Your magic fades beneath the endless blizzard.\n" +
             "The machines rise again, their eyes burning like frozen stars.\n\n" +
             "The light fades.\n\n" +
             "The snow covers the ruins, burying both man and machine alike.\n" +
             "In the silence, only the wind remembers your name." :
-            // Map 2 Defeat
             "DEFEAT: The city falls into the void.\n" +
             "Your last spell fades before the flood of machines.\n" +
             "Cold light devours the sky.\n\n" +
@@ -226,7 +317,7 @@ public class DefeatScreen implements Screen {
     
     private void scheduleTransition() {
         scrollLabel.addAction(Actions.sequence(
-            Actions.delay(8f),  // Increased from 3s to 8s to let players read the ending text
+            Actions.delay(8f),
             Actions.run(() -> {
                 logger.info("Transitioning to defeat display after centered pause");
                 skipToDefeatDisplay();
@@ -250,7 +341,7 @@ public class DefeatScreen implements Screen {
         ResourceService resourceService = ServiceLocator.getResourceService();
         if (resourceService != null) {
             backgroundImage = new Image(resourceService
-                .getAsset("images/Game_Over.png", Texture.class));
+                .getAsset("images/Defeat.jpg", Texture.class));
             backgroundImage.setFillParent(true);
             backgroundImage.addAction(Actions.alpha(0f));
             stage.addActor(backgroundImage);
@@ -274,7 +365,6 @@ public class DefeatScreen implements Screen {
             @Override
             public void changed(ChangeEvent changeEvent, com.badlogic.gdx.scenes.scene2d.Actor actor) {
                 logger.info("Restart button clicked");
-                // Restart the same map
                 game.setScreen(GdxGame.ScreenType.MAIN_GAME, false, currentMapId);
             }
         });
@@ -334,7 +424,14 @@ public class DefeatScreen implements Screen {
         timeElapsed += delta;
         ScreenUtils.clear(0, 0, 0, 1);
         
-        if (currentStage == DefeatStage.SCROLLING_TEXT) {
+        if (currentStage == DefeatStage.ANIMATION_PLAYING) {
+            updateAnimation(delta);
+            if (animationFrames != null && !animationFrames.isEmpty() && currentFrame < animationFrames.size()) {
+                batch.begin();
+                batch.draw(animationFrames.get(currentFrame), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                batch.end();
+            }
+        } else if (currentStage == DefeatStage.SCROLLING_TEXT) {
             updateScrollingText(delta);
         } else if (currentStage == DefeatStage.DEFEAT_DISPLAY) {
             updateDefeatAnimation(delta);
@@ -355,6 +452,11 @@ public class DefeatScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        
+        if (scrollLabel != null) {
+            scrollLabel.setWidth(width * 0.8f);
+            scrollLabel.setX((width - scrollLabel.getWidth()) / 2f);
+        }
     }
     
     @Override
@@ -375,6 +477,12 @@ public class DefeatScreen implements Screen {
     @Override
     public void dispose() {
         logger.debug("Disposing defeat screen");
+        if (animationFrames != null) {
+            for (Texture frame : animationFrames) {
+                frame.dispose();
+            }
+            animationFrames.clear();
+        }
         if (stage != null) {
             stage.dispose();
         }
@@ -409,4 +517,3 @@ public class DefeatScreen implements Screen {
         }
     }
 }
-

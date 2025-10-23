@@ -24,6 +24,9 @@ import com.csse3200.game.services.ResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VictoryScreen implements Screen {
     private static final Logger logger = LoggerFactory.getLogger(VictoryScreen.class);
     
@@ -35,11 +38,18 @@ public class VictoryScreen implements Screen {
     private String currentMapId;
     
     private enum VictoryStage {
+        ANIMATION_PLAYING,
         SCROLLING_TEXT,
         VICTORY_DISPLAY
     }
     
-    private VictoryStage currentStage = VictoryStage.SCROLLING_TEXT;
+    private VictoryStage currentStage;
+    
+    private List<Texture> animationFrames;
+    private int currentFrame = 0;
+    private float frameTime = 0f;
+    private static final float FRAME_DURATION = 1.0f / 15.0f;
+    private boolean animationFinished = false;
     
     private Label scrollLabel;
     private BitmapFont scrollFont;
@@ -109,7 +119,14 @@ public class VictoryScreen implements Screen {
         }
         
         loadAssets();
-        createScrollingText();
+        
+        if (currentMapId == null) {
+            currentStage = VictoryStage.ANIMATION_PLAYING;
+            loadAnimationFrames();
+        } else {
+            currentStage = VictoryStage.SCROLLING_TEXT;
+            createScrollingText();
+        }
     }
     
     private void loadAssets() {
@@ -120,7 +137,7 @@ public class VictoryScreen implements Screen {
         }
         
         String[] textures = {
-            "images/Game_Victory.png",
+            "images/Victory.jpg",
             "images/Main_Menu_Button_Background.png",
             "images/Main_Game_Button.png"
         };
@@ -133,10 +150,82 @@ public class VictoryScreen implements Screen {
         }
     }
     
+    private void loadAnimationFrames() {
+        animationFrames = new ArrayList<>();
+        
+        try {
+            logger.info("Loading Map1 victory animation frames");
+            
+            for (int i = 0; i <= 50; i++) {
+                if (i == 34) continue;
+                
+                String framePath = "images/Map1_Victory/Map1_Victory_" + i + ".png";
+                
+                if (Gdx.files.internal(framePath).exists()) {
+                    Texture frame = new Texture(Gdx.files.internal(framePath));
+                    animationFrames.add(frame);
+                } else {
+                    logger.warn("Frame not found: " + framePath);
+                }
+            }
+            
+            if (animationFrames.isEmpty()) {
+                logger.warn("No animation frames loaded, skipping to scrolling text");
+                skipAnimationToScrollingText();
+            } else {
+                logger.info("Loaded " + animationFrames.size() + " animation frames");
+            }
+            
+        } catch (Exception e) {
+            logger.error("Error loading animation frames: " + e.getMessage());
+            skipAnimationToScrollingText();
+        }
+    }
+    
+    private void updateAnimation(float delta) {
+        if (animationFrames == null || animationFrames.isEmpty()) {
+            skipAnimationToScrollingText();
+            return;
+        }
+        
+        frameTime += delta;
+        
+        if (frameTime >= FRAME_DURATION) {
+            frameTime = 0f;
+            currentFrame++;
+            
+            if (currentFrame >= animationFrames.size()) {
+                currentFrame = animationFrames.size() - 1;
+                if (!animationFinished) {
+                    animationFinished = true;
+                    logger.info("Animation finished, transitioning to scrolling text");
+                    Gdx.app.postRunnable(this::skipAnimationToScrollingText);
+                }
+            }
+        }
+        
+        if (Gdx.input.justTouched()) {
+            logger.info("Click detected, skipping animation");
+            skipAnimationToScrollingText();
+        }
+    }
+    
+    private void skipAnimationToScrollingText() {
+        if (animationFrames != null) {
+            for (Texture frame : animationFrames) {
+                frame.dispose();
+            }
+            animationFrames.clear();
+            animationFrames = null;
+        }
+        currentStage = VictoryStage.SCROLLING_TEXT;
+        timeElapsed = 0f;
+        createScrollingText();
+    }
+    
     private void createScrollingText() {
         String mapName = getMapName();
         String scrollText = currentMapId == null ? 
-            // Map 1 Victory
             "VICTORY: The Icebox has fallen silent.\n" +
             "The snow settles over the shattered husks of machines.\n" +
             "Your final spell still glows faintly, weaving warmth into the frostbitten air.\n\n" +
@@ -145,7 +234,6 @@ public class VictoryScreen implements Screen {
             "reflecting on the fragments of metal and ice — a fragile peace born from chaos.\n\n" +
             "The path to Ascent now lies open.\n" +
             "The war has only just begun." :
-            // Map 2 Victory
             "VICTORY: The city of Ascent lies in silence.\n" +
             "The Machine Core collapses, its light fading into dust.\n" +
             "You raise your hand — the last ember of human magic burning against the steel horizon.\n\n" +
@@ -230,7 +318,7 @@ public class VictoryScreen implements Screen {
     
     private void scheduleTransition() {
         scrollLabel.addAction(Actions.sequence(
-            Actions.delay(8f),  // Increased from 3s to 8s to let players read the ending text
+            Actions.delay(8f),
             Actions.run(() -> {
                 logger.info("Transitioning to victory display after centered pause");
                 skipToVictoryDisplay();
@@ -254,7 +342,7 @@ public class VictoryScreen implements Screen {
         ResourceService resourceService = ServiceLocator.getResourceService();
         if (resourceService != null) {
             backgroundImage = new Image(resourceService
-                .getAsset("images/Game_Victory.png", Texture.class));
+                .getAsset("images/Victory.jpg", Texture.class));
             backgroundImage.setFillParent(true);
             backgroundImage.addAction(Actions.alpha(0f));
             stage.addActor(backgroundImage);
@@ -352,7 +440,14 @@ public class VictoryScreen implements Screen {
         timeElapsed += delta;
         ScreenUtils.clear(0, 0, 0, 1);
         
-        if (currentStage == VictoryStage.SCROLLING_TEXT) {
+        if (currentStage == VictoryStage.ANIMATION_PLAYING) {
+            updateAnimation(delta);
+            if (animationFrames != null && !animationFrames.isEmpty() && currentFrame < animationFrames.size()) {
+                batch.begin();
+                batch.draw(animationFrames.get(currentFrame), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                batch.end();
+            }
+        } else if (currentStage == VictoryStage.SCROLLING_TEXT) {
             updateScrollingText(delta);
         } else if (currentStage == VictoryStage.VICTORY_DISPLAY) {
             updateVictoryAnimation(delta);
@@ -385,6 +480,11 @@ public class VictoryScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        
+        if (scrollLabel != null) {
+            scrollLabel.setWidth(width * 0.8f);
+            scrollLabel.setX((width - scrollLabel.getWidth()) / 2f);
+        }
     }
     
     @Override
@@ -405,6 +505,12 @@ public class VictoryScreen implements Screen {
     @Override
     public void dispose() {
         logger.debug("Disposing victory screen");
+        if (animationFrames != null) {
+            for (Texture frame : animationFrames) {
+                frame.dispose();
+            }
+            animationFrames.clear();
+        }
         if (stage != null) {
             stage.dispose();
         }
@@ -438,5 +544,4 @@ public class VictoryScreen implements Screen {
             logger.error("Failed to submit victory score to leaderboard", e);
         }
     }
-    
 }

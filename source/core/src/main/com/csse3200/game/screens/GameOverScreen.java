@@ -43,7 +43,7 @@ public class GameOverScreen extends UIComponent {
 
       // Add background image to stage
       Image gameOverBackground = new Image(ServiceLocator.getResourceService()
-          .getAsset("images/Game_Over.png", Texture.class));
+          .getAsset("images/Defeat.jpg", Texture.class));
       gameOverBackground.setFillParent(true);
       stage.addActor(gameOverBackground);
 

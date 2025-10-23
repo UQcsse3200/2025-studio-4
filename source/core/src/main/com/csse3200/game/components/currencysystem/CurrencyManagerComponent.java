@@ -205,6 +205,3 @@ public class CurrencyManagerComponent extends Component {
         updateCurrencyUI(type);
     }
 }
-
-
-

@@ -83,6 +83,7 @@ public class ForestGameArea extends GameArea {
     private Entity waveTrackerUI;
     private int TOTAL_WAVES;
 
+
     public static Difficulty gameDifficulty = Difficulty.EASY;
 
     public static ForestGameArea currentGameArea;
@@ -94,7 +95,7 @@ public class ForestGameArea extends GameArea {
 
     private static final String[] forestTextureAtlases = {
             "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas",
-            "images/tank_basic_spritesheet.atlas", "images/boss_basic_spritesheet.atlas"
+            "images/tank_enemy_atlas.atlas", "images/boss_basic_spritesheet.atlas", "images/tank_projectile_atlas.atlas"
     };
 
     private static final String[] forestSounds = {
@@ -257,14 +258,6 @@ public class ForestGameArea extends GameArea {
         // Notify UI that wave has started
         if (MainGameScreen.ui != null) {
             MainGameScreen.ui.getEvents().trigger("waveStarted");
-        }
-
-        // Trigger boss wave message when starting wave 5
-        if (waveTrackerUI != null && currentWaveIndex == waves.size() - 1) {
-            WaveTrackerDisplay display = waveTrackerUI.getComponent(WaveTrackerDisplay.class);
-            if (display != null) {
-                display.triggerBossWaveMessage();
-            }
         }
 
         // Trigger boss wave message when starting wave 5

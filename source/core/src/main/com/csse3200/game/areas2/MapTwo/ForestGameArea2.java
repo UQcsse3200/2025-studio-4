@@ -103,8 +103,8 @@ public class ForestGameArea2 extends GameArea2 {
 
 
     private static final String[] forestTextureAtlases = {
-            "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_basic_spritesheet.atlas",
-            "images/boss_basic_spritesheet.atlas"
+            "images/grunt_basic_spritesheet.atlas", "images/drone_basic_spritesheet.atlas", "images/tank_enemy_atlas.atlas",
+            "images/boss_basic_spritesheet.atlas", "images/tank_projectile_atlas.atlas"
     };
 
     private static final String[] forestSounds = {
@@ -1234,7 +1234,6 @@ public class ForestGameArea2 extends GameArea2 {
         waveTrackerUI.addComponent(new WaveTrackerDisplay(TOTAL_WAVES));
         spawnEntity(waveTrackerUI);
     }
-
 
     /**
      * 显示防御塔UI（在对话结束后调用）

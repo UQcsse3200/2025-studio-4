@@ -78,7 +78,7 @@ public class TankEnemyFactory {
     public static Entity createTankEnemy(java.util.List<Entity> waypoints, Entity player, Difficulty difficulty, int startWaypointIndex) {
         int idx = Math.max(0, Math.min(waypoints.size() - 1, startWaypointIndex));
         Entity tank = EnemyFactory.createBaseEnemyAnimated(waypoints.get(idx), new Vector2(speed), waypoints, 
-        "images/tank_basic_spritesheet.atlas", 0.5f, 0.18f, idx);
+        "images/tank_enemy_atlas.atlas", 0.5f, 0.18f, idx);
 
         // Add waypoint component for independent waypoint tracking
         WaypointComponent waypointComponent = new WaypointComponent(waypoints, player, speed);
@@ -91,9 +91,9 @@ public class TankEnemyFactory {
             .addComponent(new CombatStatsComponent(health * difficulty.getMultiplier(), damage * difficulty.getMultiplier(), resistance, weakness))
             .addComponent(new com.csse3200.game.components.enemy.EnemyTypeComponent("tank"))
             .addComponent(new DeckComponent.EnemyDeckComponent(DEFAULT_NAME, DEFAULT_HEALTH, DEFAULT_DAMAGE, DEFAULT_RESISTANCE, DEFAULT_WEAKNESS, DEFAULT_TEXTURE))
-            .addComponent(new clickable(clickRadius)).addComponent(new AntiProjectileShooterComponent(6f, 0.9f, 7f, 1.25f, "images/lazer.png"))
+            .addComponent(new clickable(clickRadius))
+            .addComponent(new AntiProjectileShooterComponent(7f, 3.5f, 7f, 1.5f, "images/tank_projectile_atlas.atlas", "fire"))
             .addComponent(new com.csse3200.game.components.ReachedBaseComponent())
-            .addComponent(new SlowEffectComponent())
             .addComponent(new EnemySoundComponent(
                 ServiceLocator.getResourceService().getAsset(TANK_WALK_SOUND, Sound.class),
                 ServiceLocator.getResourceService().getAsset(TANK_ATTACK_SOUND, Sound.class),
@@ -151,8 +151,10 @@ public class TankEnemyFactory {
             }
         });
 
-        var sz = tank.getScale(); 
-        tank.setScale(sz.x * 1.3f, sz.y * 1.3f);
+        // Scale up by 4x to compensate for smaller sprite frames (256px vs 1024px)
+        // Then apply the original 1.3x scaling
+        var sz = tank.getScale();
+        tank.setScale(sz.x * 4.0f * 1.3f, sz.y * 4.0f * 1.3f);
 
         return tank;
     }
@@ -330,4 +332,3 @@ public class TankEnemyFactory {
         throw new IllegalStateException("Instantiating static util class");
     }
 }
-

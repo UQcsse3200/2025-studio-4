@@ -1,39 +1,46 @@
 package com.csse3200.game.components.maingame;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.NinePatchDrawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.csse3200.game.GdxGame;
-import com.csse3200.game.services.ServiceLocator;
-import com.csse3200.game.services.PlayerNameService;
 import com.csse3200.game.services.PlayerAvatarService;
+import com.csse3200.game.services.PlayerNameService;
+import com.csse3200.game.services.ResourceService;
+import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.csse3200.game.ui.UiStyles;
 
 public class PauseMenuDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(PauseMenuDisplay.class);
-    private static final float Z_INDEX = 100f; 
-    private Texture dimTexHandle; 
+    private static final float Z_INDEX = 100f;
+
+    private static final String PANEL_TEX = "images/settings_bg.png";
+    private static final String BTN_TEX   = "images/settings_bg_button.png";
 
     private final GdxGame game;
+    private Texture dimTexHandle;
     private Table overlayTable;
     private Image dimImage;
     private Image pauseIcon;
-    private boolean shown = false; 
+    private boolean shown = false;
 
     public PauseMenuDisplay(GdxGame game) {
         this.game = game;
@@ -42,96 +49,77 @@ public class PauseMenuDisplay extends UIComponent {
     @Override
     public void create() {
         super.create();
+        ensureAssetsLoaded();
         addActors();
-        
         entity.getEvents().addListener("showPauseUI", this::showOverlay);
         entity.getEvents().addListener("hidePauseUI", this::hideOverlay);
     }
 
+    private void ensureAssetsLoaded() {
+        ResourceService rs = ServiceLocator.getResourceService();
+        rs.loadTextures(new String[] { PANEL_TEX, BTN_TEX });
+        rs.loadAll();
+    }
+
     private void addActors() {
-        
+        // Dim layer
         Pixmap px = new Pixmap(1, 1, Format.RGBA8888);
-        px.setColor(new Color(0f, 0f, 0f, 0.55f)); 
+        px.setColor(new Color(0f, 0f, 0f, 0.55f));
         px.fill();
         dimTexHandle = new Texture(px);
         px.dispose();
+
         dimImage = new Image(dimTexHandle);
         dimImage.setFillParent(true);
         dimImage.setVisible(false);
         stage.addActor(dimImage);
 
-        
-        overlayTable = new Table();
+        // Settings-style panel
+        Texture panelTex = ServiceLocator.getResourceService().getAsset(PANEL_TEX, Texture.class);
+        NinePatch panelPatch = new NinePatch(new TextureRegion(panelTex), 20, 20, 20, 20);
+        overlayTable = new Table(skin);
         overlayTable.setFillParent(true);
         overlayTable.setVisible(false);
 
         Table window = new Table(skin);
         window.defaults().pad(10f);
+        window.setBackground(new NinePatchDrawable(panelPatch));
 
-        Label title = new Label("Paused", skin);
-        title.setFontScale(1.8f);
-        title.setColor(new Color(1f, 0.9f, 0.6f, 1f));
-        title.getStyle().fontColor = Color.valueOf("CFF2FF");
+        Label title = new Label("Paused", skin, "title");
+        title.setColor(Color.valueOf("CFF2FF"));
 
-        // Add player info section (avatar + name)
-        Table playerInfoTable = createPlayerInfoSection();
+        // Player info
+        Table playerInfo = createPlayerInfoSection();
 
-        // Create custom button style
-        var style = UiStyles.orangeButton(skin);
-        TextButton resumeBtn   = new TextButton("Resume", style);
-        TextButton saveBtn     = new TextButton("Save", style);
-        TextButton settingsBtn = new TextButton("Settings", style);
-        TextButton rankingBtn  = new TextButton("Ranking", style);
-        TextButton quitBtn     = new TextButton("Quit to Main Menu", style);
+        // Buttons — use EXACT same style as Settings
+        TextButtonStyle btnStyle = createSettingsButtonStyle();
+        TextButton resume   = new TextButton("Resume", btnStyle);
+        TextButton save     = new TextButton("Save", btnStyle);
+        TextButton settings = new TextButton("Settings", btnStyle);
+        TextButton ranking  = new TextButton("Ranking", btnStyle);
+        TextButton quit     = new TextButton("Quit to Main Menu", btnStyle);
 
-        resumeBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("resume");
-            }
-        });
+        resume.addListener(new ChangeListener() { @Override public void changed(ChangeEvent e, Actor a) { entity.getEvents().trigger("resume"); }});
+        save.addListener(new ChangeListener()   { @Override public void changed(ChangeEvent e, Actor a) { entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("save"); }});
+        settings.addListener(new ChangeListener(){ @Override public void changed(ChangeEvent e, Actor a) { entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("showSettingsOverlay"); }});
+        ranking.addListener(new ChangeListener() { @Override public void changed(ChangeEvent e, Actor a) { entity.getEvents().trigger("hidePauseUI"); entity.getEvents().trigger("showRanking"); }});
+        quit.addListener(new ChangeListener()    { @Override public void changed(ChangeEvent e, Actor a) { entity.getEvents().trigger("quitToMenu"); }});
 
-        saveBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                logger.debug("Save button clicked from pause menu");
-                entity.getEvents().trigger("hidePauseUI");
-                entity.getEvents().trigger("save");
-            }
-        });
+        window.add(title).padBottom(12f).row();
+        window.add(playerInfo).padBottom(15f).row();
+        window.add(resume).size(280f, 50f).row();
+        window.add(save).size(280f, 50f).row();
+        window.add(settings).size(280f, 50f).row();
+        window.add(ranking).size(280f, 50f).row();
+        window.add(quit).size(280f, 50f).padTop(10f).row();
 
-        settingsBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("hidePauseUI");
-                entity.getEvents().trigger("showSettingsOverlay");
-            }
-        });
-
-        rankingBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("hidePauseUI");
-                entity.getEvents().trigger("showRanking");
-            }
-        });
-
-        quitBtn.addListener(new ChangeListener() {
-            @Override public void changed(ChangeEvent e, Actor a) {
-                entity.getEvents().trigger("quitToMenu");
-            }
-        });
-
-        window.add(title).row();
-        window.add(playerInfoTable).padBottom(15f).row();
-        window.add(resumeBtn).size(280f, 50f).row();
-        window.add(saveBtn).size(280f, 50f).row();
-        window.add(settingsBtn).size(280f, 50f).row();
-        window.add(rankingBtn).size(280f, 50f).row();
-        window.add(quitBtn).size(280f, 50f).row();
-
-        overlayTable.add(window).center();
+        overlayTable.add(window).center()
+                .size(Math.min(Gdx.graphics.getWidth() * 0.45f, 600f),
+                        Math.min(Gdx.graphics.getHeight() * 0.75f, 650f));
         stage.addActor(overlayTable);
 
-        
-        Texture pauseTex = ServiceLocator.getResourceService()
-                .getAsset("images/pause_button.png", Texture.class);
+        // Pause icon (unchanged)
+        Texture pauseTex = ServiceLocator.getResourceService().getAsset("images/pause_button.png", Texture.class);
         pauseIcon = new Image(pauseTex);
         Table topRight = new Table();
         topRight.setFillParent(true);
@@ -139,7 +127,6 @@ public class PauseMenuDisplay extends UIComponent {
         topRight.add(pauseIcon).size(48f, 48f).padTop(12f).padRight(150f);
         stage.addActor(topRight);
 
-        
         pauseIcon.addListener(new ClickListener() {
             @Override public void clicked(InputEvent event, float x, float y) {
                 logger.debug("Pause icon clicked");
@@ -148,121 +135,59 @@ public class PauseMenuDisplay extends UIComponent {
         });
     }
 
-    private void showOverlay() {
-        shown = true;
-        dimImage.setVisible(true);
-        overlayTable.setVisible(true);
-    }
-
-    private void hideOverlay() {
-        shown = false;
-        dimImage.setVisible(false);
-        overlayTable.setVisible(false);
-    }
-
-    @Override
-    protected void draw(SpriteBatch batch) {
-        // stage draws for us
-    }
-
-    @Override
-    public float getZIndex() {
-        return Z_INDEX;
-    }
-
-    /**
-     * Creates a table displaying the player's avatar and name
-     */
-    private Table createPlayerInfoSection() {
-        Table playerTable = new Table();
-        
-        // Get player services
-        PlayerNameService playerNameService = ServiceLocator.getPlayerNameService();
-        PlayerAvatarService playerAvatarService = ServiceLocator.getPlayerAvatarService();
-        
-        // Get player name
-        String playerName = "Player";
-        if (playerNameService != null) {
-            playerName = playerNameService.getPlayerName();
-        }
-        
-        // Get avatar ID and image path
-        String avatarId = "avatar_1";
-        if (playerAvatarService != null) {
-            avatarId = playerAvatarService.getPlayerAvatar();
-        }
-        
-        // Create avatar image
-        Image avatarImage = createAvatarImage(avatarId, playerAvatarService);
-        
-        // Create player name label
-        Label nameLabel = new Label(playerName, skin, "large");
-        nameLabel.setColor(Color.CYAN);
-        
-        // Add avatar and name to table
-        if (avatarImage != null) {
-            playerTable.add(avatarImage).size(60, 60).padRight(15f);
-        }
-        playerTable.add(nameLabel);
-        
-        return playerTable;
-    }
-    
-    /**
-     * Creates an image from the avatar path
-     */
-    private Image createAvatarImage(String avatarId, PlayerAvatarService playerAvatarService) {
-        if (playerAvatarService == null) {
-            return null;
-        }
-        
-        try {
-            String imagePath = playerAvatarService.getAvatarImagePath(avatarId);
-            Texture texture = ServiceLocator.getResourceService().getAsset(imagePath, Texture.class);
-            TextureRegion region = new TextureRegion(texture);
-            TextureRegionDrawable drawable = new TextureRegionDrawable(region);
-            return new Image(drawable);
-        } catch (Exception e) {
-            logger.warn("Failed to load avatar image for {}: {}", avatarId, e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Creates custom button style using button background image
-     */
-    private TextButtonStyle createCustomButtonStyle() {
+    private TextButtonStyle createSettingsButtonStyle() {
         TextButtonStyle style = new TextButtonStyle();
-        
-        // Use Segoe UI font
         style.font = skin.getFont("segoe_ui");
-        
-        // Load button background image
-        Texture buttonTexture = ServiceLocator.getResourceService()
-            .getAsset("images/Main_Game_Button.png", Texture.class);
-        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
-        
-        // Create NinePatch for scalable button background
-        NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        
-        // Create pressed state NinePatch (slightly darker)
-        NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
-        
-        // Create hover state NinePatch (slightly brighter)
-        NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
-        
-        // Set button states
-        style.up = new NinePatchDrawable(buttonPatch);
-        style.down = new NinePatchDrawable(pressedPatch);
-        style.over = new NinePatchDrawable(hoverPatch);
-        
-        style.fontColor = Color.CYAN;
-        style.downFontColor = new Color(0.0f, 0.6f, 0.8f, 1.0f);
-        style.overFontColor = new Color(0.2f, 0.8f, 1.0f, 1.0f);
-        
+
+        Texture tex = ServiceLocator.getResourceService().getAsset(BTN_TEX, Texture.class);
+        TextureRegion tr = new TextureRegion(tex);
+        TextureRegionDrawable up = new TextureRegionDrawable(tr);
+        TextureRegionDrawable down = new TextureRegionDrawable(tr);
+        TextureRegionDrawable over = new TextureRegionDrawable(tr);
+        down.tint(new Color(0.8f, 0.8f, 0.8f, 1f));
+        over.tint(new Color(1.1f, 1.1f, 1.1f, 1f));
+
+        style.up = up; style.down = down; style.over = over;
+        style.fontColor = Color.WHITE;
+        style.overFontColor = Color.WHITE;
+        style.downFontColor = Color.LIGHT_GRAY;
         return style;
+    }
+
+    private void showOverlay() { shown = true; dimImage.setVisible(true); overlayTable.setVisible(true); }
+    private void hideOverlay() { shown = false; dimImage.setVisible(false); overlayTable.setVisible(false); }
+
+    @Override protected void draw(SpriteBatch batch) {}
+
+    @Override public float getZIndex() { return Z_INDEX; }
+
+    private Table createPlayerInfoSection() {
+        Table t = new Table();
+        PlayerNameService nameService = ServiceLocator.getPlayerNameService();
+        PlayerAvatarService avatarService = ServiceLocator.getPlayerAvatarService();
+
+        String name = nameService != null ? nameService.getPlayerName() : "Player";
+        String avatarId = avatarService != null ? avatarService.getPlayerAvatar() : "avatar_1";
+
+        Image avatar = createAvatarImage(avatarId, avatarService);
+        Label nameLabel = new Label(name, skin);
+        nameLabel.setColor(Color.CYAN);
+
+        if (avatar != null) t.add(avatar).size(60, 60).padRight(15f);
+        t.add(nameLabel);
+        return t;
+    }
+
+    private Image createAvatarImage(String avatarId, PlayerAvatarService svc) {
+        if (svc == null) return null;
+        try {
+            String path = svc.getAvatarImagePath(avatarId);
+            Texture tex = ServiceLocator.getResourceService().getAsset(path, Texture.class);
+            return new Image(new TextureRegionDrawable(new TextureRegion(tex)));
+        } catch (Exception e) {
+            logger.warn("Failed to load avatar {}", avatarId);
+            return null;
+        }
     }
 
     @Override
@@ -271,6 +196,4 @@ public class PauseMenuDisplay extends UIComponent {
         if (dimTexHandle != null) dimTexHandle.dispose();
         super.dispose();
     }
-
 }
-

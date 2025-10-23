@@ -94,8 +94,8 @@ public class BookDisplay extends UIComponent {
         rightTable.setFillParent(true);
         rightTable.top().right()
                 .padLeft(stage.getViewport().getWorldWidth() * 0.2f)
-                .padTop(stage.getViewport().getWorldHeight() * 0.08f)
-                .padRight(stage.getViewport().getWorldWidth()* 0.17f);
+                .padTop(stage.getViewport().getWorldHeight() * 0.15f)
+                .padRight(stage.getViewport().getWorldWidth()* 0.19f);
         addActors();
         stage.addActor(rightTable);
         this.entity.getEvents().addListener(eventName, this::renderRightDeck);

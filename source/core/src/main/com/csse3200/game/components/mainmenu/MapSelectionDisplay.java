@@ -91,17 +91,23 @@ public class MapSelectionDisplay extends UIComponent {
         thumbImage = new Image(ServiceLocator.getResourceService().getAsset(FALLBACK_THUMB, Texture.class));
         thumbImage.setScaling(Scaling.fit);
 
-        mapNameLabel = new Label("", skin);
+        Label.LabelStyle mapLabelStyle = new Label.LabelStyle();
+        mapLabelStyle.font = skin.getFont("segoe_ui");
+        mapLabelStyle.fontColor = Color.WHITE;
+        mapNameLabel = new Label("", mapLabelStyle);
         mapNameLabel.setAlignment(Align.center);
-        mapNameLabel.setColor(Color.valueOf("AEE7F2"));
 
-        counterLabel = new Label("", skin);
+        Label.LabelStyle counterLabelStyle = new Label.LabelStyle();
+        counterLabelStyle.font = skin.getFont("segoe_ui");
+        counterLabelStyle.fontColor = Color.WHITE;
+        counterLabel = new Label("", counterLabelStyle);
         counterLabel.setAlignment(Align.center);
-        counterLabel.setColor(Color.LIGHT_GRAY);
 
         // Difficulty row
-        Label diffLabel = new Label("Difficulty:", skin);
-        diffLabel.setColor(Color.valueOf("F9B44C")); // warm gold-orange like the buttons
+        Label.LabelStyle diffLabelStyle = new Label.LabelStyle();
+        diffLabelStyle.font = skin.getFont("segoe_ui");
+        diffLabelStyle.fontColor = Color.WHITE;
+        Label diffLabel = new Label("Difficulty:", diffLabelStyle);
         diffLabel.setAlignment(Align.right);
         final SelectBox<String> diffSelect = new SelectBox<>(skin);
         diffSelect.setItems("Easy", "Normal", "Hard");

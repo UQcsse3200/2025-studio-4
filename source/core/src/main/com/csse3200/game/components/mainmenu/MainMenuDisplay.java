@@ -18,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.csse3200.game.areas.ForestGameArea;
 import com.csse3200.game.files.UserSettings;
-import com.csse3200.game.services.GameStateService;
 import com.csse3200.game.services.ResourceService;
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.ui.UIComponent;
@@ -86,8 +85,6 @@ public class MainMenuDisplay extends UIComponent {
       @Override
       public void changed(ChangeEvent changeEvent, Actor actor) {
         logger.debug("Start button clicked");
-        // Ensure a fresh game state (keep from non-game-ui branch)
-        ServiceLocator.registerGameStateService(new GameStateService());
         entity.getEvents().trigger("start");
       }
     });

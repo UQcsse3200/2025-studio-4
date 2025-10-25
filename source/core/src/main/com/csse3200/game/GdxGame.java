@@ -163,8 +163,6 @@ public class GdxGame extends Game {
         return new BookScreen(this, BookPage.ENEMY_PAGE);
       case TOWER_BOOK:
         return new BookScreen(this, BookPage.TOWER_PAGE);
-      case ACHIEVEMENT_BOOK:
-        return new BookScreen(this, BookPage.ACHIEVEMENT_PAGE);
       case HERO_BOOK:
         return new BookScreen(this, BookPage.HERO_PAGE);
       default:
@@ -174,7 +172,7 @@ public class GdxGame extends Game {
 
   public enum ScreenType {
     MAIN_MENU, MAIN_GAME, SETTINGS, SAVE_SELECTION, OPENING_CUTSCENE, VICTORY, DEFEAT,
-    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, ACHIEVEMENT_BOOK, UPGRADES, HERO_BOOK
+    MAP_SELECTION, BOOK, CURRENCY_BOOK, ENEMY_BOOK, TOWER_BOOK, UPGRADES, HERO_BOOK
   }
 
   public void setOpeningCutsceneWithBackground(int backgroundIndex) {

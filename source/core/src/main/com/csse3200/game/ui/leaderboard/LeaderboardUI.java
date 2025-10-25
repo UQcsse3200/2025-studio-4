@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.csse3200.game.components.Component; // 或 UIComponent
 import com.csse3200.game.services.ServiceLocator;
 import com.csse3200.game.services.leaderboard.LeaderboardService;
-import com.csse3200.game.ui.UIStyleHelper;
+import com.csse3200.game.services.leaderboard.InMemoryLeaderboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class LeaderboardUI extends Component {
         root = new Table();
         root.setFillParent(true);
         root.bottom().right().pad(10);
-        TextButton open = new TextButton("Leaderboard", UIStyleHelper.orangeButtonStyle());
+        TextButton open = new TextButton("Leaderboard", skin);
         root.add(open).width(160).height(44);
         stage.addActor(root);
 

@@ -62,7 +62,7 @@ public class BookDisplay extends UIComponent {
     /**
      * Constructs a BookDisplay for a specific page type.
      *
-     * @param bookPage the type of book page to display (TOWER_PAGE, ENEMY_PAGE, CURRENCY_PAGE, ACHIEVEMENT_PAGE, or HERO_PAGE)
+     * @param bookPage the type of book page to display (TOWER_PAGE, ENEMY_PAGE, or CURRENCY_PAGE)
      */
     public BookDisplay(BookPage bookPage) {
         super();
@@ -74,9 +74,6 @@ public class BookDisplay extends UIComponent {
             maxWordsLore = 15;
         } else if (bookPage == BookPage.TOWER_PAGE) {
             this.book = new BookComponent.TowerBookComponent();
-            maxWordsLore = 25;
-        } else if (bookPage == BookPage.ACHIEVEMENT_PAGE) {
-            this.book = new BookComponent.AchievementBookComponent();
             maxWordsLore = 25;
         } else if (bookPage == BookPage.HERO_PAGE) {
             this.book = new BookComponent.HeroBookComponent();
@@ -96,8 +93,8 @@ public class BookDisplay extends UIComponent {
         rightTable.setFillParent(true);
         rightTable.top().right()
                 .padLeft(stage.getViewport().getWorldWidth() * 0.2f)
-                .padTop(stage.getViewport().getWorldHeight() * 0.15f)
-                .padRight(stage.getViewport().getWorldWidth()* 0.19f);
+                .padTop(stage.getViewport().getWorldHeight() * 0.08f)
+                .padRight(stage.getViewport().getWorldWidth()* 0.17f);
         addActors();
         stage.addActor(rightTable);
         this.entity.getEvents().addListener(eventName, this::renderRightDeck);
@@ -222,25 +219,20 @@ public class BookDisplay extends UIComponent {
             TextButton.TextButtonStyle buttonStyle;
             TextButton button;
             String lockedValue = stats.get(DeckComponent.StatType.LOCKED);
-            boolean isLocked = lockedValue != null && lockedValue.equals("true");
-            
-            // 始终使用成就的图标，不管是否锁定，且所有成就都可点击
-            buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), true);
-            button = new TextButton("", buttonStyle);
-            
-            // 如果锁定，添加半透明效果
-            if (isLocked) {
-                button.setColor(1f, 1f, 1f, 0.4f); // 40% 透明度表示锁定状态
+            if (lockedValue != null && lockedValue.equals("true")) {
+                buttonStyle = createCustomButtonStyle(DeckComponent.StatType.LOCKED.getTexturePath(), false);
+                button = new TextButton("", buttonStyle);
+            } else {
+                buttonStyle = createCustomButtonStyle(stats.get(DeckComponent.StatType.TEXTURE_PATH), true);
+                button = new TextButton("", buttonStyle);
+                button.addListener(new ChangeListener() {
+                    @Override
+                    public void changed(ChangeEvent changeEvent, Actor actor) {
+                        logger.debug("Button inside bookPage clicked");
+                        entity.getEvents().trigger(eventName, currentDeck);
+                    }
+                });
             }
-            
-            // 所有成就都可以点击查看详情
-            button.addListener(new ChangeListener() {
-                @Override
-                public void changed(ChangeEvent changeEvent, Actor actor) {
-                    logger.debug("Button inside bookPage clicked");
-                    entity.getEvents().trigger(eventName, currentDeck);
-                }
-            });
 
             // Wrap button with a bordered table
             Table borderedButton = new Table();
@@ -373,10 +365,10 @@ public class BookDisplay extends UIComponent {
         if (lore != null && !lore.isEmpty()) {
             String trimmedLore = trimWords(lore, maxWordsLore);
             Label loreLabel = new Label(trimmedLore, skin, "small"); // use a smaller style
-            loreLabel.setFontScale(stageWidth * 0.0006f); // Reduced from 0.0008f to make text smaller
+            loreLabel.setFontScale(stageWidth * 0.0008f);
             loreLabel.setWrap(true);
             rightTable.add(loreLabel)
-                    .width(stageWidth * 0.25f) // Reduced from 0.3f to keep within book bounds
+                    .width(stageWidth * 0.3f)
                     .center();
             rightTable.row().padTop(stageHeight * 0.02f);
         }

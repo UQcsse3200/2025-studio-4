@@ -27,14 +27,13 @@ import org.slf4j.LoggerFactory;
 public class MainBookDisplay extends UIComponent {
     private static final Logger logger = LoggerFactory.getLogger(MainBookDisplay.class);
 
-    /** Background images for buttons: enemies, currencies, towers, achievements, heroes, back button. */
+    /** Background images for buttons: enemies, currencies, towers, back button. */
     private final String[] buttonBackGround = {
             "images/book/enemies_book.png",
             "images/book/currencies_book.png",
             "images/book/towers_book.png",
-            "images/book/achievements_book.png",
-            "images/book/heroes_book.png",
-            "images/book/hologram.png"
+            "images/book/hologram.png",
+            "images/book/heroes_book.png"
     };
 
     private Table contentTable;
@@ -100,14 +99,14 @@ public class MainBookDisplay extends UIComponent {
         stage.addActor(backgroundImage);
     }
 
-    /** Renders the navigation buttons for enemies, currencies, towers, achievements, and heroes. */
+    /** Renders the navigation buttons for enemies, currencies, and towers. */
     private void renderContentList() {
         float stageWidth = stage.getViewport().getWorldWidth();
         float stageHeight = stage.getViewport().getWorldHeight();
 
-        // Scale buttons relative to stage size (now 5 buttons)
-        float buttonWidth = stageWidth * 0.18f;   // Adjusted to fit 5 buttons
-        float buttonHeight = stageHeight * 0.24f; 
+        // Scale buttons relative to stage size
+        float buttonWidth = stageWidth * 0.2f;   // 8% of stage width
+        float buttonHeight = stageHeight * 0.26f; // 12% of stage height
 
         Table table = new Table();
         table.setFillParent(true);
@@ -115,7 +114,6 @@ public class MainBookDisplay extends UIComponent {
         TextButton.TextButtonStyle enemyButtonStyle = createCustomButtonStyle(buttonBackGround[0]);
         TextButton.TextButtonStyle currencyButtonStyle = createCustomButtonStyle(buttonBackGround[1]);
         TextButton.TextButtonStyle towerButtonStyle = createCustomButtonStyle(buttonBackGround[2]);
-        TextButton.TextButtonStyle achievementButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
         TextButton.TextButtonStyle heroButtonStyle = createCustomButtonStyle(buttonBackGround[4]);
 
         TextButton enemyButton = new TextButton("", enemyButtonStyle);
@@ -148,16 +146,6 @@ public class MainBookDisplay extends UIComponent {
             }
         });
 
-        TextButton achievementButton = new TextButton("", achievementButtonStyle);
-        achievementButton.getLabel().setColor(Color.WHITE);
-        achievementButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-                logger.debug("Go to achievement clicked");
-                entity.getEvents().trigger("goToAchievement");
-            }
-        });
-
         TextButton heroButton = new TextButton("", heroButtonStyle);
         heroButton.getLabel().setColor(Color.WHITE);
         heroButton.addListener(new ChangeListener() {
@@ -167,13 +155,36 @@ public class MainBookDisplay extends UIComponent {
             }
         });
 
+        /* Map book -> replace this
+        TextButton tmpMapButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+         */
+
+        /* Achievement book -> replace this
+        TextButton tmpAchievementButton = new TextButton("", heroButtonStyle);
+        heroButton.getLabel().setColor(Color.WHITE);
+        heroButton.addListener(new ChangeListener() {
+            @Override public void changed(ChangeEvent e, Actor a) {
+                logger.debug("Go to hero clicked");
+                entity.getEvents().trigger("goToHero");
+            }
+        });
+         */
+
         table.row().padTop(stageHeight * 0.02f); // First row of books
-        table.add(enemyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
-        table.add(currencyButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
-        table.add(towerButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
+        table.add(enemyButton).size(buttonWidth, buttonHeight);
+        table.add(currencyButton).size(buttonWidth, buttonHeight);
+        table.add(towerButton).size(buttonWidth, buttonHeight);
         table.row().padTop(stageHeight * 0.02f); // Second row of books
-        table.add(achievementButton).size(buttonWidth, buttonHeight).padRight(stageWidth * 0.01f);
         table.add(heroButton).size(buttonWidth, buttonHeight);
+        // table.add(tmpMapButton).size(buttonWidth, buttonHeight);
+        // table.add(tmpAchievementButton).size(buttonWidth, buttonHeight);
 
         table.row().padTop(stageHeight * 0.01f).padBottom(stageHeight * 0.03f);
 
@@ -189,7 +200,7 @@ public class MainBookDisplay extends UIComponent {
         float buttonWidth = stageWidth * 0.15f;   // 5% of stage width
         float buttonHeight = stageHeight * 0.24f; // 8% of stage height
 
-        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[5]);
+        TextButton.TextButtonStyle exitButtonStyle = createCustomButtonStyle(buttonBackGround[3]);
         TextButton exitButton = new TextButton("", exitButtonStyle);
         exitButton.getLabel().setColor(Color.WHITE);
 
@@ -222,29 +233,21 @@ public class MainBookDisplay extends UIComponent {
 
         style.font = skin.getFont("segoe_ui");
 
-        try {
-            Texture buttonTexture = ServiceLocator.getResourceService()
-                    .getAsset(backGround, Texture.class);
-            TextureRegion buttonRegion = new TextureRegion(buttonTexture);
+        Texture buttonTexture = ServiceLocator.getResourceService()
+                .getAsset(backGround, Texture.class);
+        TextureRegion buttonRegion = new TextureRegion(buttonTexture);
 
-            NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        NinePatch buttonPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
 
-            NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-            pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
+        NinePatch pressedPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        pressedPatch.setColor(new Color(0.8f, 0.8f, 0.8f, 1f));
 
-            NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
-            hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
+        NinePatch hoverPatch = new NinePatch(buttonRegion, 10, 10, 10, 10);
+        hoverPatch.setColor(new Color(1.1f, 1.1f, 1.1f, 1f));
 
-            style.up = new NinePatchDrawable(buttonPatch);
-            style.down = new NinePatchDrawable(pressedPatch);
-            style.over = new NinePatchDrawable(hoverPatch);
-        } catch (Exception e) {
-            logger.error("Failed to load button texture: {}", backGround, e);
-            // 使用默认样式作为后备
-            style.up = skin.getDrawable("default");
-            style.down = skin.getDrawable("default");
-            style.over = skin.getDrawable("default");
-        }
+        style.up = new NinePatchDrawable(buttonPatch);
+        style.down = new NinePatchDrawable(pressedPatch);
+        style.over = new NinePatchDrawable(hoverPatch);
 
         style.fontColor = Color.WHITE;
         style.downFontColor = Color.LIGHT_GRAY;
